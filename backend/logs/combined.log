@@ -3365,3 +3365,28 @@
 {"level":"info","message":"[Scrapers] Total internships scraped: 567","timestamp":"2026-03-07 07:05:21"}
 {"level":"info","message":"✅ Live internships: 228 new, 90 updated","timestamp":"2026-03-07 07:05:21"}
 {"level":"info","message":"📊 Final DB: 84 hackathons, 228 internships","timestamp":"2026-03-07 07:05:21"}
+{"level":"info","message":"✅ MongoDB connected: mongodb://127.0.0.1:27017/hackindia","timestamp":"2026-03-07 07:05:26"}
+{"level":"info","message":"[Scheduler] ✅ All jobs registered (IST timezone)","timestamp":"2026-03-07 07:05:26"}
+{"level":"info","message":"  • Full pipeline : 0 */6 * * *","timestamp":"2026-03-07 07:05:26"}
+{"level":"info","message":"  • Expire stale  : every hour","timestamp":"2026-03-07 07:05:26"}
+{"level":"info","message":"  • Link health   : every 12h","timestamp":"2026-03-07 07:05:26"}
+{"level":"info","message":"  • Daily stats   : midnight","timestamp":"2026-03-07 07:05:26"}
+{"level":"info","message":"✅ HackIndia API running at http://localhost:5000","timestamp":"2026-03-07 07:05:26"}
+{"level":"info","message":"   Environment  : development","timestamp":"2026-03-07 07:05:26"}
+{"level":"info","message":"   Groq AI      : configured ✔","timestamp":"2026-03-07 07:05:26"}
+{"level":"info","message":"DB has 84 open hackathons — no immediate scrape needed","timestamp":"2026-03-07 07:05:26"}
+{"level":"info","message":"GET /api/hackathons","timestamp":"2026-03-07 07:05:35"}
+{"level":"info","message":"GET /api/hackathons/stats","timestamp":"2026-03-07 07:05:35"}
+{"level":"info","message":"GET /api/hackathons","timestamp":"2026-03-07 07:05:35"}
+{"level":"info","message":"GET /api/hackathons/stats","timestamp":"2026-03-07 07:05:35"}
+{"level":"info","message":"GET /api/hackathons","timestamp":"2026-03-07 07:05:46"}
+{"level":"info","message":"GET /api/hackathons","timestamp":"2026-03-07 07:05:49"}
+{"level":"info","message":"GET /api/hackathons","timestamp":"2026-03-07 07:06:34"}
+{"level":"info","message":"GET /api/hackathons/stats","timestamp":"2026-03-07 07:06:34"}
+{"level":"info","message":"GET /api/hackathons","timestamp":"2026-03-07 07:06:34"}
+{"level":"info","message":"GET /api/hackathons/stats","timestamp":"2026-03-07 07:06:34"}
+{"level":"info","message":"GET /api/hackathons","timestamp":"2026-03-07 07:11:31"}
+{"level":"info","message":"GET /api/internships","timestamp":"2026-03-07 07:11:31"}
+{"level":"info","message":"GET /api/hackathons/stats","timestamp":"2026-03-07 07:11:31"}
+{"level":"info","message":"GET /api/hackathons","timestamp":"2026-03-07 07:11:31"}
+{"level":"info","message":"GET /api/hackathons/stats","timestamp":"2026-03-07 07:11:31"}
