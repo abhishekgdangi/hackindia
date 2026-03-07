@@ -654,7 +654,7 @@ const HackathonsPage = () => {
               <div style={{display:"flex",alignItems:"center",gap:10,marginTop:5}}>
                 <span className="badge b-open">{total} OPEN</span>
                 <span style={{fontSize:12,color:"var(--text2)"}}>All registrations currently open</span>
-                {offline && <span className="mono" style={{fontSize:9,color:"#ff4b4b",background:"rgba(255,75,75,.1)",padding:"2px 7px",borderRadius:5}}>⚠ Backend offline — start npm start in backend</span>}
+                {offline && <span className="mono" style={{fontSize:9,color:"#ff4b4b",background:"rgba(255,75,75,.1)",padding:"2px 7px",borderRadius:5}}>⚠ Backend offline — please wait, server is waking up...</span>}
               </div>
             </div>
             <div style={{display:"flex",gap:10,alignItems:"center"}}>
@@ -707,7 +707,7 @@ const HackathonsPage = () => {
               <div className="syne" style={{fontSize:22,fontWeight:800,marginBottom:10,color:"#ff4b4b"}}>Backend server is offline</div>
               <div style={{color:"var(--text2)",fontSize:14,lineHeight:1.8,marginBottom:20}}>
                 No hackathons can be shown right now.<br/>
-                Start the backend server to see live data.
+                Server is waking up, please refresh in 30 seconds.
               </div>
               <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:10,padding:"12px 20px",display:"inline-block",textAlign:"left"}}>
                 <div style={{fontSize:11,color:"var(--text3)",marginBottom:6}}>Run this in VS Code terminal:</div>
