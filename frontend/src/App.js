@@ -559,7 +559,7 @@ const HomePage = ({setPage}) => {
           {iLoading ? [1,2,3].map(i=>(
             <div key={i} className="skel" style={{height:180,borderRadius:16}}/>
           )) : featuredInterns.slice(0,6).map(i=>(
-            <div key={i._id} className="hcard" style={{padding:20,cursor:"default"}}>
+            <div key={i._id} className="hcard" style={{padding:20,cursor:"default",display:"flex",flexDirection:"column"}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
                 <div style={{display:"flex",gap:12,alignItems:"center"}}>
                   <div style={{width:44,height:44,borderRadius:12,background:"var(--bg3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,border:"1px solid var(--border)",flexShrink:0}}>
@@ -584,7 +584,7 @@ const HomePage = ({setPage}) => {
                   <div className="mono" style={{fontSize:10,fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{(i.skills||[]).slice(0,2).join(", ")||"—"}</div>
                 </div>
               </div>
-              <button className="btn-p" style={{width:"100%",justifyContent:"center",padding:"7px",fontSize:12}} onClick={()=>window.open(i.applyLink,"_blank")}>Apply Now → {i.company}</button>
+              <button className="btn-p" style={{width:"100%",justifyContent:"center",padding:"7px",fontSize:12,marginTop:"auto"}} onClick={()=>window.open(i.applyLink,"_blank")}>Apply Now →</button>
             </div>
           ))}
           {/* Browse all internships card */}
