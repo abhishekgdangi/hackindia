@@ -710,8 +710,8 @@ const HackathonsPage = () => {
                 Server is waking up, please refresh in 30 seconds.
               </div>
               <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:10,padding:"12px 20px",display:"inline-block",textAlign:"left"}}>
-                <div style={{fontSize:11,color:"var(--text3)",marginBottom:6}}>Run this in VS Code terminal:</div>
-                <code style={{fontSize:13,color:"var(--cyan)"}}>cd D:\hackindia_final\backend && npm start</code>
+                <div style={{fontSize:11,color:"var(--text3)",marginBottom:6}}>Backend URL:</div>
+                <code style={{fontSize:13,color:"var(--cyan)"}}>https://hackindia-0pum.onrender.com</code>
               </div>
             </div>
           ) : data.length===0 ? (
