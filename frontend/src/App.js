@@ -512,7 +512,7 @@ const HomePage = ({setPage}) => {
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))",gap:18}}>
           {loading ? [1,2,3].map(i=><SkeletonCard key={i}/>) : featured.length ? [
-            ...featured.slice(0,9).map(h=><HackCard key={h._id} h={h} onClick={()=>setPage("hackathons")}/>),
+            ...featured.slice(0,6).map(h=><HackCard key={h._id} h={h} onClick={()=>setPage("hackathons")}/>),
             <div key="browse-all" onClick={()=>setPage("hackathons")} style={{gridColumn:"1/-1",background:"linear-gradient(135deg,var(--card2),var(--bg3))",border:"2px dashed var(--border2)",borderRadius:14,display:"flex",flexDirection:"row",alignItems:"center",justifyContent:"space-between",cursor:"pointer",padding:"22px 32px",gap:24,transition:"all .25s"}} onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.background="linear-gradient(135deg,rgba(0,212,255,.06),var(--bg3))";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";e.currentTarget.style.background="linear-gradient(135deg,var(--card2),var(--bg3))";}}>
               <div style={{display:"flex",alignItems:"center",gap:18}}>
                 <div style={{fontSize:36}}>⚡</div>
