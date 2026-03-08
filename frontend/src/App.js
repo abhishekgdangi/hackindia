@@ -10,7 +10,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 /* ────────────────────────────────────────────────
    CONFIG
 ──────────────────────────────────────────────── */
-const API_BASE   = process.env.REACT_APP_API_URL  || "http://localhost:5000/api";
+const API_BASE   = "https://hackindia-0pum.onrender.com/api";
 // eslint-disable-next-line no-unused-vars
 const GROQ_KEY   = process.env.REACT_APP_GROQ_KEY || "";
 // eslint-disable-next-line no-unused-vars
@@ -359,7 +359,7 @@ const HackBot = ({ hackathons }) => {
     ).join("\n");
 
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:5000/api"}/chat`, {
+      const res = await fetch(`${"https://hackindia-0pum.onrender.com/api"}/chat`, {
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body: JSON.stringify({
