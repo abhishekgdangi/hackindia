@@ -3682,3 +3682,5 @@
 {"level":"info","message":"[Scrapers] Total internships scraped: 564","timestamp":"2026-03-07 21:09:13"}
 {"level":"info","message":"✅ Live internships: 223 new, 102 updated","timestamp":"2026-03-07 21:09:20"}
 {"level":"info","message":"📊 Final DB: 100 hackathons, 223 internships","timestamp":"2026-03-07 21:09:20"}
+{"level":"info","message":"[ValidationAgent] Expired 3 hackathons","timestamp":"2026-03-07 22:00:01"}
+{"level":"info","message":"[Scheduler] Hourly expire: 3 hackathons marked CLOSED","timestamp":"2026-03-07 22:00:01"}

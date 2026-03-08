@@ -300,7 +300,7 @@ const Modal = ({ h, onClose }) => {
           </div>
 
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:22}}>
-            {[["🏆","Prize",h.prize||"TBA"],["👥","Team",h.teamSizeLabel||"Any"],["📍","City",h.city],["🌐","Level",h.level||"—"]].map(([ic,lb,vl])=>(
+            {[["🏆","Prize",h.prize||"TBA"],["👥","Team",h.teamSizeLabel||"Any"],["📍","City",h.city],["🌐","Mode",h.mode||"—"]].map(([ic,lb,vl])=>(
               <div key={lb} style={{background:"var(--card2)",borderRadius:11,padding:"12px 14px",border:"1px solid var(--border)",textAlign:"center"}}>
                 <div style={{fontSize:18,marginBottom:5}}>{ic}</div>
                 <div style={{fontSize:10,color:"var(--text3)",marginBottom:3}}>{lb}</div>
