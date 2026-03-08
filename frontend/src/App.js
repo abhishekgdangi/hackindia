@@ -873,7 +873,7 @@ const InternshipsPage = () => {
             <>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))",gap:15}}>
               {paginated.map(i=>(
-                <div key={i._id} className="hcard" style={{padding:20}}>
+                <div key={i._id} className="hcard" style={{padding:20,display:"flex",flexDirection:"column"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
                     <div style={{display:"flex",gap:12,alignItems:"center"}}>
                       <div style={{width:46,height:46,borderRadius:12,background:"var(--bg3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,border:"1px solid var(--border)",flexShrink:0}}>
@@ -897,7 +897,7 @@ const InternshipsPage = () => {
                   <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:13}}>
                     {(i.skills||[]).slice(0,4).map(s=><span key={s} style={{padding:"3px 8px",borderRadius:6,fontSize:11,background:"rgba(0,212,255,.08)",color:"var(--cyan)",border:"1px solid rgba(0,212,255,.2)"}}>{s}</span>)}
                   </div>
-                  <button className="btn-p" style={{width:"100%",justifyContent:"center",padding:9,fontSize:13}} onClick={()=>window.open(i.applyLink,"_blank")}>Apply Now → {i.company}</button>
+                  <button className="btn-p" style={{width:"100%",justifyContent:"center",padding:9,fontSize:13,marginTop:"auto"}} onClick={()=>window.open(i.applyLink,"_blank")}>Apply Now →</button>
                 </div>
               ))}
             </div>

@@ -3810,3 +3810,129 @@
 {"level":"info","message":"[Scrapers] Total internships scraped: 566","timestamp":"2026-03-08 06:42:26"}
 {"level":"info","message":"✅ Live internships: 222 new, 145 updated","timestamp":"2026-03-08 06:42:29"}
 {"level":"info","message":"📊 Final DB: 98 hackathons, 222 internships","timestamp":"2026-03-08 06:42:29"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2026-03-08 11:02:49"}
+{"level":"info","message":"Cleared 100 hackathons, 0 internships","timestamp":"2026-03-08 11:02:49"}
+{"level":"info","message":"Running live hackathon scrapers…","timestamp":"2026-03-08 11:02:49"}
+{"level":"info","message":"[Scrapers] Running 10 hackathon scrapers…","timestamp":"2026-03-08 11:02:49"}
+{"level":"info","message":"  → Devpost (Tier 1)…","timestamp":"2026-03-08 11:02:49"}
+{"level":"info","message":"[Devpost] Starting scrape…","timestamp":"2026-03-08 11:02:49"}
+{"level":"info","message":"[Devpost] page 1 → 40 items","timestamp":"2026-03-08 11:02:51"}
+{"level":"info","message":"[Devpost] page 2 → 40 items","timestamp":"2026-03-08 11:02:53"}
+{"level":"info","message":"[Devpost] page 1 → 30 items","timestamp":"2026-03-08 11:02:55"}
+{"level":"info","message":"  ✔ Devpost: 80 hackathons","timestamp":"2026-03-08 11:02:57"}
+{"level":"info","message":"  → HackClub (Tier 1)…","timestamp":"2026-03-08 11:02:59"}
+{"level":"info","message":"[HackClub] Starting scrape…","timestamp":"2026-03-08 11:02:59"}
+{"level":"info","message":"[HackClub] Fetched 15 upcoming events","timestamp":"2026-03-08 11:03:06"}
+{"level":"info","message":"[HackClub] Returning 15 hackathons","timestamp":"2026-03-08 11:03:06"}
+{"level":"info","message":"  ✔ HackClub: 15 hackathons","timestamp":"2026-03-08 11:03:06"}
+{"level":"info","message":"  → TAIKAI (Tier 1)…","timestamp":"2026-03-08 11:03:09"}
+{"level":"info","message":"[TAIKAI] Starting scrape…","timestamp":"2026-03-08 11:03:09"}
+{"level":"warn","message":"[TAIKAI] GET https://taikai.network/api/v1/challenges?type=hackathon&open=true attempt 1/3 — 404","timestamp":"2026-03-08 11:03:10"}
+{"level":"warn","message":"[TAIKAI] GET https://taikai.network/api/v1/challenges?type=hackathon&open=true attempt 2/3 — 404","timestamp":"2026-03-08 11:03:12"}
+{"level":"warn","message":"[TAIKAI] GET https://taikai.network/api/v1/challenges?type=hackathon&open=true attempt 3/3 — 404","timestamp":"2026-03-08 11:03:17"}
+{"level":"warn","message":"[TAIKAI] API https://taikai.network/api/v1/challenges?type=hackathon&open=true failed: Request failed with status code 404","timestamp":"2026-03-08 11:03:17"}
+{"level":"info","message":"[TAIKAI] HTML https://taikai.network/hackathons → 1","timestamp":"2026-03-08 11:03:18"}
+{"level":"info","message":"[TAIKAI] HTML https://taikai.network/hackathons?page=1 → 1","timestamp":"2026-03-08 11:03:21"}
+{"level":"info","message":"[TAIKAI] Total: 1","timestamp":"2026-03-08 11:03:23"}
+{"level":"info","message":"  ✔ TAIKAI: 1 hackathons","timestamp":"2026-03-08 11:03:23"}
+{"level":"info","message":"  → Hackathon.com (Tier 2)…","timestamp":"2026-03-08 11:03:26"}
+{"level":"info","message":"[Hackathon.com] Starting scrape…","timestamp":"2026-03-08 11:03:26"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/online → 2","timestamp":"2026-03-08 11:03:27"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/india → 0","timestamp":"2026-03-08 11:03:30"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/ai → 6","timestamp":"2026-03-08 11:03:33"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/machine-learning → 0","timestamp":"2026-03-08 11:03:37"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/open-source → 0","timestamp":"2026-03-08 11:03:40"}
+{"level":"info","message":"[Hackathon.com] Total: 3","timestamp":"2026-03-08 11:03:42"}
+{"level":"info","message":"  ✔ Hackathon.com: 3 hackathons","timestamp":"2026-03-08 11:03:42"}
+{"level":"info","message":"  → DevEvents (Tier 2)…","timestamp":"2026-03-08 11:03:45"}
+{"level":"info","message":"[DevEvents] Starting scrape…","timestamp":"2026-03-08 11:03:45"}
+{"level":"info","message":"[DevEvents] HTML → 1 hackathons","timestamp":"2026-03-08 11:03:47"}
+{"level":"info","message":"[DevEvents] Total: 1","timestamp":"2026-03-08 11:03:47"}
+{"level":"info","message":"  ✔ DevEvents: 1 hackathons","timestamp":"2026-03-08 11:03:47"}
+{"level":"info","message":"  → MLH (Tier 2)…","timestamp":"2026-03-08 11:03:50"}
+{"level":"info","message":"[MLH] Starting scrape…","timestamp":"2026-03-08 11:03:50"}
+{"level":"info","message":"[MLH] https://mlh.io/seasons/2026/events → 0 raw cards","timestamp":"2026-03-08 11:03:54"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events attempt 1/3 — 404","timestamp":"2026-03-08 11:03:57"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events attempt 2/3 — 404","timestamp":"2026-03-08 11:04:00"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events attempt 3/3 — 404","timestamp":"2026-03-08 11:04:05"}
+{"level":"warn","message":"[MLH] Failed to fetch https://mlh.io/seasons/2027/events: Request failed with status code 404","timestamp":"2026-03-08 11:04:05"}
+{"level":"info","message":"[MLH] Returning 0 hackathons","timestamp":"2026-03-08 11:04:05"}
+{"level":"info","message":"  ✔ MLH: 0 hackathons","timestamp":"2026-03-08 11:04:05"}
+{"level":"info","message":"  → Unstop (Tier 3)…","timestamp":"2026-03-08 11:04:08"}
+{"level":"info","message":"[Unstop] Starting scrape…","timestamp":"2026-03-08 11:04:08"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/search/v2 attempt 1/3 — 404","timestamp":"2026-03-08 11:04:08"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/search/v2 attempt 2/3 — 404","timestamp":"2026-03-08 11:04:10"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/search/v2 attempt 3/3 — 404","timestamp":"2026-03-08 11:04:15"}
+{"level":"warn","message":"[Unstop] API strategy failed: Request failed with status code 404 — trying __NEXT_DATA__","timestamp":"2026-03-08 11:04:15"}
+{"level":"warn","message":"[Unstop] __NEXT_DATA__ not found in HTML","timestamp":"2026-03-08 11:04:15"}
+{"level":"info","message":"  ✔ Unstop: 0 hackathons","timestamp":"2026-03-08 11:04:15"}
+{"level":"info","message":"  → Devfolio (Tier 3)…","timestamp":"2026-03-08 11:04:17"}
+{"level":"info","message":"[Devfolio] Starting scrape…","timestamp":"2026-03-08 11:04:17"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 1/3 — 422","timestamp":"2026-03-08 11:04:18"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 2/3 — 422","timestamp":"2026-03-08 11:04:21"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 3/3 — 422","timestamp":"2026-03-08 11:04:25"}
+{"level":"warn","message":"[Devfolio] query=\"\" failed: Request failed with status code 422","timestamp":"2026-03-08 11:04:25"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 1/3 — 422","timestamp":"2026-03-08 11:04:25"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 2/3 — 422","timestamp":"2026-03-08 11:04:27"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 3/3 — 422","timestamp":"2026-03-08 11:04:32"}
+{"level":"warn","message":"[Devfolio] query=\"india\" failed: Request failed with status code 422","timestamp":"2026-03-08 11:04:32"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 1/3 — 422","timestamp":"2026-03-08 11:04:32"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 2/3 — 422","timestamp":"2026-03-08 11:04:34"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 3/3 — 422","timestamp":"2026-03-08 11:04:38"}
+{"level":"warn","message":"[Devfolio] query=\"online\" failed: Request failed with status code 422","timestamp":"2026-03-08 11:04:38"}
+{"level":"info","message":"[Devfolio] Returning 0 hackathons","timestamp":"2026-03-08 11:04:38"}
+{"level":"info","message":"  ✔ Devfolio: 0 hackathons","timestamp":"2026-03-08 11:04:38"}
+{"level":"info","message":"  → HackerEarth (Tier 3)…","timestamp":"2026-03-08 11:04:40"}
+{"level":"info","message":"[HackerEarth] Starting scrape…","timestamp":"2026-03-08 11:04:40"}
+{"level":"info","message":"[HackerEarth] offset=0 → 0 items","timestamp":"2026-03-08 11:04:42"}
+{"level":"info","message":"[HackerEarth] Returning 0 hackathons","timestamp":"2026-03-08 11:04:42"}
+{"level":"info","message":"  ✔ HackerEarth: 0 hackathons","timestamp":"2026-03-08 11:04:42"}
+{"level":"info","message":"  → DoraHacks (Tier 3)…","timestamp":"2026-03-08 11:04:45"}
+{"level":"info","message":"[DoraHacks] Starting scrape…","timestamp":"2026-03-08 11:04:45"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 1/3 — 404","timestamp":"2026-03-08 11:04:45"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 2/3 — 404","timestamp":"2026-03-08 11:04:47"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 3/3 — 404","timestamp":"2026-03-08 11:04:51"}
+{"level":"warn","message":"[DoraHacks] status=open failed: Request failed with status code 404","timestamp":"2026-03-08 11:04:51"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 1/3 — 404","timestamp":"2026-03-08 11:04:51"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 2/3 — 404","timestamp":"2026-03-08 11:04:53"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 3/3 — 404","timestamp":"2026-03-08 11:04:57"}
+{"level":"warn","message":"[DoraHacks] status=voting failed: Request failed with status code 404","timestamp":"2026-03-08 11:04:57"}
+{"level":"info","message":"[DoraHacks] Returning 0 hackathons","timestamp":"2026-03-08 11:04:57"}
+{"level":"info","message":"  ✔ DoraHacks: 0 hackathons","timestamp":"2026-03-08 11:04:57"}
+{"level":"info","message":"[Scrapers] Total hackathons scraped: 100","timestamp":"2026-03-08 11:05:00"}
+{"level":"info","message":"✅ Live hackathons: 97 new, 3 updated","timestamp":"2026-03-08 11:05:00"}
+{"level":"info","message":"Running live internship scrapers…","timestamp":"2026-03-08 11:05:00"}
+{"level":"info","message":"[Scrapers] Running 3 internship scrapers…","timestamp":"2026-03-08 11:05:00"}
+{"level":"info","message":"  → Internshala…","timestamp":"2026-03-08 11:05:00"}
+{"level":"info","message":"[Internshala] Starting scrape…","timestamp":"2026-03-08 11:05:00"}
+{"level":"info","message":"[Internshala] computer-science-internship HTML → 100 internships","timestamp":"2026-03-08 11:05:01"}
+{"level":"info","message":"[Internshala] web-development-internship HTML → 100 internships","timestamp":"2026-03-08 11:05:03"}
+{"level":"info","message":"[Internshala] machine-learning-internship HTML → 100 internships","timestamp":"2026-03-08 11:05:06"}
+{"level":"info","message":"[Internshala] data-science-internship HTML → 100 internships","timestamp":"2026-03-08 11:05:08"}
+{"level":"info","message":"[Internshala] android-development-internship HTML → 80 internships","timestamp":"2026-03-08 11:05:11"}
+{"level":"info","message":"[Internshala] python-internship HTML → 80 internships","timestamp":"2026-03-08 11:05:13"}
+{"level":"info","message":"[Internshala] Total internships found: 560","timestamp":"2026-03-08 11:05:15"}
+{"level":"info","message":"  ✔ Internshala: 560 internships","timestamp":"2026-03-08 11:05:15"}
+{"level":"info","message":"  → Remotive…","timestamp":"2026-03-08 11:05:18"}
+{"level":"info","message":"[Remotive] Starting scrape…","timestamp":"2026-03-08 11:05:18"}
+{"level":"info","message":"[Remotive] software-dev → 2 jobs","timestamp":"2026-03-08 11:05:18"}
+{"level":"info","message":"[Remotive] data → 0 jobs","timestamp":"2026-03-08 11:05:20"}
+{"level":"info","message":"[Remotive] devops-sysadmin → 2 jobs","timestamp":"2026-03-08 11:05:21"}
+{"level":"info","message":"[Remotive] mobile-dev → 2 jobs","timestamp":"2026-03-08 11:05:23"}
+{"level":"info","message":"[Remotive] Total: 6","timestamp":"2026-03-08 11:05:24"}
+{"level":"info","message":"  ✔ Remotive: 6 internships","timestamp":"2026-03-08 11:05:24"}
+{"level":"info","message":"  → Wellfound…","timestamp":"2026-03-08 11:05:27"}
+{"level":"info","message":"[Wellfound] Starting scrape…","timestamp":"2026-03-08 11:05:27"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/role/r/software-engineer-intern attempt 1/3 — 403","timestamp":"2026-03-08 11:05:27"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/role/r/software-engineer-intern attempt 2/3 — 403","timestamp":"2026-03-08 11:05:29"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/role/r/software-engineer-intern attempt 3/3 — 403","timestamp":"2026-03-08 11:05:33"}
+{"level":"warn","message":"[Wellfound] Failed https://wellfound.com/role/r/software-engineer-intern: Request failed with status code 403","timestamp":"2026-03-08 11:05:33"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/jobs?role=software-engineer-intern&location=india attempt 1/3 — 403","timestamp":"2026-03-08 11:05:33"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/jobs?role=software-engineer-intern&location=india attempt 2/3 — 403","timestamp":"2026-03-08 11:05:35"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/jobs?role=software-engineer-intern&location=india attempt 3/3 — 403","timestamp":"2026-03-08 11:05:39"}
+{"level":"warn","message":"[Wellfound] Failed https://wellfound.com/jobs?role=software-engineer-intern&location=india: Request failed with status code 403","timestamp":"2026-03-08 11:05:39"}
+{"level":"info","message":"[Wellfound] Returning 0 internships","timestamp":"2026-03-08 11:05:39"}
+{"level":"info","message":"  ✔ Wellfound: 0 internships","timestamp":"2026-03-08 11:05:39"}
+{"level":"info","message":"[Scrapers] Total internships scraped: 566","timestamp":"2026-03-08 11:05:42"}
+{"level":"info","message":"✅ Live internships: 220 new, 148 updated","timestamp":"2026-03-08 11:05:43"}
+{"level":"info","message":"📊 Final DB: 97 hackathons, 220 internships","timestamp":"2026-03-08 11:05:43"}
