@@ -13,8 +13,7 @@ async function seed() {
   await mongoose.connect(process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/hackindia");
   logger.info("Connected to MongoDB");
 
-  const [hDel, iDel] = await Promise.all([Hackathon.deleteMany({}), Internship.deleteMany({})]);
-  logger.info(`Cleared ${hDel.deletedCount} hackathons, ${iDel.deletedCount} internships`);
+  logger.info("Skipping DB clear — using upsert to preserve existing data");
 
   // ── Hackathon scrapers ───────────────────────────────────────────
   logger.info("Running live hackathon scrapers…");
