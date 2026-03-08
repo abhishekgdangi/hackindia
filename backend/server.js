@@ -146,13 +146,8 @@ async function start() {
 
   // Auto-trigger pipeline if DB is empty
   const count = await Hackathon.countDocuments({ status: "OPEN" });
-  if (count === 0) {
-    logger.info("DB is empty — running first scrape in 3 seconds…");
-    setTimeout(() => triggerNow().catch((e) => logger.error(e.message)), 3000);
-  } else {
-    logger.info(`DB has ${count} open hackathons — no immediate scrape needed`);
-  }
-}
+    // Auto-scrape on empty DB disabled — GitHub Actions handles scraping every 6h
+  logger.info(`DB has ${count} open hackathons`);
 
 /* ── Graceful shutdown ─────────────────────────────────────────── */
 process.on("SIGTERM", async () => {
