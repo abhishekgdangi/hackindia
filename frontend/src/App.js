@@ -1049,9 +1049,15 @@ const EventCard = ({e, compact=false}) => {
       </div>
 
       {/* CTA */}
-      <button className="btn-p" style={{width:"100%",justifyContent:"center",padding:"8px",fontSize:13}}
-        onClick={()=>window.open(e.registrationLink||"#","_blank")}>
-        Register Now →
+      <button className="btn-p" style={{width:"100%",justifyContent:"center",padding:"8px",fontSize:13,
+        opacity:(!e.registrationLink||e.registrationLink==="#")?"0.5":"1",
+        cursor:(!e.registrationLink||e.registrationLink==="#")?"not-allowed":"pointer"}}
+        onClick={()=>{
+          if(!e.registrationLink||e.registrationLink==="#") return;
+          const url=e.registrationLink.startsWith("http")?e.registrationLink:"https://"+e.registrationLink;
+          window.open(url,"_blank","noopener,noreferrer");
+        }}>
+        {(!e.registrationLink||e.registrationLink==="#")?"Link Unavailable":"Register Now →"}
       </button>
     </div>
   );
