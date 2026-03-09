@@ -25,7 +25,6 @@ const eventSchema = new mongoose.Schema(
     registrationLink: { type: String, default: "" },
     imageUrl:         { type: String, default: "" },
     scrapedAt:        { type: Date, default: Date.now },
-    uniqueId:         { type: String, required: true, unique: true },
     isActive:         { type: Boolean, default: true },
   },
   { timestamps: true, versionKey: false }
