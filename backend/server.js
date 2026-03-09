@@ -46,6 +46,7 @@ app.use((req, _res, next) => {
 /* ── Routes ────────────────────────────────────────────────────── */
 app.use("/api/hackathons",  require("./routes/hackathons"));
 app.use("/api/internships", require("./routes/internships"));
+app.use("/api/events",      require("./routes/events"));
 
 /* ── HackBot Chat (Groq proxy — key stays on server) ───────────── */
 app.post("/api/chat", async (req, res) => {

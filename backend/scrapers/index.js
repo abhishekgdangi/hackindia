@@ -56,6 +56,17 @@ const internshala  = require("./internshala");
 const remotive     = require("./remotive");
 const wellfound    = require("./wellfound");
 
+// ── Event scrapers ───────────────────────────────────────────────
+const { scrapeCommudle }       = require("./commudle");
+const { scrapeTechmeme }       = require("./techmeme");
+const { scrapeMeetup }         = require("./meetupScraper");
+const { scrapeEventbrite }     = require("./eventbriteScraper");
+const { scrapeAiForGood }      = require("./aiForGood");
+const { scrapeAiDeadlines }    = require("./aiDeadlines");
+const { scrapeAnalyticsIndia } = require("./analyticsIndia");
+const { scrapeGoogleDev }      = require("./googleDev");
+const { scrapeDevEvents }      = require("./devEventsScraper");
+
 const logger = require("../utils/logger");
 
 /* ═══════════════════════════════════════════════
@@ -155,4 +166,40 @@ async function runScraper(name) {
   return map[key]();
 }
 
-module.exports = { runAllScrapers, runInternshipScrapers, runScraper };
+module.exports = { runAllScrapers, runInternshipScrapers, runEventScrapers, runScraper };
+
+/* ═══════════════════════════════════════════════
+   EVENT SCRAPERS
+═══════════════════════════════════════════════ */
+async function runEventScrapers() {
+  const scrapers = [
+    { name: "Commudle",       fn: scrapeCommudle },
+    { name: "Techmeme",       fn: scrapeTechmeme },
+    { name: "Meetup",         fn: scrapeMeetup },
+    { name: "Eventbrite",     fn: scrapeEventbrite },
+    { name: "AiForGood",      fn: scrapeAiForGood },
+    { name: "AiDeadlines",    fn: scrapeAiDeadlines },
+    { name: "AnalyticsIndia", fn: scrapeAnalyticsIndia },
+    { name: "GoogleDev",      fn: scrapeGoogleDev },
+    { name: "DevEvents",      fn: scrapeDevEvents },
+  ];
+
+  const results = [];
+  logger.info(`[Scrapers] Running ${scrapers.length} event scrapers…`);
+
+  for (const s of scrapers) {
+    try {
+      logger.info(`  → ${s.name}…`);
+      const items = await s.fn();
+      const arr   = Array.isArray(items) ? items : [];
+      logger.info(`  ✔ ${s.name}: ${arr.length} events`);
+      results.push(...arr);
+    } catch (e) {
+      logger.error(`  ✘ ${s.name}: ${e.message}`);
+    }
+    await new Promise(r => setTimeout(r, 2500));
+  }
+
+  logger.info(`[Scrapers] Total events scraped: ${results.length}`);
+  return results;
+}

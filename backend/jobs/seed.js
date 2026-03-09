@@ -7,6 +7,7 @@ require("dotenv").config();
 const mongoose   = require("mongoose");
 const Hackathon  = require("../models/Hackathon");
 const Internship = require("../models/Internship");
+const Event      = require("../models/Event");
 const logger     = require("../utils/logger");
 
 async function seed() {
@@ -58,8 +59,28 @@ async function seed() {
     }
   } catch (e) { logger.error(`Internship scrape failed: ${e.message}`); }
 
-  const [fH, fI] = await Promise.all([Hackathon.countDocuments(), Internship.countDocuments()]);
-  logger.info(`📊 Final DB: ${fH} hackathons, ${fI} internships`);
+  // ── Event scrapers ───────────────────────────────────────────────
+  logger.info("Running live event scrapers…");
+  try {
+    const { runEventScrapers } = require("../scrapers");
+    const items = await runEventScrapers();
+    if (items.length) {
+      const ops = items.map(item => ({
+        updateOne: {
+          filter: { uniqueId: item.uniqueId },
+          update: { $set: { ...item, scrapedAt: new Date() } },
+          upsert: true,
+        },
+      }));
+      const r = await Event.bulkWrite(ops, { ordered: false });
+      logger.info(`✅ Live events: ${r.upsertedCount} new, ${r.modifiedCount} updated`);
+    } else {
+      logger.warn("⚠ No events scraped — check scraper logs above");
+    }
+  } catch (e) { logger.error(`Event scrape failed: ${e.message}`); }
+
+  const [fH, fI, fE] = await Promise.all([Hackathon.countDocuments(), Internship.countDocuments(), Event.countDocuments()]);
+  logger.info(`📊 Final DB: ${fH} hackathons, ${fI} internships, ${fE} events`);
   await mongoose.disconnect();
   process.exit(0);
 }

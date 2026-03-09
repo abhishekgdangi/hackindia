@@ -114,6 +114,33 @@ function useInternships({ds="", location="All", isRemote="All"}={}) {
 /* ────────────────────────────────────────────────
    HELPERS
 ──────────────────────────────────────────────── */
+function useEvents({type="", location="All", price="All", search=""}={}) {
+  const [data,    setData]    = useState([]);
+  const [total,   setTotal]   = useState(0);
+  const [loading, setLoading] = useState(true);
+  const lastKey = useRef("");
+  const fetchId = useRef(0);
+
+  useEffect(() => {
+    const key = [type,location,price,search].join("|");
+    if (key === lastKey.current) return;
+    lastKey.current = key;
+    const id = ++fetchId.current;
+    setLoading(true);
+    const params = { limit:500 };
+    if(type     && type     !=="All") params.type     = type;
+    if(location && location !=="All") params.location = location;
+    if(price    && price    !=="All") params.price    = price;
+    if(search) params.search = search;
+    apiFetch("/events", params)
+      .then(j => { if(fetchId.current!==id) return; setData(j.data||[]); setTotal(j.total||0); })
+      .catch(() => { if(fetchId.current===id) { setData([]); setTotal(0); } })
+      .finally(() => { if(fetchId.current===id) setLoading(false); });
+  }, [type, location, price, search]);
+
+  return { data, total, loading };
+}
+
 const getDays  = (d) => Math.ceil((new Date(d) - new Date()) / 86400000);
 const fmtDate  = (d) => new Date(d).toLocaleDateString("en-IN", {day:"numeric", month:"short", year:"numeric"});
 const dcClass  = (d) => { const n=getDays(d); return n<=3?"urgent":n<=7?"soon":"ok"; };
@@ -442,7 +469,7 @@ const Navbar = ({page,setPage,dark,setDark}) => (
       <span className="badge b-open" style={{fontSize:9}}>LIVE</span>
     </div>
     <div className="hm" style={{display:"flex",gap:4}}>
-      {[["home","◈ Home"],["hackathons","⚡ Hackathons"],["internships","💼 Internships"],["resources","📚 Resources"]].map(([id,lbl])=>(
+      {[["home","◈ Home"],["hackathons","⚡ Hackathons"],["internships","💼 Internships"],["events","🗓️ Events"],["resources","📚 Resources"]].map(([id,lbl])=>(
         <button key={id} className={`nav-link ${page===id?"act":""}`} onClick={()=>setPage(id)}>{lbl}</button>
       ))}
     </div>
@@ -459,6 +486,7 @@ const Navbar = ({page,setPage,dark,setDark}) => (
 const HomePage = ({setPage}) => {
   const {data:featured,loading} = useHackathons({sort:"newest"});
   const {data:featuredInterns,loading:iLoading} = useInternships({});
+  const {data:featuredEvents,loading:evLoading} = useEvents({});
   const stats = useStats();
   const ticker = featured.length ? [...featured,...featured].map(h=>`${hackLogo(h)||"⚡"} ${h.name} — ${h.prize||"TBA"} — Closes ${fmtDate(h.registrationDeadline)}`) : ["⚡ Hackathons loading... Check back soon!","🚀 New hackathons scraped every 6 hours","🤖 AI-powered discovery platform"];
 
@@ -600,6 +628,33 @@ const HomePage = ({setPage}) => {
               <div style={{padding:"10px 26px",background:"var(--green)",color:"#000",borderRadius:10,fontWeight:700,fontSize:14,flexShrink:0}}>View All →</div>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Featured Events */}
+      <div style={{background:"var(--bg2)",padding:"56px 24px",borderTop:"1px solid var(--border)"}}>
+        <div style={{maxWidth:1200,margin:"0 auto"}}>
+          <div className="sl">Tech Community</div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:24}}>
+            <h2 className="syne" style={{fontSize:30,fontWeight:800}}>🗓️ Upcoming Events</h2>
+            <button className="btn-g" style={{padding:"7px 16px",fontSize:13}} onClick={()=>setPage("events")}>View All →</button>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(310px,1fr))",gap:16}}>
+            {evLoading ? [1,2,3].map(i=><div key={i} className="skel" style={{height:180,borderRadius:16}}/>) :
+             featuredEvents.slice(0,6).map(e=><EventCard key={e._id} e={e} compact/>)}
+            {!evLoading && featuredEvents.length > 0 && (
+              <div onClick={()=>setPage("events")} style={{gridColumn:"1/-1",background:"linear-gradient(135deg,var(--card2),var(--bg3))",border:"2px dashed var(--border2)",borderRadius:14,display:"flex",flexDirection:"row",alignItems:"center",justifyContent:"space-between",cursor:"pointer",padding:"22px 32px",gap:24,transition:"all .25s"}} onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--purple)";e.currentTarget.style.background="linear-gradient(135deg,rgba(124,77,255,.06),var(--bg3))";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";e.currentTarget.style.background="linear-gradient(135deg,var(--card2),var(--bg3))"}}>
+                <div style={{display:"flex",alignItems:"center",gap:18}}>
+                  <div style={{fontSize:36}}>🗓️</div>
+                  <div>
+                    <div className="syne" style={{fontSize:18,fontWeight:800,color:"var(--purple)"}}>Browse All Tech Events</div>
+                    <div style={{fontSize:13,color:"var(--text2)",marginTop:3}}>Conferences, meetups, workshops, AI events & more · Scraped from 9 platforms</div>
+                  </div>
+                </div>
+                <div style={{padding:"10px 26px",background:"var(--purple)",color:"#fff",borderRadius:10,fontWeight:700,fontSize:14,flexShrink:0}}>View All →</div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -932,6 +987,206 @@ const InternshipsPage = () => {
 };
 
 /* ────────────────────────────────────────────────
+   EVENT TYPE COLORS & HELPERS
+──────────────────────────────────────────────── */
+const EVENT_COLORS = {
+  "Conference":       {bg:"rgba(0,212,255,.12)",   color:"var(--cyan)",    border:"rgba(0,212,255,.25)"},
+  "Workshop":         {bg:"rgba(124,77,255,.12)",  color:"var(--purple)",  border:"rgba(124,77,255,.25)"},
+  "Meetup":           {bg:"rgba(0,212,210,.12)",   color:"#00d4d2",        border:"rgba(0,212,210,.25)"},
+  "Webinar":          {bg:"rgba(255,107,53,.12)",  color:"var(--orange)",  border:"rgba(255,107,53,.25)"},
+  "Bootcamp":         {bg:"rgba(255,61,138,.12)",  color:"var(--pink)",    border:"rgba(255,61,138,.25)"},
+  "AI/ML Event":      {bg:"rgba(124,77,255,.18)",  color:"#b490ff",        border:"rgba(124,77,255,.35)"},
+  "Hackathon":        {bg:"rgba(0,255,136,.12)",   color:"var(--green)",   border:"rgba(0,255,136,.25)"},
+  "Startup Event":    {bg:"rgba(255,214,10,.12)",  color:"var(--yellow)",  border:"rgba(255,214,10,.25)"},
+  "Coding Competition":{bg:"rgba(0,212,255,.08)", color:"var(--cyan)",    border:"rgba(0,212,255,.2)"},
+  "Internship Event": {bg:"rgba(0,255,136,.08)",   color:"var(--green)",   border:"rgba(0,255,136,.2)"},
+  "Other":            {bg:"rgba(136,153,187,.12)", color:"var(--text2)",   border:"rgba(136,153,187,.25)"},
+};
+
+const EVENT_TYPE_OPTS = ["All","Conference","Workshop","Meetup","Webinar","Bootcamp","AI/ML Event","Hackathon","Startup Event","Coding Competition","Internship Event"];
+
+/* ────────────────────────────────────────────────
+   EVENT CARD
+──────────────────────────────────────────────── */
+const EventCard = ({e, compact=false}) => {
+  const typeStyle = EVENT_COLORS[e.eventType] || EVENT_COLORS["Other"];
+  return (
+    <div className="hcard" style={{padding:20,display:"flex",flexDirection:"column",gap:10,cursor:"default"}}>
+      {/* Top row */}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8}}>
+        <div style={{flex:1,minWidth:0}}>
+          <div className="syne" style={{fontWeight:700,fontSize:14,lineHeight:1.35,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{e.title}</div>
+        </div>
+        <span style={{...typeStyle,padding:"3px 9px",borderRadius:20,fontSize:10,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",whiteSpace:"nowrap",flexShrink:0,border:`1px solid ${typeStyle.border}`}}>{e.eventType}</span>
+      </div>
+
+      {/* Description */}
+      {!compact && e.description && (
+        <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.6,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:3,WebkitBoxOrient:"vertical"}}>{e.description}</div>
+      )}
+
+      {/* Meta grid */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
+        {[
+          ["📅","Date",e.date||"TBD"],
+          ["📍","Location",e.location||"Online"],
+        ].map(([ic,lb,vl])=>(
+          <div key={lb} style={{background:"var(--bg3)",borderRadius:8,padding:"6px 9px"}}>
+            <div style={{fontSize:9,color:"var(--text3)",marginBottom:1}}>{ic} {lb}</div>
+            <div className="mono" style={{fontSize:11,fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{vl}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Price + platform row */}
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,marginTop:"auto"}}>
+        <span style={{fontSize:11,padding:"2px 8px",borderRadius:6,fontWeight:700,
+          background:e.price==="Free"?"rgba(0,255,136,.1)":"rgba(255,107,53,.1)",
+          color:e.price==="Free"?"var(--green)":"var(--orange)",
+          border:`1px solid ${e.price==="Free"?"rgba(0,255,136,.25)":"rgba(255,107,53,.25)"}`
+        }}>{e.price||"Unknown"}</span>
+        <span style={{fontSize:10,color:"var(--text3)",fontFamily:"'JetBrains Mono',monospace"}}>via {e.platform}</span>
+      </div>
+
+      {/* CTA */}
+      <button className="btn-p" style={{width:"100%",justifyContent:"center",padding:"8px",fontSize:13}}
+        onClick={()=>window.open(e.registrationLink||"#","_blank")}>
+        Register Now →
+      </button>
+    </div>
+  );
+};
+
+/* ────────────────────────────────────────────────
+   EVENTS PAGE
+──────────────────────────────────────────────── */
+const EVENTS_PER_PAGE = 20;
+const EventsPage = () => {
+  const [search,setSearch]=useState(""); const [ds,setDs]=useState("");
+  const [evType,setEvType]=useState("All");
+  const [location,setLocation]=useState("All");
+  const [price,setPrice]=useState("All");
+  const [ePage,setEPage]=useState(1);
+  useEffect(()=>{const t=setTimeout(()=>setDs(search),350);return()=>clearTimeout(t);},[search]);
+  useEffect(()=>{setEPage(1);},[evType,location,price,ds]);
+  const {data,total,loading} = useEvents({type:evType,location,price,search:ds});
+  const ePages   = Math.ceil(data.length / EVENTS_PER_PAGE);
+  const paginated = data.slice((ePage-1)*EVENTS_PER_PAGE, ePage*EVENTS_PER_PAGE);
+  const hasFilter = evType!=="All"||location!=="All"||price!=="All"||search;
+
+  return (
+    <div style={{paddingTop:64}}>
+      {/* Header */}
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"32px 24px 24px"}}>
+        <div style={{maxWidth:1200,margin:"0 auto"}}>
+          <div className="sl">Tech Community</div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12,marginBottom:16}}>
+            <div>
+              <h1 className="syne" style={{fontSize:34,fontWeight:800,marginBottom:4}}>🗓️ Tech Events</h1>
+              <p style={{color:"var(--text2)",fontSize:14}}>Conferences, workshops, meetups & AI events — scraped from 9 platforms.</p>
+            </div>
+            <div style={{textAlign:"right"}}>
+              <div className="syne" style={{fontSize:32,fontWeight:800,color:"var(--purple)"}}>{data.length||total}</div>
+              <div style={{fontSize:12,color:"var(--text2)"}}>events found</div>
+            </div>
+          </div>
+          <div style={{position:"relative",maxWidth:540}}>
+            <span style={{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",color:"var(--text3)"}}>🔍</span>
+            <input className="input" placeholder="Search events, conferences, workshops…" value={search} onChange={e=>setSearch(e.target.value)} style={{padding:"12px 16px 12px 42px",fontSize:14}}/>
+          </div>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"24px",display:"flex",gap:20,alignItems:"flex-start"}}>
+
+        {/* Sidebar */}
+        <div style={{width:220,flexShrink:0,background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:18,position:"sticky",top:80}} className="hm">
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+            <span style={{fontWeight:700,fontSize:14}}>⚙️ Filters</span>
+            {hasFilter && <button onClick={()=>{setEvType("All");setLocation("All");setPrice("All");setSearch("");}} style={{fontSize:11,color:"var(--pink)",background:"transparent",border:"none",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:600}}>✕ Reset</button>}
+          </div>
+
+          {/* Event Type */}
+          <div style={{marginBottom:16}}>
+            <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>🎯 Event Type</div>
+            {EVENT_TYPE_OPTS.map(t=>(
+              <button key={t} onClick={()=>setEvType(t)} style={{display:"block",width:"100%",textAlign:"left",padding:"7px 10px",borderRadius:8,border:"none",background:evType===t?"var(--purple)":"transparent",color:evType===t?"#fff":"var(--text2)",cursor:"pointer",fontSize:12,fontFamily:"'DM Sans',sans-serif",fontWeight:evType===t?700:400,marginBottom:2,transition:"all .15s"}}>{t}</button>
+            ))}
+          </div>
+
+          <div style={{height:1,background:"var(--border)",margin:"8px 0 16px"}}/>
+
+          {/* Location */}
+          <div style={{marginBottom:16}}>
+            <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>📍 Location</div>
+            {["All","Online","Offline"].map(l=>(
+              <button key={l} onClick={()=>setLocation(l)} style={{display:"block",width:"100%",textAlign:"left",padding:"7px 10px",borderRadius:8,border:"none",background:location===l?"var(--cyan)":"transparent",color:location===l?"#000":"var(--text2)",cursor:"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif",fontWeight:location===l?700:400,marginBottom:2,transition:"all .15s"}}>{l}</button>
+            ))}
+          </div>
+
+          <div style={{height:1,background:"var(--border)",margin:"8px 0 16px"}}/>
+
+          {/* Price */}
+          <div style={{marginBottom:16}}>
+            <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>💰 Price</div>
+            {["All","Free","Paid"].map(p=>(
+              <button key={p} onClick={()=>setPrice(p)} style={{display:"block",width:"100%",textAlign:"left",padding:"7px 10px",borderRadius:8,border:"none",background:price===p?(p==="Free"?"var(--green)":p==="Paid"?"var(--orange)":"var(--cyan)"):"transparent",color:price===p?"#000":"var(--text2)",cursor:"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif",fontWeight:price===p?700:400,marginBottom:2,transition:"all .15s"}}>{p}</button>
+            ))}
+          </div>
+
+          <div style={{background:"var(--bg3)",borderRadius:10,padding:12,marginTop:8}}>
+            <div style={{fontSize:9,color:"var(--text3)",marginBottom:5}}>RESULTS</div>
+            <div className="syne" style={{fontSize:22,fontWeight:800,color:"var(--purple)"}}>{data.length||total}</div>
+            <div style={{fontSize:11,color:"var(--text2)"}}>events</div>
+          </div>
+        </div>
+
+        {/* Cards grid */}
+        <div style={{flex:1,minWidth:0}}>
+          {loading ? (
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(310px,1fr))",gap:15}}>{[1,2,3,4,5,6].map(i=><div key={i} className="skel" style={{height:240,borderRadius:16}}/>)}</div>
+          ) : data.length===0 ? (
+            <div style={{textAlign:"center",padding:"80px 20px",border:"1px dashed var(--border)",borderRadius:16}}>
+              <div style={{fontSize:52,marginBottom:14}}>🗓️</div>
+              <div className="syne" style={{fontSize:22,fontWeight:800,marginBottom:10}}>No events found</div>
+              <div style={{color:"var(--text2)",fontSize:14,lineHeight:1.8}}>
+                {hasFilter?"Try resetting filters.":"Events are scraped every 6 hours. Check back soon!"}
+              </div>
+            </div>
+          ) : (
+            <>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(310px,1fr))",gap:15}}>
+                {paginated.map(e=><EventCard key={e._id} e={e}/>)}
+              </div>
+              {ePages>1 && (
+                <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:7,marginTop:28,flexWrap:"wrap"}}>
+                  <button onClick={()=>{setEPage(p=>Math.max(1,p-1));window.scrollTo(0,200);}} disabled={ePage===1} style={{padding:"7px 14px",borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",color:ePage===1?"var(--text3)":"var(--text2)",cursor:ePage===1?"not-allowed":"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif"}}>← Prev</button>
+                  {Array.from({length:Math.min(ePages,7)},(_,i)=>{
+                    let p;
+                    if(ePages<=7) p=i+1;
+                    else if(ePage<=4) p=i+1;
+                    else if(ePage>=ePages-3) p=ePages-6+i;
+                    else p=ePage-3+i;
+                    return(<button key={p} onClick={()=>{setEPage(p);window.scrollTo(0,200);}} style={{width:36,height:36,borderRadius:8,border:"1px solid var(--border)",background:p===ePage?"var(--purple)":"var(--card)",color:p===ePage?"#fff":"var(--text2)",cursor:"pointer",fontWeight:600,fontSize:13,fontFamily:"'DM Sans',sans-serif"}}>{p}</button>);
+                  })}
+                  <button onClick={()=>{setEPage(p=>Math.min(ePages,p+1));window.scrollTo(0,200);}} disabled={ePage===ePages} style={{padding:"7px 14px",borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",color:ePage===ePages?"var(--text3)":"var(--text2)",cursor:ePage===ePages?"not-allowed":"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif"}}>Next →</button>
+                </div>
+              )}
+              {data.length>0 && (
+                <div style={{textAlign:"center",marginTop:12,fontSize:12,color:"var(--text3)"}}>
+                  Showing {(ePage-1)*EVENTS_PER_PAGE+1}–{Math.min(ePage*EVENTS_PER_PAGE,data.length)} of {data.length} events
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ────────────────────────────────────────────────
    RESOURCES PAGE
 ──────────────────────────────────────────────── */
 const RESOURCES=[
@@ -1003,10 +1258,10 @@ const Footer = ({setPage}) => (
             {["Twitter","GitHub","LinkedIn","Discord"].map(s=><div key={s} style={{padding:"4px 10px",borderRadius:7,background:"var(--card)",border:"1px solid var(--border)",fontSize:11,color:"var(--text2)",cursor:"pointer"}}>{s}</div>)}
           </div>
         </div>
-        {[["Platform",["Home","Hackathons","Internships","Resources"]],["Scrapers",["Devpost","Devfolio","Hack2Skill","Internshala","Lablab.ai","Remotive"]],["About",["How it works","AI Agents","Data Policy","Contact"]]].map(([title,links])=>(
+        {[["Platform",["Home","Hackathons","Internships","Events","Resources"]],["Scrapers",["Devpost","Devfolio","Hack2Skill","Internshala","Lablab.ai","Remotive"]],["About",["How it works","AI Agents","Data Policy","Contact"]]].map(([title,links])=>(
           <div key={title}>
             <div style={{fontSize:10,fontWeight:700,color:"var(--text3)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:12}}>{title}</div>
-            {links.map(l=><div key={l} style={{color:"var(--text2)",fontSize:13,marginBottom:8,cursor:"pointer"}} onClick={()=>["Home","Hackathons","Internships","Resources"].includes(l)&&setPage(l.toLowerCase())}>{l}</div>)}
+            {links.map(l=><div key={l} style={{color:"var(--text2)",fontSize:13,marginBottom:8,cursor:"pointer"}} onClick={()=>["Home","Hackathons","Internships","Events","Resources"].includes(l)&&setPage(l.toLowerCase())}>{l}</div>)}
           </div>
         ))}
       </div>
@@ -1041,6 +1296,7 @@ export default function App() {
           {page==="home"        && <HomePage       setPage={setPage}/>}
           {page==="hackathons"  && <HackathonsPage/>}
           {page==="internships" && <InternshipsPage/>}
+          {page==="events"      && <EventsPage/>}
           {page==="resources"   && <ResourcesPage/>}
         </main>
         <Footer setPage={setPage}/>
