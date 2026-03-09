@@ -1010,6 +1010,8 @@ const EVENT_TYPE_OPTS = ["All","Conference","Workshop","Meetup","Webinar","Bootc
 ──────────────────────────────────────────────── */
 const EventCard = ({e, compact=false}) => {
   const typeStyle = EVENT_COLORS[e.eventType] || EVENT_COLORS["Other"];
+  // Auto-generate description if missing
+  const desc = e.description || `${e.eventType} in ${e.location||"India"} — ${e.date||"Date TBD"}. Click Register to learn more.`;
   return (
     <div className="hcard" style={{padding:20,display:"flex",flexDirection:"column",gap:10,cursor:"default"}}>
       {/* Top row */}
@@ -1020,9 +1022,9 @@ const EventCard = ({e, compact=false}) => {
         <span style={{...typeStyle,padding:"3px 9px",borderRadius:20,fontSize:10,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",whiteSpace:"nowrap",flexShrink:0,border:`1px solid ${typeStyle.border}`}}>{e.eventType}</span>
       </div>
 
-      {/* Description */}
-      {!compact && e.description && (
-        <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.6,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:3,WebkitBoxOrient:"vertical"}}>{e.description}</div>
+      {/* Description — always show */}
+      {!compact && (
+        <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.6,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:3,WebkitBoxOrient:"vertical"}}>{desc}</div>
       )}
 
       {/* Meta grid */}
@@ -1038,13 +1040,20 @@ const EventCard = ({e, compact=false}) => {
         ))}
       </div>
 
-      {/* Price + platform row */}
+      {/* Price + platform row — hide Unknown price */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,marginTop:"auto"}}>
-        <span style={{fontSize:11,padding:"2px 8px",borderRadius:6,fontWeight:700,
-          background:e.price==="Free"?"rgba(0,255,136,.1)":"rgba(255,107,53,.1)",
-          color:e.price==="Free"?"var(--green)":"var(--orange)",
-          border:`1px solid ${e.price==="Free"?"rgba(0,255,136,.25)":"rgba(255,107,53,.25)"}`
-        }}>{e.price||"Unknown"}</span>
+        {e.price && e.price !== "Unknown" ? (
+          <span style={{fontSize:11,padding:"2px 8px",borderRadius:6,fontWeight:700,
+            background:e.price==="Free"?"rgba(0,255,136,.1)":"rgba(255,107,53,.1)",
+            color:e.price==="Free"?"var(--green)":"var(--orange)",
+            border:`1px solid ${e.price==="Free"?"rgba(0,255,136,.25)":"rgba(255,107,53,.25)"}`
+          }}>{e.price}</span>
+        ) : (
+          <span style={{fontSize:11,padding:"2px 8px",borderRadius:6,fontWeight:600,
+            background:"rgba(136,153,187,.08)",color:"var(--text3)",
+            border:"1px solid rgba(136,153,187,.15)"
+          }}>Check website</span>
+        )}
         <span style={{fontSize:10,color:"var(--text3)",fontFamily:"'JetBrains Mono',monospace"}}>via {e.platform}</span>
       </div>
 
