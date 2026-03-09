@@ -58,7 +58,6 @@ const wellfound    = require("./wellfound");
 
 // ── Event scrapers ───────────────────────────────────────────────
 const { scrapeCommudle }       = require("./commudle");
-const { scrapeTechmeme }       = require("./techmeme");
 const { scrapeMeetup }         = require("./meetupScraper");
 const { scrapeEventbrite }     = require("./eventbriteScraper");
 const { scrapeAiForGood }      = require("./aiForGood");
@@ -174,7 +173,6 @@ module.exports = { runAllScrapers, runInternshipScrapers, runEventScrapers, runS
 async function runEventScrapers() {
   const scrapers = [
     { name: "Commudle",       fn: scrapeCommudle },
-    { name: "Techmeme",       fn: scrapeTechmeme },
     { name: "Meetup",         fn: scrapeMeetup },
     { name: "Eventbrite",     fn: scrapeEventbrite },
     { name: "AiForGood",      fn: scrapeAiForGood },
