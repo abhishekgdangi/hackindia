@@ -4487,3 +4487,13 @@
 {"level":"info","message":"[Scrapers] Total events scraped: 173","timestamp":"2026-03-09 22:21:46"}
 {"level":"info","message":"✅ Live events: 173 new, 0 updated","timestamp":"2026-03-09 22:21:46"}
 {"level":"info","message":"📊 Final DB: 102 hackathons, 320 internships, 173 events","timestamp":"2026-03-09 22:21:47"}
+{"level":"info","message":"✅ MongoDB connected: mongodb+srv://***@cluster0.f4pz46k.mongodb.net/hackindia?appName=Cluster0","timestamp":"2026-03-09 22:24:01"}
+{"level":"info","message":"[Scheduler] ✅ All jobs registered (IST timezone)","timestamp":"2026-03-09 22:24:01"}
+{"level":"info","message":"  • Full pipeline : 0 */6 * * *","timestamp":"2026-03-09 22:24:01"}
+{"level":"info","message":"  • Expire stale  : every hour","timestamp":"2026-03-09 22:24:01"}
+{"level":"info","message":"  • Link health   : every 12h","timestamp":"2026-03-09 22:24:01"}
+{"level":"info","message":"  • Daily stats   : midnight","timestamp":"2026-03-09 22:24:01"}
+{"level":"info","message":"✅ HackIndia API running at http://localhost:5000","timestamp":"2026-03-09 22:24:01"}
+{"level":"info","message":"   Environment  : development","timestamp":"2026-03-09 22:24:01"}
+{"level":"info","message":"   Groq AI      : configured ✔","timestamp":"2026-03-09 22:24:01"}
+{"level":"info","message":"DB has 100 open hackathons","timestamp":"2026-03-09 22:24:01"}
