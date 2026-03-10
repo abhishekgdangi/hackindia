@@ -57,14 +57,15 @@ const remotive     = require("./remotive");
 const wellfound    = require("./wellfound");
 
 // ── Event scrapers ───────────────────────────────────────────────
-const { scrapeCommudle }       = require("./commudle");
-const { scrapeMeetup }         = require("./meetupScraper");
-const { scrapeEventbrite }     = require("./eventbriteScraper");
-const { scrapeAiForGood }      = require("./aiForGood");
-const { scrapeAiDeadlines }    = require("./aiDeadlines");
-const { scrapeAnalyticsIndia } = require("./analyticsIndia");
-const { scrapeGoogleDev }      = require("./googleDev");
-const { scrapeDevEvents }      = require("./devEventsScraper");
+// ── Event scrapers (India-focused, verified working) ──────────
+const { scrapeEventbrite }    = require("./eventbriteScraper"); // ✅ India/Online Eventbrite
+const { scrapeGoogleDev }     = require("./googleDev");         // ✅ Google Dev events HTML
+const { scrapeLuma }          = require("./luma");              // ✅ Luma India calendars
+const { scrapeUnstopEvents }  = require("./unstopEvents");      // ✅ Unstop events/workshops
+const { scrapeKonfhub }       = require("./konfhub");           // ✅ KonfHub India conferences
+const { scrapeGDGCommunity }  = require("./gdgCommunity");      // ✅ GDG DevFests India
+const { scrapeDevEventsIndia }= require("./devEventsIndia");    // ✅ dev.events India meetups
+const { scrapeHasGeek }       = require("./hasgeek");           // ✅ HasGeek India dev events
 
 const logger = require("../utils/logger");
 
@@ -172,14 +173,14 @@ module.exports = { runAllScrapers, runInternshipScrapers, runEventScrapers, runS
 ═══════════════════════════════════════════════ */
 async function runEventScrapers() {
   const scrapers = [
-    { name: "Commudle",       fn: scrapeCommudle },
-    { name: "Meetup",         fn: scrapeMeetup },
-    { name: "Eventbrite",     fn: scrapeEventbrite },
-    { name: "AiForGood",      fn: scrapeAiForGood },
-    { name: "AiDeadlines",    fn: scrapeAiDeadlines },
-    { name: "AnalyticsIndia", fn: scrapeAnalyticsIndia },
-    { name: "GoogleDev",      fn: scrapeGoogleDev },
-    { name: "DevEvents",      fn: scrapeDevEvents },
+    { name: "Eventbrite",   fn: scrapeEventbrite },    // India + Online
+    { name: "GoogleDev",    fn: scrapeGoogleDev },     // Google Dev events
+    { name: "Luma",         fn: scrapeLuma },           // Luma India calendars
+    { name: "Unstop",       fn: scrapeUnstopEvents },  // Unstop workshops/events
+    { name: "KonfHub",      fn: scrapeKonfhub },        // KonfHub India conferences
+    { name: "GDGCommunity", fn: scrapeGDGCommunity },  // GDG DevFests India
+    { name: "DevEventsIN",  fn: scrapeDevEventsIndia }, // dev.events India meetups
+    { name: "HasGeek",      fn: scrapeHasGeek },        // HasGeek India dev events
   ];
 
   const results = [];
