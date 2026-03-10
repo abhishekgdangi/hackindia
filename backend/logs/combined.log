@@ -7196,3 +7196,123 @@
 {"level":"info","message":"[Scrapers] Total events scraped: 139","timestamp":"2026-03-10 22:47:27"}
 {"level":"info","message":"✅ Live events: 1 new, 138 updated","timestamp":"2026-03-10 22:47:28"}
 {"level":"info","message":"📊 Final DB: 152 hackathons, 576 internships, 581 events","timestamp":"2026-03-10 22:47:28"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2026-03-10 22:49:33"}
+{"level":"info","message":"Skipping DB clear — using upsert to preserve existing data","timestamp":"2026-03-10 22:49:33"}
+{"level":"info","message":"Running live hackathon scrapers…","timestamp":"2026-03-10 22:49:33"}
+{"level":"info","message":"[Scrapers] Running 7 hackathon scrapers…","timestamp":"2026-03-10 22:49:33"}
+{"level":"info","message":"  → Devpost (Tier 1)…","timestamp":"2026-03-10 22:49:33"}
+{"level":"info","message":"[Devpost] Starting scrape…","timestamp":"2026-03-10 22:49:33"}
+{"level":"info","message":"[Devpost] page 1 → 40 items","timestamp":"2026-03-10 22:49:36"}
+{"level":"info","message":"[Devpost] page 2 → 24 items","timestamp":"2026-03-10 22:49:38"}
+{"level":"info","message":"[Devpost] page 1 → 30 items","timestamp":"2026-03-10 22:49:40"}
+{"level":"info","message":"  ✔ Devpost: 64 hackathons","timestamp":"2026-03-10 22:49:42"}
+{"level":"info","message":"  → HackClub (Tier 1)…","timestamp":"2026-03-10 22:49:44"}
+{"level":"info","message":"[HackClub] Starting scrape…","timestamp":"2026-03-10 22:49:44"}
+{"level":"info","message":"[HackClub] API https://hackathons.hackclub.com/api/events/upcoming → 14 events","timestamp":"2026-03-10 22:49:48"}
+{"level":"info","message":"[HackClub] Returning 2","timestamp":"2026-03-10 22:49:48"}
+{"level":"info","message":"  ✔ HackClub: 2 hackathons","timestamp":"2026-03-10 22:49:48"}
+{"level":"info","message":"  → TAIKAI (Tier 1)…","timestamp":"2026-03-10 22:49:50"}
+{"level":"info","message":"[TAIKAI] Starting scrape…","timestamp":"2026-03-10 22:49:50"}
+{"level":"info","message":"[TAIKAI] HTML https://taikai.network/hackathons → 22 raw cards","timestamp":"2026-03-10 22:49:52"}
+{"level":"info","message":"[TAIKAI] Total: 1","timestamp":"2026-03-10 22:49:52"}
+{"level":"info","message":"  ✔ TAIKAI: 1 hackathons","timestamp":"2026-03-10 22:49:52"}
+{"level":"info","message":"  → Hackathon.com (Tier 2)…","timestamp":"2026-03-10 22:49:55"}
+{"level":"info","message":"[Hackathon.com] Starting scrape…","timestamp":"2026-03-10 22:49:55"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/online → 2","timestamp":"2026-03-10 22:49:56"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/india → 0","timestamp":"2026-03-10 22:49:59"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/ai → 6","timestamp":"2026-03-10 22:50:02"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/machine-learning → 0","timestamp":"2026-03-10 22:50:05"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/open-source → 0","timestamp":"2026-03-10 22:50:08"}
+{"level":"info","message":"[Hackathon.com] Total: 3","timestamp":"2026-03-10 22:50:11"}
+{"level":"info","message":"  ✔ Hackathon.com: 3 hackathons","timestamp":"2026-03-10 22:50:11"}
+{"level":"info","message":"  → DevEvents (Tier 2)…","timestamp":"2026-03-10 22:50:13"}
+{"level":"info","message":"[DevEvents] Starting scrape…","timestamp":"2026-03-10 22:50:13"}
+{"level":"info","message":"[DevEvents] HTML → 1 hackathons","timestamp":"2026-03-10 22:50:17"}
+{"level":"info","message":"[DevEvents] Total: 1","timestamp":"2026-03-10 22:50:17"}
+{"level":"info","message":"  ✔ DevEvents: 1 hackathons","timestamp":"2026-03-10 22:50:17"}
+{"level":"info","message":"  → Devfolio (Tier 3)…","timestamp":"2026-03-10 22:50:19"}
+{"level":"info","message":"[Devfolio] Starting scrape…","timestamp":"2026-03-10 22:50:19"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/search/hackathons attempt 1/3 — 404","timestamp":"2026-03-10 22:50:20"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/search/hackathons attempt 2/3 — 404","timestamp":"2026-03-10 22:50:22"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/search/hackathons attempt 3/3 — 404","timestamp":"2026-03-10 22:50:26"}
+{"level":"warn","message":"[Devfolio] API https://api.devfolio.co/api/search/hackathons failed: Request failed with status code 404","timestamp":"2026-03-10 22:50:26"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/search attempt 1/3 — 404","timestamp":"2026-03-10 22:50:27"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/search attempt 2/3 — 404","timestamp":"2026-03-10 22:50:29"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/search attempt 3/3 — 404","timestamp":"2026-03-10 22:50:33"}
+{"level":"warn","message":"[Devfolio] API https://api.devfolio.co/api/hackathons/search failed: Request failed with status code 404","timestamp":"2026-03-10 22:50:33"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons?status=open&limit=30 attempt 1/3 — 422","timestamp":"2026-03-10 22:50:33"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons?status=open&limit=30 attempt 2/3 — 422","timestamp":"2026-03-10 22:50:35"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons?status=open&limit=30 attempt 3/3 — 422","timestamp":"2026-03-10 22:50:39"}
+{"level":"warn","message":"[Devfolio] API https://api.devfolio.co/api/hackathons?status=open&limit=30 failed: Request failed with status code 422","timestamp":"2026-03-10 22:50:39"}
+{"level":"info","message":"[Devfolio] https://devfolio.co/hackathons selector \"[class*='HackathonCard'], [class*='hackathon-card']\" → 31 cards","timestamp":"2026-03-10 22:50:40"}
+{"level":"info","message":"[Devfolio] Returning 26 hackathons","timestamp":"2026-03-10 22:50:40"}
+{"level":"info","message":"  ✔ Devfolio: 26 hackathons","timestamp":"2026-03-10 22:50:40"}
+{"level":"info","message":"  → HackerEarth (Tier 3)…","timestamp":"2026-03-10 22:50:43"}
+{"level":"info","message":"[HackerEarth] Starting scrape…","timestamp":"2026-03-10 22:50:43"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/data/?type=hackathon attempt 1/3 — 404","timestamp":"2026-03-10 22:50:46"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/data/?type=hackathon attempt 2/3 — 404","timestamp":"2026-03-10 22:50:49"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/data/?type=hackathon attempt 3/3 — 404","timestamp":"2026-03-10 22:50:53"}
+{"level":"warn","message":"[HackerEarth] API https://www.hackerearth.com/challenges/data/?type=hackathon failed: Request failed with status code 404","timestamp":"2026-03-10 22:50:53"}
+{"level":"info","message":"[HackerEarth] HTML cards → 162","timestamp":"2026-03-10 22:50:56"}
+{"level":"info","message":"[HackerEarth] Returning 15 hackathons","timestamp":"2026-03-10 22:50:56"}
+{"level":"info","message":"  ✔ HackerEarth: 15 hackathons","timestamp":"2026-03-10 22:50:56"}
+{"level":"info","message":"[Scrapers] Total hackathons scraped: 112","timestamp":"2026-03-10 22:50:59"}
+{"level":"info","message":"✅ Live hackathons: 0 new, 112 updated","timestamp":"2026-03-10 22:50:59"}
+{"level":"info","message":"Running live internship scrapers…","timestamp":"2026-03-10 22:50:59"}
+{"level":"info","message":"[Scrapers] Running 2 internship scrapers…","timestamp":"2026-03-10 22:50:59"}
+{"level":"info","message":"  → Internshala…","timestamp":"2026-03-10 22:50:59"}
+{"level":"info","message":"[Internshala] Starting scrape…","timestamp":"2026-03-10 22:50:59"}
+{"level":"info","message":"[Internshala] computer-science-internship HTML → 100 internships","timestamp":"2026-03-10 22:51:00"}
+{"level":"info","message":"[Internshala] web-development-internship HTML → 100 internships","timestamp":"2026-03-10 22:51:03"}
+{"level":"info","message":"[Internshala] machine-learning-internship HTML → 100 internships","timestamp":"2026-03-10 22:51:06"}
+{"level":"info","message":"[Internshala] data-science-internship HTML → 100 internships","timestamp":"2026-03-10 22:51:08"}
+{"level":"info","message":"[Internshala] android-development-internship HTML → 80 internships","timestamp":"2026-03-10 22:51:11"}
+{"level":"info","message":"[Internshala] python-internship HTML → 80 internships","timestamp":"2026-03-10 22:51:14"}
+{"level":"info","message":"[Internshala] Total internships found: 560","timestamp":"2026-03-10 22:51:16"}
+{"level":"info","message":"  ✔ Internshala: 560 internships","timestamp":"2026-03-10 22:51:16"}
+{"level":"info","message":"  → Remotive…","timestamp":"2026-03-10 22:51:19"}
+{"level":"info","message":"[Remotive] Starting scrape…","timestamp":"2026-03-10 22:51:19"}
+{"level":"info","message":"[Remotive] software-dev → 2 jobs","timestamp":"2026-03-10 22:51:19"}
+{"level":"info","message":"[Remotive] data → 0 jobs","timestamp":"2026-03-10 22:51:21"}
+{"level":"info","message":"[Remotive] devops-sysadmin → 2 jobs","timestamp":"2026-03-10 22:51:24"}
+{"level":"info","message":"[Remotive] mobile-dev → 2 jobs","timestamp":"2026-03-10 22:51:27"}
+{"level":"info","message":"[Remotive] Total: 6","timestamp":"2026-03-10 22:51:28"}
+{"level":"info","message":"  ✔ Remotive: 6 internships","timestamp":"2026-03-10 22:51:28"}
+{"level":"info","message":"[Scrapers] Total internships scraped: 566","timestamp":"2026-03-10 22:51:30"}
+{"level":"info","message":"✅ Live internships: 1 new, 320 updated","timestamp":"2026-03-10 22:51:32"}
+{"level":"info","message":"Running live event scrapers…","timestamp":"2026-03-10 22:51:32"}
+{"level":"info","message":"[Scrapers] Running 5 event scrapers…","timestamp":"2026-03-10 22:51:32"}
+{"level":"info","message":"  → Eventbrite…","timestamp":"2026-03-10 22:51:32"}
+{"level":"info","message":"[Eventbrite] Starting scrape…","timestamp":"2026-03-10 22:51:32"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india/technology/: 16 total so far","timestamp":"2026-03-10 22:51:36"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india/free--science-and-tech--events/: 30 total so far","timestamp":"2026-03-10 22:51:43"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india/tech--conferences/: 45 total so far","timestamp":"2026-03-10 22:51:49"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india/science-and-tech--expos/: 51 total so far","timestamp":"2026-03-10 22:51:54"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india/science-and-tech--exhibitions/: 51 total so far","timestamp":"2026-03-10 22:51:59"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/online/tech--expos--india/: 63 total so far","timestamp":"2026-03-10 22:52:04"}
+{"level":"info","message":"[Eventbrite] Total: 63 events","timestamp":"2026-03-10 22:52:06"}
+{"level":"info","message":"  ✔ Eventbrite: 63 events","timestamp":"2026-03-10 22:52:06"}
+{"level":"info","message":"  → GoogleDev…","timestamp":"2026-03-10 22:52:09"}
+{"level":"info","message":"[GoogleDev] Starting scrape…","timestamp":"2026-03-10 22:52:09"}
+{"level":"info","message":"[GoogleDev] HTML: 14 events","timestamp":"2026-03-10 22:52:10"}
+{"level":"info","message":"  ✔ GoogleDev: 14 events","timestamp":"2026-03-10 22:52:10"}
+{"level":"info","message":"  → Luma…","timestamp":"2026-03-10 22:52:12"}
+{"level":"info","message":"[Luma] Starting scrape…","timestamp":"2026-03-10 22:52:12"}
+{"level":"info","message":"[Luma] Discover https://api.lu.ma/discover/get-paginated-events?location=India&period=future&limit=50 → 40","timestamp":"2026-03-10 22:52:14"}
+{"level":"info","message":"[Luma] Total: 40 events","timestamp":"2026-03-10 22:52:26"}
+{"level":"info","message":"  ✔ Luma: 40 events","timestamp":"2026-03-10 22:52:26"}
+{"level":"info","message":"  → HasGeek…","timestamp":"2026-03-10 22:52:28"}
+{"level":"info","message":"[HasGeek] Starting scrape…","timestamp":"2026-03-10 22:52:28"}
+{"level":"info","message":"[HasGeek] https://hasgeek.com/: 22 events","timestamp":"2026-03-10 22:52:29"}
+{"level":"info","message":"[HasGeek] Total: 22 events","timestamp":"2026-03-10 22:52:29"}
+{"level":"info","message":"  ✔ HasGeek: 22 events","timestamp":"2026-03-10 22:52:29"}
+{"level":"info","message":"  → IndiaExpos…","timestamp":"2026-03-10 22:52:31"}
+{"level":"info","message":"[IndiaExpos] Starting scrape…","timestamp":"2026-03-10 22:52:31"}
+{"level":"info","message":"[IndiaExpos] 10times india/technology: 8 total","timestamp":"2026-03-10 22:52:34"}
+{"level":"warn","message":"[IndiaExpos] 10times failed: Request failed with status code 404","timestamp":"2026-03-10 22:52:36"}
+{"level":"warn","message":"[IndiaExpos] 10times failed: Request failed with status code 404","timestamp":"2026-03-10 22:52:37"}
+{"level":"info","message":"[IndiaExpos] Total: 8 expos","timestamp":"2026-03-10 22:52:37"}
+{"level":"info","message":"  ✔ IndiaExpos: 8 events","timestamp":"2026-03-10 22:52:37"}
+{"level":"info","message":"[Scrapers] Total events scraped: 147","timestamp":"2026-03-10 22:52:40"}
+{"level":"info","message":"✅ Live events: 8 new, 139 updated","timestamp":"2026-03-10 22:52:40"}
+{"level":"info","message":"📊 Final DB: 152 hackathons, 577 internships, 589 events","timestamp":"2026-03-10 22:52:40"}

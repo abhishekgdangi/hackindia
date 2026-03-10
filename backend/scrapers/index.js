@@ -158,7 +158,8 @@ async function runEventScrapers() {
     { name: "Eventbrite",   fn: scrapeEventbrite },    // India + Online
     { name: "GoogleDev",    fn: scrapeGoogleDev },     // Google Dev events
     { name: "Luma",         fn: scrapeLuma },           // Luma India calendars
-    { name: "HasGeek",      fn: scrapeHasGeek },        // HasGeek India dev events
+    { name: "HasGeek",      fn: scrapeHasGeek },
+    { name: "IndiaExpos",  fn: scrapeIndiaExpos },        // HasGeek India dev events
   ];
 
   const results = [];
