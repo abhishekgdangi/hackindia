@@ -1,6 +1,6 @@
 /**
  * scrapers/eventbriteScraper.js
- * Eventbrite — tech events (Online + India)
+ * Eventbrite — India tech events with proper direct event URLs
  */
 
 const axios   = require("axios");
@@ -12,14 +12,16 @@ async function scrapeEventbrite() {
   const results = [];
 
   const headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0 Safari/537.36",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36",
     Accept: "text/html,application/xhtml+xml,*/*;q=0.9",
     "Accept-Language": "en-IN,en;q=0.9",
   };
 
+  // India-specific tech event URLs only
   const URLS = [
-    "https://www.eventbrite.com/d/online/tech--events/?page=1",
-    "https://www.eventbrite.com/d/india/tech--events/?page=1",
+    "https://www.eventbrite.com/d/india/technology/",
+    "https://www.eventbrite.com/d/india/free--science-and-tech--events/",
+    "https://www.eventbrite.com/d/india/tech--conferences/",
   ];
 
   for (const url of URLS) {
@@ -27,70 +29,91 @@ async function scrapeEventbrite() {
       const res = await axios.get(url, { headers, timeout: 25000 });
       const $   = cheerio.load(res.data);
 
-      // Look for __NEXT_DATA__ first
+      // Primary: extract from __NEXT_DATA__ JSON
       const nd = $("script#__NEXT_DATA__").html();
       if (nd) {
         try {
-          const json   = JSON.parse(nd);
-          const edges  =
+          const json  = JSON.parse(nd);
+          // Try multiple paths Eventbrite uses
+          const events =
             json?.props?.pageProps?.serverPayload?.search_result?.events?.results ||
+            json?.props?.pageProps?.serverPayload?.events?.results ||
             json?.props?.pageProps?.events ||
+            json?.props?.pageProps?.initialData?.search_result?.events?.results ||
             [];
 
-          for (const evt of edges) {
+          for (const evt of events) {
             const title = (evt.name || evt.title || "").trim();
             if (!title) continue;
 
-            const uid = `eventbrite-${evt.id || (title+"-"+(evt.start?.local||evt.url||"")).toLowerCase().replace(/\W+/g, "-").slice(0, 80)}`;
+            // Must have a real event URL, not homepage
+            const evtUrl = evt.url || evt.event_url || "";
+            if (!evtUrl || !evtUrl.includes("/e/")) continue;
+
+            // India-only filter: skip events not in India
+            const venueCountry = (evt.venue?.country || evt.primary_venue?.address?.country || "").toLowerCase();
+            const isOnlineEvent = !!evt.online_event;
+            if (!isOnlineEvent && venueCountry && venueCountry !== "in" && venueCountry !== "india") continue;
+
+            const city = isOnlineEvent ? "Online"
+              : (evt.venue?.city || evt.primary_venue?.address?.city || "India");
+
+            const uid = `eventbrite-${evt.id || title.toLowerCase().replace(/\W+/g,"-").slice(0,60)}`;
             results.push({
               title,
               description: (evt.summary || evt.description || "").slice(0, 300),
-              eventType: "Conference",
-              platform:  "Eventbrite",
-              date:      evt.start?.local
-                ? new Date(evt.start.local).toLocaleDateString("en-IN")
-                : evt.start_date || "",
-              location: evt.venue?.city || (evt.online_event ? "Online" : "Global"),
-              price:    evt.is_free || evt.ticket_availability?.is_free ? "Free" : "Paid",
-              registrationLink: evt.url || `https://www.eventbrite.com`,
-              imageUrl: evt.logo?.url || evt.image?.url || "",
+              eventType: _classifyEvent(title),
+              platform: "Eventbrite",
+              date: evt.start?.local
+                ? new Date(evt.start.local).toLocaleDateString("en-IN", {day:"2-digit",month:"short",year:"numeric"})
+                : (evt.start_date || ""),
+              location: city,
+              mode: isOnlineEvent ? "Online" : "Offline",
+              price: (evt.is_free || evt.ticket_availability?.is_free) ? "Free" : "Paid",
+              registrationLink: evtUrl,
+              imageUrl: evt.logo?.url || evt.image?.url || evt.logo?.original?.url || "",
               uniqueId: uid,
             });
           }
-          logger.info(`[Eventbrite] __NEXT_DATA__ from ${url}: ${edges.length} events`);
+          logger.info(`[Eventbrite] __NEXT_DATA__ from ${url}: ${events.length} raw → ${results.length} so far`);
+          if (events.length > 0) { await new Promise(r => setTimeout(r, 2000)); continue; }
         } catch (_) {}
       }
 
-      // Fallback: HTML card parsing
-      if (results.length === 0) {
-        $("[data-event-id], article[class*='event'], .search-event-card-wrapper").each((_, el) => {
-          const title = $(el).find("h2, h3, [class*='title']").first().text().trim();
-          if (!title) return;
+      // Fallback: parse HTML cards directly
+      const cards = $("a[href*='/e/']");
+      cards.each((_, el) => {
+        const href = $(el).attr("href") || "";
+        if (!href.includes("/e/") || href.includes("eventbrite.com/e/") === false) return;
+        const link = href.startsWith("http") ? href.split("?")[0] : `https://www.eventbrite.com${href.split("?")[0]}`;
 
-          const href = $(el).find("a[href*='eventbrite']").first().attr("href") ||
-                       $(el).find("a[href]").first().attr("href") || "";
-          const link = href.startsWith("http") ? href : `https://www.eventbrite.com${href}`;
+        const title = $(el).find("h2, h3, [class*='title'], [class*='Typography']").first().text().trim()
+          || $(el).attr("aria-label") || "";
+        if (!title || title.length < 5) return;
 
-          const dateText = $(el).find("time, [class*='date']").first().text().trim();
-          const locText  = $(el).find("[class*='location'], [class*='venue']").first().text().trim();
-          const isFree   = $(el).find("[class*='price']").text().toLowerCase().includes("free");
+        const dateText = $(el).find("time, [class*='date'], [class*='Date']").first().text().trim();
+        const locText  = $(el).find("[class*='location'], [class*='Location'], [class*='venue']").first().text().trim();
+        const isFree   = $(el).text().toLowerCase().includes("free");
 
-          const uid = `eventbrite-html-${(title+(link||"")).toLowerCase().replace(/\W+/g, "-").slice(0, 80)}`;
-          results.push({
-            title,
-            description: $(el).find("[class*='summary'], p").first().text().trim().slice(0, 200),
-            eventType: "Conference",
-            platform:  "Eventbrite",
-            date:      dateText,
-            location:  locText || "Online",
-            price:     isFree ? "Free" : "Paid",
-            registrationLink: link,
-            imageUrl:  $(el).find("img").first().attr("src") || "",
-            uniqueId:  uid,
-          });
+        const uid = `eventbrite-html-${link.split("/e/")[1]?.split("/")[0] || title.toLowerCase().replace(/\W+/g,"-").slice(0,60)}`;
+        if (results.some(r => r.uniqueId === uid)) return;
+
+        results.push({
+          title,
+          description: $(el).find("p, [class*='summary']").first().text().trim().slice(0, 200),
+          eventType: _classifyEvent(title),
+          platform: "Eventbrite",
+          date: dateText,
+          location: locText || "India",
+          mode: (locText||"").toLowerCase().includes("online") ? "Online" : "Offline",
+          price: isFree ? "Free" : "Paid",
+          registrationLink: link,
+          imageUrl: $(el).find("img").first().attr("src") || "",
+          uniqueId: uid,
         });
-      }
+      });
 
+      logger.info(`[Eventbrite] ${url}: ${results.length} total so far`);
       await new Promise(r => setTimeout(r, 2000));
     } catch (err) {
       logger.warn(`[Eventbrite] ${url} failed: ${err.message}`);
@@ -99,12 +122,24 @@ async function scrapeEventbrite() {
 
   logger.info(`[Eventbrite] Total: ${results.length} events`);
 
+  // Deduplicate
   const seen = new Set();
   return results.filter(e => {
     if (seen.has(e.uniqueId)) return false;
     seen.add(e.uniqueId);
     return true;
   });
+}
+
+function _classifyEvent(title) {
+  const t = (title || "").toLowerCase();
+  if (t.includes("conference") || t.includes("summit") || t.includes("expo")) return "Conference";
+  if (t.includes("workshop") || t.includes("training") || t.includes("bootcamp")) return "Workshop";
+  if (t.includes("meetup") || t.includes("networking") || t.includes("meet")) return "Meetup";
+  if (t.includes("webinar") || t.includes("online session") || t.includes("virtual")) return "Webinar";
+  if (t.includes("hackathon")) return "Hackathon";
+  if (t.includes("ai") || t.includes("machine learning") || t.includes("ml ")) return "AI/ML Event";
+  return "Conference";
 }
 
 module.exports = { scrapeEventbrite };

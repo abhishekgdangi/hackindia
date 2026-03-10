@@ -1,128 +1,113 @@
 /**
  * scrapers/googleDev.js
- * Google Developers events — developers.google.com/events
+ * Google Developers events — India only via developers.google.com/events
  */
 
 const axios   = require("axios");
 const cheerio = require("cheerio");
 const logger  = require("../utils/logger");
 
+const INDIA_KEYWORDS = ["india","bangalore","bengaluru","mumbai","delhi","hyderabad",
+  "pune","chennai","kolkata","noida","gurugram","gurgaon","kochi","ahmedabad",
+  "jaipur","indore","chandigarh","lucknow"];
+
+function isIndia(text) {
+  const t = (text || "").toLowerCase();
+  return INDIA_KEYWORDS.some(k => t.includes(k));
+}
+
 async function scrapeGoogleDev() {
   logger.info("[GoogleDev] Starting scrape…");
   const results = [];
 
   const headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0 Safari/537.36",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36",
     Accept: "text/html,application/xhtml+xml,*/*;q=0.9",
     "Accept-Language": "en-IN,en;q=0.9",
   };
 
-  // Google Developers Events uses a public JSON feed in addition to HTML
+  // Try the HTML page
   try {
-    const jsonRes = await axios.get(
-      "https://developers.google.com/events/api/events.json",
-      { headers, timeout: 20000 }
-    );
-    const items = jsonRes.data?.events || jsonRes.data || [];
-    const arr   = Array.isArray(items) ? items : [];
+    const res = await axios.get("https://developers.google.com/events", {
+      headers, timeout: 25000,
+    });
+    const $ = cheerio.load(res.data);
 
-    for (const item of arr) {
-      const title = (item.name || item.title || "").trim();
-      if (!title) continue;
+    // JSON-LD structured data
+    $("script[type='application/ld+json']").each((_, el) => {
+      try {
+        const data  = JSON.parse($(el).html());
+        const items = Array.isArray(data) ? data : [data];
+        for (const item of items) {
+          if (!["Event","BusinessEvent","SocialEvent"].includes(item["@type"])) continue;
+          const title = (item.name || "").trim();
+          if (!title) continue;
 
-      const uid = `googledev-${item.id || (title+"-"+(item.startDate||item.url||"")).toLowerCase().replace(/\W+/g, "-").slice(0, 80)}`;
-      results.push({
-        title,
-        description: (item.description || item.summary || "").slice(0, 300),
-        eventType:   _classifyGoogleEvent(item),
-        platform:    "Google Developers",
-        date:        item.startDate || item.date
-          ? new Date(item.startDate || item.date).toLocaleDateString("en-IN")
-          : "",
-        location: item.location || item.city || "Online",
-        price:    "Free",
-        registrationLink: item.registrationLink || item.url || "https://developers.google.com/events",
-        imageUrl: item.imageUrl || item.banner || "",
-        uniqueId: uid,
-      });
-    }
-    logger.info(`[GoogleDev] JSON API: ${results.length} events`);
-  } catch (apiErr) {
-    logger.warn(`[GoogleDev] JSON API failed: ${apiErr.message}`);
-  }
+          const loc = item.location?.name || item.location?.address?.addressLocality || "";
+          const country = item.location?.address?.addressCountry || "";
+          const isOnline = (item.eventAttendanceMode || "").toLowerCase().includes("online");
 
-  // Fallback: HTML scrape
-  if (results.length === 0) {
-    try {
-      const res = await axios.get("https://developers.google.com/events", {
-        headers,
-        timeout: 25000,
-      });
-      const $ = cheerio.load(res.data);
+          // Keep only India or Online events
+          if (!isOnline && country && country.toLowerCase() !== "in" && !isIndia(loc)) continue;
 
-      // Try JSON-LD structured data first
-      $("script[type='application/ld+json']").each((_, el) => {
-        try {
-          const data  = JSON.parse($(el).html());
-          const items = Array.isArray(data) ? data : [data];
-          for (const item of items) {
-            if (!["Event", "BusinessEvent"].includes(item["@type"])) continue;
-            const title = (item.name || "").trim();
-            if (!title) continue;
-            const uid = `googledev-ld-${(title+"-"+(item.startDate||item.url||"")).toLowerCase().replace(/\W+/g, "-").slice(0, 80)}`;
-            results.push({
-              title,
-              description: (item.description || "").slice(0, 300),
-              eventType:   "Conference",
-              platform:    "Google Developers",
-              date:        item.startDate
-                ? new Date(item.startDate).toLocaleDateString("en-IN")
-                : "",
-              location: item.location?.name || "Online",
-              price:    "Free",
-              registrationLink: item.url || "https://developers.google.com/events",
-              imageUrl: item.image || "",
-              uniqueId: uid,
-            });
-          }
-        } catch (_) {}
-      });
+          const evtUrl = item.url || "";
+          if (!evtUrl) continue;
 
-      // DOM-based fallback
-      if (results.length === 0) {
-        $("[class*='event-card'], [class*='EventCard'], article, .devsite-landing-row-item").each((_, el) => {
-          const title = $(el).find("h2, h3, h4, [class*='title']").first().text().trim();
-          if (!title || title.length < 5) return;
-
-          const href = $(el).find("a[href]").first().attr("href") || "";
-          const link = href.startsWith("http")
-            ? href
-            : `https://developers.google.com${href}`;
-
-          const dateText = $(el).find("time, [class*='date']").first().text().trim() ||
-                           $(el).find("time").attr("datetime") || "";
-          const locText  = $(el).find("[class*='location'], [class*='venue']").first().text().trim();
-
-          const uid = `googledev-html-${(title+"-"+(link||dateText||"")).toLowerCase().replace(/\W+/g, "-").slice(0, 80)}`;
+          const uid = `googledev-ld-${evtUrl.split("/").pop() || title.toLowerCase().replace(/\W+/g,"-").slice(0,60)}`;
           results.push({
             title,
-            description: $(el).find("p, [class*='description']").first().text().trim().slice(0, 250),
-            eventType:   "Conference",
-            platform:    "Google Developers",
-            date:        dateText,
-            location:    locText || "Online",
-            price:       "Free",
-            registrationLink: link || "https://developers.google.com/events",
-            imageUrl:    $(el).find("img").first().attr("src") || "",
-            uniqueId:    uid,
+            description: (item.description || "").slice(0, 300),
+            eventType: _classifyGoogleEvent(title),
+            platform: "Google Developers",
+            date: item.startDate ? new Date(item.startDate).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}) : "",
+            location: isOnline ? "Online" : (loc || "India"),
+            mode: isOnline ? "Online" : "Offline",
+            price: "Free",
+            registrationLink: evtUrl,
+            imageUrl: item.image || "",
+            uniqueId: uid,
           });
-        });
-      }
+        }
+      } catch (_) {}
+    });
 
-      logger.info(`[GoogleDev] HTML: ${results.length} events`);
-    } catch (htmlErr) {
-      logger.error(`[GoogleDev] HTML failed: ${htmlErr.message}`);
+    // DOM fallback
+    if (results.length === 0) {
+      $("[class*='event-card'], [class*='EventCard'], article, .devsite-landing-row-item").each((_, el) => {
+        const title = $(el).find("h2,h3,h4,[class*='title']").first().text().trim();
+        if (!title || title.length < 5) return;
+
+        const href = $(el).find("a[href]").first().attr("href") || "";
+        const link = href.startsWith("http") ? href : `https://developers.google.com${href}`;
+        const locText = $(el).find("[class*='location'],[class*='venue']").first().text().trim();
+        const dateText = $(el).find("time,[class*='date']").first().text().trim();
+        const isOnline = locText.toLowerCase().includes("online");
+
+        // India-only filter
+        if (!isOnline && locText && !isIndia(locText)) return;
+
+        const uid = `googledev-html-${link.split("/").slice(-2).join("-").replace(/\W+/g,"-").slice(0,60)}`;
+        if (results.some(r => r.uniqueId === uid)) return;
+
+        results.push({
+          title,
+          description: $(el).find("p,[class*='description']").first().text().trim().slice(0, 250),
+          eventType: _classifyGoogleEvent(title),
+          platform: "Google Developers",
+          date: dateText,
+          location: isOnline ? "Online" : (locText || "India"),
+          mode: isOnline ? "Online" : "Offline",
+          price: "Free",
+          registrationLink: link,
+          imageUrl: $(el).find("img").first().attr("src") || "",
+          uniqueId: uid,
+        });
+      });
     }
+
+    logger.info(`[GoogleDev] HTML: ${results.length} events`);
+  } catch (err) {
+    logger.error(`[GoogleDev] HTML failed: ${err.message}`);
   }
 
   const seen = new Set();
@@ -133,15 +118,12 @@ async function scrapeGoogleDev() {
   });
 }
 
-function _classifyGoogleEvent(item) {
-  const name = (item.name || item.title || item.type || "").toLowerCase();
-  if (name.includes("io") || name.includes("summit") || name.includes("cloud next")) return "Conference";
-  if (name.includes("devfest"))     return "Conference";
-  if (name.includes("workshop"))    return "Workshop";
-  if (name.includes("study jam"))   return "Workshop";
-  if (name.includes("meetup"))      return "Meetup";
-  if (name.includes("hackathon"))   return "Hackathon";
-  if (name.includes("gdg"))         return "Meetup";
+function _classifyGoogleEvent(title) {
+  const t = (title || "").toLowerCase();
+  if (t.includes("devfest") || t.includes("summit") || t.includes("io ") || t.includes("next")) return "Conference";
+  if (t.includes("workshop") || t.includes("study jam") || t.includes("lab")) return "Workshop";
+  if (t.includes("meetup") || t.includes("gdg")) return "Meetup";
+  if (t.includes("hackathon")) return "Hackathon";
   return "Conference";
 }
 
