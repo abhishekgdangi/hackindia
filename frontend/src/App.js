@@ -33,6 +33,16 @@ async function apiFetch(path, params = {}) {
 /* ────────────────────────────────────────────────
    HOOKS
 ──────────────────────────────────────────────── */
+// Fisher-Yates shuffle — mix results so same platform doesn't cluster
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 function useHackathons(filters={}, page=1) {
   const [data,    setData]    = useState([]);
   const [total,   setTotal]   = useState(0);
@@ -52,7 +62,7 @@ function useHackathons(filters={}, page=1) {
     apiFetch("/hackathons", { ...filters, limit:500 })  // page handled client-side
       .then(j => {
         if (fetchId.current !== id) return;
-        setData(j.data || []);
+        setData(shuffle(j.data || []));
         setTotal(j.total || 0);
         setOffline(false);
       })
@@ -141,6 +151,8 @@ function useEvents({type="", city="All", price="All", domain="All", search=""}={
           const dl = domain.toLowerCase();
           arr = arr.filter(e=>(e.eventType||"").toLowerCase().includes(dl)||(e.title||"").toLowerCase().includes(dl)||(e.description||"").toLowerCase().includes(dl));
         }
+        // Filter out hackathon/internship types (belong to other pages)
+        arr = arr.filter(e => e.eventType!=="Hackathon" && e.eventType!=="Internship Event");
         // Sort by date ascending (soonest first, TBD last)
         arr.sort((a,b)=>{
           const da = a.date ? new Date(a.date) : null;
@@ -150,7 +162,7 @@ function useEvents({type="", city="All", price="All", domain="All", search=""}={
           if(!db) return -1;
           return da - db;
         });
-        setData(arr); setTotal(j.total||0);
+        setData(shuffle(arr)); setTotal(j.total||0);
       })
       .catch(() => { if(fetchId.current===id) { setData([]); setTotal(0); } })
       .finally(() => { if(fetchId.current===id) setLoading(false); });
@@ -1072,67 +1084,88 @@ const fmtEventDate = (d) => {
 
 const EventCard = ({e, compact=false}) => {
   const typeStyle = EVENT_COLORS[e.eventType] || EVENT_COLORS["Other"];
-  const desc = e.description || `${e.eventType||"Event"} — ${e.location||"India"}. Click Register to learn more.`;
-  const locStr=(e.location||"").toLowerCase();const modeStr=(e.mode||"").toLowerCase();const isOnline=locStr==="online"||locStr==="virtual"||locStr==="remote"||modeStr.includes("online");
-  const city=isOnline?"Online":(e.location&&e.location!=="India"&&e.location!=="Online"?e.location:"India");
+
+  // Robust online/offline detection — check location, mode, and description
+  const locStr = (e.location||"").toLowerCase();
+  const modeStr = (e.mode||"").toLowerCase();
+  const isOnline = locStr==="online" || locStr==="virtual" || locStr==="remote"
+    || modeStr.includes("online") || modeStr.includes("virtual")
+    || (locStr==="" && !e.city);
+
+  // City: show actual city name if offline, "Online" if online, "India" as last fallback
+  const city = isOnline ? "Online"
+    : (e.location && e.location!=="India" && e.location!=="Online" ? e.location : "India");
+
+  // Clean short description
+  const desc = (e.description||"").replace(/Tech event in.*Source:.*$/i,"").trim()
+    || `${e.eventType||"Event"} · ${city}`;
+
   const dateStr = fmtEventDate(e.date);
-  const hasLink = e.registrationLink && e.registrationLink!=="#";
+  const hasLink = !!(e.registrationLink && e.registrationLink!=="#" && e.registrationLink!=="");
+
+  // Skip hackathon/internship types in events page (they belong to other pages)
+  const evType = (e.eventType==="Hackathon"||e.eventType==="Internship Event") ? "Event" : (e.eventType||"Event");
+  const typeStyleFinal = EVENT_COLORS[evType] || EVENT_COLORS["Other"];
+
   return (
-    <div className="hcard" style={{padding:20,display:"flex",flexDirection:"column",gap:10,cursor:"default"}}>
-      {/* Top row: logo + title + type badge */}
+    <div className="hcard" style={{padding:20,display:"flex",flexDirection:"column",gap:10,cursor:"default",minHeight:280}}>
+
+      {/* Row 1: Logo + Title + Type badge */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8}}>
         <div style={{display:"flex",gap:10,alignItems:"flex-start",flex:1,minWidth:0}}>
-          <div style={{width:38,height:38,borderRadius:9,background:"var(--bg3)",border:"1px solid var(--border)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0}}>
-            {EVENT_PLATFORM_LOGO(e.platform, e.registrationLink)}
+          <div style={{width:40,height:40,borderRadius:10,background:"var(--bg3)",border:"1px solid var(--border)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}}>
+            {EVENT_PLATFORM_LOGO(e.platform||"")}
           </div>
           <div style={{flex:1,minWidth:0}}>
-            <div className="syne" style={{fontWeight:700,fontSize:14,lineHeight:1.35,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{e.title}</div>
-            <div style={{fontSize:10,color:"var(--text3)",marginTop:2,fontFamily:"'JetBrains Mono',monospace"}}>via {e.platform}</div>
+            <div className="syne" style={{fontWeight:700,fontSize:13,lineHeight:1.4,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{e.title}</div>
+            <div style={{fontSize:10,color:"var(--text3)",marginTop:2,fontFamily:"'JetBrains Mono',monospace"}}>via {e.platform||"Unknown"}</div>
           </div>
         </div>
-        <span style={{...typeStyle,padding:"3px 9px",borderRadius:20,fontSize:10,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",whiteSpace:"nowrap",flexShrink:0,border:`1px solid ${typeStyle.border}`}}>{e.eventType||"Event"}</span>
+        <span style={{...typeStyleFinal,padding:"3px 9px",borderRadius:20,fontSize:10,fontWeight:700,
+          fontFamily:"'JetBrains Mono',monospace",whiteSpace:"nowrap",flexShrink:0,
+          border:`1px solid ${typeStyleFinal.border}`}}>{evType}</span>
       </div>
 
-      {/* Description */}
+      {/* Row 2: Description */}
       {!compact && (
-        <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.6,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{desc}</div>
+        <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.6,overflow:"hidden",display:"-webkit-box",
+          WebkitLineClamp:2,WebkitBoxOrient:"vertical",minHeight:36}}>{desc}</div>
       )}
 
-      {/* Meta: date + city + mode + price row */}
+      {/* Row 3: Date + Location boxes */}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
-        <div style={{background:"var(--bg3)",borderRadius:8,padding:"6px 9px"}}>
-          <div style={{fontSize:9,color:"var(--text3)",marginBottom:1}}>📅 Date</div>
+        <div style={{background:"var(--bg3)",borderRadius:8,padding:"7px 10px"}}>
+          <div style={{fontSize:9,color:"var(--text3)",marginBottom:2,textTransform:"uppercase",letterSpacing:".05em"}}>📅 Date</div>
           <div className="mono" style={{fontSize:11,fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{dateStr}</div>
         </div>
-        <div style={{background:"var(--bg3)",borderRadius:8,padding:"6px 9px"}}>
-          <div style={{fontSize:9,color:"var(--text3)",marginBottom:1}}>📍 Location</div>
+        <div style={{background:"var(--bg3)",borderRadius:8,padding:"7px 10px"}}>
+          <div style={{fontSize:9,color:"var(--text3)",marginBottom:2,textTransform:"uppercase",letterSpacing:".05em"}}>📍 City</div>
           <div className="mono" style={{fontSize:11,fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{city}</div>
         </div>
       </div>
 
-      {/* Mode + Price row */}
+      {/* Row 4: Online/Offline + Price badges */}
       <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginTop:"auto"}}>
-        <span style={{fontSize:11,padding:"2px 8px",borderRadius:6,fontWeight:700,
-          background:isOnline?"rgba(0,212,255,.1)":"rgba(0,255,136,.1)",
+        <span style={{fontSize:11,padding:"3px 9px",borderRadius:6,fontWeight:700,
+          background:isOnline?"rgba(0,212,255,.12)":"rgba(0,255,136,.12)",
           color:isOnline?"var(--cyan)":"var(--green)",
-          border:`1px solid ${isOnline?"rgba(0,212,255,.25)":"rgba(0,255,136,.25)"}`
+          border:`1px solid ${isOnline?"rgba(0,212,255,.3)":"rgba(0,255,136,.3)"}`
         }}>{isOnline?"🌐 Online":"📌 Offline"}</span>
-        {e.price && e.price!=="Unknown" ? (
-          <span style={{fontSize:11,padding:"2px 8px",borderRadius:6,fontWeight:700,
-            background:e.price==="Free"?"rgba(0,255,136,.1)":"rgba(255,107,53,.1)",
-            color:e.price==="Free"?"var(--green)":"var(--orange)",
-            border:`1px solid ${e.price==="Free"?"rgba(0,255,136,.25)":"rgba(255,107,53,.25)"}`
-          }}>{e.price==="Free"?"Free":"Paid"}</span>
+        {e.price==="Free" ? (
+          <span style={{fontSize:11,padding:"3px 9px",borderRadius:6,fontWeight:700,
+            background:"rgba(0,255,136,.1)",color:"var(--green)",border:"1px solid rgba(0,255,136,.25)"}}>Free</span>
+        ) : e.price==="Paid" ? (
+          <span style={{fontSize:11,padding:"3px 9px",borderRadius:6,fontWeight:700,
+            background:"rgba(255,107,53,.1)",color:"var(--orange)",border:"1px solid rgba(255,107,53,.25)"}}>Paid</span>
         ) : (
-          <span style={{fontSize:11,padding:"2px 8px",borderRadius:6,fontWeight:600,
-            background:"rgba(136,153,187,.08)",color:"var(--text3)",border:"1px solid rgba(136,153,187,.15)"
-          }}>Check site</span>
+          <span style={{fontSize:11,padding:"3px 9px",borderRadius:6,fontWeight:600,
+            background:"rgba(136,153,187,.08)",color:"var(--text3)",border:"1px solid rgba(136,153,187,.15)"}}>Check site</span>
         )}
       </div>
 
-      {/* CTA */}
-      <button className="btn-p" style={{width:"100%",justifyContent:"center",padding:"8px",fontSize:13,
-        opacity:hasLink?"1":"0.5",cursor:hasLink?"pointer":"not-allowed"}}
+      {/* Row 5: Register button */}
+      <button className="btn-p" style={{width:"100%",justifyContent:"center",padding:"9px",fontSize:13,
+        opacity:hasLink?1:0.4,cursor:hasLink?"pointer":"not-allowed"}}
         onClick={()=>{
           if(!hasLink) return;
           const url=e.registrationLink.startsWith("http")?e.registrationLink:"https://"+e.registrationLink;

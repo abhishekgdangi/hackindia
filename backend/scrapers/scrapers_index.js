@@ -1,74 +1,133 @@
 /**
  * scrapers/index.js — ALL active scrapers
  *
- * ═══════════════════════════════════════════════
- *  HACKATHON SCRAPERS
- * ═══════════════════════════════════════════════
+ * HACKATHON: Devpost, HackClub, TAIKAI, Hackathon.com, DevEvents, Devfolio, HackerEarth
+ * INTERNSHIP: Internshala, Remotive
+ * EVENTS: Eventbrite, GoogleDev, Luma, HasGeek
  *
- * ✅ Tier 1 — Confirmed public JSON APIs:
- *    • Devpost      — devpost.com/api/hackathons       (60-80 results)
- *    • HackClub     — hackathons.hackclub.com API       (2-20 results)
- *    • TAIKAI       — taikai.network HTML               (1-5 results)
- *
- * ✅ Tier 2 — HTML scrapers:
- *    • Hackathon.com — hackathon.com listing HTML       (3-8 results)
- *    • DevEvents     — devents.io listing               (1-3 results)
- *
- * ✅ Tier 3 — Internal API / __NEXT_DATA__:
- *    • Devfolio      — api.devfolio.co REST             (20-30 results)
- *    • HackerEarth   — hackerearth.com HTML cards       (10-20 results)
- *
- * ❌ REMOVED (permanently broken / 0 results):
- *    MLH (0 parsed), Unstop (API 404), DoraHacks (405 blocked),
- *    LetsIntern (404), Fresherworld (JS-rendered), Hirist (404),
- *    Twenty19 (dead domain), Apna (404), KonfHub (404), UnstopEvents
- *
- * ═══════════════════════════════════════════════
- *  INTERNSHIP SCRAPERS
- * ═══════════════════════════════════════════════
- *
- * ✅ Working:
- *    • Internshala  — 500+ results (India #1)
- *    • Remotive     — 3-10 remote results
- *
- * ═══════════════════════════════════════════════
- *  EVENT SCRAPERS
- * ═══════════════════════════════════════════════
- *
- * ✅ Working:
- *    • Eventbrite     — India tech events (direct event URLs)
- *    • GoogleDev      — Google Dev events (India + Online only)
- *    • Luma           — Luma India calendars
- *    • GDGCommunity   — GDG DevFests India
- *    • DevEventsIndia — dev.events India meetups/conferences
- *    • HasGeek        — HasGeek India dev events
+ * REMOVED: MLH, Unstop, DoraHacks, LetsIntern, Fresherworld, Hirist,
+ *          Twenty19, Apna, KonfHub, UnstopEvents, GDGCommunity, DevEventsIndia
  */
 
-// ── Tier 1: Public JSON APIs ─────────────────────────────────────
 const devpost      = require("./devpost");
 const hackclub     = require("./hackclub");
 const taikai       = require("./taikai");
-
-// ── Tier 2: HTML scrapers ────────────────────────────────────────
 const hackathoncom = require("./hackathoncom");
 const devevents    = require("./devevents");
-
-// ── Tier 3: Internal API / __NEXT_DATA__ ─────────────────────────
 const devfolio2    = require("./devfolio2");
 const hackerearth  = require("./hackerearth");
-
-// ── Internship scrapers ──────────────────────────────────────────
 const internshala  = require("./internshala");
 const remotive     = require("./remotive");
 
-// ── Event scrapers ───────────────────────────────────────────────
 const { scrapeEventbrite }    = require("./eventbriteScraper");
 const { scrapeGoogleDev }     = require("./googleDev");
 const { scrapeLuma }          = require("./luma");
-const { scrapeGDGCommunity }  = require("./gdgCommunity");
-const { scrapeDevEventsIndia }= require("./devEventsIndia");
 const { scrapeHasGeek }       = require("./hasgeek");
 
 const logger = require("../utils/logger");
 
+// ── Hackathons ────────────────────────────────────────────────────
+async function runHackathonScrapers() {
+  const scrapers = [
+    { name: "Devpost",       fn: () => devpost.scrape(),      tier: 1 },
+    { name: "HackClub",      fn: () => hackclub.scrape(),     tier: 1 },
+    { name: "TAIKAI",        fn: () => taikai.scrape(),       tier: 1 },
+    { name: "Hackathon.com", fn: () => hackathoncom.scrape(), tier: 2 },
+    { name: "DevEvents",     fn: () => devevents.scrape(),    tier: 2 },
+    { name: "Devfolio",      fn: () => devfolio2.scrape(),    tier: 3 },
+    { name: "HackerEarth",   fn: () => hackerearth.scrape(),  tier: 3 },
+  ];
 
+  logger.info(`[Scrapers] Running ${scrapers.length} hackathon scrapers…`);
+  const results = [];
+  for (const s of scrapers) {
+    logger.info(`  → ${s.name} (Tier ${s.tier})…`);
+    try {
+      const arr = await s.fn();
+      logger.info(`  ✔ ${s.name}: ${arr.length} hackathons`);
+      results.push(...arr);
+    } catch (err) {
+      logger.warn(`  ✖ ${s.name} failed: ${err.message}`);
+    }
+    await new Promise(r => setTimeout(r, 2500));
+  }
+  logger.info(`[Scrapers] Total hackathons scraped: ${results.length}`);
+  return results;
+}
+
+// ── Internships ───────────────────────────────────────────────────
+async function runInternshipScrapers() {
+  const scrapers = [
+    { name: "Internshala", fn: () => internshala.scrape() },
+    { name: "Remotive",    fn: () => remotive.scrape()    },
+  ];
+
+  logger.info(`[Scrapers] Running ${scrapers.length} internship scrapers…`);
+  const results = [];
+  for (const s of scrapers) {
+    logger.info(`  → ${s.name}…`);
+    try {
+      const arr = await s.fn();
+      logger.info(`  ✔ ${s.name}: ${arr.length} internships`);
+      results.push(...arr);
+    } catch (err) {
+      logger.warn(`  ✖ ${s.name} failed: ${err.message}`);
+    }
+    await new Promise(r => setTimeout(r, 2000));
+  }
+  logger.info(`[Scrapers] Total internships scraped: ${results.length}`);
+  if (results.length === 0) logger.warn("⚠ No internships scraped — check scraper logs above");
+  return results;
+}
+
+// ── Events ────────────────────────────────────────────────────────
+async function runEventScrapers() {
+  const scrapers = [
+    { name: "Eventbrite", fn: scrapeEventbrite },
+    { name: "GoogleDev",  fn: scrapeGoogleDev  },
+    { name: "Luma",       fn: scrapeLuma       },
+    { name: "HasGeek",    fn: scrapeHasGeek    },
+  ];
+
+  logger.info(`[Scrapers] Running ${scrapers.length} event scrapers…`);
+  const results = [];
+  for (const s of scrapers) {
+    logger.info(`  → ${s.name}…`);
+    try {
+      const arr = await s.fn();
+      logger.info(`  ✔ ${s.name}: ${arr.length} events`);
+      results.push(...arr);
+    } catch (err) {
+      logger.warn(`  ✖ ${s.name} failed: ${err.message}`);
+    }
+    await new Promise(r => setTimeout(r, 2000));
+  }
+  logger.info(`[Scrapers] Total events scraped: ${results.length}`);
+  if (results.length === 0) logger.warn("⚠ No events scraped — check scraper logs above");
+  return results;
+}
+
+// ── Single scraper runner ─────────────────────────────────────────
+async function runSingleScraper(name) {
+  const map = {
+    devpost:      () => devpost.scrape(),
+    hackclub:     () => hackclub.scrape(),
+    taikai:       () => taikai.scrape(),
+    hackathoncom: () => hackathoncom.scrape(),
+    devevents:    () => devevents.scrape(),
+    devfolio:     () => devfolio2.scrape(),
+    hackerearth:  () => hackerearth.scrape(),
+    internshala:  () => internshala.scrape(),
+    remotive:     () => remotive.scrape(),
+    eventbrite:   scrapeEventbrite,
+    googledev:    scrapeGoogleDev,
+    luma:         scrapeLuma,
+    hasgeek:      scrapeHasGeek,
+  };
+  const key = name.toLowerCase();
+  if (!map[key]) throw new Error(`Unknown scraper: ${name}`);
+  logger.info(`[Scrapers] Running single scraper: ${name}`);
+  return await map[key]();
+}
+
+module.exports = { runHackathonScrapers, runInternshipScrapers, runEventScrapers, runSingleScraper };
