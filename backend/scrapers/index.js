@@ -16,7 +16,6 @@
  *    • MLH           — mlh.io season schedule HTML      (10-40 results)
  *
  * ✅ Tier 3 — Internal API / __NEXT_DATA__ extraction (may vary):
- *    • Unstop        — unstop.com REST + __NEXT_DATA__  (0-50 results)
  *    • Devfolio      — api.devfolio.co REST             (0-25 results)
  *    • HackerEarth   — hackerearth.com/api/v3/events    (0-30 results)
  *    • DoraHacks     — dorahacks.io/api/hackathon/list  (0-20 results)
@@ -70,7 +69,6 @@ const apna         = require("./apna");
 const { scrapeEventbrite }    = require("./eventbriteScraper"); // ✅ India/Online Eventbrite
 const { scrapeGoogleDev }     = require("./googleDev");         // ✅ Google Dev events HTML
 const { scrapeLuma }          = require("./luma");              // ✅ Luma India calendars
-const { scrapeUnstopEvents }  = require("./unstopEvents");      // ✅ Unstop events/workshops
 const { scrapeKonfhub }       = require("./konfhub");           // ✅ KonfHub India conferences
 const { scrapeGDGCommunity }  = require("./gdgCommunity");      // ✅ GDG DevFests India
 const { scrapeDevEventsIndia }= require("./devEventsIndia");    // ✅ dev.events India meetups
@@ -92,7 +90,6 @@ async function runAllScrapers() {
     { name: "DevEvents",     fn: () => devevents.scrape(),    tier: 2 },
     { name: "MLH",           fn: () => mlh.scrape(),          tier: 2 },
     // Tier 3 — internal APIs (may return 0 if blocked)
-    { name: "Unstop",        fn: () => unstop.scrape(),       tier: 3 },
     { name: "Devfolio",      fn: () => devfolio2.scrape(),    tier: 3 },
     { name: "HackerEarth",   fn: () => hackerearth.scrape(),  tier: 3 },
     { name: "DoraHacks",     fn: () => dorahacks.scrape(),    tier: 3 },
@@ -193,7 +190,6 @@ async function runEventScrapers() {
     { name: "Eventbrite",   fn: scrapeEventbrite },    // India + Online
     { name: "GoogleDev",    fn: scrapeGoogleDev },     // Google Dev events
     { name: "Luma",         fn: scrapeLuma },           // Luma India calendars
-    { name: "Unstop",       fn: scrapeUnstopEvents },  // Unstop workshops/events
     { name: "KonfHub",      fn: scrapeKonfhub },        // KonfHub India conferences
     { name: "GDGCommunity", fn: scrapeGDGCommunity },  // GDG DevFests India
     { name: "DevEventsIN",  fn: scrapeDevEventsIndia }, // dev.events India meetups
