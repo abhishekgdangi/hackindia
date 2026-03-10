@@ -41,7 +41,7 @@ async function scrapeMeetup() {
           evt.venue?.localized_location ||
           (evt.is_online_event ? "Online" : q.city);
 
-        const uid = `meetup-${evt.id || title.toLowerCase().replace(/\W+/g, "-").slice(0, 50)}`;
+        const uid = `meetup-${evt.id || (title+"-"+(evt.local_date||evt.time||"")).toString().toLowerCase().replace(/\W+/g, "-").slice(0, 80)}`;
 
         results.push({
           title,
@@ -95,7 +95,7 @@ async function scrapeMeetup() {
           for (const evt of evtList) {
             const title = (evt.title || evt.name || "").trim();
             if (!title) continue;
-            const uid = `meetup-nx-${(evt.id || title).toLowerCase().replace(/\W+/g, "-").slice(0, 50)}`;
+            const uid = `meetup-nx-${(evt.id || (title+"-"+(evt.dateTime||""))).toLowerCase().replace(/\W+/g, "-").slice(0, 80)}`;
             results.push({
               title,
               description: (evt.description || "").slice(0, 300),

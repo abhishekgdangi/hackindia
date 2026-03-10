@@ -41,7 +41,7 @@ async function scrapeEventbrite() {
             const title = (evt.name || evt.title || "").trim();
             if (!title) continue;
 
-            const uid = `eventbrite-${evt.id || title.toLowerCase().replace(/\W+/g, "-").slice(0, 50)}`;
+            const uid = `eventbrite-${evt.id || (title+"-"+(evt.start?.local||evt.url||"")).toLowerCase().replace(/\W+/g, "-").slice(0, 80)}`;
             results.push({
               title,
               description: (evt.summary || evt.description || "").slice(0, 300),
@@ -75,7 +75,7 @@ async function scrapeEventbrite() {
           const locText  = $(el).find("[class*='location'], [class*='venue']").first().text().trim();
           const isFree   = $(el).find("[class*='price']").text().toLowerCase().includes("free");
 
-          const uid = `eventbrite-html-${title.toLowerCase().replace(/\W+/g, "-").slice(0, 60)}`;
+          const uid = `eventbrite-html-${(title+(link||"")).toLowerCase().replace(/\W+/g, "-").slice(0, 80)}`;
           results.push({
             title,
             description: $(el).find("[class*='summary'], p").first().text().trim().slice(0, 200),

@@ -30,7 +30,7 @@ async function scrapeGoogleDev() {
       const title = (item.name || item.title || "").trim();
       if (!title) continue;
 
-      const uid = `googledev-${item.id || title.toLowerCase().replace(/\W+/g, "-").slice(0, 60)}`;
+      const uid = `googledev-${item.id || (title+"-"+(item.startDate||item.url||"")).toLowerCase().replace(/\W+/g, "-").slice(0, 80)}`;
       results.push({
         title,
         description: (item.description || item.summary || "").slice(0, 300),
@@ -69,7 +69,7 @@ async function scrapeGoogleDev() {
             if (!["Event", "BusinessEvent"].includes(item["@type"])) continue;
             const title = (item.name || "").trim();
             if (!title) continue;
-            const uid = `googledev-ld-${title.toLowerCase().replace(/\W+/g, "-").slice(0, 60)}`;
+            const uid = `googledev-ld-${(title+"-"+(item.startDate||item.url||"")).toLowerCase().replace(/\W+/g, "-").slice(0, 80)}`;
             results.push({
               title,
               description: (item.description || "").slice(0, 300),
@@ -103,7 +103,7 @@ async function scrapeGoogleDev() {
                            $(el).find("time").attr("datetime") || "";
           const locText  = $(el).find("[class*='location'], [class*='venue']").first().text().trim();
 
-          const uid = `googledev-html-${title.toLowerCase().replace(/\W+/g, "-").slice(0, 60)}`;
+          const uid = `googledev-html-${(title+"-"+(link||dateText||"")).toLowerCase().replace(/\W+/g, "-").slice(0, 80)}`;
           results.push({
             title,
             description: $(el).find("p, [class*='description']").first().text().trim().slice(0, 250),
