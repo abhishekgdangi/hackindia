@@ -1073,8 +1073,8 @@ const fmtEventDate = (d) => {
 const EventCard = ({e, compact=false}) => {
   const typeStyle = EVENT_COLORS[e.eventType] || EVENT_COLORS["Other"];
   const desc = e.description || `${e.eventType||"Event"} — ${e.location||"India"}. Click Register to learn more.`;
-  const isOnline = (e.mode||e.location||"").toLowerCase().includes("online") || (e.location||"").toLowerCase()==="online";
-  const city = (!isOnline && e.location && e.location!=="India") ? e.location : null;
+  const locStr=(e.location||"").toLowerCase();const modeStr=(e.mode||"").toLowerCase();const isOnline=locStr==="online"||locStr==="virtual"||locStr==="remote"||modeStr.includes("online");
+  const city=isOnline?"Online":(e.location&&e.location!=="India"&&e.location!=="Online"?e.location:"India");
   const dateStr = fmtEventDate(e.date);
   const hasLink = e.registrationLink && e.registrationLink!=="#";
   return (
@@ -1106,7 +1106,7 @@ const EventCard = ({e, compact=false}) => {
         </div>
         <div style={{background:"var(--bg3)",borderRadius:8,padding:"6px 9px"}}>
           <div style={{fontSize:9,color:"var(--text3)",marginBottom:1}}>📍 Location</div>
-          <div className="mono" style={{fontSize:11,fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{city||"Online"}</div>
+          <div className="mono" style={{fontSize:11,fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{city}</div>
         </div>
       </div>
 
