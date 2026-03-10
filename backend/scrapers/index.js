@@ -54,7 +54,8 @@ const remotive     = require("./remotive");
 const { scrapeEventbrite }    = require("./eventbriteScraper"); // ✅ India/Online Eventbrite
 const { scrapeGoogleDev }     = require("./googleDev");         // ✅ Google Dev events HTML
 const { scrapeLuma }          = require("./luma");              // ✅ Luma India calendars
-const { scrapeHasGeek }       = require("./hasgeek");           // ✅ HasGeek India dev events
+const { scrapeHasGeek }       = require("./hasgeek");
+const { scrapeIndiaExpos }     = require("./indiaExpos");           // ✅ HasGeek India dev events
 
 const logger = require("../utils/logger");
 
