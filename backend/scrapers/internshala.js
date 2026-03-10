@@ -67,8 +67,16 @@ class InternshalaInternshipScraper extends BaseScraper {
         // HTML card scraping
         $(".internship_meta, .individual_internship, [class*='internship-card']").each((_, el) => {
           try {
-            const name    = $(el).find(".profile, .job-title, h3, .title").first().text().trim();
-            const company = $(el).find(".company_name, .company, .org, h4").first().text().trim();
+            // Extract role name — strip company name if accidentally included
+            let name    = $(el).find(".profile, .job-title, h3, .title").first().text().trim();
+            let company = $(el).find(".company_name, .company, .org, h4").first().text().trim();
+            // Internshala sometimes puts "Role at Company" or "Role Company" in title
+            if (name && company && name.toLowerCase().includes(company.toLowerCase())) {
+              name = name.replace(new RegExp(company, "gi"), "").replace(/\s+at\s+$/i,"").trim();
+            }
+            // Also strip "Actively hiring" suffix from company name
+            company = company.replace(/\s*Actively\s*hiring\s*/gi, "").trim();
+            name    = name.replace(/\s*Actively\s*hiring\s*/gi, "").trim();
             const stipend = $(el).find(".stipend, .salary, [class*='stipend']").first().text().trim();
             const location= $(el).find(".location_link, .location, .city").first().text().trim();
             const duration= $(el).find(".duration, .internship_other_details_row").first().text().trim();

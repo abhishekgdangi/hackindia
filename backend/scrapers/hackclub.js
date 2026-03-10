@@ -58,6 +58,11 @@ class HackClubScraper extends BaseScraper {
     if (e.apac)          tags.push("APAC");
     tags.push("Student", "HackClub");
 
+    // Only keep India, Online, or APAC events
+    const isIndia = /india|bangalore|bengaluru|mumbai|delhi|hyderabad|pune|chennai/i.test(city + " " + (e.country||""));
+    const isOnline = mode === "Online" || mode === "Online + Offline" || e.virtual;
+    if (!isIndia && !isOnline) return null;
+
     return this.normalise({
       name:                 e.name.trim(),
       organizer:            "Hack Club",

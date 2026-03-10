@@ -217,48 +217,82 @@ const SkeletonCard = () => (
 /* ────────────────────────────────────────────────
    HACKATHON CARD
 ──────────────────────────────────────────────── */
-/* Logo helper — maps platform/organizer to a real emoji/logo */
-const hackLogo = (h) => {
-  const n = (h.name||"").toLowerCase();
-  const o = (h.organizer||"").toLowerCase();
-  const p = (h.sourcePlatform||"").toLowerCase();
-  if (o.includes("google") || n.includes("google"))     return "🔵";
-  if (o.includes("microsoft") || n.includes("microsoft")) return "💙";
-  if (o.includes("amazon") || n.includes("amazon"))     return "🟠";
-  if (o.includes("flipkart") || n.includes("flipkart")) return "🛒";
-  if (o.includes("iit") || n.includes("iit"))           return "🎓";
-  if (o.includes("mlh") || o.includes("major league"))  return "🎯";
-  if (o.includes("github") || n.includes("github"))     return "🐙";
-  if (o.includes("meta") || n.includes("meta"))         return "🔷";
-  if (o.includes("aws") || n.includes("aws"))           return "☁️";
-  if (o.includes("ibm") || n.includes("ibm"))           return "🔷";
-  if (n.includes("ai") || n.includes("llm") || n.includes("machine")) return "🤖";
-  if (n.includes("blockchain") || n.includes("web3"))   return "⛓️";
-  if (n.includes("health") || n.includes("med"))        return "🏥";
-  if (n.includes("finance") || n.includes("fintech"))   return "💰";
-  if (n.includes("climate") || n.includes("green"))     return "🌱";
-  if (n.includes("education") || n.includes("edu"))     return "📚";
-  if (n.includes("social") || n.includes("community"))  return "🤝";
-  if (p === "devfolio")    return "🚀";
-  if (p === "devpost")     return "💻";
-  if (p === "unstop")      return "⚡";
-  if (p === "dorahacks")   return "🌐";
-  if (p === "hackerearth") return "💡";
-  if (p === "hackclub")    return "🏫";
-  if (p === "mlh")         return "🎯";
-  // Only use logo field if it's an emoji/short string, NOT a raw URL
-  if (h.logo && !h.logo.startsWith("http") && h.logo !== "🖥️") return h.logo;
-  // Colorful fallback based on name char code
-  const fallbacks = ["🔴","🟡","🟢","🔵","🟣","🟠","⚫","🔶","🔹","🌟","💎","🏆","🎪","🎭","🎨"];
-  return fallbacks[(h.name||"?").charCodeAt(0) % fallbacks.length];
+/* ── Logo helpers ───────────────────────────────────────────── */
+// Returns a real logo URL or null
+const getLogoUrl = (name="", organizer="", platform="", applyLink="") => {
+  const n = name.toLowerCase();
+  const o = organizer.toLowerCase();
+  // Known domain map
+  const domainMap = {
+    google:"google.com", microsoft:"microsoft.com", amazon:"amazon.com",
+    meta:"meta.com", apple:"apple.com", github:"github.com",
+    aws:"aws.amazon.com", ibm:"ibm.com", flipkart:"flipkart.com",
+    zomato:"zomato.com", swiggy:"swiggy.in", razorpay:"razorpay.com",
+    infosys:"infosys.com", wipro:"wipro.com", tcs:"tcs.com",
+    paytm:"paytm.com", meesho:"meesho.com", cred:"cred.club",
+    devpost:"devpost.com", devfolio:"devfolio.co",
+    unstop:"unstop.com", dorahacks:"dorahacks.io",
+    hackerearth:"hackerearth.com", hackclub:"hackclub.com",
+    mlh:"mlh.io", "hack club":"hackclub.com",
+  };
+  for (const [key, domain] of Object.entries(domainMap)) {
+    if (n.includes(key) || o.includes(key)) {
+      return `https://logo.clearbit.com/${domain}`;
+    }
+  }
+  // Try to extract domain from applyLink
+  try {
+    if (applyLink && applyLink.startsWith("http")) {
+      const host = new URL(applyLink).hostname.replace("www.","");
+      return `https://logo.clearbit.com/${host}`;
+    }
+  } catch(_) {}
+  return null;
 };
+
+// Emoji fallback
+const hackLogoEmoji = (h) => {
+  const n = (h.name||"").toLowerCase();
+  const p = (h.sourcePlatform||"").toLowerCase();
+  if (n.includes("ai")||n.includes("llm")||n.includes("machine")) return "🤖";
+  if (n.includes("blockchain")||n.includes("web3"))  return "⛓️";
+  if (n.includes("health")||n.includes("med"))       return "🏥";
+  if (n.includes("finance")||n.includes("fintech"))  return "💰";
+  if (n.includes("climate")||n.includes("green"))    return "🌱";
+  if (n.includes("edu"))                             return "📚";
+  if (p==="devfolio")    return "🚀"; if (p==="devpost")    return "💻";
+  if (p==="unstop")      return "⚡"; if (p==="dorahacks")  return "🌐";
+  if (p==="hackerearth") return "💡"; if (p==="hackclub")   return "🏫";
+  const fb=["🔴","🟡","🟢","🔵","🟣","🟠","🔶","🔹","🌟","💎","🏆","🎪","🎭","🎨"];
+  return fb[(h.name||"?").charCodeAt(0)%fb.length];
+};
+
+// Logo image component — shows real logo or emoji fallback
+const LogoBox = ({name="",organizer="",platform="",applyLink="",size=44,radius=12,emoji=null}) => {
+  const [imgOk, setImgOk] = React.useState(true);
+  const url = getLogoUrl(name, organizer, platform, applyLink);
+  const fb  = emoji || hackLogoEmoji({name,organizer,sourcePlatform:platform});
+  return (
+    <div style={{width:size,height:size,borderRadius:radius,background:"var(--bg3)",
+      display:"flex",alignItems:"center",justifyContent:"center",
+      fontSize:size*0.5,flexShrink:0,border:"1px solid var(--border)",overflow:"hidden"}}>
+      {url && imgOk
+        ? <img src={url} alt={name} onError={()=>setImgOk(false)}
+            style={{width:"75%",height:"75%",objectFit:"contain",borderRadius:4}}/>
+        : fb}
+    </div>
+  );
+};
+
+// Legacy helper kept for ticker
+const hackLogo = (h) => hackLogoEmoji(h);
 
 const HackCard = ({ h, onClick }) => (
   <div className="hcard" onClick={()=>onClick(h)} style={{display:"flex",flexDirection:"column"}}>
     <div style={{padding:"20px 20px 16px",flex:1}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
         <div style={{display:"flex",alignItems:"center",gap:12}}>
-          <div style={{width:44,height:44,borderRadius:12,background:"var(--bg3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0,border:"1px solid var(--border)"}}>{hackLogo(h)}</div>
+          <LogoBox name={h.name} organizer={h.organizer} platform={h.sourcePlatform} applyLink={h.applyLink} size={44} radius={12}/>
           <div>
             <div className="syne" style={{fontWeight:700,fontSize:14,lineHeight:1.3,marginBottom:3}}>{h.name}</div>
             <div style={{fontSize:11,color:"var(--text2)",display:"flex",alignItems:"center",gap:6}}>
@@ -306,7 +340,7 @@ const Modal = ({ h, onClose }) => {
         <div style={{padding:32}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:24}}>
             <div style={{display:"flex",gap:16,alignItems:"center"}}>
-              <div style={{width:60,height:60,borderRadius:14,background:"linear-gradient(135deg,var(--card2),var(--bg3))",display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,border:"1px solid var(--border2)"}}>{hackLogo(h)}</div>
+              <LogoBox name={h.name} organizer={h.organizer} platform={h.sourcePlatform} applyLink={h.applyLink} size={60} radius={14}/>
               <div>
                 <div className="syne" style={{fontSize:20,fontWeight:800,marginBottom:5}}>{h.name}</div>
                 <div style={{color:"var(--text2)",fontSize:13,marginBottom:8}}>{h.organizer}</div>
@@ -591,7 +625,7 @@ const HomePage = ({setPage}) => {
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
                 <div style={{display:"flex",gap:12,alignItems:"center"}}>
                   <div style={{width:44,height:44,borderRadius:12,background:"var(--bg3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,border:"1px solid var(--border)",flexShrink:0}}>
-                    {["Google","Microsoft","Amazon","Meta","Apple"].some(b=>i.company?.includes(b)) ? "🏢" : "💼"}
+                    {["Google","Microsoft","Amazon","Meta","Apple"].some(b=>i.company?.includes(b)) ? <LogoBox name={i.company} organizer={i.company} platform="internshala" applyLink={i.applyLink} size={28} radius={7}/> : "💼"}
                   </div>
                   <div>
                     <div className="syne" style={{fontWeight:700,fontSize:13,lineHeight:1.3}}>{i.company}</div>
@@ -834,19 +868,7 @@ const InternshipsPage = () => {
   const LOCATIONS=["All","Bangalore","Mumbai","Delhi","Hyderabad","Pune","Chennai","Remote/WFH"];
   const SKILLS=["All","Python","React","JavaScript","Java","Data Science","ML/AI","Android","Node.js","Cloud/AWS"];
   const hasFilter = location!=="All"||skill!=="All"||isRemote!=="All"||search;
-  const internLogo = (company="") => {
-    const n=company.toLowerCase();
-    if(n.includes("google"))return"🔵"; if(n.includes("microsoft"))return"💙";
-    if(n.includes("amazon"))return"🟠"; if(n.includes("flipkart"))return"🛒";
-    if(n.includes("zomato"))return"🔴"; if(n.includes("swiggy"))return"🟠";
-    if(n.includes("razorpay"))return"🟢"; if(n.includes("cred"))return"⚫";
-    if(n.includes("meesho"))return"🟣"; if(n.includes("dream11"))return"🏏";
-    if(n.includes("ibm"))return"🔷"; if(n.includes("infosys"))return"🟦";
-    if(n.includes("wipro"))return"⬛"; if(n.includes("tcs"))return"🔵";
-    if(n.includes("paytm"))return"💳";
-    const fb=["🔴","🟡","🟢","🔵","🟣","🟠","🔶","🔹","🌟","💎"];
-    return fb[(company||"?").charCodeAt(0)%fb.length];
-  };
+  // internLogo replaced by LogoBox component
   return (
     <div style={{paddingTop:64}}>
       {/* Header */}
@@ -931,9 +953,7 @@ const InternshipsPage = () => {
                 <div key={i._id} className="hcard" style={{padding:20,display:"flex",flexDirection:"column"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
                     <div style={{display:"flex",gap:12,alignItems:"center"}}>
-                      <div style={{width:46,height:46,borderRadius:12,background:"var(--bg3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,border:"1px solid var(--border)",flexShrink:0}}>
-                        {internLogo(i.company)}
-                      </div>
+                      <LogoBox name={i.company} organizer={i.company} platform="internshala" applyLink={i.applyLink} size={46} radius={12}/>
                       <div>
                         <div className="syne" style={{fontWeight:700,fontSize:14,lineHeight:1.3}}>{i.company}</div>
                         <div style={{color:"var(--text2)",fontSize:12,marginTop:2}}>{i.role}</div>
@@ -1016,8 +1036,12 @@ const EventCard = ({e, compact=false}) => {
     <div className="hcard" style={{padding:20,display:"flex",flexDirection:"column",gap:10,cursor:"default"}}>
       {/* Top row */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8}}>
-        <div style={{flex:1,minWidth:0}}>
-          <div className="syne" style={{fontWeight:700,fontSize:14,lineHeight:1.35,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{e.title}</div>
+        <div style={{display:"flex",gap:10,alignItems:"flex-start",flex:1,minWidth:0}}>
+          <LogoBox name={e.platform} organizer={e.platform} platform={e.platform} applyLink={e.registrationLink} size={38} radius={9}
+            emoji={e.platform==="Eventbrite"?"🎫":e.platform==="GoogleDev"?"🔵":e.platform==="Commudle"?"🇮🇳":"📅"}/>
+          <div style={{flex:1,minWidth:0}}>
+            <div className="syne" style={{fontWeight:700,fontSize:14,lineHeight:1.35,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{e.title}</div>
+          </div>
         </div>
         <span style={{...typeStyle,padding:"3px 9px",borderRadius:20,fontSize:10,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",whiteSpace:"nowrap",flexShrink:0,border:`1px solid ${typeStyle.border}`}}>{e.eventType}</span>
       </div>
