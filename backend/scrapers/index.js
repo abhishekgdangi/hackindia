@@ -54,8 +54,6 @@ const remotive     = require("./remotive");
 const { scrapeEventbrite }    = require("./eventbriteScraper"); // ✅ India/Online Eventbrite
 const { scrapeGoogleDev }     = require("./googleDev");         // ✅ Google Dev events HTML
 const { scrapeLuma }          = require("./luma");              // ✅ Luma India calendars
-const { scrapeGDGCommunity }  = require("./gdgCommunity");      // ✅ GDG DevFests India
-const { scrapeDevEventsIndia }= require("./devEventsIndia");    // ✅ dev.events India meetups
 const { scrapeHasGeek }       = require("./hasgeek");           // ✅ HasGeek India dev events
 
 const logger = require("../utils/logger");
@@ -159,8 +157,6 @@ async function runEventScrapers() {
     { name: "Eventbrite",   fn: scrapeEventbrite },    // India + Online
     { name: "GoogleDev",    fn: scrapeGoogleDev },     // Google Dev events
     { name: "Luma",         fn: scrapeLuma },           // Luma India calendars
-    { name: "GDGCommunity", fn: scrapeGDGCommunity },  // GDG DevFests India
-    { name: "DevEventsIN",  fn: scrapeDevEventsIndia }, // dev.events India meetups
     { name: "HasGeek",      fn: scrapeHasGeek },        // HasGeek India dev events
   ];
 
