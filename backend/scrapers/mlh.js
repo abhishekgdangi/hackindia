@@ -1,14 +1,7 @@
 /**
- * scrapers/mlh.js
- * Major League Hacking (MLH) — Official student hackathon league
- *
- * Strategy: MLH renders their seasons page as server-side HTML with
- * structured event cards. We parse them with cheerio.
- * URL: https://mlh.io/seasons/2025/events
- *
- * ✅ APPROACH: HTML scraping with cheerio (SSR page — data in HTML)
+ * scrapers/mlh.js — Major League Hacking
+ * Fixed: URL changed from mlh.io to mlh.com for 2026 season
  */
-
 const BaseScraper = require("./base");
 const logger      = require("../utils/logger");
 const cheerio     = require("cheerio");
@@ -16,11 +9,12 @@ const cheerio     = require("cheerio");
 class MLHScraper extends BaseScraper {
   constructor() {
     super("MLH");
-    // Try current year + next year seasons
-    const yr  = new Date().getFullYear();
+    const yr = new Date().getFullYear();
     this.urls = [
       `https://mlh.io/seasons/${yr}/events`,
+      `https://www.mlh.com/seasons/${yr}/events`,
       `https://mlh.io/seasons/${yr + 1}/events`,
+      `https://www.mlh.com/seasons/${yr + 1}/events`,
     ];
   }
 
@@ -28,107 +22,62 @@ class MLHScraper extends BaseScraper {
     logger.info("[MLH] Starting scrape…");
     const results = [];
     const seen    = new Set();
+    const now     = new Date();
 
     for (const url of this.urls) {
       try {
-        const res  = await this.get(url, {
-          headers: {
-            Accept:          "text/html,application/xhtml+xml,*/*",
-            "Cache-Control": "no-cache",
-          },
+        const res = await this.get(url, {
+          headers: { Accept: "text/html,application/xhtml+xml,*/*", "User-Agent": "Mozilla/5.0 Chrome/125.0.0.0" },
           timeout: 25000,
         });
 
         const $ = cheerio.load(res.data);
-
-        // MLH event cards — selector based on their HTML structure
-        // Each event is in a div.event or article.event or similar
-        const cards = $(".event, .event-wrapper, [class*='event-item'], article").toArray();
-
+        const cards = $(".event, .event-wrapper, article, [class*='event']").toArray();
         logger.info(`[MLH] ${url} → ${cards.length} raw cards`);
+
+        if (cards.length === 0) continue;
 
         for (const el of cards) {
           try {
-            const h = this._parseCard($, el, url);
-            if (h && !seen.has(h.externalId)) {
-              seen.add(h.externalId);
-              results.push(h);
+            const $el  = $(el);
+            const name = $el.find("h3, h4, .name, .title").first().text().trim();
+            if (!name) continue;
+            const href = $el.find("a").first().attr("href") || "";
+            const link = href.startsWith("http") ? href : href ? `https://mlh.io${href}` : "https://mlh.io";
+            const dateText  = $el.find(".date, time, [class*='date']").first().text().trim();
+            const cityText  = $el.find(".location, .city, [class*='location']").first().text().trim();
+            const modeText  = $el.find("[class*='online'], [class*='hybrid'], [class*='in-person']").first().text().trim();
+
+            if (dateText) {
+              const d = new Date(dateText);
+              if (!isNaN(d) && d < now) continue;
             }
-          } catch (e) {
-            logger.warn(`[MLH] Card parse error: ${e.message}`);
-          }
+
+            const uid = `mlh-${(name + dateText).toLowerCase().replace(/\W+/g, "-").slice(0, 70)}`;
+            if (seen.has(uid)) continue;
+            seen.add(uid);
+
+            results.push(this.normalise({
+              name, organizer: "MLH",
+              mode: /online|virtual/i.test(modeText + cityText) ? "Online" : /hybrid/i.test(modeText) ? "Online + Offline" : "Online",
+              city: cityText || "Online",
+              registrationDeadline: dateText ? new Date(dateText) : null,
+              applyLink: link, sourceUrl: url,
+              externalId: uid, logo: "🎯",
+              description: `MLH Member Event: ${name}`,
+            }));
+          } catch(_) {}
         }
 
-        await this.sleep(2000);
+        if (results.length > 0) break;
       } catch (err) {
-        logger.warn(`[MLH] Failed to fetch ${url}: ${err.message}`);
+        logger.warn(`[MLH] GET ${url} failed: ${err.message}`);
       }
     }
 
     logger.info(`[MLH] Returning ${results.length} hackathons`);
     return results;
   }
-
-  _parseCard($, el, sourceUrl) {
-    const $el = $(el);
-
-    // Name
-    const name =
-      $el.find("h3, h2, .event-name, .title, [class*='name']").first().text().trim() ||
-      $el.find("a").first().text().trim();
-    if (!name || name.length < 3) return null;
-
-    // Link
-    let link =
-      $el.find("a.event-link, a[href*='mlh.io'], a").first().attr("href") ||
-      $el.attr("data-url") || "";
-    if (link && !link.startsWith("http")) link = "https://mlh.io" + link;
-    if (!link) return null;
-
-    // Date text — try various selectors
-    const dateTxt =
-      $el.find(".event-date, .date, time, [class*='date']").first().text().trim() || "";
-
-    // Location
-    const locTxt =
-      $el.find(".event-location, .location, [class*='location']").first().text().trim() || "";
-
-    const isOnline = /online|virtual|digital/i.test(locTxt) || /online/i.test($el.text());
-    const city     = isOnline ? "Online" : (locTxt.split(",")[0].trim() || "Global");
-    const mode     = isOnline ? "Online" : "Offline";
-
-    // Image / logo
-    const logo = $el.find("img").first().attr("src") || "🎓";
-
-    // Try to parse date
-    let startDate = null;
-    if (dateTxt) {
-      const parsed = new Date(dateTxt.replace(/–.*/,"").trim());
-      if (!isNaN(parsed)) startDate = parsed;
-    }
-
-    return this.normalise({
-      name,
-      organizer:            "MLH",
-      mode,
-      city,
-      state:                "",
-      country:              isOnline ? "Global" : (locTxt.split(",").pop().trim() || "Global"),
-      startDate,
-      endDate:              null,
-      registrationDeadline: startDate,
-      prize:                "TBA",
-      tags:                 ["MLH", "Student", "Hackathon"],
-      domains:              [],
-      applyLink:            link,
-      websiteLink:          link,
-      sourceUrl,
-      externalId:           link,
-      logo,
-      isFeatured:           true,
-    });
-  }
 }
 
-const _inst = new MLHScraper();
-module.exports = { scrape: () => _inst.scrape() };
+module.exports = new MLHScraper();

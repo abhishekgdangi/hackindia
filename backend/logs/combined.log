@@ -4497,3 +4497,1053 @@
 {"level":"info","message":"   Environment  : development","timestamp":"2026-03-09 22:24:01"}
 {"level":"info","message":"   Groq AI      : configured ✔","timestamp":"2026-03-09 22:24:01"}
 {"level":"info","message":"DB has 100 open hackathons","timestamp":"2026-03-09 22:24:01"}
+{"level":"info","message":"[Scrapers] Running 9 event scrapers…","timestamp":"2026-03-09 22:42:23"}
+{"level":"info","message":"  → Commudle…","timestamp":"2026-03-09 22:42:23"}
+{"level":"info","message":"[Commudle] Starting scrape…","timestamp":"2026-03-09 22:42:23"}
+{"level":"info","message":"[Commudle] API: 0 events","timestamp":"2026-03-09 22:42:24"}
+{"level":"info","message":"  ✔ Commudle: 0 events","timestamp":"2026-03-09 22:42:24"}
+{"level":"info","message":"  → Techmeme…","timestamp":"2026-03-09 22:42:26"}
+{"level":"info","message":"[Techmeme] Starting scrape…","timestamp":"2026-03-09 22:42:26"}
+{"level":"info","message":"[Techmeme] 0 events scraped","timestamp":"2026-03-09 22:42:28"}
+{"level":"info","message":"  ✔ Techmeme: 0 events","timestamp":"2026-03-09 22:42:28"}
+{"level":"info","message":"  → Meetup…","timestamp":"2026-03-09 22:42:30"}
+{"level":"info","message":"[Meetup] Starting scrape…","timestamp":"2026-03-09 22:42:30"}
+{"level":"warn","message":"[Meetup] API failed for Bangalore: Request failed with status code 404","timestamp":"2026-03-09 22:42:30"}
+{"level":"warn","message":"[Meetup] API failed for Delhi: Request failed with status code 404","timestamp":"2026-03-09 22:42:30"}
+{"level":"warn","message":"[Meetup] API failed for Mumbai: Request failed with status code 404","timestamp":"2026-03-09 22:42:30"}
+{"level":"info","message":"[Meetup] HTML fallback: 0 events","timestamp":"2026-03-09 22:42:33"}
+{"level":"info","message":"  ✔ Meetup: 0 events","timestamp":"2026-03-09 22:42:33"}
+{"level":"info","message":"  → Eventbrite…","timestamp":"2026-03-09 22:42:36"}
+{"level":"info","message":"[Eventbrite] Starting scrape…","timestamp":"2026-03-09 22:42:36"}
+{"level":"info","message":"[Eventbrite] Total: 44 events","timestamp":"2026-03-09 22:42:46"}
+{"level":"info","message":"  ✔ Eventbrite: 22 events","timestamp":"2026-03-09 22:42:46"}
+{"level":"info","message":"  → AiForGood…","timestamp":"2026-03-09 22:42:49"}
+{"level":"info","message":"[AiForGood] Starting scrape…","timestamp":"2026-03-09 22:42:49"}
+{"level":"info","message":"[AiForGood] 0 events scraped","timestamp":"2026-03-09 22:43:06"}
+{"level":"info","message":"  ✔ AiForGood: 0 events","timestamp":"2026-03-09 22:43:06"}
+{"level":"info","message":"  → AiDeadlines…","timestamp":"2026-03-09 22:43:09"}
+{"level":"info","message":"[AiDeadlines] Starting scrape…","timestamp":"2026-03-09 22:43:09"}
+{"level":"info","message":"[AiDeadlines] 0 upcoming deadlines from YAML","timestamp":"2026-03-09 22:43:10"}
+{"level":"info","message":"  ✔ AiDeadlines: 0 events","timestamp":"2026-03-09 22:43:10"}
+{"level":"info","message":"  → AnalyticsIndia…","timestamp":"2026-03-09 22:43:12"}
+{"level":"info","message":"[AnalyticsIndia] Starting scrape…","timestamp":"2026-03-09 22:43:12"}
+{"level":"info","message":"[AnalyticsIndia] 0 events scraped","timestamp":"2026-03-09 22:43:13"}
+{"level":"info","message":"  ✔ AnalyticsIndia: 0 events","timestamp":"2026-03-09 22:43:13"}
+{"level":"info","message":"  → GoogleDev…","timestamp":"2026-03-09 22:43:16"}
+{"level":"info","message":"[GoogleDev] Starting scrape…","timestamp":"2026-03-09 22:43:16"}
+{"level":"warn","message":"[GoogleDev] JSON API failed: Request failed with status code 404","timestamp":"2026-03-09 22:43:18"}
+{"level":"info","message":"[GoogleDev] HTML: 14 events","timestamp":"2026-03-09 22:43:19"}
+{"level":"info","message":"  ✔ GoogleDev: 9 events","timestamp":"2026-03-09 22:43:19"}
+{"level":"info","message":"  → DevEvents…","timestamp":"2026-03-09 22:43:22"}
+{"level":"info","message":"[DevEvents] Starting events scrape…","timestamp":"2026-03-09 22:43:22"}
+{"level":"info","message":"[DevEvents] https://dev.events/api/events?page=1&per_page=50&category=conference: 0 events","timestamp":"2026-03-09 22:43:26"}
+{"level":"info","message":"[DevEvents] https://dev.events/api/events?page=1&per_page=50&category=meetup: 0 events","timestamp":"2026-03-09 22:43:29"}
+{"level":"info","message":"[DevEvents] https://dev.events/api/events?page=1&per_page=50&online=true: 0 events","timestamp":"2026-03-09 22:43:32"}
+{"level":"info","message":"[DevEvents] HTML fallback: 0 events","timestamp":"2026-03-09 22:43:35"}
+{"level":"info","message":"  ✔ DevEvents: 0 events","timestamp":"2026-03-09 22:43:35"}
+{"level":"info","message":"[Scrapers] Total events scraped: 31","timestamp":"2026-03-09 22:43:37"}
+{"level":"info","message":"[Scrapers] Running 9 event scrapers…","timestamp":"2026-03-09 22:48:29"}
+{"level":"info","message":"  → Commudle…","timestamp":"2026-03-09 22:48:29"}
+{"level":"info","message":"[Commudle] Starting scrape…","timestamp":"2026-03-09 22:48:29"}
+{"level":"info","message":"[Commudle] API: 0 events","timestamp":"2026-03-09 22:48:29"}
+{"level":"info","message":"  ✔ Commudle: 0 events","timestamp":"2026-03-09 22:48:29"}
+{"level":"info","message":"  → Techmeme…","timestamp":"2026-03-09 22:48:31"}
+{"level":"info","message":"[Techmeme] Starting scrape…","timestamp":"2026-03-09 22:48:31"}
+{"level":"info","message":"[Techmeme] 0 events scraped","timestamp":"2026-03-09 22:48:33"}
+{"level":"info","message":"  ✔ Techmeme: 0 events","timestamp":"2026-03-09 22:48:33"}
+{"level":"info","message":"  → Meetup…","timestamp":"2026-03-09 22:48:36"}
+{"level":"info","message":"[Meetup] Starting scrape…","timestamp":"2026-03-09 22:48:36"}
+{"level":"warn","message":"[Meetup] API failed for Bangalore: Request failed with status code 404","timestamp":"2026-03-09 22:48:36"}
+{"level":"warn","message":"[Meetup] API failed for Delhi: Request failed with status code 404","timestamp":"2026-03-09 22:48:36"}
+{"level":"warn","message":"[Meetup] API failed for Mumbai: Request failed with status code 404","timestamp":"2026-03-09 22:48:36"}
+{"level":"info","message":"[Meetup] HTML fallback: 0 events","timestamp":"2026-03-09 22:48:39"}
+{"level":"info","message":"  ✔ Meetup: 0 events","timestamp":"2026-03-09 22:48:39"}
+{"level":"info","message":"  → Eventbrite…","timestamp":"2026-03-09 22:48:41"}
+{"level":"info","message":"[Eventbrite] Starting scrape…","timestamp":"2026-03-09 22:48:41"}
+{"level":"info","message":"[Eventbrite] Total: 44 events","timestamp":"2026-03-09 22:48:56"}
+{"level":"info","message":"  ✔ Eventbrite: 22 events","timestamp":"2026-03-09 22:48:56"}
+{"level":"info","message":"  → AiForGood…","timestamp":"2026-03-09 22:48:58"}
+{"level":"info","message":"[AiForGood] Starting scrape…","timestamp":"2026-03-09 22:48:58"}
+{"level":"info","message":"[AiForGood] 0 events scraped","timestamp":"2026-03-09 22:49:08"}
+{"level":"info","message":"  ✔ AiForGood: 0 events","timestamp":"2026-03-09 22:49:08"}
+{"level":"info","message":"  → AiDeadlines…","timestamp":"2026-03-09 22:49:10"}
+{"level":"info","message":"[AiDeadlines] Starting scrape…","timestamp":"2026-03-09 22:49:10"}
+{"level":"info","message":"[AiDeadlines] 0 upcoming deadlines from YAML","timestamp":"2026-03-09 22:49:11"}
+{"level":"info","message":"  ✔ AiDeadlines: 0 events","timestamp":"2026-03-09 22:49:11"}
+{"level":"info","message":"  → AnalyticsIndia…","timestamp":"2026-03-09 22:49:14"}
+{"level":"info","message":"[AnalyticsIndia] Starting scrape…","timestamp":"2026-03-09 22:49:14"}
+{"level":"info","message":"[AnalyticsIndia] 0 events scraped","timestamp":"2026-03-09 22:49:16"}
+{"level":"info","message":"  ✔ AnalyticsIndia: 0 events","timestamp":"2026-03-09 22:49:16"}
+{"level":"info","message":"  → GoogleDev…","timestamp":"2026-03-09 22:49:19"}
+{"level":"info","message":"[GoogleDev] Starting scrape…","timestamp":"2026-03-09 22:49:19"}
+{"level":"warn","message":"[GoogleDev] JSON API failed: Request failed with status code 404","timestamp":"2026-03-09 22:49:20"}
+{"level":"info","message":"[GoogleDev] HTML: 14 events","timestamp":"2026-03-09 22:49:22"}
+{"level":"info","message":"  ✔ GoogleDev: 9 events","timestamp":"2026-03-09 22:49:22"}
+{"level":"info","message":"  → DevEvents…","timestamp":"2026-03-09 22:49:24"}
+{"level":"info","message":"[DevEvents] Starting events scrape…","timestamp":"2026-03-09 22:49:24"}
+{"level":"info","message":"[DevEvents] https://dev.events/api/events?page=1&per_page=50&category=conference: 0 events","timestamp":"2026-03-09 22:49:28"}
+{"level":"info","message":"[DevEvents] https://dev.events/api/events?page=1&per_page=50&category=meetup: 0 events","timestamp":"2026-03-09 22:49:32"}
+{"level":"info","message":"[DevEvents] https://dev.events/api/events?page=1&per_page=50&online=true: 0 events","timestamp":"2026-03-09 22:49:35"}
+{"level":"info","message":"[DevEvents] HTML fallback: 0 events","timestamp":"2026-03-09 22:49:40"}
+{"level":"info","message":"  ✔ DevEvents: 0 events","timestamp":"2026-03-09 22:49:40"}
+{"level":"info","message":"[Scrapers] Total events scraped: 31","timestamp":"2026-03-09 22:49:42"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2026-03-09 22:56:37"}
+{"level":"info","message":"Skipping DB clear — using upsert to preserve existing data","timestamp":"2026-03-09 22:56:37"}
+{"level":"info","message":"Running live hackathon scrapers…","timestamp":"2026-03-09 22:56:37"}
+{"level":"info","message":"[Scrapers] Running 10 hackathon scrapers…","timestamp":"2026-03-09 22:56:38"}
+{"level":"info","message":"  → Devpost (Tier 1)…","timestamp":"2026-03-09 22:56:38"}
+{"level":"info","message":"[Devpost] Starting scrape…","timestamp":"2026-03-09 22:56:38"}
+{"level":"info","message":"[Devpost] page 1 → 40 items","timestamp":"2026-03-09 22:56:40"}
+{"level":"info","message":"[Devpost] page 2 → 23 items","timestamp":"2026-03-09 22:56:42"}
+{"level":"info","message":"[Devpost] page 1 → 30 items","timestamp":"2026-03-09 22:56:46"}
+{"level":"info","message":"  ✔ Devpost: 63 hackathons","timestamp":"2026-03-09 22:56:48"}
+{"level":"info","message":"  → HackClub (Tier 1)…","timestamp":"2026-03-09 22:56:50"}
+{"level":"info","message":"[HackClub] Starting scrape…","timestamp":"2026-03-09 22:56:50"}
+{"level":"info","message":"[HackClub] Fetched 14 upcoming events","timestamp":"2026-03-09 22:56:54"}
+{"level":"info","message":"[HackClub] Returning 14 hackathons","timestamp":"2026-03-09 22:56:54"}
+{"level":"info","message":"  ✔ HackClub: 14 hackathons","timestamp":"2026-03-09 22:56:54"}
+{"level":"info","message":"  → TAIKAI (Tier 1)…","timestamp":"2026-03-09 22:56:57"}
+{"level":"info","message":"[TAIKAI] Starting scrape…","timestamp":"2026-03-09 22:56:57"}
+{"level":"warn","message":"[TAIKAI] GET https://taikai.network/api/v1/challenges?type=hackathon&open=true attempt 1/3 — 404","timestamp":"2026-03-09 22:56:59"}
+{"level":"warn","message":"[TAIKAI] GET https://taikai.network/api/v1/challenges?type=hackathon&open=true attempt 2/3 — 404","timestamp":"2026-03-09 22:57:02"}
+{"level":"warn","message":"[TAIKAI] GET https://taikai.network/api/v1/challenges?type=hackathon&open=true attempt 3/3 — 404","timestamp":"2026-03-09 22:57:06"}
+{"level":"warn","message":"[TAIKAI] API https://taikai.network/api/v1/challenges?type=hackathon&open=true failed: Request failed with status code 404","timestamp":"2026-03-09 22:57:06"}
+{"level":"info","message":"[TAIKAI] HTML https://taikai.network/hackathons → 1","timestamp":"2026-03-09 22:57:08"}
+{"level":"info","message":"[TAIKAI] HTML https://taikai.network/hackathons?page=1 → 1","timestamp":"2026-03-09 22:57:11"}
+{"level":"info","message":"[TAIKAI] Total: 1","timestamp":"2026-03-09 22:57:13"}
+{"level":"info","message":"  ✔ TAIKAI: 1 hackathons","timestamp":"2026-03-09 22:57:13"}
+{"level":"info","message":"  → Hackathon.com (Tier 2)…","timestamp":"2026-03-09 22:57:16"}
+{"level":"info","message":"[Hackathon.com] Starting scrape…","timestamp":"2026-03-09 22:57:16"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/online → 2","timestamp":"2026-03-09 22:57:17"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/india → 0","timestamp":"2026-03-09 22:57:20"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/ai → 6","timestamp":"2026-03-09 22:57:23"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/machine-learning → 0","timestamp":"2026-03-09 22:57:27"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/open-source → 0","timestamp":"2026-03-09 22:57:30"}
+{"level":"info","message":"[Hackathon.com] Total: 3","timestamp":"2026-03-09 22:57:32"}
+{"level":"info","message":"  ✔ Hackathon.com: 3 hackathons","timestamp":"2026-03-09 22:57:32"}
+{"level":"info","message":"  → DevEvents (Tier 2)…","timestamp":"2026-03-09 22:57:35"}
+{"level":"info","message":"[DevEvents] Starting scrape…","timestamp":"2026-03-09 22:57:35"}
+{"level":"info","message":"[DevEvents] HTML → 1 hackathons","timestamp":"2026-03-09 22:57:40"}
+{"level":"info","message":"[DevEvents] Total: 1","timestamp":"2026-03-09 22:57:40"}
+{"level":"info","message":"  ✔ DevEvents: 1 hackathons","timestamp":"2026-03-09 22:57:40"}
+{"level":"info","message":"  → MLH (Tier 2)…","timestamp":"2026-03-09 22:57:43"}
+{"level":"info","message":"[MLH] Starting scrape…","timestamp":"2026-03-09 22:57:43"}
+{"level":"info","message":"[MLH] https://mlh.io/seasons/2026/events → 0 raw cards","timestamp":"2026-03-09 22:57:49"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events attempt 1/3 — 404","timestamp":"2026-03-09 22:57:51"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events attempt 2/3 — 404","timestamp":"2026-03-09 22:57:54"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events attempt 3/3 — 404","timestamp":"2026-03-09 22:57:59"}
+{"level":"warn","message":"[MLH] Failed to fetch https://mlh.io/seasons/2027/events: Request failed with status code 404","timestamp":"2026-03-09 22:57:59"}
+{"level":"info","message":"[MLH] Returning 0 hackathons","timestamp":"2026-03-09 22:57:59"}
+{"level":"info","message":"  ✔ MLH: 0 hackathons","timestamp":"2026-03-09 22:57:59"}
+{"level":"info","message":"  → Unstop (Tier 3)…","timestamp":"2026-03-09 22:58:02"}
+{"level":"info","message":"[Unstop] Starting scrape…","timestamp":"2026-03-09 22:58:02"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/search/v2 attempt 1/3 — 404","timestamp":"2026-03-09 22:58:02"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/search/v2 attempt 2/3 — 404","timestamp":"2026-03-09 22:58:05"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/search/v2 attempt 3/3 — 404","timestamp":"2026-03-09 22:58:09"}
+{"level":"warn","message":"[Unstop] API strategy failed: Request failed with status code 404 — trying __NEXT_DATA__","timestamp":"2026-03-09 22:58:09"}
+{"level":"warn","message":"[Unstop] __NEXT_DATA__ not found in HTML","timestamp":"2026-03-09 22:58:09"}
+{"level":"info","message":"  ✔ Unstop: 0 hackathons","timestamp":"2026-03-09 22:58:09"}
+{"level":"info","message":"  → Devfolio (Tier 3)…","timestamp":"2026-03-09 22:58:12"}
+{"level":"info","message":"[Devfolio] Starting scrape…","timestamp":"2026-03-09 22:58:12"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 1/3 — 422","timestamp":"2026-03-09 22:58:12"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 2/3 — 422","timestamp":"2026-03-09 22:58:14"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 3/3 — 422","timestamp":"2026-03-09 22:58:19"}
+{"level":"warn","message":"[Devfolio] query=\"\" failed: Request failed with status code 422","timestamp":"2026-03-09 22:58:19"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 1/3 — 422","timestamp":"2026-03-09 22:58:19"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 2/3 — 422","timestamp":"2026-03-09 22:58:21"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 3/3 — 422","timestamp":"2026-03-09 22:58:25"}
+{"level":"warn","message":"[Devfolio] query=\"india\" failed: Request failed with status code 422","timestamp":"2026-03-09 22:58:25"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 1/3 — 422","timestamp":"2026-03-09 22:58:25"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 2/3 — 422","timestamp":"2026-03-09 22:58:27"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 3/3 — 422","timestamp":"2026-03-09 22:58:31"}
+{"level":"warn","message":"[Devfolio] query=\"online\" failed: Request failed with status code 422","timestamp":"2026-03-09 22:58:31"}
+{"level":"info","message":"[Devfolio] Returning 0 hackathons","timestamp":"2026-03-09 22:58:31"}
+{"level":"info","message":"  ✔ Devfolio: 0 hackathons","timestamp":"2026-03-09 22:58:31"}
+{"level":"info","message":"  → HackerEarth (Tier 3)…","timestamp":"2026-03-09 22:58:34"}
+{"level":"info","message":"[HackerEarth] Starting scrape…","timestamp":"2026-03-09 22:58:34"}
+{"level":"info","message":"[HackerEarth] offset=0 → 0 items","timestamp":"2026-03-09 22:58:35"}
+{"level":"info","message":"[HackerEarth] Returning 0 hackathons","timestamp":"2026-03-09 22:58:35"}
+{"level":"info","message":"  ✔ HackerEarth: 0 hackathons","timestamp":"2026-03-09 22:58:35"}
+{"level":"info","message":"  → DoraHacks (Tier 3)…","timestamp":"2026-03-09 22:58:38"}
+{"level":"info","message":"[DoraHacks] Starting scrape…","timestamp":"2026-03-09 22:58:38"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 1/3 — 404","timestamp":"2026-03-09 22:58:38"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 2/3 — 404","timestamp":"2026-03-09 22:58:40"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 3/3 — 404","timestamp":"2026-03-09 22:58:44"}
+{"level":"warn","message":"[DoraHacks] status=open failed: Request failed with status code 404","timestamp":"2026-03-09 22:58:44"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 1/3 — 404","timestamp":"2026-03-09 22:58:44"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 2/3 — 404","timestamp":"2026-03-09 22:58:46"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 3/3 — 404","timestamp":"2026-03-09 22:58:51"}
+{"level":"warn","message":"[DoraHacks] status=voting failed: Request failed with status code 404","timestamp":"2026-03-09 22:58:51"}
+{"level":"info","message":"[DoraHacks] Returning 0 hackathons","timestamp":"2026-03-09 22:58:51"}
+{"level":"info","message":"  ✔ DoraHacks: 0 hackathons","timestamp":"2026-03-09 22:58:51"}
+{"level":"info","message":"[Scrapers] Total hackathons scraped: 82","timestamp":"2026-03-09 22:58:54"}
+{"level":"info","message":"✅ Live hackathons: 0 new, 82 updated","timestamp":"2026-03-09 22:58:54"}
+{"level":"info","message":"Running live internship scrapers…","timestamp":"2026-03-09 22:58:54"}
+{"level":"info","message":"[Scrapers] Running 3 internship scrapers…","timestamp":"2026-03-09 22:58:54"}
+{"level":"info","message":"  → Internshala…","timestamp":"2026-03-09 22:58:54"}
+{"level":"info","message":"[Internshala] Starting scrape…","timestamp":"2026-03-09 22:58:54"}
+{"level":"info","message":"[Internshala] computer-science-internship HTML → 100 internships","timestamp":"2026-03-09 22:58:54"}
+{"level":"info","message":"[Internshala] web-development-internship HTML → 100 internships","timestamp":"2026-03-09 22:58:57"}
+{"level":"info","message":"[Internshala] machine-learning-internship HTML → 100 internships","timestamp":"2026-03-09 22:58:59"}
+{"level":"info","message":"[Internshala] data-science-internship HTML → 100 internships","timestamp":"2026-03-09 22:59:02"}
+{"level":"info","message":"[Internshala] android-development-internship HTML → 80 internships","timestamp":"2026-03-09 22:59:04"}
+{"level":"info","message":"[Internshala] python-internship HTML → 80 internships","timestamp":"2026-03-09 22:59:07"}
+{"level":"info","message":"[Internshala] Total internships found: 560","timestamp":"2026-03-09 22:59:09"}
+{"level":"info","message":"  ✔ Internshala: 560 internships","timestamp":"2026-03-09 22:59:09"}
+{"level":"info","message":"  → Remotive…","timestamp":"2026-03-09 22:59:11"}
+{"level":"info","message":"[Remotive] Starting scrape…","timestamp":"2026-03-09 22:59:11"}
+{"level":"info","message":"[Remotive] software-dev → 2 jobs","timestamp":"2026-03-09 22:59:12"}
+{"level":"info","message":"[Remotive] data → 0 jobs","timestamp":"2026-03-09 22:59:13"}
+{"level":"info","message":"[Remotive] devops-sysadmin → 2 jobs","timestamp":"2026-03-09 22:59:14"}
+{"level":"info","message":"[Remotive] mobile-dev → 2 jobs","timestamp":"2026-03-09 22:59:15"}
+{"level":"info","message":"[Remotive] Total: 6","timestamp":"2026-03-09 22:59:16"}
+{"level":"info","message":"  ✔ Remotive: 6 internships","timestamp":"2026-03-09 22:59:16"}
+{"level":"info","message":"  → Wellfound…","timestamp":"2026-03-09 22:59:19"}
+{"level":"info","message":"[Wellfound] Starting scrape…","timestamp":"2026-03-09 22:59:19"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/role/r/software-engineer-intern attempt 1/3 — 403","timestamp":"2026-03-09 22:59:19"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/role/r/software-engineer-intern attempt 2/3 — 403","timestamp":"2026-03-09 22:59:21"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/role/r/software-engineer-intern attempt 3/3 — 403","timestamp":"2026-03-09 22:59:25"}
+{"level":"warn","message":"[Wellfound] Failed https://wellfound.com/role/r/software-engineer-intern: Request failed with status code 403","timestamp":"2026-03-09 22:59:25"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/jobs?role=software-engineer-intern&location=india attempt 1/3 — 403","timestamp":"2026-03-09 22:59:25"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/jobs?role=software-engineer-intern&location=india attempt 2/3 — 403","timestamp":"2026-03-09 22:59:27"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/jobs?role=software-engineer-intern&location=india attempt 3/3 — 403","timestamp":"2026-03-09 22:59:31"}
+{"level":"warn","message":"[Wellfound] Failed https://wellfound.com/jobs?role=software-engineer-intern&location=india: Request failed with status code 403","timestamp":"2026-03-09 22:59:31"}
+{"level":"info","message":"[Wellfound] Returning 0 internships","timestamp":"2026-03-09 22:59:31"}
+{"level":"info","message":"  ✔ Wellfound: 0 internships","timestamp":"2026-03-09 22:59:31"}
+{"level":"info","message":"[Scrapers] Total internships scraped: 566","timestamp":"2026-03-09 22:59:34"}
+{"level":"info","message":"✅ Live internships: 3 new, 322 updated","timestamp":"2026-03-09 22:59:36"}
+{"level":"info","message":"Running live event scrapers…","timestamp":"2026-03-09 22:59:36"}
+{"level":"info","message":"[Scrapers] Running 8 event scrapers…","timestamp":"2026-03-09 22:59:36"}
+{"level":"info","message":"  → Commudle…","timestamp":"2026-03-09 22:59:36"}
+{"level":"info","message":"[Commudle] Starting scrape…","timestamp":"2026-03-09 22:59:36"}
+{"level":"info","message":"[Commudle] API: 0 events","timestamp":"2026-03-09 22:59:37"}
+{"level":"info","message":"  ✔ Commudle: 0 events","timestamp":"2026-03-09 22:59:37"}
+{"level":"info","message":"  → Meetup…","timestamp":"2026-03-09 22:59:39"}
+{"level":"info","message":"[Meetup] Starting scrape…","timestamp":"2026-03-09 22:59:39"}
+{"level":"warn","message":"[Meetup] API failed for Bangalore: Request failed with status code 404","timestamp":"2026-03-09 22:59:40"}
+{"level":"warn","message":"[Meetup] API failed for Delhi: Request failed with status code 404","timestamp":"2026-03-09 22:59:40"}
+{"level":"warn","message":"[Meetup] API failed for Mumbai: Request failed with status code 404","timestamp":"2026-03-09 22:59:40"}
+{"level":"info","message":"[Meetup] HTML fallback: 0 events","timestamp":"2026-03-09 22:59:43"}
+{"level":"info","message":"  ✔ Meetup: 0 events","timestamp":"2026-03-09 22:59:43"}
+{"level":"info","message":"  → Eventbrite…","timestamp":"2026-03-09 22:59:45"}
+{"level":"info","message":"[Eventbrite] Starting scrape…","timestamp":"2026-03-09 22:59:45"}
+{"level":"info","message":"[Eventbrite] Total: 46 events","timestamp":"2026-03-09 22:59:59"}
+{"level":"info","message":"  ✔ Eventbrite: 23 events","timestamp":"2026-03-09 22:59:59"}
+{"level":"info","message":"  → AiForGood…","timestamp":"2026-03-09 23:00:02"}
+{"level":"info","message":"[AiForGood] Starting scrape…","timestamp":"2026-03-09 23:00:02"}
+{"level":"info","message":"[AiForGood] 0 events scraped","timestamp":"2026-03-09 23:00:08"}
+{"level":"info","message":"  ✔ AiForGood: 0 events","timestamp":"2026-03-09 23:00:08"}
+{"level":"info","message":"  → AiDeadlines…","timestamp":"2026-03-09 23:00:10"}
+{"level":"info","message":"[AiDeadlines] Starting scrape…","timestamp":"2026-03-09 23:00:10"}
+{"level":"info","message":"[AiDeadlines] 0 upcoming deadlines from YAML","timestamp":"2026-03-09 23:00:10"}
+{"level":"info","message":"  ✔ AiDeadlines: 0 events","timestamp":"2026-03-09 23:00:10"}
+{"level":"info","message":"  → AnalyticsIndia…","timestamp":"2026-03-09 23:00:13"}
+{"level":"info","message":"[AnalyticsIndia] Starting scrape…","timestamp":"2026-03-09 23:00:13"}
+{"level":"info","message":"[AnalyticsIndia] 0 events scraped","timestamp":"2026-03-09 23:00:17"}
+{"level":"info","message":"  ✔ AnalyticsIndia: 0 events","timestamp":"2026-03-09 23:00:17"}
+{"level":"info","message":"  → GoogleDev…","timestamp":"2026-03-09 23:00:20"}
+{"level":"info","message":"[GoogleDev] Starting scrape…","timestamp":"2026-03-09 23:00:20"}
+{"level":"warn","message":"[GoogleDev] JSON API failed: Request failed with status code 404","timestamp":"2026-03-09 23:00:20"}
+{"level":"info","message":"[GoogleDev] HTML: 14 events","timestamp":"2026-03-09 23:00:21"}
+{"level":"info","message":"  ✔ GoogleDev: 9 events","timestamp":"2026-03-09 23:00:21"}
+{"level":"info","message":"  → DevEvents…","timestamp":"2026-03-09 23:00:24"}
+{"level":"info","message":"[DevEvents] Starting events scrape…","timestamp":"2026-03-09 23:00:24"}
+{"level":"info","message":"[DevEvents] https://dev.events/api/events?page=1&per_page=50&category=conference: 0 events","timestamp":"2026-03-09 23:00:25"}
+{"level":"info","message":"[DevEvents] https://dev.events/api/events?page=1&per_page=50&category=meetup: 0 events","timestamp":"2026-03-09 23:00:28"}
+{"level":"info","message":"[DevEvents] https://dev.events/api/events?page=1&per_page=50&online=true: 0 events","timestamp":"2026-03-09 23:00:30"}
+{"level":"info","message":"[DevEvents] HTML fallback: 0 events","timestamp":"2026-03-09 23:00:33"}
+{"level":"info","message":"  ✔ DevEvents: 0 events","timestamp":"2026-03-09 23:00:33"}
+{"level":"info","message":"[Scrapers] Total events scraped: 32","timestamp":"2026-03-09 23:00:35"}
+{"level":"info","message":"✅ Live events: 0 new, 0 updated","timestamp":"2026-03-09 23:00:35"}
+{"level":"info","message":"📊 Final DB: 102 hackathons, 323 internships, 0 events","timestamp":"2026-03-09 23:00:35"}
+{"level":"info","message":"[Scrapers] Running 8 event scrapers…","timestamp":"2026-03-09 23:02:09"}
+{"level":"info","message":"  → Commudle…","timestamp":"2026-03-09 23:02:09"}
+{"level":"info","message":"[Commudle] Starting scrape…","timestamp":"2026-03-09 23:02:09"}
+{"level":"info","message":"[Commudle] API: 0 events","timestamp":"2026-03-09 23:02:10"}
+{"level":"info","message":"  ✔ Commudle: 0 events","timestamp":"2026-03-09 23:02:10"}
+{"level":"info","message":"  → Meetup…","timestamp":"2026-03-09 23:02:12"}
+{"level":"info","message":"[Meetup] Starting scrape…","timestamp":"2026-03-09 23:02:12"}
+{"level":"warn","message":"[Meetup] API failed for Bangalore: Request failed with status code 404","timestamp":"2026-03-09 23:02:13"}
+{"level":"warn","message":"[Meetup] API failed for Delhi: Request failed with status code 404","timestamp":"2026-03-09 23:02:13"}
+{"level":"warn","message":"[Meetup] API failed for Mumbai: Request failed with status code 404","timestamp":"2026-03-09 23:02:13"}
+{"level":"info","message":"[Meetup] HTML fallback: 0 events","timestamp":"2026-03-09 23:02:14"}
+{"level":"info","message":"  ✔ Meetup: 0 events","timestamp":"2026-03-09 23:02:14"}
+{"level":"info","message":"  → Eventbrite…","timestamp":"2026-03-09 23:02:16"}
+{"level":"info","message":"[Eventbrite] Starting scrape…","timestamp":"2026-03-09 23:02:16"}
+{"level":"info","message":"[Eventbrite] Total: 46 events","timestamp":"2026-03-09 23:02:28"}
+{"level":"info","message":"  ✔ Eventbrite: 23 events","timestamp":"2026-03-09 23:02:28"}
+{"level":"info","message":"  → AiForGood…","timestamp":"2026-03-09 23:02:30"}
+{"level":"info","message":"[AiForGood] Starting scrape…","timestamp":"2026-03-09 23:02:30"}
+{"level":"info","message":"[AiForGood] 0 events scraped","timestamp":"2026-03-09 23:02:33"}
+{"level":"info","message":"  ✔ AiForGood: 0 events","timestamp":"2026-03-09 23:02:33"}
+{"level":"info","message":"  → AiDeadlines…","timestamp":"2026-03-09 23:02:36"}
+{"level":"info","message":"[AiDeadlines] Starting scrape…","timestamp":"2026-03-09 23:02:36"}
+{"level":"info","message":"[AiDeadlines] 0 upcoming deadlines from YAML","timestamp":"2026-03-09 23:02:36"}
+{"level":"info","message":"  ✔ AiDeadlines: 0 events","timestamp":"2026-03-09 23:02:36"}
+{"level":"info","message":"  → AnalyticsIndia…","timestamp":"2026-03-09 23:02:39"}
+{"level":"info","message":"[AnalyticsIndia] Starting scrape…","timestamp":"2026-03-09 23:02:39"}
+{"level":"info","message":"[AnalyticsIndia] 0 events scraped","timestamp":"2026-03-09 23:02:40"}
+{"level":"info","message":"  ✔ AnalyticsIndia: 0 events","timestamp":"2026-03-09 23:02:40"}
+{"level":"info","message":"  → GoogleDev…","timestamp":"2026-03-09 23:02:43"}
+{"level":"info","message":"[GoogleDev] Starting scrape…","timestamp":"2026-03-09 23:02:43"}
+{"level":"warn","message":"[GoogleDev] JSON API failed: Request failed with status code 404","timestamp":"2026-03-09 23:02:44"}
+{"level":"info","message":"[GoogleDev] HTML: 14 events","timestamp":"2026-03-09 23:02:45"}
+{"level":"info","message":"  ✔ GoogleDev: 9 events","timestamp":"2026-03-09 23:02:45"}
+{"level":"info","message":"  → DevEvents…","timestamp":"2026-03-09 23:02:47"}
+{"level":"info","message":"[DevEvents] Starting events scrape…","timestamp":"2026-03-09 23:02:47"}
+{"level":"info","message":"[DevEvents] https://dev.events/api/events?page=1&per_page=50&category=conference: 0 events","timestamp":"2026-03-09 23:02:49"}
+{"level":"info","message":"[DevEvents] https://dev.events/api/events?page=1&per_page=50&category=meetup: 0 events","timestamp":"2026-03-09 23:02:53"}
+{"level":"info","message":"[DevEvents] https://dev.events/api/events?page=1&per_page=50&online=true: 0 events","timestamp":"2026-03-09 23:02:55"}
+{"level":"info","message":"[DevEvents] HTML fallback: 0 events","timestamp":"2026-03-09 23:02:58"}
+{"level":"info","message":"  ✔ DevEvents: 0 events","timestamp":"2026-03-09 23:02:58"}
+{"level":"info","message":"[Scrapers] Total events scraped: 32","timestamp":"2026-03-09 23:03:00"}
+{"level":"info","message":"[Scrapers] Running 8 event scrapers…","timestamp":"2026-03-10 06:58:34"}
+{"level":"info","message":"  → Commudle…","timestamp":"2026-03-10 06:58:34"}
+{"level":"info","message":"[Commudle] Starting scrape…","timestamp":"2026-03-10 06:58:34"}
+{"level":"info","message":"[Commudle] API: 0 events","timestamp":"2026-03-10 06:58:34"}
+{"level":"info","message":"  ✔ Commudle: 0 events","timestamp":"2026-03-10 06:58:34"}
+{"level":"info","message":"  → Meetup…","timestamp":"2026-03-10 06:58:36"}
+{"level":"info","message":"[Meetup] Starting scrape…","timestamp":"2026-03-10 06:58:36"}
+{"level":"warn","message":"[Meetup] API failed for Bangalore: Request failed with status code 404","timestamp":"2026-03-10 06:58:37"}
+{"level":"warn","message":"[Meetup] API failed for Delhi: Request failed with status code 404","timestamp":"2026-03-10 06:58:38"}
+{"level":"warn","message":"[Meetup] API failed for Mumbai: Request failed with status code 404","timestamp":"2026-03-10 06:58:40"}
+{"level":"info","message":"[Meetup] HTML fallback: 0 events","timestamp":"2026-03-10 06:58:43"}
+{"level":"info","message":"  ✔ Meetup: 0 events","timestamp":"2026-03-10 06:58:43"}
+{"level":"info","message":"  → Eventbrite…","timestamp":"2026-03-10 06:58:45"}
+{"level":"info","message":"[Eventbrite] Starting scrape…","timestamp":"2026-03-10 06:58:45"}
+{"level":"info","message":"[Eventbrite] Total: 44 events","timestamp":"2026-03-10 06:58:57"}
+{"level":"info","message":"  ✔ Eventbrite: 22 events","timestamp":"2026-03-10 06:58:57"}
+{"level":"info","message":"  → AiForGood…","timestamp":"2026-03-10 06:59:00"}
+{"level":"info","message":"[AiForGood] Starting scrape…","timestamp":"2026-03-10 06:59:00"}
+{"level":"info","message":"[AiForGood] 0 events scraped","timestamp":"2026-03-10 06:59:06"}
+{"level":"info","message":"  ✔ AiForGood: 0 events","timestamp":"2026-03-10 06:59:06"}
+{"level":"info","message":"  → AiDeadlines…","timestamp":"2026-03-10 06:59:08"}
+{"level":"info","message":"[AiDeadlines] Starting scrape…","timestamp":"2026-03-10 06:59:08"}
+{"level":"info","message":"[AiDeadlines] 0 upcoming deadlines from YAML","timestamp":"2026-03-10 06:59:08"}
+{"level":"info","message":"  ✔ AiDeadlines: 0 events","timestamp":"2026-03-10 06:59:08"}
+{"level":"info","message":"  → AnalyticsIndia…","timestamp":"2026-03-10 06:59:11"}
+{"level":"info","message":"[AnalyticsIndia] Starting scrape…","timestamp":"2026-03-10 06:59:11"}
+{"level":"info","message":"[AnalyticsIndia] 0 events scraped","timestamp":"2026-03-10 06:59:12"}
+{"level":"info","message":"  ✔ AnalyticsIndia: 0 events","timestamp":"2026-03-10 06:59:12"}
+{"level":"info","message":"  → GoogleDev…","timestamp":"2026-03-10 06:59:14"}
+{"level":"info","message":"[GoogleDev] Starting scrape…","timestamp":"2026-03-10 06:59:14"}
+{"level":"warn","message":"[GoogleDev] JSON API failed: Request failed with status code 404","timestamp":"2026-03-10 06:59:15"}
+{"level":"info","message":"[GoogleDev] HTML: 14 events","timestamp":"2026-03-10 06:59:16"}
+{"level":"info","message":"  ✔ GoogleDev: 9 events","timestamp":"2026-03-10 06:59:16"}
+{"level":"info","message":"  → DevEvents…","timestamp":"2026-03-10 06:59:18"}
+{"level":"info","message":"[DevEvents] Starting events scrape…","timestamp":"2026-03-10 06:59:18"}
+{"level":"info","message":"[DevEvents] https://dev.events/api/events?page=1&per_page=50&category=conference: 0 events","timestamp":"2026-03-10 06:59:20"}
+{"level":"info","message":"[DevEvents] https://dev.events/api/events?page=1&per_page=50&category=meetup: 0 events","timestamp":"2026-03-10 06:59:23"}
+{"level":"info","message":"[DevEvents] https://dev.events/api/events?page=1&per_page=50&online=true: 0 events","timestamp":"2026-03-10 06:59:25"}
+{"level":"info","message":"[DevEvents] HTML fallback: 0 events","timestamp":"2026-03-10 06:59:28"}
+{"level":"info","message":"  ✔ DevEvents: 0 events","timestamp":"2026-03-10 06:59:28"}
+{"level":"info","message":"[Scrapers] Total events scraped: 31","timestamp":"2026-03-10 06:59:31"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2026-03-10 07:23:57"}
+{"level":"info","message":"Skipping DB clear — using upsert to preserve existing data","timestamp":"2026-03-10 07:23:57"}
+{"level":"info","message":"Running live hackathon scrapers…","timestamp":"2026-03-10 07:23:57"}
+{"level":"info","message":"[Scrapers] Running 10 hackathon scrapers…","timestamp":"2026-03-10 07:23:58"}
+{"level":"info","message":"  → Devpost (Tier 1)…","timestamp":"2026-03-10 07:23:58"}
+{"level":"info","message":"[Devpost] Starting scrape…","timestamp":"2026-03-10 07:23:58"}
+{"level":"info","message":"[Devpost] page 1 → 40 items","timestamp":"2026-03-10 07:24:00"}
+{"level":"info","message":"[Devpost] page 2 → 21 items","timestamp":"2026-03-10 07:24:02"}
+{"level":"info","message":"[Devpost] page 1 → 30 items","timestamp":"2026-03-10 07:24:04"}
+{"level":"info","message":"  ✔ Devpost: 61 hackathons","timestamp":"2026-03-10 07:24:05"}
+{"level":"info","message":"  → HackClub (Tier 1)…","timestamp":"2026-03-10 07:24:08"}
+{"level":"info","message":"[HackClub] Starting scrape…","timestamp":"2026-03-10 07:24:08"}
+{"level":"info","message":"[HackClub] Fetched 14 upcoming events","timestamp":"2026-03-10 07:24:12"}
+{"level":"info","message":"[HackClub] Returning 2 hackathons","timestamp":"2026-03-10 07:24:12"}
+{"level":"info","message":"  ✔ HackClub: 2 hackathons","timestamp":"2026-03-10 07:24:12"}
+{"level":"info","message":"  → TAIKAI (Tier 1)…","timestamp":"2026-03-10 07:24:14"}
+{"level":"info","message":"[TAIKAI] Starting scrape…","timestamp":"2026-03-10 07:24:14"}
+{"level":"warn","message":"[TAIKAI] GET https://taikai.network/api/v1/challenges?type=hackathon&open=true attempt 1/3 — 404","timestamp":"2026-03-10 07:24:16"}
+{"level":"warn","message":"[TAIKAI] GET https://taikai.network/api/v1/challenges?type=hackathon&open=true attempt 2/3 — 404","timestamp":"2026-03-10 07:24:18"}
+{"level":"warn","message":"[TAIKAI] GET https://taikai.network/api/v1/challenges?type=hackathon&open=true attempt 3/3 — 404","timestamp":"2026-03-10 07:24:22"}
+{"level":"warn","message":"[TAIKAI] API https://taikai.network/api/v1/challenges?type=hackathon&open=true failed: Request failed with status code 404","timestamp":"2026-03-10 07:24:22"}
+{"level":"info","message":"[TAIKAI] HTML https://taikai.network/hackathons → 1","timestamp":"2026-03-10 07:24:24"}
+{"level":"info","message":"[TAIKAI] HTML https://taikai.network/hackathons?page=1 → 1","timestamp":"2026-03-10 07:24:27"}
+{"level":"info","message":"[TAIKAI] Total: 1","timestamp":"2026-03-10 07:24:29"}
+{"level":"info","message":"  ✔ TAIKAI: 1 hackathons","timestamp":"2026-03-10 07:24:29"}
+{"level":"info","message":"  → Hackathon.com (Tier 2)…","timestamp":"2026-03-10 07:24:31"}
+{"level":"info","message":"[Hackathon.com] Starting scrape…","timestamp":"2026-03-10 07:24:31"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/online → 2","timestamp":"2026-03-10 07:24:32"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/india → 0","timestamp":"2026-03-10 07:24:35"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/ai → 6","timestamp":"2026-03-10 07:24:38"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/machine-learning → 0","timestamp":"2026-03-10 07:24:41"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/open-source → 0","timestamp":"2026-03-10 07:24:44"}
+{"level":"info","message":"[Hackathon.com] Total: 3","timestamp":"2026-03-10 07:24:47"}
+{"level":"info","message":"  ✔ Hackathon.com: 3 hackathons","timestamp":"2026-03-10 07:24:47"}
+{"level":"info","message":"  → DevEvents (Tier 2)…","timestamp":"2026-03-10 07:24:49"}
+{"level":"info","message":"[DevEvents] Starting scrape…","timestamp":"2026-03-10 07:24:49"}
+{"level":"info","message":"[DevEvents] HTML → 1 hackathons","timestamp":"2026-03-10 07:24:52"}
+{"level":"info","message":"[DevEvents] Total: 1","timestamp":"2026-03-10 07:24:52"}
+{"level":"info","message":"  ✔ DevEvents: 1 hackathons","timestamp":"2026-03-10 07:24:52"}
+{"level":"info","message":"  → MLH (Tier 2)…","timestamp":"2026-03-10 07:24:54"}
+{"level":"info","message":"[MLH] Starting scrape…","timestamp":"2026-03-10 07:24:54"}
+{"level":"info","message":"[MLH] https://mlh.io/seasons/2026/events → 0 raw cards","timestamp":"2026-03-10 07:24:58"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events attempt 1/3 — 404","timestamp":"2026-03-10 07:25:01"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events attempt 2/3 — 404","timestamp":"2026-03-10 07:25:03"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events attempt 3/3 — 404","timestamp":"2026-03-10 07:25:08"}
+{"level":"warn","message":"[MLH] Failed to fetch https://mlh.io/seasons/2027/events: Request failed with status code 404","timestamp":"2026-03-10 07:25:08"}
+{"level":"info","message":"[MLH] Returning 0 hackathons","timestamp":"2026-03-10 07:25:08"}
+{"level":"info","message":"  ✔ MLH: 0 hackathons","timestamp":"2026-03-10 07:25:08"}
+{"level":"info","message":"  → Unstop (Tier 3)…","timestamp":"2026-03-10 07:25:11"}
+{"level":"info","message":"[Unstop] Starting scrape…","timestamp":"2026-03-10 07:25:11"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/search/v2 attempt 1/3 — 404","timestamp":"2026-03-10 07:25:11"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/search/v2 attempt 2/3 — 404","timestamp":"2026-03-10 07:25:13"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/search/v2 attempt 3/3 — 404","timestamp":"2026-03-10 07:25:18"}
+{"level":"warn","message":"[Unstop] API strategy failed: Request failed with status code 404 — trying __NEXT_DATA__","timestamp":"2026-03-10 07:25:18"}
+{"level":"warn","message":"[Unstop] __NEXT_DATA__ not found in HTML","timestamp":"2026-03-10 07:25:18"}
+{"level":"info","message":"  ✔ Unstop: 0 hackathons","timestamp":"2026-03-10 07:25:18"}
+{"level":"info","message":"  → Devfolio (Tier 3)…","timestamp":"2026-03-10 07:25:20"}
+{"level":"info","message":"[Devfolio] Starting scrape…","timestamp":"2026-03-10 07:25:20"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 1/3 — 422","timestamp":"2026-03-10 07:25:20"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 2/3 — 422","timestamp":"2026-03-10 07:25:22"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 3/3 — 422","timestamp":"2026-03-10 07:25:27"}
+{"level":"warn","message":"[Devfolio] query=\"\" failed: Request failed with status code 422","timestamp":"2026-03-10 07:25:27"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 1/3 — 422","timestamp":"2026-03-10 07:25:27"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 2/3 — 422","timestamp":"2026-03-10 07:25:29"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 3/3 — 422","timestamp":"2026-03-10 07:25:33"}
+{"level":"warn","message":"[Devfolio] query=\"india\" failed: Request failed with status code 422","timestamp":"2026-03-10 07:25:33"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 1/3 — 422","timestamp":"2026-03-10 07:25:33"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 2/3 — 422","timestamp":"2026-03-10 07:25:35"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 3/3 — 422","timestamp":"2026-03-10 07:25:39"}
+{"level":"warn","message":"[Devfolio] query=\"online\" failed: Request failed with status code 422","timestamp":"2026-03-10 07:25:39"}
+{"level":"info","message":"[Devfolio] Returning 0 hackathons","timestamp":"2026-03-10 07:25:39"}
+{"level":"info","message":"  ✔ Devfolio: 0 hackathons","timestamp":"2026-03-10 07:25:39"}
+{"level":"info","message":"  → HackerEarth (Tier 3)…","timestamp":"2026-03-10 07:25:41"}
+{"level":"info","message":"[HackerEarth] Starting scrape…","timestamp":"2026-03-10 07:25:41"}
+{"level":"info","message":"[HackerEarth] offset=0 → 0 items","timestamp":"2026-03-10 07:25:43"}
+{"level":"info","message":"[HackerEarth] Returning 0 hackathons","timestamp":"2026-03-10 07:25:43"}
+{"level":"info","message":"  ✔ HackerEarth: 0 hackathons","timestamp":"2026-03-10 07:25:43"}
+{"level":"info","message":"  → DoraHacks (Tier 3)…","timestamp":"2026-03-10 07:25:45"}
+{"level":"info","message":"[DoraHacks] Starting scrape…","timestamp":"2026-03-10 07:25:45"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 1/3 — 404","timestamp":"2026-03-10 07:25:45"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 2/3 — 404","timestamp":"2026-03-10 07:25:47"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 3/3 — 404","timestamp":"2026-03-10 07:25:51"}
+{"level":"warn","message":"[DoraHacks] status=open failed: Request failed with status code 404","timestamp":"2026-03-10 07:25:51"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 1/3 — 404","timestamp":"2026-03-10 07:25:52"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 2/3 — 404","timestamp":"2026-03-10 07:25:54"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 3/3 — 404","timestamp":"2026-03-10 07:25:58"}
+{"level":"warn","message":"[DoraHacks] status=voting failed: Request failed with status code 404","timestamp":"2026-03-10 07:25:58"}
+{"level":"info","message":"[DoraHacks] Returning 0 hackathons","timestamp":"2026-03-10 07:25:58"}
+{"level":"info","message":"  ✔ DoraHacks: 0 hackathons","timestamp":"2026-03-10 07:25:58"}
+{"level":"info","message":"[Scrapers] Total hackathons scraped: 68","timestamp":"2026-03-10 07:26:00"}
+{"level":"info","message":"✅ Live hackathons: 0 new, 68 updated","timestamp":"2026-03-10 07:26:00"}
+{"level":"info","message":"Running live internship scrapers…","timestamp":"2026-03-10 07:26:00"}
+{"level":"info","message":"[Scrapers] Running 3 internship scrapers…","timestamp":"2026-03-10 07:26:00"}
+{"level":"info","message":"  → Internshala…","timestamp":"2026-03-10 07:26:00"}
+{"level":"info","message":"[Internshala] Starting scrape…","timestamp":"2026-03-10 07:26:00"}
+{"level":"info","message":"[Internshala] computer-science-internship HTML → 100 internships","timestamp":"2026-03-10 07:26:01"}
+{"level":"info","message":"[Internshala] web-development-internship HTML → 100 internships","timestamp":"2026-03-10 07:26:04"}
+{"level":"info","message":"[Internshala] machine-learning-internship HTML → 100 internships","timestamp":"2026-03-10 07:26:07"}
+{"level":"info","message":"[Internshala] data-science-internship HTML → 100 internships","timestamp":"2026-03-10 07:26:09"}
+{"level":"info","message":"[Internshala] android-development-internship HTML → 80 internships","timestamp":"2026-03-10 07:26:11"}
+{"level":"info","message":"[Internshala] python-internship HTML → 80 internships","timestamp":"2026-03-10 07:26:14"}
+{"level":"info","message":"[Internshala] Total internships found: 560","timestamp":"2026-03-10 07:26:16"}
+{"level":"info","message":"  ✔ Internshala: 560 internships","timestamp":"2026-03-10 07:26:16"}
+{"level":"info","message":"  → Remotive…","timestamp":"2026-03-10 07:26:18"}
+{"level":"info","message":"[Remotive] Starting scrape…","timestamp":"2026-03-10 07:26:18"}
+{"level":"info","message":"[Remotive] software-dev → 2 jobs","timestamp":"2026-03-10 07:26:19"}
+{"level":"info","message":"[Remotive] data → 0 jobs","timestamp":"2026-03-10 07:26:20"}
+{"level":"info","message":"[Remotive] devops-sysadmin → 2 jobs","timestamp":"2026-03-10 07:26:21"}
+{"level":"info","message":"[Remotive] mobile-dev → 2 jobs","timestamp":"2026-03-10 07:26:24"}
+{"level":"info","message":"[Remotive] Total: 6","timestamp":"2026-03-10 07:26:25"}
+{"level":"info","message":"  ✔ Remotive: 6 internships","timestamp":"2026-03-10 07:26:25"}
+{"level":"info","message":"  → Wellfound…","timestamp":"2026-03-10 07:26:27"}
+{"level":"info","message":"[Wellfound] Starting scrape…","timestamp":"2026-03-10 07:26:27"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/role/r/software-engineer-intern attempt 1/3 — 403","timestamp":"2026-03-10 07:26:28"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/role/r/software-engineer-intern attempt 2/3 — 403","timestamp":"2026-03-10 07:26:30"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/role/r/software-engineer-intern attempt 3/3 — 403","timestamp":"2026-03-10 07:26:34"}
+{"level":"warn","message":"[Wellfound] Failed https://wellfound.com/role/r/software-engineer-intern: Request failed with status code 403","timestamp":"2026-03-10 07:26:34"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/jobs?role=software-engineer-intern&location=india attempt 1/3 — 403","timestamp":"2026-03-10 07:26:34"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/jobs?role=software-engineer-intern&location=india attempt 2/3 — 403","timestamp":"2026-03-10 07:26:36"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/jobs?role=software-engineer-intern&location=india attempt 3/3 — 403","timestamp":"2026-03-10 07:26:40"}
+{"level":"warn","message":"[Wellfound] Failed https://wellfound.com/jobs?role=software-engineer-intern&location=india: Request failed with status code 403","timestamp":"2026-03-10 07:26:40"}
+{"level":"info","message":"[Wellfound] Returning 0 internships","timestamp":"2026-03-10 07:26:40"}
+{"level":"info","message":"  ✔ Wellfound: 0 internships","timestamp":"2026-03-10 07:26:40"}
+{"level":"info","message":"[Scrapers] Total internships scraped: 566","timestamp":"2026-03-10 07:26:42"}
+{"level":"info","message":"✅ Live internships: 138 new, 186 updated","timestamp":"2026-03-10 07:26:43"}
+{"level":"info","message":"Running live event scrapers…","timestamp":"2026-03-10 07:26:43"}
+{"level":"info","message":"[Scrapers] Running 8 event scrapers…","timestamp":"2026-03-10 07:26:43"}
+{"level":"info","message":"  → Commudle…","timestamp":"2026-03-10 07:26:43"}
+{"level":"info","message":"[Commudle] Starting scrape…","timestamp":"2026-03-10 07:26:43"}
+{"level":"info","message":"[Commudle] API: 0 events","timestamp":"2026-03-10 07:26:43"}
+{"level":"info","message":"  ✔ Commudle: 0 events","timestamp":"2026-03-10 07:26:43"}
+{"level":"info","message":"  → Meetup…","timestamp":"2026-03-10 07:26:46"}
+{"level":"info","message":"[Meetup] Starting scrape…","timestamp":"2026-03-10 07:26:46"}
+{"level":"warn","message":"[Meetup] API failed for Bangalore: Request failed with status code 404","timestamp":"2026-03-10 07:26:46"}
+{"level":"warn","message":"[Meetup] API failed for Delhi: Request failed with status code 404","timestamp":"2026-03-10 07:26:46"}
+{"level":"warn","message":"[Meetup] API failed for Mumbai: Request failed with status code 404","timestamp":"2026-03-10 07:26:46"}
+{"level":"info","message":"[Meetup] HTML fallback: 0 events","timestamp":"2026-03-10 07:26:48"}
+{"level":"info","message":"  ✔ Meetup: 0 events","timestamp":"2026-03-10 07:26:48"}
+{"level":"info","message":"  → Eventbrite…","timestamp":"2026-03-10 07:26:51"}
+{"level":"info","message":"[Eventbrite] Starting scrape…","timestamp":"2026-03-10 07:26:51"}
+{"level":"info","message":"[Eventbrite] Total: 46 events","timestamp":"2026-03-10 07:27:06"}
+{"level":"info","message":"  ✔ Eventbrite: 23 events","timestamp":"2026-03-10 07:27:06"}
+{"level":"info","message":"  → AiForGood…","timestamp":"2026-03-10 07:27:08"}
+{"level":"info","message":"[AiForGood] Starting scrape…","timestamp":"2026-03-10 07:27:08"}
+{"level":"info","message":"[AiForGood] 0 events scraped","timestamp":"2026-03-10 07:27:17"}
+{"level":"info","message":"  ✔ AiForGood: 0 events","timestamp":"2026-03-10 07:27:17"}
+{"level":"info","message":"  → AiDeadlines…","timestamp":"2026-03-10 07:27:19"}
+{"level":"info","message":"[AiDeadlines] Starting scrape…","timestamp":"2026-03-10 07:27:19"}
+{"level":"info","message":"[AiDeadlines] 0 upcoming deadlines from YAML","timestamp":"2026-03-10 07:27:20"}
+{"level":"info","message":"  ✔ AiDeadlines: 0 events","timestamp":"2026-03-10 07:27:20"}
+{"level":"info","message":"  → AnalyticsIndia…","timestamp":"2026-03-10 07:27:22"}
+{"level":"info","message":"[AnalyticsIndia] Starting scrape…","timestamp":"2026-03-10 07:27:22"}
+{"level":"info","message":"[AnalyticsIndia] 0 events scraped","timestamp":"2026-03-10 07:27:24"}
+{"level":"info","message":"  ✔ AnalyticsIndia: 0 events","timestamp":"2026-03-10 07:27:24"}
+{"level":"info","message":"  → GoogleDev…","timestamp":"2026-03-10 07:27:27"}
+{"level":"info","message":"[GoogleDev] Starting scrape…","timestamp":"2026-03-10 07:27:27"}
+{"level":"warn","message":"[GoogleDev] JSON API failed: Request failed with status code 404","timestamp":"2026-03-10 07:27:27"}
+{"level":"info","message":"[GoogleDev] HTML: 14 events","timestamp":"2026-03-10 07:27:28"}
+{"level":"info","message":"  ✔ GoogleDev: 9 events","timestamp":"2026-03-10 07:27:28"}
+{"level":"info","message":"  → DevEvents…","timestamp":"2026-03-10 07:27:30"}
+{"level":"info","message":"[DevEvents] Starting events scrape…","timestamp":"2026-03-10 07:27:30"}
+{"level":"info","message":"[DevEvents] https://dev.events/api/events?page=1&per_page=50&category=conference: 0 events","timestamp":"2026-03-10 07:27:32"}
+{"level":"info","message":"[DevEvents] https://dev.events/api/events?page=1&per_page=50&category=meetup: 0 events","timestamp":"2026-03-10 07:27:35"}
+{"level":"info","message":"[DevEvents] https://dev.events/api/events?page=1&per_page=50&online=true: 0 events","timestamp":"2026-03-10 07:27:37"}
+{"level":"info","message":"[DevEvents] HTML fallback: 0 events","timestamp":"2026-03-10 07:27:40"}
+{"level":"info","message":"  ✔ DevEvents: 0 events","timestamp":"2026-03-10 07:27:40"}
+{"level":"info","message":"[Scrapers] Total events scraped: 32","timestamp":"2026-03-10 07:27:42"}
+{"level":"info","message":"✅ Live events: 8 new, 24 updated","timestamp":"2026-03-10 07:27:43"}
+{"level":"info","message":"📊 Final DB: 102 hackathons, 461 internships, 39 events","timestamp":"2026-03-10 07:27:43"}
+{"level":"info","message":"[Scrapers] Running 8 event scrapers…","timestamp":"2026-03-10 07:33:50"}
+{"level":"info","message":"  → Eventbrite…","timestamp":"2026-03-10 07:33:50"}
+{"level":"info","message":"[Eventbrite] Starting scrape…","timestamp":"2026-03-10 07:33:50"}
+{"level":"info","message":"[Eventbrite] Total: 44 events","timestamp":"2026-03-10 07:34:01"}
+{"level":"info","message":"  ✔ Eventbrite: 22 events","timestamp":"2026-03-10 07:34:01"}
+{"level":"info","message":"  → GoogleDev…","timestamp":"2026-03-10 07:34:03"}
+{"level":"info","message":"[GoogleDev] Starting scrape…","timestamp":"2026-03-10 07:34:03"}
+{"level":"warn","message":"[GoogleDev] JSON API failed: Request failed with status code 404","timestamp":"2026-03-10 07:34:04"}
+{"level":"info","message":"[GoogleDev] HTML: 14 events","timestamp":"2026-03-10 07:34:05"}
+{"level":"info","message":"  ✔ GoogleDev: 9 events","timestamp":"2026-03-10 07:34:05"}
+{"level":"info","message":"  → Luma…","timestamp":"2026-03-10 07:34:08"}
+{"level":"info","message":"[Luma] Starting scrape…","timestamp":"2026-03-10 07:34:08"}
+{"level":"warn","message":"[Luma] API failed for CommunityMeetups: Request failed with status code 404 — trying HTML","timestamp":"2026-03-10 07:34:08"}
+{"level":"warn","message":"[Luma] API failed for devbangalore: Request failed with status code 404 — trying HTML","timestamp":"2026-03-10 07:34:10"}
+{"level":"warn","message":"[Luma] HTML fallback failed for devbangalore: Request failed with status code 404","timestamp":"2026-03-10 07:34:11"}
+{"level":"warn","message":"[Luma] API failed for GDGBangalore: Request failed with status code 404 — trying HTML","timestamp":"2026-03-10 07:34:11"}
+{"level":"warn","message":"[Luma] HTML fallback failed for GDGBangalore: Request failed with status code 404","timestamp":"2026-03-10 07:34:12"}
+{"level":"warn","message":"[Luma] Discover API failed: Request failed with status code 404","timestamp":"2026-03-10 07:34:12"}
+{"level":"info","message":"[Luma] Total: 0 events","timestamp":"2026-03-10 07:34:12"}
+{"level":"info","message":"  ✔ Luma: 0 events","timestamp":"2026-03-10 07:34:12"}
+{"level":"info","message":"  → Unstop…","timestamp":"2026-03-10 07:34:14"}
+{"level":"info","message":"[UnstopEvents] Starting scrape…","timestamp":"2026-03-10 07:34:14"}
+{"level":"info","message":"[UnstopEvents] event: 20 items","timestamp":"2026-03-10 07:34:16"}
+{"level":"info","message":"[UnstopEvents] workshop: 20 items","timestamp":"2026-03-10 07:34:18"}
+{"level":"info","message":"[UnstopEvents] conference: 20 items","timestamp":"2026-03-10 07:34:22"}
+{"level":"info","message":"[UnstopEvents] Total: 17 events","timestamp":"2026-03-10 07:34:22"}
+{"level":"info","message":"  ✔ Unstop: 17 events","timestamp":"2026-03-10 07:34:22"}
+{"level":"info","message":"  → KonfHub…","timestamp":"2026-03-10 07:34:24"}
+{"level":"info","message":"[KonfHub] Starting scrape…","timestamp":"2026-03-10 07:34:24"}
+{"level":"warn","message":"[KonfHub] API failed: Request failed with status code 403","timestamp":"2026-03-10 07:34:24"}
+{"level":"warn","message":"[KonfHub] API failed: Request failed with status code 401","timestamp":"2026-03-10 07:34:24"}
+{"level":"warn","message":"[KonfHub] API failed: Request failed with status code 404","timestamp":"2026-03-10 07:34:25"}
+{"level":"info","message":"[KonfHub] Total: 0 events","timestamp":"2026-03-10 07:34:25"}
+{"level":"info","message":"  ✔ KonfHub: 0 events","timestamp":"2026-03-10 07:34:25"}
+{"level":"info","message":"  → GDGCommunity…","timestamp":"2026-03-10 07:34:27"}
+{"level":"info","message":"[GDGCommunity] Starting scrape…","timestamp":"2026-03-10 07:34:27"}
+{"level":"warn","message":"[GDGCommunity] API failed: Request failed with status code 403","timestamp":"2026-03-10 07:34:28"}
+{"level":"info","message":"[GDGCommunity] API: 500 events","timestamp":"2026-03-10 07:34:33"}
+{"level":"info","message":"[GDGCommunity] Total: 203 events","timestamp":"2026-03-10 07:34:33"}
+{"level":"info","message":"  ✔ GDGCommunity: 203 events","timestamp":"2026-03-10 07:34:33"}
+{"level":"info","message":"  → DevEventsIN…","timestamp":"2026-03-10 07:34:36"}
+{"level":"info","message":"[DevEventsIndia] Starting scrape…","timestamp":"2026-03-10 07:34:36"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/tech: 36 events","timestamp":"2026-03-10 07:34:38"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/ai: 5 events","timestamp":"2026-03-10 07:34:40"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/cloud: 7 events","timestamp":"2026-03-10 07:34:43"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/javascript: 3 events","timestamp":"2026-03-10 07:34:45"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/devops: 5 events","timestamp":"2026-03-10 07:34:47"}
+{"level":"info","message":"[DevEventsIndia] /conferences/AS/IN: 88 events","timestamp":"2026-03-10 07:34:50"}
+{"level":"info","message":"[DevEventsIndia] Total: 144 events","timestamp":"2026-03-10 07:34:51"}
+{"level":"info","message":"  ✔ DevEventsIN: 144 events","timestamp":"2026-03-10 07:34:51"}
+{"level":"info","message":"  → HasGeek…","timestamp":"2026-03-10 07:34:53"}
+{"level":"info","message":"[HasGeek] Starting scrape…","timestamp":"2026-03-10 07:34:53"}
+{"level":"info","message":"[HasGeek] https://hasgeek.com/: 22 events","timestamp":"2026-03-10 07:34:54"}
+{"level":"info","message":"[HasGeek] Total: 22 events","timestamp":"2026-03-10 07:34:54"}
+{"level":"info","message":"  ✔ HasGeek: 22 events","timestamp":"2026-03-10 07:34:54"}
+{"level":"info","message":"[Scrapers] Total events scraped: 417","timestamp":"2026-03-10 07:34:56"}
+{"level":"info","message":"[Scrapers] Running 8 event scrapers…","timestamp":"2026-03-10 07:37:04"}
+{"level":"info","message":"  → Eventbrite…","timestamp":"2026-03-10 07:37:04"}
+{"level":"info","message":"[Eventbrite] Starting scrape…","timestamp":"2026-03-10 07:37:04"}
+{"level":"info","message":"[Eventbrite] Total: 44 events","timestamp":"2026-03-10 07:37:14"}
+{"level":"info","message":"  ✔ Eventbrite: 22 events","timestamp":"2026-03-10 07:37:14"}
+{"level":"info","message":"  → GoogleDev…","timestamp":"2026-03-10 07:37:16"}
+{"level":"info","message":"[GoogleDev] Starting scrape…","timestamp":"2026-03-10 07:37:16"}
+{"level":"warn","message":"[GoogleDev] JSON API failed: Request failed with status code 404","timestamp":"2026-03-10 07:37:17"}
+{"level":"info","message":"[GoogleDev] HTML: 14 events","timestamp":"2026-03-10 07:37:18"}
+{"level":"info","message":"  ✔ GoogleDev: 9 events","timestamp":"2026-03-10 07:37:18"}
+{"level":"info","message":"  → Luma…","timestamp":"2026-03-10 07:37:21"}
+{"level":"info","message":"[Luma] Starting scrape…","timestamp":"2026-03-10 07:37:21"}
+{"level":"warn","message":"[Luma] API failed for CommunityMeetups: Request failed with status code 404 — trying HTML","timestamp":"2026-03-10 07:37:22"}
+{"level":"warn","message":"[Luma] API failed for devbangalore: Request failed with status code 404 — trying HTML","timestamp":"2026-03-10 07:37:24"}
+{"level":"warn","message":"[Luma] HTML fallback failed for devbangalore: Request failed with status code 404","timestamp":"2026-03-10 07:37:24"}
+{"level":"warn","message":"[Luma] API failed for GDGBangalore: Request failed with status code 404 — trying HTML","timestamp":"2026-03-10 07:37:24"}
+{"level":"warn","message":"[Luma] HTML fallback failed for GDGBangalore: Request failed with status code 404","timestamp":"2026-03-10 07:37:25"}
+{"level":"warn","message":"[Luma] Discover API failed: Request failed with status code 404","timestamp":"2026-03-10 07:37:25"}
+{"level":"info","message":"[Luma] Total: 0 events","timestamp":"2026-03-10 07:37:25"}
+{"level":"info","message":"  ✔ Luma: 0 events","timestamp":"2026-03-10 07:37:25"}
+{"level":"info","message":"  → Unstop…","timestamp":"2026-03-10 07:37:28"}
+{"level":"info","message":"[UnstopEvents] Starting scrape…","timestamp":"2026-03-10 07:37:28"}
+{"level":"info","message":"[UnstopEvents] event: 20 items","timestamp":"2026-03-10 07:37:28"}
+{"level":"info","message":"[UnstopEvents] workshop: 20 items","timestamp":"2026-03-10 07:37:28"}
+{"level":"info","message":"[UnstopEvents] conference: 20 items","timestamp":"2026-03-10 07:37:28"}
+{"level":"info","message":"[UnstopEvents] Total: 17 events","timestamp":"2026-03-10 07:37:28"}
+{"level":"info","message":"  ✔ Unstop: 17 events","timestamp":"2026-03-10 07:37:28"}
+{"level":"info","message":"  → KonfHub…","timestamp":"2026-03-10 07:37:31"}
+{"level":"info","message":"[KonfHub] Starting scrape…","timestamp":"2026-03-10 07:37:31"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2026-03-10 07:37:43"}
+{"level":"info","message":"Skipping DB clear — using upsert to preserve existing data","timestamp":"2026-03-10 07:37:43"}
+{"level":"info","message":"Running live hackathon scrapers…","timestamp":"2026-03-10 07:37:43"}
+{"level":"info","message":"[Scrapers] Running 10 hackathon scrapers…","timestamp":"2026-03-10 07:37:43"}
+{"level":"info","message":"  → Devpost (Tier 1)…","timestamp":"2026-03-10 07:37:43"}
+{"level":"info","message":"[Devpost] Starting scrape…","timestamp":"2026-03-10 07:37:43"}
+{"level":"info","message":"[Devpost] page 1 → 40 items","timestamp":"2026-03-10 07:37:45"}
+{"level":"info","message":"[Devpost] page 2 → 22 items","timestamp":"2026-03-10 07:37:47"}
+{"level":"info","message":"[Devpost] page 1 → 30 items","timestamp":"2026-03-10 07:37:48"}
+{"level":"info","message":"  ✔ Devpost: 62 hackathons","timestamp":"2026-03-10 07:37:50"}
+{"level":"info","message":"  → HackClub (Tier 1)…","timestamp":"2026-03-10 07:37:52"}
+{"level":"info","message":"[HackClub] Starting scrape…","timestamp":"2026-03-10 07:37:52"}
+{"level":"warn","message":"[HackClub] GET https://hackathons.hackclub.com/api/events/upcoming attempt 1/3 — 500","timestamp":"2026-03-10 07:37:54"}
+{"level":"warn","message":"[HackClub] GET https://hackathons.hackclub.com/api/events/upcoming attempt 2/3 — 500","timestamp":"2026-03-10 07:37:57"}
+{"level":"warn","message":"[HackClub] GET https://hackathons.hackclub.com/api/events/upcoming attempt 3/3 — 500","timestamp":"2026-03-10 07:38:01"}
+{"level":"error","message":"[HackClub] Fetch failed: Request failed with status code 500","timestamp":"2026-03-10 07:38:01"}
+{"level":"info","message":"[HackClub] Returning 0 hackathons","timestamp":"2026-03-10 07:38:01"}
+{"level":"info","message":"  ✔ HackClub: 0 hackathons","timestamp":"2026-03-10 07:38:01"}
+{"level":"info","message":"  → TAIKAI (Tier 1)…","timestamp":"2026-03-10 07:38:04"}
+{"level":"info","message":"[TAIKAI] Starting scrape…","timestamp":"2026-03-10 07:38:04"}
+{"level":"warn","message":"[TAIKAI] GET https://taikai.network/api/v1/challenges?type=hackathon&open=true attempt 1/3 — 404","timestamp":"2026-03-10 07:38:05"}
+{"level":"warn","message":"[TAIKAI] GET https://taikai.network/api/v1/challenges?type=hackathon&open=true attempt 2/3 — 404","timestamp":"2026-03-10 07:38:07"}
+{"level":"warn","message":"[TAIKAI] GET https://taikai.network/api/v1/challenges?type=hackathon&open=true attempt 3/3 — 404","timestamp":"2026-03-10 07:38:12"}
+{"level":"warn","message":"[TAIKAI] API https://taikai.network/api/v1/challenges?type=hackathon&open=true failed: Request failed with status code 404","timestamp":"2026-03-10 07:38:12"}
+{"level":"info","message":"[TAIKAI] HTML https://taikai.network/hackathons → 1","timestamp":"2026-03-10 07:38:13"}
+{"level":"info","message":"[TAIKAI] HTML https://taikai.network/hackathons?page=1 → 1","timestamp":"2026-03-10 07:38:16"}
+{"level":"info","message":"[TAIKAI] Total: 1","timestamp":"2026-03-10 07:38:18"}
+{"level":"info","message":"  ✔ TAIKAI: 1 hackathons","timestamp":"2026-03-10 07:38:18"}
+{"level":"info","message":"  → Hackathon.com (Tier 2)…","timestamp":"2026-03-10 07:38:21"}
+{"level":"info","message":"[Hackathon.com] Starting scrape…","timestamp":"2026-03-10 07:38:21"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/online → 2","timestamp":"2026-03-10 07:38:22"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/india → 0","timestamp":"2026-03-10 07:38:25"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/ai → 6","timestamp":"2026-03-10 07:38:28"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/machine-learning → 0","timestamp":"2026-03-10 07:38:31"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/open-source → 0","timestamp":"2026-03-10 07:38:34"}
+{"level":"info","message":"[Hackathon.com] Total: 3","timestamp":"2026-03-10 07:38:36"}
+{"level":"info","message":"  ✔ Hackathon.com: 3 hackathons","timestamp":"2026-03-10 07:38:36"}
+{"level":"info","message":"  → DevEvents (Tier 2)…","timestamp":"2026-03-10 07:38:39"}
+{"level":"info","message":"[DevEvents] Starting scrape…","timestamp":"2026-03-10 07:38:39"}
+{"level":"info","message":"[DevEvents] HTML → 1 hackathons","timestamp":"2026-03-10 07:38:42"}
+{"level":"info","message":"[DevEvents] Total: 1","timestamp":"2026-03-10 07:38:42"}
+{"level":"info","message":"  ✔ DevEvents: 1 hackathons","timestamp":"2026-03-10 07:38:42"}
+{"level":"info","message":"  → MLH (Tier 2)…","timestamp":"2026-03-10 07:38:44"}
+{"level":"info","message":"[MLH] Starting scrape…","timestamp":"2026-03-10 07:38:44"}
+{"level":"info","message":"[MLH] https://mlh.io/seasons/2026/events → 0 raw cards","timestamp":"2026-03-10 07:38:49"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events attempt 1/3 — 404","timestamp":"2026-03-10 07:38:52"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events attempt 2/3 — 404","timestamp":"2026-03-10 07:38:55"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events attempt 3/3 — 404","timestamp":"2026-03-10 07:38:59"}
+{"level":"warn","message":"[MLH] Failed to fetch https://mlh.io/seasons/2027/events: Request failed with status code 404","timestamp":"2026-03-10 07:38:59"}
+{"level":"info","message":"[MLH] Returning 0 hackathons","timestamp":"2026-03-10 07:38:59"}
+{"level":"info","message":"  ✔ MLH: 0 hackathons","timestamp":"2026-03-10 07:38:59"}
+{"level":"info","message":"  → Unstop (Tier 3)…","timestamp":"2026-03-10 07:39:02"}
+{"level":"info","message":"[Unstop] Starting scrape…","timestamp":"2026-03-10 07:39:02"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/search/v2 attempt 1/3 — 404","timestamp":"2026-03-10 07:39:02"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/search/v2 attempt 2/3 — 404","timestamp":"2026-03-10 07:39:05"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/search/v2 attempt 3/3 — 404","timestamp":"2026-03-10 07:39:09"}
+{"level":"warn","message":"[Unstop] API strategy failed: Request failed with status code 404 — trying __NEXT_DATA__","timestamp":"2026-03-10 07:39:09"}
+{"level":"warn","message":"[Unstop] __NEXT_DATA__ not found in HTML","timestamp":"2026-03-10 07:39:09"}
+{"level":"info","message":"  ✔ Unstop: 0 hackathons","timestamp":"2026-03-10 07:39:09"}
+{"level":"info","message":"  → Devfolio (Tier 3)…","timestamp":"2026-03-10 07:39:11"}
+{"level":"info","message":"[Devfolio] Starting scrape…","timestamp":"2026-03-10 07:39:11"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 1/3 — 422","timestamp":"2026-03-10 07:39:12"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 2/3 — 422","timestamp":"2026-03-10 07:39:14"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 3/3 — 422","timestamp":"2026-03-10 07:39:18"}
+{"level":"warn","message":"[Devfolio] query=\"\" failed: Request failed with status code 422","timestamp":"2026-03-10 07:39:18"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 1/3 — 422","timestamp":"2026-03-10 07:39:18"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 2/3 — 422","timestamp":"2026-03-10 07:39:20"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 3/3 — 422","timestamp":"2026-03-10 07:39:24"}
+{"level":"warn","message":"[Devfolio] query=\"india\" failed: Request failed with status code 422","timestamp":"2026-03-10 07:39:24"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 1/3 — 422","timestamp":"2026-03-10 07:39:24"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 2/3 — 422","timestamp":"2026-03-10 07:39:26"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/ attempt 3/3 — 422","timestamp":"2026-03-10 07:39:30"}
+{"level":"warn","message":"[Devfolio] query=\"online\" failed: Request failed with status code 422","timestamp":"2026-03-10 07:39:30"}
+{"level":"info","message":"[Devfolio] Returning 0 hackathons","timestamp":"2026-03-10 07:39:30"}
+{"level":"info","message":"  ✔ Devfolio: 0 hackathons","timestamp":"2026-03-10 07:39:30"}
+{"level":"info","message":"  → HackerEarth (Tier 3)…","timestamp":"2026-03-10 07:39:33"}
+{"level":"info","message":"[HackerEarth] Starting scrape…","timestamp":"2026-03-10 07:39:33"}
+{"level":"info","message":"[HackerEarth] offset=0 → 0 items","timestamp":"2026-03-10 07:39:34"}
+{"level":"info","message":"[HackerEarth] Returning 0 hackathons","timestamp":"2026-03-10 07:39:34"}
+{"level":"info","message":"  ✔ HackerEarth: 0 hackathons","timestamp":"2026-03-10 07:39:34"}
+{"level":"info","message":"  → DoraHacks (Tier 3)…","timestamp":"2026-03-10 07:39:36"}
+{"level":"info","message":"[DoraHacks] Starting scrape…","timestamp":"2026-03-10 07:39:36"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 1/3 — 404","timestamp":"2026-03-10 07:39:36"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 2/3 — 404","timestamp":"2026-03-10 07:39:38"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 3/3 — 404","timestamp":"2026-03-10 07:39:42"}
+{"level":"warn","message":"[DoraHacks] status=open failed: Request failed with status code 404","timestamp":"2026-03-10 07:39:42"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 1/3 — 404","timestamp":"2026-03-10 07:39:42"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 2/3 — 404","timestamp":"2026-03-10 07:39:45"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon/list/ attempt 3/3 — 404","timestamp":"2026-03-10 07:39:49"}
+{"level":"warn","message":"[DoraHacks] status=voting failed: Request failed with status code 404","timestamp":"2026-03-10 07:39:49"}
+{"level":"info","message":"[DoraHacks] Returning 0 hackathons","timestamp":"2026-03-10 07:39:49"}
+{"level":"info","message":"  ✔ DoraHacks: 0 hackathons","timestamp":"2026-03-10 07:39:49"}
+{"level":"info","message":"[Scrapers] Total hackathons scraped: 67","timestamp":"2026-03-10 07:39:51"}
+{"level":"info","message":"✅ Live hackathons: 1 new, 66 updated","timestamp":"2026-03-10 07:39:51"}
+{"level":"info","message":"Running live internship scrapers…","timestamp":"2026-03-10 07:39:51"}
+{"level":"info","message":"[Scrapers] Running 3 internship scrapers…","timestamp":"2026-03-10 07:39:51"}
+{"level":"info","message":"  → Internshala…","timestamp":"2026-03-10 07:39:51"}
+{"level":"info","message":"[Internshala] Starting scrape…","timestamp":"2026-03-10 07:39:51"}
+{"level":"info","message":"[Internshala] computer-science-internship HTML → 100 internships","timestamp":"2026-03-10 07:39:52"}
+{"level":"info","message":"[Internshala] web-development-internship HTML → 100 internships","timestamp":"2026-03-10 07:39:54"}
+{"level":"info","message":"[Internshala] machine-learning-internship HTML → 100 internships","timestamp":"2026-03-10 07:39:57"}
+{"level":"info","message":"[Internshala] data-science-internship HTML → 100 internships","timestamp":"2026-03-10 07:39:59"}
+{"level":"info","message":"[Internshala] android-development-internship HTML → 80 internships","timestamp":"2026-03-10 07:40:02"}
+{"level":"info","message":"[Internshala] python-internship HTML → 80 internships","timestamp":"2026-03-10 07:40:04"}
+{"level":"info","message":"[Internshala] Total internships found: 560","timestamp":"2026-03-10 07:40:06"}
+{"level":"info","message":"  ✔ Internshala: 560 internships","timestamp":"2026-03-10 07:40:06"}
+{"level":"info","message":"  → Remotive…","timestamp":"2026-03-10 07:40:08"}
+{"level":"info","message":"[Remotive] Starting scrape…","timestamp":"2026-03-10 07:40:08"}
+{"level":"info","message":"[Remotive] software-dev → 2 jobs","timestamp":"2026-03-10 07:40:08"}
+{"level":"info","message":"[Remotive] data → 0 jobs","timestamp":"2026-03-10 07:40:10"}
+{"level":"info","message":"[Remotive] devops-sysadmin → 2 jobs","timestamp":"2026-03-10 07:40:11"}
+{"level":"info","message":"[Remotive] mobile-dev → 2 jobs","timestamp":"2026-03-10 07:40:12"}
+{"level":"info","message":"[Remotive] Total: 6","timestamp":"2026-03-10 07:40:13"}
+{"level":"info","message":"  ✔ Remotive: 6 internships","timestamp":"2026-03-10 07:40:13"}
+{"level":"info","message":"  → Wellfound…","timestamp":"2026-03-10 07:40:15"}
+{"level":"info","message":"[Wellfound] Starting scrape…","timestamp":"2026-03-10 07:40:15"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/role/r/software-engineer-intern attempt 1/3 — 403","timestamp":"2026-03-10 07:40:16"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/role/r/software-engineer-intern attempt 2/3 — 403","timestamp":"2026-03-10 07:40:18"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/role/r/software-engineer-intern attempt 3/3 — 403","timestamp":"2026-03-10 07:40:22"}
+{"level":"warn","message":"[Wellfound] Failed https://wellfound.com/role/r/software-engineer-intern: Request failed with status code 403","timestamp":"2026-03-10 07:40:22"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/jobs?role=software-engineer-intern&location=india attempt 1/3 — 403","timestamp":"2026-03-10 07:40:22"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/jobs?role=software-engineer-intern&location=india attempt 2/3 — 403","timestamp":"2026-03-10 07:40:24"}
+{"level":"warn","message":"[Wellfound] GET https://wellfound.com/jobs?role=software-engineer-intern&location=india attempt 3/3 — 403","timestamp":"2026-03-10 07:40:28"}
+{"level":"warn","message":"[Wellfound] Failed https://wellfound.com/jobs?role=software-engineer-intern&location=india: Request failed with status code 403","timestamp":"2026-03-10 07:40:28"}
+{"level":"info","message":"[Wellfound] Returning 0 internships","timestamp":"2026-03-10 07:40:28"}
+{"level":"info","message":"  ✔ Wellfound: 0 internships","timestamp":"2026-03-10 07:40:28"}
+{"level":"info","message":"[Scrapers] Total internships scraped: 566","timestamp":"2026-03-10 07:40:30"}
+{"level":"info","message":"✅ Live internships: 0 new, 325 updated","timestamp":"2026-03-10 07:40:32"}
+{"level":"info","message":"Running live event scrapers…","timestamp":"2026-03-10 07:40:32"}
+{"level":"info","message":"[Scrapers] Running 8 event scrapers…","timestamp":"2026-03-10 07:40:32"}
+{"level":"info","message":"  → Eventbrite…","timestamp":"2026-03-10 07:40:32"}
+{"level":"info","message":"[Eventbrite] Starting scrape…","timestamp":"2026-03-10 07:40:32"}
+{"level":"info","message":"[Eventbrite] Total: 46 events","timestamp":"2026-03-10 07:40:44"}
+{"level":"info","message":"  ✔ Eventbrite: 23 events","timestamp":"2026-03-10 07:40:44"}
+{"level":"info","message":"  → GoogleDev…","timestamp":"2026-03-10 07:40:47"}
+{"level":"info","message":"[GoogleDev] Starting scrape…","timestamp":"2026-03-10 07:40:47"}
+{"level":"warn","message":"[GoogleDev] JSON API failed: Request failed with status code 404","timestamp":"2026-03-10 07:40:48"}
+{"level":"info","message":"[GoogleDev] HTML: 14 events","timestamp":"2026-03-10 07:40:48"}
+{"level":"info","message":"  ✔ GoogleDev: 9 events","timestamp":"2026-03-10 07:40:48"}
+{"level":"info","message":"  → Luma…","timestamp":"2026-03-10 07:40:51"}
+{"level":"info","message":"[Luma] Starting scrape…","timestamp":"2026-03-10 07:40:51"}
+{"level":"warn","message":"[Luma] API failed for CommunityMeetups: Request failed with status code 404 — trying HTML","timestamp":"2026-03-10 07:40:52"}
+{"level":"warn","message":"[Luma] API failed for devbangalore: Request failed with status code 404 — trying HTML","timestamp":"2026-03-10 07:40:54"}
+{"level":"warn","message":"[Luma] HTML fallback failed for devbangalore: Request failed with status code 404","timestamp":"2026-03-10 07:40:54"}
+{"level":"warn","message":"[Luma] API failed for GDGBangalore: Request failed with status code 404 — trying HTML","timestamp":"2026-03-10 07:40:54"}
+{"level":"warn","message":"[Luma] HTML fallback failed for GDGBangalore: Request failed with status code 404","timestamp":"2026-03-10 07:40:55"}
+{"level":"warn","message":"[Luma] Discover API failed: Request failed with status code 404","timestamp":"2026-03-10 07:40:55"}
+{"level":"info","message":"[Luma] Total: 0 events","timestamp":"2026-03-10 07:40:55"}
+{"level":"info","message":"  ✔ Luma: 0 events","timestamp":"2026-03-10 07:40:55"}
+{"level":"info","message":"  → Unstop…","timestamp":"2026-03-10 07:40:58"}
+{"level":"info","message":"[UnstopEvents] Starting scrape…","timestamp":"2026-03-10 07:40:58"}
+{"level":"info","message":"[UnstopEvents] event: 20 items","timestamp":"2026-03-10 07:41:02"}
+{"level":"info","message":"[UnstopEvents] workshop: 20 items","timestamp":"2026-03-10 07:41:06"}
+{"level":"info","message":"[UnstopEvents] conference: 20 items","timestamp":"2026-03-10 07:41:09"}
+{"level":"info","message":"[UnstopEvents] Total: 17 events","timestamp":"2026-03-10 07:41:09"}
+{"level":"info","message":"  ✔ Unstop: 17 events","timestamp":"2026-03-10 07:41:09"}
+{"level":"info","message":"  → KonfHub…","timestamp":"2026-03-10 07:41:12"}
+{"level":"info","message":"[KonfHub] Starting scrape…","timestamp":"2026-03-10 07:41:12"}
+{"level":"warn","message":"[KonfHub] API failed: Request failed with status code 403","timestamp":"2026-03-10 07:41:12"}
+{"level":"warn","message":"[KonfHub] API failed: Request failed with status code 401","timestamp":"2026-03-10 07:41:12"}
+{"level":"warn","message":"[KonfHub] API failed: Request failed with status code 404","timestamp":"2026-03-10 07:41:13"}
+{"level":"info","message":"[KonfHub] Total: 0 events","timestamp":"2026-03-10 07:41:13"}
+{"level":"info","message":"  ✔ KonfHub: 0 events","timestamp":"2026-03-10 07:41:13"}
+{"level":"info","message":"  → GDGCommunity…","timestamp":"2026-03-10 07:41:15"}
+{"level":"info","message":"[GDGCommunity] Starting scrape…","timestamp":"2026-03-10 07:41:15"}
+{"level":"warn","message":"[GDGCommunity] API failed: Request failed with status code 403","timestamp":"2026-03-10 07:41:16"}
+{"level":"info","message":"[GDGCommunity] API: 500 events","timestamp":"2026-03-10 07:41:23"}
+{"level":"info","message":"[GDGCommunity] Total: 203 events","timestamp":"2026-03-10 07:41:23"}
+{"level":"info","message":"  ✔ GDGCommunity: 203 events","timestamp":"2026-03-10 07:41:23"}
+{"level":"info","message":"  → DevEventsIN…","timestamp":"2026-03-10 07:41:25"}
+{"level":"info","message":"[DevEventsIndia] Starting scrape…","timestamp":"2026-03-10 07:41:25"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/tech: 36 events","timestamp":"2026-03-10 07:41:27"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/ai: 5 events","timestamp":"2026-03-10 07:41:29"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/cloud: 7 events","timestamp":"2026-03-10 07:41:31"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/javascript: 3 events","timestamp":"2026-03-10 07:41:33"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/devops: 5 events","timestamp":"2026-03-10 07:41:35"}
+{"level":"info","message":"[DevEventsIndia] /conferences/AS/IN: 88 events","timestamp":"2026-03-10 07:41:37"}
+{"level":"info","message":"[DevEventsIndia] Total: 144 events","timestamp":"2026-03-10 07:41:39"}
+{"level":"info","message":"  ✔ DevEventsIN: 144 events","timestamp":"2026-03-10 07:41:39"}
+{"level":"info","message":"  → HasGeek…","timestamp":"2026-03-10 07:41:41"}
+{"level":"info","message":"[HasGeek] Starting scrape…","timestamp":"2026-03-10 07:41:41"}
+{"level":"info","message":"[HasGeek] https://hasgeek.com/: 22 events","timestamp":"2026-03-10 07:41:42"}
+{"level":"info","message":"[HasGeek] Total: 22 events","timestamp":"2026-03-10 07:41:42"}
+{"level":"info","message":"  ✔ HasGeek: 22 events","timestamp":"2026-03-10 07:41:42"}
+{"level":"info","message":"[Scrapers] Total events scraped: 418","timestamp":"2026-03-10 07:41:44"}
+{"level":"info","message":"✅ Live events: 7 new, 411 updated","timestamp":"2026-03-10 07:41:45"}
+{"level":"info","message":"📊 Final DB: 103 hackathons, 461 internships, 424 events","timestamp":"2026-03-10 07:41:45"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2026-03-10 07:52:59"}
+{"level":"info","message":"Skipping DB clear — using upsert to preserve existing data","timestamp":"2026-03-10 07:52:59"}
+{"level":"info","message":"Running live hackathon scrapers…","timestamp":"2026-03-10 07:52:59"}
+{"level":"info","message":"[Scrapers] Running 10 hackathon scrapers…","timestamp":"2026-03-10 07:52:59"}
+{"level":"info","message":"  → Devpost (Tier 1)…","timestamp":"2026-03-10 07:52:59"}
+{"level":"info","message":"[Devpost] Starting scrape…","timestamp":"2026-03-10 07:52:59"}
+{"level":"info","message":"[Devpost] page 1 → 40 items","timestamp":"2026-03-10 07:53:01"}
+{"level":"info","message":"[Devpost] page 2 → 22 items","timestamp":"2026-03-10 07:53:03"}
+{"level":"info","message":"[Devpost] page 1 → 30 items","timestamp":"2026-03-10 07:53:05"}
+{"level":"info","message":"  ✔ Devpost: 62 hackathons","timestamp":"2026-03-10 07:53:06"}
+{"level":"info","message":"  → HackClub (Tier 1)…","timestamp":"2026-03-10 07:53:09"}
+{"level":"info","message":"[HackClub] Starting scrape…","timestamp":"2026-03-10 07:53:09"}
+{"level":"info","message":"[HackClub] API https://hackathons.hackclub.com/api/events/upcoming → 14 events","timestamp":"2026-03-10 07:53:12"}
+{"level":"info","message":"[HackClub] Returning 2","timestamp":"2026-03-10 07:53:13"}
+{"level":"info","message":"  ✔ HackClub: 2 hackathons","timestamp":"2026-03-10 07:53:13"}
+{"level":"info","message":"  → TAIKAI (Tier 1)…","timestamp":"2026-03-10 07:53:15"}
+{"level":"info","message":"[TAIKAI] Starting scrape…","timestamp":"2026-03-10 07:53:15"}
+{"level":"info","message":"[TAIKAI] HTML https://taikai.network/hackathons → 22 raw cards","timestamp":"2026-03-10 07:53:17"}
+{"level":"info","message":"[TAIKAI] Total: 1","timestamp":"2026-03-10 07:53:17"}
+{"level":"info","message":"  ✔ TAIKAI: 1 hackathons","timestamp":"2026-03-10 07:53:17"}
+{"level":"info","message":"  → Hackathon.com (Tier 2)…","timestamp":"2026-03-10 07:53:19"}
+{"level":"info","message":"[Hackathon.com] Starting scrape…","timestamp":"2026-03-10 07:53:19"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/online → 2","timestamp":"2026-03-10 07:53:21"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/india → 0","timestamp":"2026-03-10 07:53:24"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/ai → 6","timestamp":"2026-03-10 07:53:27"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/machine-learning → 0","timestamp":"2026-03-10 07:53:30"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/open-source → 0","timestamp":"2026-03-10 07:53:33"}
+{"level":"info","message":"[Hackathon.com] Total: 3","timestamp":"2026-03-10 07:53:36"}
+{"level":"info","message":"  ✔ Hackathon.com: 3 hackathons","timestamp":"2026-03-10 07:53:36"}
+{"level":"info","message":"  → DevEvents (Tier 2)…","timestamp":"2026-03-10 07:53:38"}
+{"level":"info","message":"[DevEvents] Starting scrape…","timestamp":"2026-03-10 07:53:38"}
+{"level":"info","message":"[DevEvents] HTML → 1 hackathons","timestamp":"2026-03-10 07:53:42"}
+{"level":"info","message":"[DevEvents] Total: 1","timestamp":"2026-03-10 07:53:42"}
+{"level":"info","message":"  ✔ DevEvents: 1 hackathons","timestamp":"2026-03-10 07:53:42"}
+{"level":"info","message":"  → MLH (Tier 2)…","timestamp":"2026-03-10 07:53:44"}
+{"level":"info","message":"[MLH] Starting scrape…","timestamp":"2026-03-10 07:53:44"}
+{"level":"info","message":"[MLH] https://mlh.io/seasons/2026/events → 4 raw cards","timestamp":"2026-03-10 07:53:48"}
+{"level":"info","message":"[MLH] https://www.mlh.com/seasons/2026/events → 4 raw cards","timestamp":"2026-03-10 07:53:54"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events attempt 1/3 — 404","timestamp":"2026-03-10 07:53:57"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events attempt 2/3 — 404","timestamp":"2026-03-10 07:54:00"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events attempt 3/3 — 404","timestamp":"2026-03-10 07:54:05"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events failed: Request failed with status code 404","timestamp":"2026-03-10 07:54:05"}
+{"level":"warn","message":"[MLH] GET https://www.mlh.com/seasons/2027/events attempt 1/3 — 404","timestamp":"2026-03-10 07:54:05"}
+{"level":"warn","message":"[MLH] GET https://www.mlh.com/seasons/2027/events attempt 2/3 — 404","timestamp":"2026-03-10 07:54:08"}
+{"level":"warn","message":"[MLH] GET https://www.mlh.com/seasons/2027/events attempt 3/3 — 404","timestamp":"2026-03-10 07:54:12"}
+{"level":"warn","message":"[MLH] GET https://www.mlh.com/seasons/2027/events failed: Request failed with status code 404","timestamp":"2026-03-10 07:54:12"}
+{"level":"info","message":"[MLH] Returning 0 hackathons","timestamp":"2026-03-10 07:54:12"}
+{"level":"info","message":"  ✔ MLH: 0 hackathons","timestamp":"2026-03-10 07:54:12"}
+{"level":"info","message":"  → Unstop (Tier 3)…","timestamp":"2026-03-10 07:54:15"}
+{"level":"info","message":"[Unstop] Starting scrape…","timestamp":"2026-03-10 07:54:15"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/search-v3 attempt 1/3 — 404","timestamp":"2026-03-10 07:54:15"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/search-v3 attempt 2/3 — 404","timestamp":"2026-03-10 07:54:18"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/search-v3 attempt 3/3 — 404","timestamp":"2026-03-10 07:54:22"}
+{"level":"warn","message":"[Unstop] API https://unstop.com/api/public/opportunity/search-v3 failed: Request failed with status code 404","timestamp":"2026-03-10 07:54:22"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/search/v3 attempt 1/3 — 404","timestamp":"2026-03-10 07:54:22"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/search/v3 attempt 2/3 — 404","timestamp":"2026-03-10 07:54:25"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/search/v3 attempt 3/3 — 404","timestamp":"2026-03-10 07:54:29"}
+{"level":"warn","message":"[Unstop] API https://unstop.com/api/public/opportunity/search/v3 failed: Request failed with status code 404","timestamp":"2026-03-10 07:54:29"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/listing attempt 1/3 — 404","timestamp":"2026-03-10 07:54:29"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/listing attempt 2/3 — 404","timestamp":"2026-03-10 07:54:31"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunity/listing attempt 3/3 — 404","timestamp":"2026-03-10 07:54:36"}
+{"level":"warn","message":"[Unstop] API https://unstop.com/api/public/opportunity/listing failed: Request failed with status code 404","timestamp":"2026-03-10 07:54:36"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunities attempt 1/3 — 404","timestamp":"2026-03-10 07:54:36"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunities attempt 2/3 — 404","timestamp":"2026-03-10 07:54:38"}
+{"level":"warn","message":"[Unstop] GET https://unstop.com/api/public/opportunities attempt 3/3 — 404","timestamp":"2026-03-10 07:54:43"}
+{"level":"warn","message":"[Unstop] API https://unstop.com/api/public/opportunities failed: Request failed with status code 404","timestamp":"2026-03-10 07:54:43"}
+{"level":"info","message":"[Unstop] HTML cards → 0","timestamp":"2026-03-10 07:54:43"}
+{"level":"info","message":"[Unstop] Returning 0 hackathons","timestamp":"2026-03-10 07:54:43"}
+{"level":"info","message":"  ✔ Unstop: 0 hackathons","timestamp":"2026-03-10 07:54:43"}
+{"level":"info","message":"  → Devfolio (Tier 3)…","timestamp":"2026-03-10 07:54:45"}
+{"level":"info","message":"[Devfolio] Starting scrape…","timestamp":"2026-03-10 07:54:45"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/search/hackathons attempt 1/3 — 404","timestamp":"2026-03-10 07:54:45"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/search/hackathons attempt 2/3 — 404","timestamp":"2026-03-10 07:54:48"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/search/hackathons attempt 3/3 — 404","timestamp":"2026-03-10 07:54:52"}
+{"level":"warn","message":"[Devfolio] API https://api.devfolio.co/api/search/hackathons failed: Request failed with status code 404","timestamp":"2026-03-10 07:54:52"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/search attempt 1/3 — 404","timestamp":"2026-03-10 07:54:52"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/search attempt 2/3 — 404","timestamp":"2026-03-10 07:54:54"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/search attempt 3/3 — 404","timestamp":"2026-03-10 07:54:58"}
+{"level":"warn","message":"[Devfolio] API https://api.devfolio.co/api/hackathons/search failed: Request failed with status code 404","timestamp":"2026-03-10 07:54:58"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons?status=open&limit=30 attempt 1/3 — 422","timestamp":"2026-03-10 07:54:58"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons?status=open&limit=30 attempt 2/3 — 422","timestamp":"2026-03-10 07:55:00"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons?status=open&limit=30 attempt 3/3 — 422","timestamp":"2026-03-10 07:55:04"}
+{"level":"warn","message":"[Devfolio] API https://api.devfolio.co/api/hackathons?status=open&limit=30 failed: Request failed with status code 422","timestamp":"2026-03-10 07:55:04"}
+{"level":"info","message":"[Devfolio] https://devfolio.co/hackathons selector \"[class*='HackathonCard'], [class*='hackathon-card']\" → 32 cards","timestamp":"2026-03-10 07:55:05"}
+{"level":"info","message":"[Devfolio] Returning 27 hackathons","timestamp":"2026-03-10 07:55:05"}
+{"level":"info","message":"  ✔ Devfolio: 27 hackathons","timestamp":"2026-03-10 07:55:05"}
+{"level":"info","message":"  → HackerEarth (Tier 3)…","timestamp":"2026-03-10 07:55:07"}
+{"level":"info","message":"[HackerEarth] Starting scrape…","timestamp":"2026-03-10 07:55:07"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/data/?type=hackathon attempt 1/3 — 404","timestamp":"2026-03-10 07:55:14"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/data/?type=hackathon attempt 2/3 — 404","timestamp":"2026-03-10 07:55:16"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/data/?type=hackathon attempt 3/3 — 404","timestamp":"2026-03-10 07:55:20"}
+{"level":"warn","message":"[HackerEarth] API https://www.hackerearth.com/challenges/data/?type=hackathon failed: Request failed with status code 404","timestamp":"2026-03-10 07:55:20"}
+{"level":"info","message":"[HackerEarth] HTML cards → 162","timestamp":"2026-03-10 07:55:24"}
+{"level":"info","message":"[HackerEarth] Returning 15 hackathons","timestamp":"2026-03-10 07:55:24"}
+{"level":"info","message":"  ✔ HackerEarth: 15 hackathons","timestamp":"2026-03-10 07:55:24"}
+{"level":"info","message":"  → DoraHacks (Tier 3)…","timestamp":"2026-03-10 07:55:26"}
+{"level":"info","message":"[DoraHacks] Starting scrape…","timestamp":"2026-03-10 07:55:26"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon attempt 1/3 — 405","timestamp":"2026-03-10 07:55:26"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon attempt 2/3 — 405","timestamp":"2026-03-10 07:55:28"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon attempt 3/3 — 405","timestamp":"2026-03-10 07:55:32"}
+{"level":"warn","message":"[DoraHacks] API https://dorahacks.io/api/hackathon failed: Request failed with status code 405","timestamp":"2026-03-10 07:55:32"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/v1/hackathon/list attempt 1/3 — 405","timestamp":"2026-03-10 07:55:32"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/v1/hackathon/list attempt 2/3 — 405","timestamp":"2026-03-10 07:55:35"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/v1/hackathon/list attempt 3/3 — 405","timestamp":"2026-03-10 07:55:39"}
+{"level":"warn","message":"[DoraHacks] API https://dorahacks.io/api/v1/hackathon/list failed: Request failed with status code 405","timestamp":"2026-03-10 07:55:39"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/buidl?type=hackathon&status=open attempt 1/3 — 405","timestamp":"2026-03-10 07:55:39"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/buidl?type=hackathon&status=open attempt 2/3 — 405","timestamp":"2026-03-10 07:55:41"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/buidl?type=hackathon&status=open attempt 3/3 — 405","timestamp":"2026-03-10 07:55:45"}
+{"level":"warn","message":"[DoraHacks] API https://dorahacks.io/api/buidl?type=hackathon&status=open failed: Request failed with status code 405","timestamp":"2026-03-10 07:55:45"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon?status=open&limit=30&offset=0 attempt 1/3 — 405","timestamp":"2026-03-10 07:55:45"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon?status=open&limit=30&offset=0 attempt 2/3 — 405","timestamp":"2026-03-10 07:55:47"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon?status=open&limit=30&offset=0 attempt 3/3 — 405","timestamp":"2026-03-10 07:55:51"}
+{"level":"warn","message":"[DoraHacks] API https://dorahacks.io/api/hackathon?status=open&limit=30&offset=0 failed: Request failed with status code 405","timestamp":"2026-03-10 07:55:51"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/hackathon attempt 1/3 — 405","timestamp":"2026-03-10 07:55:51"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/hackathon attempt 2/3 — 405","timestamp":"2026-03-10 07:55:53"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/hackathon attempt 3/3 — 405","timestamp":"2026-03-10 07:55:57"}
+{"level":"warn","message":"[DoraHacks] HTML failed: Request failed with status code 405","timestamp":"2026-03-10 07:55:57"}
+{"level":"info","message":"[DoraHacks] Returning 0 hackathons","timestamp":"2026-03-10 07:55:57"}
+{"level":"info","message":"  ✔ DoraHacks: 0 hackathons","timestamp":"2026-03-10 07:55:57"}
+{"level":"info","message":"[Scrapers] Total hackathons scraped: 111","timestamp":"2026-03-10 07:56:00"}
+{"level":"info","message":"✅ Live hackathons: 42 new, 69 updated","timestamp":"2026-03-10 07:56:00"}
+{"level":"info","message":"Running live internship scrapers…","timestamp":"2026-03-10 07:56:00"}
+{"level":"info","message":"[Scrapers] Running 7 internship scrapers…","timestamp":"2026-03-10 07:56:00"}
+{"level":"info","message":"  → Internshala…","timestamp":"2026-03-10 07:56:00"}
+{"level":"info","message":"[Internshala] Starting scrape…","timestamp":"2026-03-10 07:56:00"}
+{"level":"info","message":"[Internshala] computer-science-internship HTML → 100 internships","timestamp":"2026-03-10 07:56:01"}
+{"level":"info","message":"[Internshala] web-development-internship HTML → 100 internships","timestamp":"2026-03-10 07:56:03"}
+{"level":"info","message":"[Internshala] machine-learning-internship HTML → 100 internships","timestamp":"2026-03-10 07:56:05"}
+{"level":"info","message":"[Internshala] data-science-internship HTML → 100 internships","timestamp":"2026-03-10 07:56:08"}
+{"level":"info","message":"[Internshala] android-development-internship HTML → 80 internships","timestamp":"2026-03-10 07:56:10"}
+{"level":"info","message":"[Internshala] python-internship HTML → 80 internships","timestamp":"2026-03-10 07:56:13"}
+{"level":"info","message":"[Internshala] Total internships found: 560","timestamp":"2026-03-10 07:56:15"}
+{"level":"info","message":"  ✔ Internshala: 560 internships","timestamp":"2026-03-10 07:56:15"}
+{"level":"info","message":"  → Remotive…","timestamp":"2026-03-10 07:56:17"}
+{"level":"info","message":"[Remotive] Starting scrape…","timestamp":"2026-03-10 07:56:17"}
+{"level":"info","message":"[Remotive] software-dev → 2 jobs","timestamp":"2026-03-10 07:56:17"}
+{"level":"info","message":"[Remotive] data → 0 jobs","timestamp":"2026-03-10 07:56:18"}
+{"level":"info","message":"[Remotive] devops-sysadmin → 2 jobs","timestamp":"2026-03-10 07:56:19"}
+{"level":"info","message":"[Remotive] mobile-dev → 2 jobs","timestamp":"2026-03-10 07:56:21"}
+{"level":"info","message":"[Remotive] Total: 6","timestamp":"2026-03-10 07:56:22"}
+{"level":"info","message":"  ✔ Remotive: 6 internships","timestamp":"2026-03-10 07:56:22"}
+{"level":"info","message":"  → LetsIntern…","timestamp":"2026-03-10 07:56:24"}
+{"level":"info","message":"[LetsIntern] Starting scrape…","timestamp":"2026-03-10 07:56:24"}
+{"level":"warn","message":"[LetsIntern] GET https://www.letsintern.com/internships/it attempt 1/3 — 404","timestamp":"2026-03-10 07:56:25"}
+{"level":"warn","message":"[LetsIntern] GET https://www.letsintern.com/internships/it attempt 2/3 — 404","timestamp":"2026-03-10 07:56:28"}
+{"level":"warn","message":"[LetsIntern] GET https://www.letsintern.com/internships/it attempt 3/3 — 404","timestamp":"2026-03-10 07:56:32"}
+{"level":"warn","message":"[LetsIntern] https://www.letsintern.com/internships/it failed: Request failed with status code 404","timestamp":"2026-03-10 07:56:32"}
+{"level":"warn","message":"[LetsIntern] GET https://www.letsintern.com/internships/engineering attempt 1/3 — 404","timestamp":"2026-03-10 07:56:34"}
+{"level":"warn","message":"[LetsIntern] GET https://www.letsintern.com/internships/engineering attempt 2/3 — 404","timestamp":"2026-03-10 07:56:37"}
+{"level":"warn","message":"[LetsIntern] GET https://www.letsintern.com/internships/engineering attempt 3/3 — 404","timestamp":"2026-03-10 07:56:41"}
+{"level":"warn","message":"[LetsIntern] https://www.letsintern.com/internships/engineering failed: Request failed with status code 404","timestamp":"2026-03-10 07:56:41"}
+{"level":"warn","message":"[LetsIntern] GET https://www.letsintern.com/internships/computer-science attempt 1/3 — 404","timestamp":"2026-03-10 07:56:43"}
+{"level":"warn","message":"[LetsIntern] GET https://www.letsintern.com/internships/computer-science attempt 2/3 — 404","timestamp":"2026-03-10 07:56:45"}
+{"level":"warn","message":"[LetsIntern] GET https://www.letsintern.com/internships/computer-science attempt 3/3 — 404","timestamp":"2026-03-10 07:56:50"}
+{"level":"warn","message":"[LetsIntern] https://www.letsintern.com/internships/computer-science failed: Request failed with status code 404","timestamp":"2026-03-10 07:56:50"}
+{"level":"info","message":"[LetsIntern] https://www.letsintern.com/internships → 0 cards","timestamp":"2026-03-10 07:56:54"}
+{"level":"info","message":"[LetsIntern] Total: 0","timestamp":"2026-03-10 07:56:55"}
+{"level":"info","message":"  ✔ LetsIntern: 0 internships","timestamp":"2026-03-10 07:56:55"}
+{"level":"info","message":"  → Fresherworld…","timestamp":"2026-03-10 07:56:57"}
+{"level":"info","message":"[Fresherworld] Starting scrape…","timestamp":"2026-03-10 07:56:57"}
+{"level":"info","message":"[Fresherworld] https://www.fresherworld.com/internship → 0 cards","timestamp":"2026-03-10 07:57:00"}
+{"level":"info","message":"[Fresherworld] https://www.fresherworld.com/internship/it-software → 0 cards","timestamp":"2026-03-10 07:57:02"}
+{"level":"info","message":"[Fresherworld] https://www.fresherworld.com/internship/computer-science → 0 cards","timestamp":"2026-03-10 07:57:05"}
+{"level":"info","message":"[Fresherworld] Total: 0","timestamp":"2026-03-10 07:57:06"}
+{"level":"info","message":"  ✔ Fresherworld: 0 internships","timestamp":"2026-03-10 07:57:06"}
+{"level":"info","message":"  → Hirist…","timestamp":"2026-03-10 07:57:09"}
+{"level":"info","message":"[Hirist] Starting scrape…","timestamp":"2026-03-10 07:57:09"}
+{"level":"warn","message":"[Hirist] GET https://www.hirist.tech/jobs/internship attempt 1/3 — 404","timestamp":"2026-03-10 07:57:09"}
+{"level":"warn","message":"[Hirist] GET https://www.hirist.tech/jobs/internship attempt 2/3 — 404","timestamp":"2026-03-10 07:57:11"}
+{"level":"warn","message":"[Hirist] GET https://www.hirist.tech/jobs/internship attempt 3/3 — 404","timestamp":"2026-03-10 07:57:15"}
+{"level":"warn","message":"[Hirist] https://www.hirist.tech/jobs/internship failed: Request failed with status code 404","timestamp":"2026-03-10 07:57:15"}
+{"level":"warn","message":"[Hirist] GET https://www.hirist.tech/jobs/fresher attempt 1/3 — 404","timestamp":"2026-03-10 07:57:17"}
+{"level":"warn","message":"[Hirist] GET https://www.hirist.tech/jobs/fresher attempt 2/3 — 404","timestamp":"2026-03-10 07:57:19"}
+{"level":"warn","message":"[Hirist] GET https://www.hirist.tech/jobs/fresher attempt 3/3 — 404","timestamp":"2026-03-10 07:57:23"}
+{"level":"warn","message":"[Hirist] https://www.hirist.tech/jobs/fresher failed: Request failed with status code 404","timestamp":"2026-03-10 07:57:23"}
+{"level":"warn","message":"[Hirist] GET https://www.hirist.tech/jobs/software-engineer-internship attempt 1/3 — 404","timestamp":"2026-03-10 07:57:24"}
+{"level":"warn","message":"[Hirist] GET https://www.hirist.tech/jobs/software-engineer-internship attempt 2/3 — 404","timestamp":"2026-03-10 07:57:26"}
+{"level":"warn","message":"[Hirist] GET https://www.hirist.tech/jobs/software-engineer-internship attempt 3/3 — 404","timestamp":"2026-03-10 07:57:30"}
+{"level":"warn","message":"[Hirist] https://www.hirist.tech/jobs/software-engineer-internship failed: Request failed with status code 404","timestamp":"2026-03-10 07:57:30"}
+{"level":"info","message":"[Hirist] Total: 0","timestamp":"2026-03-10 07:57:32"}
+{"level":"info","message":"  ✔ Hirist: 0 internships","timestamp":"2026-03-10 07:57:32"}
+{"level":"info","message":"  → Twenty19…","timestamp":"2026-03-10 07:57:34"}
+{"level":"info","message":"[Twenty19] Starting scrape…","timestamp":"2026-03-10 07:57:34"}
+{"level":"warn","message":"[Twenty19] GET https://www.twenty19.com/internship attempt 1/3 — Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 07:57:35"}
+{"level":"warn","message":"[Twenty19] GET https://www.twenty19.com/internship attempt 2/3 — Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 07:57:37"}
+{"level":"warn","message":"[Twenty19] GET https://www.twenty19.com/internship attempt 3/3 — Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 07:57:42"}
+{"level":"warn","message":"[Twenty19] https://www.twenty19.com/internship failed: Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 07:57:42"}
+{"level":"warn","message":"[Twenty19] GET https://www.twenty19.com/internship/engineering attempt 1/3 — Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 07:57:43"}
+{"level":"warn","message":"[Twenty19] GET https://www.twenty19.com/internship/engineering attempt 2/3 — Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 07:57:46"}
+{"level":"warn","message":"[Twenty19] GET https://www.twenty19.com/internship/engineering attempt 3/3 — Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 07:57:50"}
+{"level":"warn","message":"[Twenty19] https://www.twenty19.com/internship/engineering failed: Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 07:57:50"}
+{"level":"warn","message":"[Twenty19] GET https://www.twenty19.com/internship/it-software attempt 1/3 — Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 07:57:52"}
+{"level":"warn","message":"[Twenty19] GET https://www.twenty19.com/internship/it-software attempt 2/3 — Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 07:57:55"}
+{"level":"warn","message":"[Twenty19] GET https://www.twenty19.com/internship/it-software attempt 3/3 — Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 07:57:59"}
+{"level":"warn","message":"[Twenty19] https://www.twenty19.com/internship/it-software failed: Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 07:57:59"}
+{"level":"info","message":"[Twenty19] Total: 0","timestamp":"2026-03-10 07:58:00"}
+{"level":"info","message":"  ✔ Twenty19: 0 internships","timestamp":"2026-03-10 07:58:00"}
+{"level":"info","message":"  → Apna…","timestamp":"2026-03-10 07:58:03"}
+{"level":"info","message":"[Apna] Starting scrape…","timestamp":"2026-03-10 07:58:03"}
+{"level":"warn","message":"[Apna] GET https://api.apna.co/v1/jobs?type=internship attempt 1/3 — getaddrinfo ENOTFOUND api.apna.co","timestamp":"2026-03-10 07:58:04"}
+{"level":"warn","message":"[Apna] GET https://api.apna.co/v1/jobs?type=internship attempt 2/3 — getaddrinfo ENOTFOUND api.apna.co","timestamp":"2026-03-10 07:58:06"}
+{"level":"warn","message":"[Apna] GET https://api.apna.co/v1/jobs?type=internship attempt 3/3 — getaddrinfo ENOTFOUND api.apna.co","timestamp":"2026-03-10 07:58:10"}
+{"level":"warn","message":"[Apna] API https://api.apna.co/v1/jobs?type=internship failed: getaddrinfo ENOTFOUND api.apna.co","timestamp":"2026-03-10 07:58:10"}
+{"level":"warn","message":"[Apna] GET https://apna.co/jobs/internship attempt 1/3 — 404","timestamp":"2026-03-10 07:58:10"}
+{"level":"warn","message":"[Apna] GET https://apna.co/jobs/internship attempt 2/3 — 404","timestamp":"2026-03-10 07:58:12"}
+{"level":"warn","message":"[Apna] GET https://apna.co/jobs/internship attempt 3/3 — 404","timestamp":"2026-03-10 07:58:16"}
+{"level":"warn","message":"[Apna] HTML https://apna.co/jobs/internship failed: Request failed with status code 404","timestamp":"2026-03-10 07:58:16"}
+{"level":"warn","message":"[Apna] GET https://apna.co/jobs/fresher-jobs attempt 1/3 — 404","timestamp":"2026-03-10 07:58:17"}
+{"level":"warn","message":"[Apna] GET https://apna.co/jobs/fresher-jobs attempt 2/3 — 404","timestamp":"2026-03-10 07:58:19"}
+{"level":"warn","message":"[Apna] GET https://apna.co/jobs/fresher-jobs attempt 3/3 — 404","timestamp":"2026-03-10 07:58:23"}
+{"level":"warn","message":"[Apna] HTML https://apna.co/jobs/fresher-jobs failed: Request failed with status code 404","timestamp":"2026-03-10 07:58:23"}
+{"level":"info","message":"[Apna] Total: 0","timestamp":"2026-03-10 07:58:23"}
+{"level":"info","message":"  ✔ Apna: 0 internships","timestamp":"2026-03-10 07:58:23"}
+{"level":"info","message":"[Scrapers] Total internships scraped: 566","timestamp":"2026-03-10 07:58:25"}
+{"level":"info","message":"✅ Live internships: 1 new, 326 updated","timestamp":"2026-03-10 07:58:26"}
+{"level":"info","message":"Running live event scrapers…","timestamp":"2026-03-10 07:58:26"}
+{"level":"info","message":"[Scrapers] Running 8 event scrapers…","timestamp":"2026-03-10 07:58:26"}
+{"level":"info","message":"  → Eventbrite…","timestamp":"2026-03-10 07:58:26"}
+{"level":"info","message":"[Eventbrite] Starting scrape…","timestamp":"2026-03-10 07:58:26"}
+{"level":"info","message":"[Eventbrite] Total: 44 events","timestamp":"2026-03-10 07:58:37"}
+{"level":"info","message":"  ✔ Eventbrite: 22 events","timestamp":"2026-03-10 07:58:37"}
+{"level":"info","message":"  → GoogleDev…","timestamp":"2026-03-10 07:58:40"}
+{"level":"info","message":"[GoogleDev] Starting scrape…","timestamp":"2026-03-10 07:58:40"}
+{"level":"warn","message":"[GoogleDev] JSON API failed: Request failed with status code 404","timestamp":"2026-03-10 07:58:40"}
+{"level":"info","message":"[GoogleDev] HTML: 14 events","timestamp":"2026-03-10 07:58:41"}
+{"level":"info","message":"  ✔ GoogleDev: 9 events","timestamp":"2026-03-10 07:58:41"}
+{"level":"info","message":"  → Luma…","timestamp":"2026-03-10 07:58:44"}
+{"level":"info","message":"[Luma] Starting scrape…","timestamp":"2026-03-10 07:58:44"}
+{"level":"info","message":"[Luma] Discover https://api.lu.ma/discover/get-paginated-events?location=India&period=future&limit=50 → 40","timestamp":"2026-03-10 07:58:45"}
+{"level":"info","message":"[Luma] Total: 40 events","timestamp":"2026-03-10 07:58:55"}
+{"level":"info","message":"  ✔ Luma: 40 events","timestamp":"2026-03-10 07:58:55"}
+{"level":"info","message":"  → Unstop…","timestamp":"2026-03-10 07:58:58"}
+{"level":"info","message":"[UnstopEvents] Starting scrape…","timestamp":"2026-03-10 07:58:58"}
+{"level":"info","message":"[UnstopEvents] event: 20 items","timestamp":"2026-03-10 07:59:00"}
+{"level":"info","message":"[UnstopEvents] workshop: 20 items","timestamp":"2026-03-10 07:59:04"}
+{"level":"info","message":"[UnstopEvents] conference: 20 items","timestamp":"2026-03-10 07:59:10"}
+{"level":"info","message":"[UnstopEvents] Total: 17 events","timestamp":"2026-03-10 07:59:10"}
+{"level":"info","message":"  ✔ Unstop: 17 events","timestamp":"2026-03-10 07:59:10"}
+{"level":"info","message":"  → KonfHub…","timestamp":"2026-03-10 07:59:12"}
+{"level":"info","message":"[KonfHub] Starting scrape…","timestamp":"2026-03-10 07:59:12"}
+{"level":"warn","message":"[KonfHub] https://konfhub.com/explore failed: Request failed with status code 404","timestamp":"2026-03-10 07:59:13"}
+{"level":"warn","message":"[KonfHub] https://konfhub.com/conferences failed: Request failed with status code 404","timestamp":"2026-03-10 07:59:17"}
+{"level":"info","message":"[KonfHub] Total: 0 events","timestamp":"2026-03-10 07:59:18"}
+{"level":"info","message":"  ✔ KonfHub: 0 events","timestamp":"2026-03-10 07:59:18"}
+{"level":"info","message":"  → GDGCommunity…","timestamp":"2026-03-10 07:59:21"}
+{"level":"info","message":"[GDGCommunity] Starting scrape…","timestamp":"2026-03-10 07:59:21"}
+{"level":"warn","message":"[GDGCommunity] API failed: Request failed with status code 403","timestamp":"2026-03-10 07:59:22"}
+{"level":"info","message":"[GDGCommunity] API: 500 events","timestamp":"2026-03-10 07:59:28"}
+{"level":"info","message":"[GDGCommunity] Total: 203 events","timestamp":"2026-03-10 07:59:28"}
+{"level":"info","message":"  ✔ GDGCommunity: 203 events","timestamp":"2026-03-10 07:59:28"}
+{"level":"info","message":"  → DevEventsIN…","timestamp":"2026-03-10 07:59:30"}
+{"level":"info","message":"[DevEventsIndia] Starting scrape…","timestamp":"2026-03-10 07:59:30"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/tech: 36 events","timestamp":"2026-03-10 07:59:31"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/ai: 5 events","timestamp":"2026-03-10 07:59:34"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/cloud: 7 events","timestamp":"2026-03-10 07:59:36"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/javascript: 3 events","timestamp":"2026-03-10 07:59:38"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/devops: 5 events","timestamp":"2026-03-10 07:59:40"}
+{"level":"info","message":"[DevEventsIndia] /conferences/AS/IN: 88 events","timestamp":"2026-03-10 07:59:43"}
+{"level":"info","message":"[DevEventsIndia] Total: 144 events","timestamp":"2026-03-10 07:59:44"}
+{"level":"info","message":"  ✔ DevEventsIN: 144 events","timestamp":"2026-03-10 07:59:44"}
+{"level":"info","message":"  → HasGeek…","timestamp":"2026-03-10 07:59:46"}
+{"level":"info","message":"[HasGeek] Starting scrape…","timestamp":"2026-03-10 07:59:46"}
+{"level":"info","message":"[HasGeek] https://hasgeek.com/: 22 events","timestamp":"2026-03-10 07:59:47"}
+{"level":"info","message":"[HasGeek] Total: 22 events","timestamp":"2026-03-10 07:59:47"}
+{"level":"info","message":"  ✔ HasGeek: 22 events","timestamp":"2026-03-10 07:59:47"}
+{"level":"info","message":"[Scrapers] Total events scraped: 457","timestamp":"2026-03-10 07:59:49"}
+{"level":"info","message":"✅ Live events: 40 new, 417 updated","timestamp":"2026-03-10 07:59:51"}
+{"level":"info","message":"📊 Final DB: 145 hackathons, 462 internships, 464 events","timestamp":"2026-03-10 07:59:51"}

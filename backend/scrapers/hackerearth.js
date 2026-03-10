@@ -1,123 +1,139 @@
 /**
- * scrapers/hackerearth.js
- * HackerEarth Challenges — coding challenges + hackathons
- *
- * Strategy: HackerEarth exposes a public REST API at /api/v3/ that returns
- * JSON for their public challenge listings. Discovered via DevTools inspection.
- *
- * Endpoint: GET https://www.hackerearth.com/api/v3/events/?limit=50
- *
- * ✅ APPROACH: Direct REST API (JSON) — no auth required for public events
+ * scrapers/hackerearth.js — HackerEarth Challenges
+ * Fixed: API endpoint changed. Now uses correct v4 endpoint + HTML fallback.
  */
-
 const BaseScraper = require("./base");
+const cheerio     = require("cheerio");
 const logger      = require("../utils/logger");
 
 class HackerEarthScraper extends BaseScraper {
   constructor() {
     super("HackerEarth");
-    this.apiUrl  = "https://www.hackerearth.com/api/v3/events/";
     this.baseUrl = "https://www.hackerearth.com";
+    this.apiUrls = [
+      "https://www.hackerearth.com/api/v4/challenges/?type=hackathon&status=ongoing,upcoming&limit=50",
+      "https://www.hackerearth.com/api/v3/challenges/?type=hackathon&limit=50",
+      "https://www.hackerearth.com/api/v2/challenges/?type=hackathon&limit=50",
+      "https://www.hackerearth.com/challenges/data/?type=hackathon",
+    ];
+    this.htmlUrl = "https://www.hackerearth.com/challenges/hackathon/";
   }
 
   async scrape() {
     logger.info("[HackerEarth] Starting scrape…");
     const results = [];
+    const seen    = new Set();
+    const now     = new Date();
 
-    const pages = [
-      { type: "hackathon", limit: 50, offset: 0 },
-      { type: "hackathon", limit: 50, offset: 50 },
-    ];
-
-    for (const params of pages) {
+    // Strategy 1: Try all API endpoints
+    for (const url of this.apiUrls) {
       try {
-        const res = await this.get(this.apiUrl, {
-          params,
+        const res   = await this.get(url, {
           headers: {
-            Accept:   "application/json",
-            Referer:  "https://www.hackerearth.com/challenges/",
+            Accept: "application/json",
+            Referer: "https://www.hackerearth.com/challenges/",
+            "User-Agent": "Mozilla/5.0 Chrome/125.0.0.0",
           },
           timeout: 20000,
         });
-
-        // Response shape: { response: { hackathons: [...] } } or { hackathons: [...] }
         const body  = res.data;
-        const items =
-          body?.response?.hackathons ||
-          body?.hackathons           ||
-          body?.results              ||
-          (Array.isArray(body) ? body : []);
-
-        logger.info(`[HackerEarth] offset=${params.offset} → ${items.length} items`);
-
-        for (const item of items) {
-          try {
-            const h = this._parse(item);
-            if (h) results.push(h);
-          } catch (e) {
-            logger.warn(`[HackerEarth] Parse error: ${e.message}`);
+        const items = body?.results || body?.response?.hackathons || body?.hackathons ||
+                      body?.challenges || body?.data || (Array.isArray(body) ? body : []);
+        if (items.length > 0) {
+          logger.info(`[HackerEarth] API ${url} → ${items.length}`);
+          for (const item of items) {
+            const h = this._parse(item, now);
+            if (h && !seen.has(h.externalId)) { seen.add(h.externalId); results.push(h); }
           }
+          if (results.length > 0) break;
         }
-
-        // If less than limit returned, no more pages
-        if (items.length < params.limit) break;
-        await this.sleep(1500);
-
       } catch (err) {
-        logger.warn(`[HackerEarth] offset=${params.offset} failed: ${err.message}`);
-        break;
+        logger.warn(`[HackerEarth] API ${url} failed: ${err.message}`);
       }
+    }
+    if (results.length > 0) { logger.info(`[HackerEarth] Returning ${results.length}`); return results; }
+
+    // Strategy 2: HTML scraping
+    try {
+      const res = await this.get(this.htmlUrl, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 Chrome/125.0.0.0",
+          Accept: "text/html",
+          Referer: "https://www.hackerearth.com/challenges/",
+        },
+        timeout: 25000,
+      });
+      const $ = cheerio.load(res.data);
+
+      // Check for JSON data in script
+      $("script").each((_, el) => {
+        const text = $(el).html() || "";
+        if (!text.includes("hackathon") && !text.includes("challenge")) return;
+        const match = text.match(/window\.__INITIAL_STATE__\s*=\s*({[\s\S]*?});/);
+        if (!match) return;
+        try {
+          const state = JSON.parse(match[1]);
+          const items = state?.challenges?.list || state?.hackathons || [];
+          for (const item of items) {
+            const h = this._parse(item, now);
+            if (h && !seen.has(h.externalId)) { seen.add(h.externalId); results.push(h); }
+          }
+        } catch (_) {}
+      });
+
+      if (results.length > 0) { logger.info(`[HackerEarth] Returning ${results.length}`); return results; }
+
+      // Card scraping fallback
+      const cards = $(".challenge-card, [class*='challenge'], [class*='hackathon'], article").toArray();
+      logger.info(`[HackerEarth] HTML cards → ${cards.length}`);
+      for (const el of cards) {
+        const $el  = $(el);
+        const name = $el.find("h2,h3,h4,.title,[class*='title']").first().text().trim();
+        if (!name || seen.has(name)) continue;
+        const href = $el.find("a[href*='/challenges/']").first().attr("href") || "";
+        const link = href.startsWith("http") ? href : href ? `https://www.hackerearth.com${href}` : "";
+        if (!link) continue;
+        seen.add(name);
+        results.push(this.normalise({
+          name, organizer: "HackerEarth", mode: "Online", city: "Online",
+          applyLink: link, sourceUrl: this.htmlUrl,
+          externalId: `he-${name.toLowerCase().replace(/\W+/g,"-").slice(0,60)}`,
+          logo: "💻", tags: ["Hackathon", "Coding"],
+        }));
+      }
+    } catch (err) {
+      logger.warn(`[HackerEarth] HTML failed: ${err.message}`);
     }
 
     logger.info(`[HackerEarth] Returning ${results.length} hackathons`);
     return results;
   }
 
-  _parse(item) {
-    const title = item.title || item.name || "";
+  _parse(item, now) {
+    const title = item.title || item.name || item.challenge_name || "";
     if (!title) return null;
-
-    const slug  = item.slug || item.url_path || "";
+    const slug  = item.slug || item.url_path || item.challenge_url_path || "";
     const link  = slug
       ? `https://www.hackerearth.com/challenges/hackathon/${slug}/`
       : (item.url || item.challenge_url || "");
     if (!link) return null;
-
-    const prize =
-      item.prize         ||
-      (item.prize_amount ? `$${item.prize_amount}` : "TBA");
-
-    const start  = item.start_time  || item.start_date  || null;
-    const end    = item.end_time    || item.end_date    || null;
-    const regEnd = item.reg_end_time || end             || null;
-
-    const tags   = (item.tags || item.skills || []).map(t =>
-      typeof t === "string" ? t : t.name || ""
-    ).filter(Boolean);
-
+    const end = item.end_time || item.end_date || item.ends_at || null;
+    if (end && new Date(end) < now) return null;
+    const tags = (item.tags || item.skills || item.domains || []).map(t =>
+      typeof t === "string" ? t : t.name || "").filter(Boolean);
     return this.normalise({
-      name:                 title.trim(),
-      organizer:            item.company?.name || item.organization || "HackerEarth",
-      mode:                 "Online",
-      city:                 "Online",
-      state:                "",
-      country:              "Global",
-      startDate:            start,
-      endDate:              end,
-      registrationDeadline: regEnd,
-      prize,
-      teamSizeMin:          item.min_team_size || 1,
-      teamSizeMax:          item.max_team_size || 4,
-      domains:              tags,
-      tags:                 [...tags, "Coding"],
-      applyLink:            link,
-      websiteLink:          link,
-      sourceUrl:            "https://www.hackerearth.com/challenges/",
-      externalId:           String(item.id || item.slug || title),
-      logo:                 item.logo        ||
-                            item.cover_image  || "💻",
-      isFeatured:           Boolean(item.is_featured),
-      registrationCount:    Number(item.num_participants || 0),
+      name: title.trim(),
+      organizer: item.company?.name || item.organisation_name || "HackerEarth",
+      mode: "Online", city: "Online",
+      startDate: item.start_time || item.start_date || null,
+      endDate: end, registrationDeadline: item.reg_end_time || end,
+      prize: item.prize || (item.prize_amount ? `$${item.prize_amount}` : "TBA"),
+      tags: [...tags, "Coding"], domains: tags,
+      applyLink: link, websiteLink: link, sourceUrl: this.htmlUrl,
+      externalId: `he-${String(item.id || item.slug || title).slice(0,70)}`,
+      logo: item.logo || item.cover_image || "💻",
+      isFeatured: Boolean(item.is_featured),
+      registrationCount: Number(item.num_participants || 0),
     });
   }
 }

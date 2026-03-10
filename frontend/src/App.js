@@ -114,7 +114,7 @@ function useInternships({ds="", location="All", isRemote="All"}={}) {
 /* ────────────────────────────────────────────────
    HELPERS
 ──────────────────────────────────────────────── */
-function useEvents({type="", location="All", price="All", search=""}={}) {
+function useEvents({type="", city="All", price="All", domain="All", search=""}={}) {
   const [data,    setData]    = useState([]);
   const [total,   setTotal]   = useState(0);
   const [loading, setLoading] = useState(true);
@@ -122,21 +122,39 @@ function useEvents({type="", location="All", price="All", search=""}={}) {
   const fetchId = useRef(0);
 
   useEffect(() => {
-    const key = [type,location,price,search].join("|");
+    const key = [type,city,price,domain,search].join("|");
     if (key === lastKey.current) return;
     lastKey.current = key;
     const id = ++fetchId.current;
     setLoading(true);
     const params = { limit:500 };
-    if(type     && type     !=="All") params.type     = type;
-    if(location && location !=="All") params.location = location;
-    if(price    && price    !=="All") params.price    = price;
+    if(type   && type   !=="All") params.type   = type;
+    if(city   && city   !=="All") params.location = city;
+    if(price  && price  !=="All") params.price  = price;
     if(search) params.search = search;
     apiFetch("/events", params)
-      .then(j => { if(fetchId.current!==id) return; setData(j.data||[]); setTotal(j.total||0); })
+      .then(j => {
+        if(fetchId.current!==id) return;
+        let arr = j.data||[];
+        // Client-side domain filter (eventType contains domain keyword)
+        if(domain && domain!=="All") {
+          const dl = domain.toLowerCase();
+          arr = arr.filter(e=>(e.eventType||"").toLowerCase().includes(dl)||(e.title||"").toLowerCase().includes(dl)||(e.description||"").toLowerCase().includes(dl));
+        }
+        // Sort by date ascending (soonest first, TBD last)
+        arr.sort((a,b)=>{
+          const da = a.date ? new Date(a.date) : null;
+          const db = b.date ? new Date(b.date) : null;
+          if(!da && !db) return 0;
+          if(!da) return 1;
+          if(!db) return -1;
+          return da - db;
+        });
+        setData(arr); setTotal(j.total||0);
+      })
       .catch(() => { if(fetchId.current===id) { setData([]); setTotal(0); } })
       .finally(() => { if(fetchId.current===id) setLoading(false); });
-  }, [type, location, price, search]);
+  }, [type, city, price, domain, search]);
 
   return { data, total, loading };
 }
@@ -1023,74 +1041,104 @@ const EVENT_COLORS = {
   "Other":            {bg:"rgba(136,153,187,.12)", color:"var(--text2)",   border:"rgba(136,153,187,.25)"},
 };
 
-const EVENT_TYPE_OPTS = ["All","Conference","Workshop","Meetup","Webinar","Bootcamp","AI/ML Event","Hackathon","Startup Event","Coding Competition","Internship Event"];
+const EVENT_TYPE_OPTS = ["All","Conference","Workshop","Meetup","Webinar","Bootcamp","AI/ML Event","Startup Event","Coding Competition"];
 
 /* ────────────────────────────────────────────────
    EVENT CARD
 ──────────────────────────────────────────────── */
+const EVENT_PLATFORM_LOGO = (platform="", link="") => {
+  const p = platform.toLowerCase();
+  if(p.includes("eventbrite")) return "🎫";
+  if(p.includes("google") || p.includes("gdg")) return "🔵";
+  if(p.includes("luma")) return "🌙";
+  if(p.includes("unstop")) return "🏆";
+  if(p.includes("konfhub")) return "🎪";
+  if(p.includes("hasgeek")) return "🛠";
+  if(p.includes("dev.events")) return "📡";
+  return "📅";
+};
+
+const fmtEventDate = (d) => {
+  if(!d) return "TBD";
+  const dt = new Date(d);
+  if(isNaN(dt)) {
+    // Try to parse "Mar 15, 2026" style strings
+    const parsed = new Date(String(d));
+    if(!isNaN(parsed)) return parsed.toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});
+    return String(d);
+  }
+  return dt.toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"});
+};
+
 const EventCard = ({e, compact=false}) => {
   const typeStyle = EVENT_COLORS[e.eventType] || EVENT_COLORS["Other"];
-  // Auto-generate description if missing
-  const desc = e.description || `${e.eventType} in ${e.location||"India"} — ${e.date||"Date TBD"}. Click Register to learn more.`;
+  const desc = e.description || `${e.eventType||"Event"} — ${e.location||"India"}. Click Register to learn more.`;
+  const isOnline = (e.mode||e.location||"").toLowerCase().includes("online") || (e.location||"").toLowerCase()==="online";
+  const city = (!isOnline && e.location && e.location!=="India") ? e.location : null;
+  const dateStr = fmtEventDate(e.date);
+  const hasLink = e.registrationLink && e.registrationLink!=="#";
   return (
     <div className="hcard" style={{padding:20,display:"flex",flexDirection:"column",gap:10,cursor:"default"}}>
-      {/* Top row */}
+      {/* Top row: logo + title + type badge */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8}}>
         <div style={{display:"flex",gap:10,alignItems:"flex-start",flex:1,minWidth:0}}>
-          <LogoBox name={e.platform} organizer={e.platform} platform={e.platform} applyLink={e.registrationLink} size={38} radius={9}
-            emoji={e.platform==="Eventbrite"?"🎫":e.platform==="GoogleDev"?"🔵":e.platform==="Commudle"?"🇮🇳":"📅"}/>
+          <div style={{width:38,height:38,borderRadius:9,background:"var(--bg3)",border:"1px solid var(--border)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0}}>
+            {EVENT_PLATFORM_LOGO(e.platform, e.registrationLink)}
+          </div>
           <div style={{flex:1,minWidth:0}}>
             <div className="syne" style={{fontWeight:700,fontSize:14,lineHeight:1.35,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{e.title}</div>
+            <div style={{fontSize:10,color:"var(--text3)",marginTop:2,fontFamily:"'JetBrains Mono',monospace"}}>via {e.platform}</div>
           </div>
         </div>
-        <span style={{...typeStyle,padding:"3px 9px",borderRadius:20,fontSize:10,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",whiteSpace:"nowrap",flexShrink:0,border:`1px solid ${typeStyle.border}`}}>{e.eventType}</span>
+        <span style={{...typeStyle,padding:"3px 9px",borderRadius:20,fontSize:10,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",whiteSpace:"nowrap",flexShrink:0,border:`1px solid ${typeStyle.border}`}}>{e.eventType||"Event"}</span>
       </div>
 
-      {/* Description — always show */}
+      {/* Description */}
       {!compact && (
-        <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.6,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:3,WebkitBoxOrient:"vertical"}}>{desc}</div>
+        <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.6,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{desc}</div>
       )}
 
-      {/* Meta grid */}
+      {/* Meta: date + city + mode + price row */}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
-        {[
-          ["📅","Date",e.date||"TBD"],
-          ["📍","Location",e.location||"Online"],
-        ].map(([ic,lb,vl])=>(
-          <div key={lb} style={{background:"var(--bg3)",borderRadius:8,padding:"6px 9px"}}>
-            <div style={{fontSize:9,color:"var(--text3)",marginBottom:1}}>{ic} {lb}</div>
-            <div className="mono" style={{fontSize:11,fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{vl}</div>
-          </div>
-        ))}
+        <div style={{background:"var(--bg3)",borderRadius:8,padding:"6px 9px"}}>
+          <div style={{fontSize:9,color:"var(--text3)",marginBottom:1}}>📅 Date</div>
+          <div className="mono" style={{fontSize:11,fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{dateStr}</div>
+        </div>
+        <div style={{background:"var(--bg3)",borderRadius:8,padding:"6px 9px"}}>
+          <div style={{fontSize:9,color:"var(--text3)",marginBottom:1}}>📍 Location</div>
+          <div className="mono" style={{fontSize:11,fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{city||"Online"}</div>
+        </div>
       </div>
 
-      {/* Price + platform row — hide Unknown price */}
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,marginTop:"auto"}}>
-        {e.price && e.price !== "Unknown" ? (
+      {/* Mode + Price row */}
+      <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginTop:"auto"}}>
+        <span style={{fontSize:11,padding:"2px 8px",borderRadius:6,fontWeight:700,
+          background:isOnline?"rgba(0,212,255,.1)":"rgba(0,255,136,.1)",
+          color:isOnline?"var(--cyan)":"var(--green)",
+          border:`1px solid ${isOnline?"rgba(0,212,255,.25)":"rgba(0,255,136,.25)"}`
+        }}>{isOnline?"🌐 Online":"📌 Offline"}</span>
+        {e.price && e.price!=="Unknown" ? (
           <span style={{fontSize:11,padding:"2px 8px",borderRadius:6,fontWeight:700,
             background:e.price==="Free"?"rgba(0,255,136,.1)":"rgba(255,107,53,.1)",
             color:e.price==="Free"?"var(--green)":"var(--orange)",
             border:`1px solid ${e.price==="Free"?"rgba(0,255,136,.25)":"rgba(255,107,53,.25)"}`
-          }}>{e.price}</span>
+          }}>{e.price==="Free"?"Free":"Paid"}</span>
         ) : (
           <span style={{fontSize:11,padding:"2px 8px",borderRadius:6,fontWeight:600,
-            background:"rgba(136,153,187,.08)",color:"var(--text3)",
-            border:"1px solid rgba(136,153,187,.15)"
-          }}>Check website</span>
+            background:"rgba(136,153,187,.08)",color:"var(--text3)",border:"1px solid rgba(136,153,187,.15)"
+          }}>Check site</span>
         )}
-        <span style={{fontSize:10,color:"var(--text3)",fontFamily:"'JetBrains Mono',monospace"}}>via {e.platform}</span>
       </div>
 
       {/* CTA */}
       <button className="btn-p" style={{width:"100%",justifyContent:"center",padding:"8px",fontSize:13,
-        opacity:(!e.registrationLink||e.registrationLink==="#")?"0.5":"1",
-        cursor:(!e.registrationLink||e.registrationLink==="#")?"not-allowed":"pointer"}}
+        opacity:hasLink?"1":"0.5",cursor:hasLink?"pointer":"not-allowed"}}
         onClick={()=>{
-          if(!e.registrationLink||e.registrationLink==="#") return;
+          if(!hasLink) return;
           const url=e.registrationLink.startsWith("http")?e.registrationLink:"https://"+e.registrationLink;
           window.open(url,"_blank","noopener,noreferrer");
         }}>
-        {(!e.registrationLink||e.registrationLink==="#")?"Link Unavailable":"Register Now →"}
+        {hasLink?"Register Now →":"Link Unavailable"}
       </button>
     </div>
   );
@@ -1100,18 +1148,25 @@ const EventCard = ({e, compact=false}) => {
    EVENTS PAGE
 ──────────────────────────────────────────────── */
 const EVENTS_PER_PAGE = 20;
+
+const INDIA_CITY_OPTS = ["All","Online","Bangalore","Mumbai","Delhi","Hyderabad","Pune","Chennai","Kolkata","Noida","Gurugram","Kochi","Ahmedabad","Jaipur","Indore","Surat","Chandigarh","Lucknow"];
+const EVENT_DOMAIN_OPTS = ["All","AI/ML","Web Dev","Cloud","DevOps","Blockchain","Data Science","Mobile","Open Source","Security"];
+
 const EventsPage = () => {
   const [search,setSearch]=useState(""); const [ds,setDs]=useState("");
   const [evType,setEvType]=useState("All");
-  const [location,setLocation]=useState("All");
+  const [city,setCity]=useState("All");
   const [price,setPrice]=useState("All");
+  const [domain,setDomain]=useState("All");
   const [ePage,setEPage]=useState(1);
   useEffect(()=>{const t=setTimeout(()=>setDs(search),350);return()=>clearTimeout(t);},[search]);
-  useEffect(()=>{setEPage(1);},[evType,location,price,ds]);
-  const {data,total,loading} = useEvents({type:evType,location,price,search:ds});
-  const ePages   = Math.ceil(data.length / EVENTS_PER_PAGE);
+  useEffect(()=>{setEPage(1);},[evType,city,price,domain,ds]);
+  const {data,total,loading} = useEvents({type:evType,city,price,domain,search:ds});
+  const ePages    = Math.ceil(data.length / EVENTS_PER_PAGE);
   const paginated = data.slice((ePage-1)*EVENTS_PER_PAGE, ePage*EVENTS_PER_PAGE);
-  const hasFilter = evType!=="All"||location!=="All"||price!=="All"||search;
+  const hasFilter = evType!=="All"||city!=="All"||price!=="All"||domain!=="All"||search;
+  const onlineCount  = data.filter(e=>(e.mode||e.location||"").toLowerCase().includes("online")||e.location==="Online").length;
+  const offlineCount = data.length - onlineCount;
 
   return (
     <div style={{paddingTop:64}}>
@@ -1124,9 +1179,10 @@ const EventsPage = () => {
               <h1 className="syne" style={{fontSize:34,fontWeight:800,marginBottom:4}}>🗓️ Tech Events</h1>
               <p style={{color:"var(--text2)",fontSize:14}}>Conferences, workshops, meetups & AI events — scraped from 9 platforms.</p>
             </div>
-            <div style={{textAlign:"right"}}>
-              <div className="syne" style={{fontSize:32,fontWeight:800,color:"var(--purple)"}}>{data.length||total}</div>
-              <div style={{fontSize:12,color:"var(--text2)"}}>events found</div>
+            <div style={{display:"flex",gap:16,textAlign:"center"}}>
+              <div><div className="syne" style={{fontSize:26,fontWeight:800,color:"var(--purple)"}}>{data.length||total}</div><div style={{fontSize:11,color:"var(--text2)"}}>events found</div></div>
+              <div><div className="syne" style={{fontSize:26,fontWeight:800,color:"var(--cyan)"}}>{onlineCount}</div><div style={{fontSize:11,color:"var(--text2)"}}>online</div></div>
+              <div><div className="syne" style={{fontSize:26,fontWeight:800,color:"var(--green)"}}>{offlineCount}</div><div style={{fontSize:11,color:"var(--text2)"}}>offline</div></div>
             </div>
           </div>
           <div style={{position:"relative",maxWidth:540}}>
@@ -1143,7 +1199,7 @@ const EventsPage = () => {
         <div style={{width:220,flexShrink:0,background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:18,position:"sticky",top:80}} className="hm">
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
             <span style={{fontWeight:700,fontSize:14}}>⚙️ Filters</span>
-            {hasFilter && <button onClick={()=>{setEvType("All");setLocation("All");setPrice("All");setSearch("");}} style={{fontSize:11,color:"var(--pink)",background:"transparent",border:"none",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:600}}>✕ Reset</button>}
+            {hasFilter && <button onClick={()=>{setEvType("All");setCity("All");setPrice("All");setDomain("All");setSearch("");}} style={{fontSize:11,color:"var(--pink)",background:"transparent",border:"none",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:600}}>✕ Reset</button>}
           </div>
 
           {/* Event Type */}
@@ -1156,11 +1212,21 @@ const EventsPage = () => {
 
           <div style={{height:1,background:"var(--border)",margin:"8px 0 16px"}}/>
 
-          {/* Location */}
+          {/* Domain */}
           <div style={{marginBottom:16}}>
-            <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>📍 Location</div>
-            {["All","Online","Offline"].map(l=>(
-              <button key={l} onClick={()=>setLocation(l)} style={{display:"block",width:"100%",textAlign:"left",padding:"7px 10px",borderRadius:8,border:"none",background:location===l?"var(--cyan)":"transparent",color:location===l?"#000":"var(--text2)",cursor:"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif",fontWeight:location===l?700:400,marginBottom:2,transition:"all .15s"}}>{l}</button>
+            <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>💡 Domain</div>
+            {EVENT_DOMAIN_OPTS.map(d=>(
+              <button key={d} onClick={()=>setDomain(d)} style={{display:"block",width:"100%",textAlign:"left",padding:"7px 10px",borderRadius:8,border:"none",background:domain===d?"var(--yellow)":"transparent",color:domain===d?"#000":"var(--text2)",cursor:"pointer",fontSize:12,fontFamily:"'DM Sans',sans-serif",fontWeight:domain===d?700:400,marginBottom:2,transition:"all .15s"}}>{d}</button>
+            ))}
+          </div>
+
+          <div style={{height:1,background:"var(--border)",margin:"8px 0 16px"}}/>
+
+          {/* City */}
+          <div style={{marginBottom:16}}>
+            <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>📍 City</div>
+            {INDIA_CITY_OPTS.map(c=>(
+              <button key={c} onClick={()=>setCity(c)} style={{display:"block",width:"100%",textAlign:"left",padding:"7px 10px",borderRadius:8,border:"none",background:city===c?"var(--cyan)":"transparent",color:city===c?"#000":"var(--text2)",cursor:"pointer",fontSize:12,fontFamily:"'DM Sans',sans-serif",fontWeight:city===c?700:400,marginBottom:2,transition:"all .15s"}}>{c}</button>
             ))}
           </div>
 
@@ -1184,7 +1250,7 @@ const EventsPage = () => {
         {/* Cards grid */}
         <div style={{flex:1,minWidth:0}}>
           {loading ? (
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(310px,1fr))",gap:15}}>{[1,2,3,4,5,6].map(i=><div key={i} className="skel" style={{height:240,borderRadius:16}}/>)}</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(310px,1fr))",gap:15}}>{[1,2,3,4,5,6].map(i=><div key={i} className="skel" style={{height:260,borderRadius:16}}/>)}</div>
           ) : data.length===0 ? (
             <div style={{textAlign:"center",padding:"80px 20px",border:"1px dashed var(--border)",borderRadius:16}}>
               <div style={{fontSize:52,marginBottom:14}}>🗓️</div>
@@ -1196,7 +1262,7 @@ const EventsPage = () => {
           ) : (
             <>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(310px,1fr))",gap:15}}>
-                {paginated.map(e=><EventCard key={e._id} e={e}/>)}
+                {paginated.map(e=><EventCard key={e._id||e.uniqueId} e={e}/>)}
               </div>
               {ePages>1 && (
                 <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:7,marginTop:28,flexWrap:"wrap"}}>

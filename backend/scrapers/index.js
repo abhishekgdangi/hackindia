@@ -22,17 +22,22 @@
  *    • DoraHacks     — dorahacks.io/api/hackathon/list  (0-20 results)
  *
  * ❌ REMOVED (permanently broken):
- *    Hack2Skill, Lablab, Reskilll, AllHackathons, LetsIntern,
- *    Fresherworld, Twenty19, YCombinator
+ *    Hack2Skill, Lablab, Reskilll, AllHackathons, YCombinator
  *
  * ═══════════════════════════════════════════════
  *  INTERNSHIP SCRAPERS
  * ═══════════════════════════════════════════════
  *
  * ✅ Working:
- *    • Internshala  — 500+ results
+ *    • Internshala  — 500+ results (India #1)
  *    • Remotive     — 3-10 remote results
- *    • Wellfound    — __NEXT_DATA__ extraction (0-30 results)
+ *    • LetsIntern   — India student internships
+ *    • Fresherworld — India freshers/internships
+ *    • Hirist       — India tech internships
+ *    • Twenty19     — India student platform
+ *    • Apna         — India jobs platform (50M users)
+ *
+ * ❌ REMOVED: Wellfound (403 blocked)
  */
 
 // ── Tier 1: Public JSON APIs ─────────────────────────────────────
@@ -54,7 +59,11 @@ const dorahacks    = require("./dorahacks");
 // ── Internship scrapers ──────────────────────────────────────────
 const internshala  = require("./internshala");
 const remotive     = require("./remotive");
-const wellfound    = require("./wellfound");
+const letsintern   = require("./letsintern");
+const fresherworld = require("./fresherworld");
+const hirist       = require("./hirist");
+const twenty19     = require("./twenty19");
+const apna         = require("./apna");
 
 // ── Event scrapers ───────────────────────────────────────────────
 // ── Event scrapers (India-focused, verified working) ──────────
@@ -115,9 +124,13 @@ async function runAllScrapers() {
 ═══════════════════════════════════════════════ */
 async function runInternshipScrapers() {
   const scrapers = [
-    { name: "Internshala", fn: () => internshala.scrape() },
-    { name: "Remotive",    fn: () => remotive.scrape()    },
-    { name: "Wellfound",   fn: () => wellfound.scrape()   },
+    { name: "Internshala",  fn: () => internshala.scrape()  },
+    { name: "Remotive",     fn: () => remotive.scrape()     },
+    { name: "LetsIntern",   fn: () => letsintern.scrape()   },
+    { name: "Fresherworld", fn: () => fresherworld.scrape() },
+    { name: "Hirist",       fn: () => hirist.scrape()       },
+    { name: "Twenty19",     fn: () => twenty19.scrape()     },
+    { name: "Apna",         fn: () => apna.scrape()         },
   ];
 
   const results = [];
@@ -157,7 +170,11 @@ async function runScraper(name) {
     dorahacks:    () => dorahacks.scrape(),
     internshala:  () => internshala.scrape(),
     remotive:     () => remotive.scrape(),
-    wellfound:    () => wellfound.scrape(),
+    letsintern:   () => letsintern.scrape(),
+    fresherworld: () => fresherworld.scrape(),
+    hirist:       () => hirist.scrape(),
+    twenty19:     () => twenty19.scrape(),
+    apna:         () => apna.scrape(),
   };
 
   const key = name.toLowerCase();
