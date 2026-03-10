@@ -59,7 +59,7 @@ function useHackathons(filters={}, page=1) {
     const id = ++fetchId.current;
     setLoading(true);
 
-    apiFetch("/hackathons", { ...filters, limit:500 })  // page handled client-side
+    apiFetch("/hackathons", { ...filters, limit:1000 })  // page handled client-side
       .then(j => {
         if (fetchId.current !== id) return;
         setData(shuffle(j.data || []));
@@ -102,7 +102,7 @@ function useInternships({ds="", location="All", isRemote="All"}={}) {
     const id = ++fetchId.current;
     setLoading(true);
 
-    const params = { limit:500 };
+    const params = { limit:1000 };
     if(ds) params.search = ds;
     if(isRemote==="Remote") params.isRemote = "true";
     if(location!=="All" && location!=="Remote/WFH") params.location = location;
@@ -137,7 +137,7 @@ function useEvents({type="", city="All", price="All", domain="All", search=""}={
     lastKey.current = key;
     const id = ++fetchId.current;
     setLoading(true);
-    const params = { limit:500 };
+    const params = { limit:1000 };
     if(type   && type   !=="All") params.type   = type;
     if(city   && city   !=="All") params.location = city;
     if(price  && price  !=="All") params.price  = price;
@@ -1083,8 +1083,6 @@ const fmtEventDate = (d) => {
 };
 
 const EventCard = ({e, compact=false}) => {
-  const typeStyle = EVENT_COLORS[e.eventType] || EVENT_COLORS["Other"];
-
   // Robust online/offline detection — check location, mode, and description
   const locStr = (e.location||"").toLowerCase();
   const modeStr = (e.mode||"").toLowerCase();
