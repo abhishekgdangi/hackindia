@@ -5819,3 +5819,243 @@
 {"level":"info","message":"[Scrapers] Total events scraped: 453","timestamp":"2026-03-10 12:19:23"}
 {"level":"info","message":"✅ Live events: 24 new, 429 updated","timestamp":"2026-03-10 12:19:36"}
 {"level":"info","message":"📊 Final DB: 149 hackathons, 494 internships, 488 events","timestamp":"2026-03-10 12:19:36"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2026-03-10 12:35:38"}
+{"level":"info","message":"Skipping DB clear — using upsert to preserve existing data","timestamp":"2026-03-10 12:35:38"}
+{"level":"info","message":"Running live hackathon scrapers…","timestamp":"2026-03-10 12:35:38"}
+{"level":"info","message":"[Scrapers] Running 9 hackathon scrapers…","timestamp":"2026-03-10 12:35:38"}
+{"level":"info","message":"  → Devpost (Tier 1)…","timestamp":"2026-03-10 12:35:38"}
+{"level":"info","message":"[Devpost] Starting scrape…","timestamp":"2026-03-10 12:35:38"}
+{"level":"info","message":"[Devpost] page 1 → 40 items","timestamp":"2026-03-10 12:35:40"}
+{"level":"info","message":"[Devpost] page 2 → 24 items","timestamp":"2026-03-10 12:35:42"}
+{"level":"info","message":"[Devpost] page 1 → 30 items","timestamp":"2026-03-10 12:35:44"}
+{"level":"info","message":"  ✔ Devpost: 64 hackathons","timestamp":"2026-03-10 12:35:45"}
+{"level":"info","message":"  → HackClub (Tier 1)…","timestamp":"2026-03-10 12:35:48"}
+{"level":"info","message":"[HackClub] Starting scrape…","timestamp":"2026-03-10 12:35:48"}
+{"level":"info","message":"[HackClub] API https://hackathons.hackclub.com/api/events/upcoming → 14 events","timestamp":"2026-03-10 12:35:52"}
+{"level":"info","message":"[HackClub] Returning 2","timestamp":"2026-03-10 12:35:52"}
+{"level":"info","message":"  ✔ HackClub: 2 hackathons","timestamp":"2026-03-10 12:35:52"}
+{"level":"info","message":"  → TAIKAI (Tier 1)…","timestamp":"2026-03-10 12:35:54"}
+{"level":"info","message":"[TAIKAI] Starting scrape…","timestamp":"2026-03-10 12:35:54"}
+{"level":"info","message":"[TAIKAI] HTML https://taikai.network/hackathons → 22 raw cards","timestamp":"2026-03-10 12:35:58"}
+{"level":"info","message":"[TAIKAI] Total: 1","timestamp":"2026-03-10 12:35:58"}
+{"level":"info","message":"  ✔ TAIKAI: 1 hackathons","timestamp":"2026-03-10 12:35:58"}
+{"level":"info","message":"  → Hackathon.com (Tier 2)…","timestamp":"2026-03-10 12:36:01"}
+{"level":"info","message":"[Hackathon.com] Starting scrape…","timestamp":"2026-03-10 12:36:01"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/online → 2","timestamp":"2026-03-10 12:36:02"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/india → 0","timestamp":"2026-03-10 12:36:05"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/ai → 6","timestamp":"2026-03-10 12:36:08"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/machine-learning → 0","timestamp":"2026-03-10 12:36:12"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/open-source → 0","timestamp":"2026-03-10 12:36:15"}
+{"level":"info","message":"[Hackathon.com] Total: 3","timestamp":"2026-03-10 12:36:18"}
+{"level":"info","message":"  ✔ Hackathon.com: 3 hackathons","timestamp":"2026-03-10 12:36:18"}
+{"level":"info","message":"  → DevEvents (Tier 2)…","timestamp":"2026-03-10 12:36:20"}
+{"level":"info","message":"[DevEvents] Starting scrape…","timestamp":"2026-03-10 12:36:20"}
+{"level":"info","message":"[DevEvents] HTML → 1 hackathons","timestamp":"2026-03-10 12:36:23"}
+{"level":"info","message":"[DevEvents] Total: 1","timestamp":"2026-03-10 12:36:23"}
+{"level":"info","message":"  ✔ DevEvents: 1 hackathons","timestamp":"2026-03-10 12:36:23"}
+{"level":"info","message":"  → MLH (Tier 2)…","timestamp":"2026-03-10 12:36:25"}
+{"level":"info","message":"[MLH] Starting scrape…","timestamp":"2026-03-10 12:36:25"}
+{"level":"info","message":"[MLH] https://mlh.io/seasons/2026/events → 4 raw cards","timestamp":"2026-03-10 12:36:31"}
+{"level":"info","message":"[MLH] https://www.mlh.com/seasons/2026/events → 4 raw cards","timestamp":"2026-03-10 12:36:34"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events attempt 1/3 — 404","timestamp":"2026-03-10 12:36:35"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events attempt 2/3 — 404","timestamp":"2026-03-10 12:36:38"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events attempt 3/3 — 404","timestamp":"2026-03-10 12:36:43"}
+{"level":"warn","message":"[MLH] GET https://mlh.io/seasons/2027/events failed: Request failed with status code 404","timestamp":"2026-03-10 12:36:43"}
+{"level":"warn","message":"[MLH] GET https://www.mlh.com/seasons/2027/events attempt 1/3 — 404","timestamp":"2026-03-10 12:36:46"}
+{"level":"warn","message":"[MLH] GET https://www.mlh.com/seasons/2027/events attempt 2/3 — 404","timestamp":"2026-03-10 12:36:48"}
+{"level":"warn","message":"[MLH] GET https://www.mlh.com/seasons/2027/events attempt 3/3 — 404","timestamp":"2026-03-10 12:36:54"}
+{"level":"warn","message":"[MLH] GET https://www.mlh.com/seasons/2027/events failed: Request failed with status code 404","timestamp":"2026-03-10 12:36:54"}
+{"level":"info","message":"[MLH] Returning 0 hackathons","timestamp":"2026-03-10 12:36:54"}
+{"level":"info","message":"  ✔ MLH: 0 hackathons","timestamp":"2026-03-10 12:36:54"}
+{"level":"info","message":"  → Devfolio (Tier 3)…","timestamp":"2026-03-10 12:36:56"}
+{"level":"info","message":"[Devfolio] Starting scrape…","timestamp":"2026-03-10 12:36:56"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/search/hackathons attempt 1/3 — 404","timestamp":"2026-03-10 12:36:57"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/search/hackathons attempt 2/3 — 404","timestamp":"2026-03-10 12:36:59"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/search/hackathons attempt 3/3 — 404","timestamp":"2026-03-10 12:37:03"}
+{"level":"warn","message":"[Devfolio] API https://api.devfolio.co/api/search/hackathons failed: Request failed with status code 404","timestamp":"2026-03-10 12:37:03"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/search attempt 1/3 — 404","timestamp":"2026-03-10 12:37:03"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/search attempt 2/3 — 404","timestamp":"2026-03-10 12:37:05"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/search attempt 3/3 — 404","timestamp":"2026-03-10 12:37:10"}
+{"level":"warn","message":"[Devfolio] API https://api.devfolio.co/api/hackathons/search failed: Request failed with status code 404","timestamp":"2026-03-10 12:37:10"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons?status=open&limit=30 attempt 1/3 — 422","timestamp":"2026-03-10 12:37:10"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons?status=open&limit=30 attempt 2/3 — 422","timestamp":"2026-03-10 12:37:12"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons?status=open&limit=30 attempt 3/3 — 422","timestamp":"2026-03-10 12:37:16"}
+{"level":"warn","message":"[Devfolio] API https://api.devfolio.co/api/hackathons?status=open&limit=30 failed: Request failed with status code 422","timestamp":"2026-03-10 12:37:16"}
+{"level":"info","message":"[Devfolio] https://devfolio.co/hackathons selector \"[class*='HackathonCard'], [class*='hackathon-card']\" → 31 cards","timestamp":"2026-03-10 12:37:17"}
+{"level":"info","message":"[Devfolio] Returning 26 hackathons","timestamp":"2026-03-10 12:37:17"}
+{"level":"info","message":"  ✔ Devfolio: 26 hackathons","timestamp":"2026-03-10 12:37:17"}
+{"level":"info","message":"  → HackerEarth (Tier 3)…","timestamp":"2026-03-10 12:37:19"}
+{"level":"info","message":"[HackerEarth] Starting scrape…","timestamp":"2026-03-10 12:37:19"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/data/?type=hackathon attempt 1/3 — 404","timestamp":"2026-03-10 12:37:23"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/data/?type=hackathon attempt 2/3 — 404","timestamp":"2026-03-10 12:37:26"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/data/?type=hackathon attempt 3/3 — 404","timestamp":"2026-03-10 12:37:30"}
+{"level":"warn","message":"[HackerEarth] API https://www.hackerearth.com/challenges/data/?type=hackathon failed: Request failed with status code 404","timestamp":"2026-03-10 12:37:30"}
+{"level":"info","message":"[HackerEarth] HTML cards → 162","timestamp":"2026-03-10 12:37:34"}
+{"level":"info","message":"[HackerEarth] Returning 15 hackathons","timestamp":"2026-03-10 12:37:34"}
+{"level":"info","message":"  ✔ HackerEarth: 15 hackathons","timestamp":"2026-03-10 12:37:34"}
+{"level":"info","message":"  → DoraHacks (Tier 3)…","timestamp":"2026-03-10 12:37:36"}
+{"level":"info","message":"[DoraHacks] Starting scrape…","timestamp":"2026-03-10 12:37:36"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon attempt 1/3 — 405","timestamp":"2026-03-10 12:37:36"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon attempt 2/3 — 405","timestamp":"2026-03-10 12:37:39"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon attempt 3/3 — 405","timestamp":"2026-03-10 12:37:43"}
+{"level":"warn","message":"[DoraHacks] API https://dorahacks.io/api/hackathon failed: Request failed with status code 405","timestamp":"2026-03-10 12:37:43"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/v1/hackathon/list attempt 1/3 — 405","timestamp":"2026-03-10 12:37:43"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/v1/hackathon/list attempt 2/3 — 405","timestamp":"2026-03-10 12:37:45"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/v1/hackathon/list attempt 3/3 — 405","timestamp":"2026-03-10 12:37:49"}
+{"level":"warn","message":"[DoraHacks] API https://dorahacks.io/api/v1/hackathon/list failed: Request failed with status code 405","timestamp":"2026-03-10 12:37:49"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/buidl?type=hackathon&status=open attempt 1/3 — 405","timestamp":"2026-03-10 12:37:49"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/buidl?type=hackathon&status=open attempt 2/3 — 405","timestamp":"2026-03-10 12:37:51"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/buidl?type=hackathon&status=open attempt 3/3 — 405","timestamp":"2026-03-10 12:37:56"}
+{"level":"warn","message":"[DoraHacks] API https://dorahacks.io/api/buidl?type=hackathon&status=open failed: Request failed with status code 405","timestamp":"2026-03-10 12:37:56"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon?status=open&limit=30&offset=0 attempt 1/3 — 405","timestamp":"2026-03-10 12:37:56"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon?status=open&limit=30&offset=0 attempt 2/3 — 405","timestamp":"2026-03-10 12:37:58"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/api/hackathon?status=open&limit=30&offset=0 attempt 3/3 — 405","timestamp":"2026-03-10 12:38:02"}
+{"level":"warn","message":"[DoraHacks] API https://dorahacks.io/api/hackathon?status=open&limit=30&offset=0 failed: Request failed with status code 405","timestamp":"2026-03-10 12:38:02"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/hackathon attempt 1/3 — 405","timestamp":"2026-03-10 12:38:02"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/hackathon attempt 2/3 — 405","timestamp":"2026-03-10 12:38:04"}
+{"level":"warn","message":"[DoraHacks] GET https://dorahacks.io/hackathon attempt 3/3 — 405","timestamp":"2026-03-10 12:38:08"}
+{"level":"warn","message":"[DoraHacks] HTML failed: Request failed with status code 405","timestamp":"2026-03-10 12:38:08"}
+{"level":"info","message":"[DoraHacks] Returning 0 hackathons","timestamp":"2026-03-10 12:38:08"}
+{"level":"info","message":"  ✔ DoraHacks: 0 hackathons","timestamp":"2026-03-10 12:38:08"}
+{"level":"info","message":"[Scrapers] Total hackathons scraped: 112","timestamp":"2026-03-10 12:38:11"}
+{"level":"info","message":"✅ Live hackathons: 1 new, 111 updated","timestamp":"2026-03-10 12:38:12"}
+{"level":"info","message":"Running live internship scrapers…","timestamp":"2026-03-10 12:38:12"}
+{"level":"info","message":"[Scrapers] Running 7 internship scrapers…","timestamp":"2026-03-10 12:38:12"}
+{"level":"info","message":"  → Internshala…","timestamp":"2026-03-10 12:38:12"}
+{"level":"info","message":"[Internshala] Starting scrape…","timestamp":"2026-03-10 12:38:12"}
+{"level":"info","message":"[Internshala] computer-science-internship HTML → 100 internships","timestamp":"2026-03-10 12:38:12"}
+{"level":"info","message":"[Internshala] web-development-internship HTML → 100 internships","timestamp":"2026-03-10 12:38:15"}
+{"level":"info","message":"[Internshala] machine-learning-internship HTML → 100 internships","timestamp":"2026-03-10 12:38:17"}
+{"level":"info","message":"[Internshala] data-science-internship HTML → 100 internships","timestamp":"2026-03-10 12:38:20"}
+{"level":"info","message":"[Internshala] android-development-internship HTML → 80 internships","timestamp":"2026-03-10 12:38:22"}
+{"level":"info","message":"[Internshala] python-internship HTML → 80 internships","timestamp":"2026-03-10 12:38:25"}
+{"level":"info","message":"[Internshala] Total internships found: 560","timestamp":"2026-03-10 12:38:27"}
+{"level":"info","message":"  ✔ Internshala: 560 internships","timestamp":"2026-03-10 12:38:27"}
+{"level":"info","message":"  → Remotive…","timestamp":"2026-03-10 12:38:29"}
+{"level":"info","message":"[Remotive] Starting scrape…","timestamp":"2026-03-10 12:38:29"}
+{"level":"info","message":"[Remotive] software-dev → 2 jobs","timestamp":"2026-03-10 12:38:31"}
+{"level":"info","message":"[Remotive] data → 0 jobs","timestamp":"2026-03-10 12:38:32"}
+{"level":"info","message":"[Remotive] devops-sysadmin → 2 jobs","timestamp":"2026-03-10 12:38:34"}
+{"level":"info","message":"[Remotive] mobile-dev → 2 jobs","timestamp":"2026-03-10 12:38:38"}
+{"level":"info","message":"[Remotive] Total: 6","timestamp":"2026-03-10 12:38:39"}
+{"level":"info","message":"  ✔ Remotive: 6 internships","timestamp":"2026-03-10 12:38:39"}
+{"level":"info","message":"  → LetsIntern…","timestamp":"2026-03-10 12:38:42"}
+{"level":"info","message":"[LetsIntern] Starting scrape…","timestamp":"2026-03-10 12:38:42"}
+{"level":"warn","message":"[LetsIntern] GET https://www.letsintern.com/internships/it attempt 1/3 — 404","timestamp":"2026-03-10 12:38:43"}
+{"level":"warn","message":"[LetsIntern] GET https://www.letsintern.com/internships/it attempt 2/3 — 404","timestamp":"2026-03-10 12:38:46"}
+{"level":"warn","message":"[LetsIntern] GET https://www.letsintern.com/internships/it attempt 3/3 — 404","timestamp":"2026-03-10 12:38:50"}
+{"level":"warn","message":"[LetsIntern] https://www.letsintern.com/internships/it failed: Request failed with status code 404","timestamp":"2026-03-10 12:38:50"}
+{"level":"warn","message":"[LetsIntern] GET https://www.letsintern.com/internships/engineering attempt 1/3 — 404","timestamp":"2026-03-10 12:38:52"}
+{"level":"warn","message":"[LetsIntern] GET https://www.letsintern.com/internships/engineering attempt 2/3 — 404","timestamp":"2026-03-10 12:38:55"}
+{"level":"warn","message":"[LetsIntern] GET https://www.letsintern.com/internships/engineering attempt 3/3 — 404","timestamp":"2026-03-10 12:38:59"}
+{"level":"warn","message":"[LetsIntern] https://www.letsintern.com/internships/engineering failed: Request failed with status code 404","timestamp":"2026-03-10 12:38:59"}
+{"level":"warn","message":"[LetsIntern] GET https://www.letsintern.com/internships/computer-science attempt 1/3 — 404","timestamp":"2026-03-10 12:39:01"}
+{"level":"warn","message":"[LetsIntern] GET https://www.letsintern.com/internships/computer-science attempt 2/3 — 404","timestamp":"2026-03-10 12:39:04"}
+{"level":"warn","message":"[LetsIntern] GET https://www.letsintern.com/internships/computer-science attempt 3/3 — 404","timestamp":"2026-03-10 12:39:09"}
+{"level":"warn","message":"[LetsIntern] https://www.letsintern.com/internships/computer-science failed: Request failed with status code 404","timestamp":"2026-03-10 12:39:09"}
+{"level":"info","message":"[LetsIntern] https://www.letsintern.com/internships → 0 cards","timestamp":"2026-03-10 12:39:12"}
+{"level":"info","message":"[LetsIntern] Total: 0","timestamp":"2026-03-10 12:39:13"}
+{"level":"info","message":"  ✔ LetsIntern: 0 internships","timestamp":"2026-03-10 12:39:13"}
+{"level":"info","message":"  → Fresherworld…","timestamp":"2026-03-10 12:39:16"}
+{"level":"info","message":"[Fresherworld] Starting scrape…","timestamp":"2026-03-10 12:39:16"}
+{"level":"info","message":"[Fresherworld] https://www.fresherworld.com/internship → 0 cards","timestamp":"2026-03-10 12:39:17"}
+{"level":"info","message":"[Fresherworld] https://www.fresherworld.com/internship/it-software → 0 cards","timestamp":"2026-03-10 12:39:20"}
+{"level":"info","message":"[Fresherworld] https://www.fresherworld.com/internship/computer-science → 0 cards","timestamp":"2026-03-10 12:39:23"}
+{"level":"info","message":"[Fresherworld] Total: 0","timestamp":"2026-03-10 12:39:24"}
+{"level":"info","message":"  ✔ Fresherworld: 0 internships","timestamp":"2026-03-10 12:39:24"}
+{"level":"info","message":"  → Hirist…","timestamp":"2026-03-10 12:39:27"}
+{"level":"info","message":"[Hirist] Starting scrape…","timestamp":"2026-03-10 12:39:27"}
+{"level":"warn","message":"[Hirist] GET https://www.hirist.tech/jobs/internship attempt 1/3 — 404","timestamp":"2026-03-10 12:39:27"}
+{"level":"warn","message":"[Hirist] GET https://www.hirist.tech/jobs/internship attempt 2/3 — 404","timestamp":"2026-03-10 12:39:29"}
+{"level":"warn","message":"[Hirist] GET https://www.hirist.tech/jobs/internship attempt 3/3 — 404","timestamp":"2026-03-10 12:39:33"}
+{"level":"warn","message":"[Hirist] https://www.hirist.tech/jobs/internship failed: Request failed with status code 404","timestamp":"2026-03-10 12:39:33"}
+{"level":"warn","message":"[Hirist] GET https://www.hirist.tech/jobs/fresher attempt 1/3 — 404","timestamp":"2026-03-10 12:39:35"}
+{"level":"warn","message":"[Hirist] GET https://www.hirist.tech/jobs/fresher attempt 2/3 — 404","timestamp":"2026-03-10 12:39:37"}
+{"level":"warn","message":"[Hirist] GET https://www.hirist.tech/jobs/fresher attempt 3/3 — 404","timestamp":"2026-03-10 12:39:41"}
+{"level":"warn","message":"[Hirist] https://www.hirist.tech/jobs/fresher failed: Request failed with status code 404","timestamp":"2026-03-10 12:39:41"}
+{"level":"warn","message":"[Hirist] GET https://www.hirist.tech/jobs/software-engineer-internship attempt 1/3 — 404","timestamp":"2026-03-10 12:39:43"}
+{"level":"warn","message":"[Hirist] GET https://www.hirist.tech/jobs/software-engineer-internship attempt 2/3 — 404","timestamp":"2026-03-10 12:39:45"}
+{"level":"warn","message":"[Hirist] GET https://www.hirist.tech/jobs/software-engineer-internship attempt 3/3 — 404","timestamp":"2026-03-10 12:39:49"}
+{"level":"warn","message":"[Hirist] https://www.hirist.tech/jobs/software-engineer-internship failed: Request failed with status code 404","timestamp":"2026-03-10 12:39:49"}
+{"level":"info","message":"[Hirist] Total: 0","timestamp":"2026-03-10 12:39:51"}
+{"level":"info","message":"  ✔ Hirist: 0 internships","timestamp":"2026-03-10 12:39:51"}
+{"level":"info","message":"  → Twenty19…","timestamp":"2026-03-10 12:39:53"}
+{"level":"info","message":"[Twenty19] Starting scrape…","timestamp":"2026-03-10 12:39:53"}
+{"level":"warn","message":"[Twenty19] GET https://www.twenty19.com/internship attempt 1/3 — Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 12:39:54"}
+{"level":"warn","message":"[Twenty19] GET https://www.twenty19.com/internship attempt 2/3 — Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 12:39:56"}
+{"level":"warn","message":"[Twenty19] GET https://www.twenty19.com/internship attempt 3/3 — Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 12:40:01"}
+{"level":"warn","message":"[Twenty19] https://www.twenty19.com/internship failed: Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 12:40:01"}
+{"level":"warn","message":"[Twenty19] GET https://www.twenty19.com/internship/engineering attempt 1/3 — Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 12:40:03"}
+{"level":"warn","message":"[Twenty19] GET https://www.twenty19.com/internship/engineering attempt 2/3 — Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 12:40:05"}
+{"level":"warn","message":"[Twenty19] GET https://www.twenty19.com/internship/engineering attempt 3/3 — Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 12:40:10"}
+{"level":"warn","message":"[Twenty19] https://www.twenty19.com/internship/engineering failed: Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 12:40:10"}
+{"level":"warn","message":"[Twenty19] GET https://www.twenty19.com/internship/it-software attempt 1/3 — Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 12:40:12"}
+{"level":"warn","message":"[Twenty19] GET https://www.twenty19.com/internship/it-software attempt 2/3 — Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 12:40:15"}
+{"level":"warn","message":"[Twenty19] GET https://www.twenty19.com/internship/it-software attempt 3/3 — Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 12:40:19"}
+{"level":"warn","message":"[Twenty19] https://www.twenty19.com/internship/it-software failed: Hostname/IP does not match certificate's altnames: Host: www.twenty19.com. is not in the cert's altnames: DNS:athena.holistic-it.at, DNS:coffee-reminder.holistic-it.at, DNS:ferienimwald.kinderimwald.at, DNS:fiw.alfredfriedrich.at, DNS:kaffee-knecht.holistic-it.at","timestamp":"2026-03-10 12:40:19"}
+{"level":"info","message":"[Twenty19] Total: 0","timestamp":"2026-03-10 12:40:21"}
+{"level":"info","message":"  ✔ Twenty19: 0 internships","timestamp":"2026-03-10 12:40:21"}
+{"level":"info","message":"  → Apna…","timestamp":"2026-03-10 12:40:23"}
+{"level":"info","message":"[Apna] Starting scrape…","timestamp":"2026-03-10 12:40:23"}
+{"level":"warn","message":"[Apna] GET https://api.apna.co/v1/jobs?type=internship attempt 1/3 — getaddrinfo ENOTFOUND api.apna.co","timestamp":"2026-03-10 12:40:24"}
+{"level":"warn","message":"[Apna] GET https://api.apna.co/v1/jobs?type=internship attempt 2/3 — getaddrinfo ENOTFOUND api.apna.co","timestamp":"2026-03-10 12:40:27"}
+{"level":"warn","message":"[Apna] GET https://api.apna.co/v1/jobs?type=internship attempt 3/3 — getaddrinfo ENOTFOUND api.apna.co","timestamp":"2026-03-10 12:40:31"}
+{"level":"warn","message":"[Apna] API https://api.apna.co/v1/jobs?type=internship failed: getaddrinfo ENOTFOUND api.apna.co","timestamp":"2026-03-10 12:40:31"}
+{"level":"warn","message":"[Apna] GET https://apna.co/jobs/internship attempt 1/3 — 404","timestamp":"2026-03-10 12:40:31"}
+{"level":"warn","message":"[Apna] GET https://apna.co/jobs/internship attempt 2/3 — 404","timestamp":"2026-03-10 12:40:33"}
+{"level":"warn","message":"[Apna] GET https://apna.co/jobs/internship attempt 3/3 — 404","timestamp":"2026-03-10 12:40:38"}
+{"level":"warn","message":"[Apna] HTML https://apna.co/jobs/internship failed: Request failed with status code 404","timestamp":"2026-03-10 12:40:38"}
+{"level":"warn","message":"[Apna] GET https://apna.co/jobs/fresher-jobs attempt 1/3 — 404","timestamp":"2026-03-10 12:40:38"}
+{"level":"warn","message":"[Apna] GET https://apna.co/jobs/fresher-jobs attempt 2/3 — 404","timestamp":"2026-03-10 12:40:40"}
+{"level":"warn","message":"[Apna] GET https://apna.co/jobs/fresher-jobs attempt 3/3 — 404","timestamp":"2026-03-10 12:40:44"}
+{"level":"warn","message":"[Apna] HTML https://apna.co/jobs/fresher-jobs failed: Request failed with status code 404","timestamp":"2026-03-10 12:40:44"}
+{"level":"info","message":"[Apna] Total: 0","timestamp":"2026-03-10 12:40:44"}
+{"level":"info","message":"  ✔ Apna: 0 internships","timestamp":"2026-03-10 12:40:44"}
+{"level":"info","message":"[Scrapers] Total internships scraped: 566","timestamp":"2026-03-10 12:40:47"}
+{"level":"info","message":"✅ Live internships: 6 new, 379 updated","timestamp":"2026-03-10 12:40:48"}
+{"level":"info","message":"Running live event scrapers…","timestamp":"2026-03-10 12:40:48"}
+{"level":"info","message":"[Scrapers] Running 7 event scrapers…","timestamp":"2026-03-10 12:40:48"}
+{"level":"info","message":"  → Eventbrite…","timestamp":"2026-03-10 12:40:48"}
+{"level":"info","message":"[Eventbrite] Starting scrape…","timestamp":"2026-03-10 12:40:48"}
+{"level":"info","message":"[Eventbrite] Total: 46 events","timestamp":"2026-03-10 12:40:59"}
+{"level":"info","message":"  ✔ Eventbrite: 23 events","timestamp":"2026-03-10 12:40:59"}
+{"level":"info","message":"  → GoogleDev…","timestamp":"2026-03-10 12:41:02"}
+{"level":"info","message":"[GoogleDev] Starting scrape…","timestamp":"2026-03-10 12:41:02"}
+{"level":"warn","message":"[GoogleDev] JSON API failed: Request failed with status code 404","timestamp":"2026-03-10 12:41:03"}
+{"level":"info","message":"[GoogleDev] HTML: 14 events","timestamp":"2026-03-10 12:41:03"}
+{"level":"info","message":"  ✔ GoogleDev: 9 events","timestamp":"2026-03-10 12:41:03"}
+{"level":"info","message":"  → Luma…","timestamp":"2026-03-10 12:41:06"}
+{"level":"info","message":"[Luma] Starting scrape…","timestamp":"2026-03-10 12:41:06"}
+{"level":"info","message":"[Luma] Discover https://api.lu.ma/discover/get-paginated-events?location=India&period=future&limit=50 → 39","timestamp":"2026-03-10 12:41:08"}
+{"level":"info","message":"[Luma] Total: 38 events","timestamp":"2026-03-10 12:41:20"}
+{"level":"info","message":"  ✔ Luma: 38 events","timestamp":"2026-03-10 12:41:20"}
+{"level":"info","message":"  → KonfHub…","timestamp":"2026-03-10 12:41:23"}
+{"level":"info","message":"[KonfHub] Starting scrape…","timestamp":"2026-03-10 12:41:23"}
+{"level":"warn","message":"[KonfHub] https://konfhub.com/explore failed: Request failed with status code 404","timestamp":"2026-03-10 12:41:23"}
+{"level":"warn","message":"[KonfHub] https://konfhub.com/conferences failed: Request failed with status code 404","timestamp":"2026-03-10 12:41:27"}
+{"level":"info","message":"[KonfHub] Total: 0 events","timestamp":"2026-03-10 12:41:29"}
+{"level":"info","message":"  ✔ KonfHub: 0 events","timestamp":"2026-03-10 12:41:29"}
+{"level":"info","message":"  → GDGCommunity…","timestamp":"2026-03-10 12:41:31"}
+{"level":"info","message":"[GDGCommunity] Starting scrape…","timestamp":"2026-03-10 12:41:31"}
+{"level":"warn","message":"[GDGCommunity] API failed: Request failed with status code 403","timestamp":"2026-03-10 12:41:33"}
+{"level":"info","message":"[GDGCommunity] API: 500 events","timestamp":"2026-03-10 12:41:38"}
+{"level":"info","message":"[GDGCommunity] Total: 203 events","timestamp":"2026-03-10 12:41:38"}
+{"level":"info","message":"  ✔ GDGCommunity: 203 events","timestamp":"2026-03-10 12:41:38"}
+{"level":"info","message":"  → DevEventsIN…","timestamp":"2026-03-10 12:41:41"}
+{"level":"info","message":"[DevEventsIndia] Starting scrape…","timestamp":"2026-03-10 12:41:41"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/tech: 34 events","timestamp":"2026-03-10 12:41:42"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/ai: 5 events","timestamp":"2026-03-10 12:41:44"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/cloud: 6 events","timestamp":"2026-03-10 12:41:46"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/javascript: 3 events","timestamp":"2026-03-10 12:41:48"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/devops: 5 events","timestamp":"2026-03-10 12:41:50"}
+{"level":"info","message":"[DevEventsIndia] /conferences/AS/IN: 87 events","timestamp":"2026-03-10 12:41:52"}
+{"level":"info","message":"[DevEventsIndia] Total: 140 events","timestamp":"2026-03-10 12:41:53"}
+{"level":"info","message":"  ✔ DevEventsIN: 140 events","timestamp":"2026-03-10 12:41:53"}
+{"level":"info","message":"  → HasGeek…","timestamp":"2026-03-10 12:41:56"}
+{"level":"info","message":"[HasGeek] Starting scrape…","timestamp":"2026-03-10 12:41:56"}
+{"level":"info","message":"[HasGeek] https://hasgeek.com/: 22 events","timestamp":"2026-03-10 12:41:57"}
+{"level":"info","message":"[HasGeek] Total: 22 events","timestamp":"2026-03-10 12:41:57"}
+{"level":"info","message":"  ✔ HasGeek: 22 events","timestamp":"2026-03-10 12:41:57"}
+{"level":"info","message":"[Scrapers] Total events scraped: 435","timestamp":"2026-03-10 12:41:59"}
+{"level":"info","message":"✅ Live events: 1 new, 434 updated","timestamp":"2026-03-10 12:42:00"}
+{"level":"info","message":"📊 Final DB: 150 hackathons, 500 internships, 489 events","timestamp":"2026-03-10 12:42:00"}
