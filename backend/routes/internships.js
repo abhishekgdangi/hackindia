@@ -7,6 +7,16 @@ const Internship = require("../models/Internship");
 const logger     = require("../utils/logger");
 const router     = express.Router();
 
+// Fisher-Yates shuffle
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+
 /* ── GET /api/internships ──────────────────────────────────────── */
 router.get("/", async (req, res) => {
   try {
@@ -34,6 +44,7 @@ router.get("/", async (req, res) => {
       .limit(Math.min(parseInt(limit), 500))
       .lean();
 
+    shuffle(data);
     res.json({ success: true, total, data });
   } catch (err) {
     logger.error(`GET /internships: ${err.message}`);

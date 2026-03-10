@@ -9,6 +9,16 @@ const AgentLog   = require("../models/AgentLog");
 const logger     = require("../utils/logger");
 const router     = express.Router();
 
+// Fisher-Yates shuffle
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+
 /* ── GET /api/hackathons ──────────────────────────────────────────
    Query params: domain, mode, city, teamSize, sort, page, limit, search, featured */
 router.get("/", async (req, res) => {
@@ -65,6 +75,7 @@ router.get("/", async (req, res) => {
       .select("-__v -agentNotes")
       .lean();
 
+    shuffle(data);
     res.json({
       success: true,
       total,
