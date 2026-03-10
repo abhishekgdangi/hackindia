@@ -23,6 +23,7 @@ const { scrapeEventbrite }    = require("./eventbriteScraper");
 const { scrapeGoogleDev }     = require("./googleDev");
 const { scrapeLuma }          = require("./luma");
 const { scrapeHasGeek }       = require("./hasgeek");
+const { scrapeIndiaExpos }     = require("./indiaExpos");
 
 const logger = require("../utils/logger");
 
@@ -87,6 +88,7 @@ async function runEventScrapers() {
     { name: "GoogleDev",  fn: scrapeGoogleDev  },
     { name: "Luma",       fn: scrapeLuma       },
     { name: "HasGeek",    fn: scrapeHasGeek    },
+    { name: "IndiaExpos", fn: scrapeIndiaExpos },
   ];
 
   logger.info(`[Scrapers] Running ${scrapers.length} event scrapers…`);
@@ -123,6 +125,7 @@ async function runSingleScraper(name) {
     googledev:    scrapeGoogleDev,
     luma:         scrapeLuma,
     hasgeek:      scrapeHasGeek,
+    indiaexpos:   scrapeIndiaExpos,
   };
   const key = name.toLowerCase();
   if (!map[key]) throw new Error(`Unknown scraper: ${name}`);

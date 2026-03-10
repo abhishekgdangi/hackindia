@@ -22,6 +22,9 @@ async function scrapeEventbrite() {
     "https://www.eventbrite.com/d/india/technology/",
     "https://www.eventbrite.com/d/india/free--science-and-tech--events/",
     "https://www.eventbrite.com/d/india/tech--conferences/",
+    "https://www.eventbrite.com/d/india/science-and-tech--expos/",
+    "https://www.eventbrite.com/d/india/science-and-tech--exhibitions/",
+    "https://www.eventbrite.com/d/online/tech--expos--india/",
   ];
 
   for (const url of URLS) {
@@ -133,7 +136,8 @@ async function scrapeEventbrite() {
 
 function _classifyEvent(title) {
   const t = (title || "").toLowerCase();
-  if (t.includes("conference") || t.includes("summit") || t.includes("expo")) return "Conference";
+  if (t.includes("expo") || t.includes("exhibition") || t.includes("trade show") || t.includes("fair")) return "Conference";
+  if (t.includes("conference") || t.includes("summit") || t.includes("conclave")) return "Conference";
   if (t.includes("workshop") || t.includes("training") || t.includes("bootcamp")) return "Workshop";
   if (t.includes("meetup") || t.includes("networking") || t.includes("meet")) return "Meetup";
   if (t.includes("webinar") || t.includes("online session") || t.includes("virtual")) return "Webinar";
