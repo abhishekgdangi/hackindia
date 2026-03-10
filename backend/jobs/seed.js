@@ -1,3 +1,5 @@
+require("dns").setDefaultResultOrder("ipv4first");
+require("dns").setServers(["8.8.8.8","8.8.4.4"]);
 /**
  * jobs/seed.js
  * Wipes DB → runs all live scrapers (NO fake seed data)
