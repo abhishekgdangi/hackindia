@@ -287,7 +287,7 @@ const hackLogoEmoji = (h) => {
 
 // Logo image component — shows real logo or emoji fallback
 const LogoBox = ({name="",organizer="",platform="",applyLink="",size=44,radius=12,emoji=null}) => {
-  const [imgOk, setImgOk] = React.useState(true);
+  const [imgOk, setImgOk] = useState(true);
   const url = getLogoUrl(name, organizer, platform, applyLink);
   const fb  = emoji || hackLogoEmoji({name,organizer,sourcePlatform:platform});
   return (
