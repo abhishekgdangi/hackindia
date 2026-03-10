@@ -113,7 +113,7 @@ async function scrapeDevEventsIndia() {
           seen.add(uid);
           results.push({
             title,
-            description: `${_classify(title + " " + path)} in ${isOnline ? "Online" : city}, India. Source: dev.events`,
+            description: $(el).find("p, [class*='desc'], [class*='summary']").first().text().trim().slice(0,200) || `${_classify(title + " " + path)} in ${isOnline ? "Online" : city}`,
             eventType:   _classify(title + " " + path),
             platform:    "dev.events",
             date:        dateStr || null,

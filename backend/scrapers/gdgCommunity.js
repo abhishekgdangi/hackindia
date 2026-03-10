@@ -93,9 +93,13 @@ function _parse(item, now, seen) {
   const startDate = item.start_date || item.startDate || item.start_at;
   if (startDate && new Date(startDate) < now) return null;
 
-  const city    = item.chapter__city || item.city || item.location || "India";
+  const city    = item.chapter__city || item.city || item.location || "";
   const country = item.chapter__country || item.country || "";
-  if (country && country !== "IN" && !/(india|bangalore|mumbai|delhi|pune|hyderabad|chennai)/i.test(city)) return null;
+  const INDIA_RE = /(india|bangalore|bengaluru|mumbai|delhi|pune|hyderabad|chennai|kolkata|noida|gurugram|gurgaon|kochi|ahmedabad|jaipur|indore|chandigarh|lucknow|surat)/i;
+  // Strict India-only: must have IN country code OR known India city name
+  const isIndia = country === "IN" || INDIA_RE.test(city) || INDIA_RE.test(item.chapter__name || "");
+  if (!isIndia) return null;
+  const cityDisplay = city || "India";
 
   const slug  = item.url || String(item.id || title.toLowerCase().replace(/\W+/g,"-").slice(0,60));
   const uid   = `gdgcommunity-${slug.replace(/\W+/g,"-").slice(0,80)}`;
@@ -107,11 +111,12 @@ function _parse(item, now, seen) {
 
   return {
     title,
-    description: (item.description || item.summary || "").slice(0,300) || `GDG event in ${city}. DevFest, workshops & more.`,
+    description: (item.description || item.summary || "").slice(0,300) || `GDG event in ${cityDisplay}. DevFest, workshops & more.`,
     eventType:   _classify(title),
     platform:    "GDG Community",
     date:        dateStr,
-    location:    /online|virtual/i.test(city) ? "Online" : city,
+    location:    /online|virtual/i.test(cityDisplay) ? "Online" : cityDisplay,
+    mode:        /online|virtual/i.test(cityDisplay) ? "Online" : "Offline",
     price:       "Free",
     registrationLink: link,
     imageUrl:    item.image || item.cover_url || "",

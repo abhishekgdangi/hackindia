@@ -6301,3 +6301,319 @@
 {"level":"info","message":"[Scrapers] Total events scraped: 464","timestamp":"2026-03-10 13:02:30"}
 {"level":"info","message":"✅ Live events: 62 new, 402 updated","timestamp":"2026-03-10 13:02:31"}
 {"level":"info","message":"📊 Final DB: 150 hackathons, 501 internships, 551 events","timestamp":"2026-03-10 13:02:31"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2026-03-10 13:05:30"}
+{"level":"info","message":"Skipping DB clear — using upsert to preserve existing data","timestamp":"2026-03-10 13:05:31"}
+{"level":"info","message":"Running live hackathon scrapers…","timestamp":"2026-03-10 13:05:31"}
+{"level":"info","message":"[Scrapers] Running 7 hackathon scrapers…","timestamp":"2026-03-10 13:05:31"}
+{"level":"info","message":"  → Devpost (Tier 1)…","timestamp":"2026-03-10 13:05:31"}
+{"level":"info","message":"[Devpost] Starting scrape…","timestamp":"2026-03-10 13:05:31"}
+{"level":"info","message":"[Devpost] page 1 → 40 items","timestamp":"2026-03-10 13:05:34"}
+{"level":"info","message":"[Devpost] page 2 → 24 items","timestamp":"2026-03-10 13:05:36"}
+{"level":"info","message":"[Devpost] page 1 → 30 items","timestamp":"2026-03-10 13:05:38"}
+{"level":"info","message":"  ✔ Devpost: 64 hackathons","timestamp":"2026-03-10 13:05:39"}
+{"level":"info","message":"  → HackClub (Tier 1)…","timestamp":"2026-03-10 13:05:42"}
+{"level":"info","message":"[HackClub] Starting scrape…","timestamp":"2026-03-10 13:05:42"}
+{"level":"info","message":"[HackClub] API https://hackathons.hackclub.com/api/events/upcoming → 14 events","timestamp":"2026-03-10 13:05:46"}
+{"level":"info","message":"[HackClub] Returning 2","timestamp":"2026-03-10 13:05:46"}
+{"level":"info","message":"  ✔ HackClub: 2 hackathons","timestamp":"2026-03-10 13:05:46"}
+{"level":"info","message":"  → TAIKAI (Tier 1)…","timestamp":"2026-03-10 13:05:48"}
+{"level":"info","message":"[TAIKAI] Starting scrape…","timestamp":"2026-03-10 13:05:48"}
+{"level":"info","message":"[TAIKAI] HTML https://taikai.network/hackathons → 22 raw cards","timestamp":"2026-03-10 13:05:52"}
+{"level":"info","message":"[TAIKAI] Total: 1","timestamp":"2026-03-10 13:05:52"}
+{"level":"info","message":"  ✔ TAIKAI: 1 hackathons","timestamp":"2026-03-10 13:05:52"}
+{"level":"info","message":"  → Hackathon.com (Tier 2)…","timestamp":"2026-03-10 13:05:55"}
+{"level":"info","message":"[Hackathon.com] Starting scrape…","timestamp":"2026-03-10 13:05:55"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/online → 2","timestamp":"2026-03-10 13:05:57"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/india → 0","timestamp":"2026-03-10 13:06:03"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/ai → 6","timestamp":"2026-03-10 13:06:06"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/machine-learning → 0","timestamp":"2026-03-10 13:06:10"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/open-source → 0","timestamp":"2026-03-10 13:06:15"}
+{"level":"info","message":"[Hackathon.com] Total: 3","timestamp":"2026-03-10 13:06:17"}
+{"level":"info","message":"  ✔ Hackathon.com: 3 hackathons","timestamp":"2026-03-10 13:06:17"}
+{"level":"info","message":"  → DevEvents (Tier 2)…","timestamp":"2026-03-10 13:06:20"}
+{"level":"info","message":"[DevEvents] Starting scrape…","timestamp":"2026-03-10 13:06:20"}
+{"level":"warn","message":"[DevEvents] GET https://dev.events/api/events attempt 1/3 — getaddrinfo ENOTFOUND dev.events","timestamp":"2026-03-10 13:06:20"}
+{"level":"warn","message":"[DevEvents] GET https://dev.events/api/events attempt 2/3 — getaddrinfo ENOTFOUND dev.events","timestamp":"2026-03-10 13:06:22"}
+{"level":"warn","message":"[DevEvents] GET https://dev.events/api/events attempt 3/3 — getaddrinfo ENOTFOUND dev.events","timestamp":"2026-03-10 13:06:26"}
+{"level":"warn","message":"[DevEvents] API failed: getaddrinfo ENOTFOUND dev.events","timestamp":"2026-03-10 13:06:26"}
+{"level":"warn","message":"[DevEvents] GET https://dev.events/hackathons attempt 1/3 — getaddrinfo ENOTFOUND dev.events","timestamp":"2026-03-10 13:06:26"}
+{"level":"warn","message":"[DevEvents] GET https://dev.events/hackathons attempt 2/3 — getaddrinfo ENOTFOUND dev.events","timestamp":"2026-03-10 13:06:28"}
+{"level":"warn","message":"[DevEvents] GET https://dev.events/hackathons attempt 3/3 — getaddrinfo ENOTFOUND dev.events","timestamp":"2026-03-10 13:06:32"}
+{"level":"warn","message":"[DevEvents] HTML failed: getaddrinfo ENOTFOUND dev.events","timestamp":"2026-03-10 13:06:32"}
+{"level":"info","message":"[DevEvents] Total: 0","timestamp":"2026-03-10 13:06:32"}
+{"level":"info","message":"  ✔ DevEvents: 0 hackathons","timestamp":"2026-03-10 13:06:32"}
+{"level":"info","message":"  → Devfolio (Tier 3)…","timestamp":"2026-03-10 13:06:34"}
+{"level":"info","message":"[Devfolio] Starting scrape…","timestamp":"2026-03-10 13:06:34"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/search/hackathons attempt 1/3 — getaddrinfo ENOTFOUND api.devfolio.co","timestamp":"2026-03-10 13:06:34"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/search/hackathons attempt 2/3 — getaddrinfo ENOTFOUND api.devfolio.co","timestamp":"2026-03-10 13:06:36"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/search/hackathons attempt 3/3 — getaddrinfo ENOTFOUND api.devfolio.co","timestamp":"2026-03-10 13:06:40"}
+{"level":"warn","message":"[Devfolio] API https://api.devfolio.co/api/search/hackathons failed: getaddrinfo ENOTFOUND api.devfolio.co","timestamp":"2026-03-10 13:06:40"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/search attempt 1/3 — getaddrinfo ENOTFOUND api.devfolio.co","timestamp":"2026-03-10 13:06:40"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/search attempt 2/3 — getaddrinfo ENOTFOUND api.devfolio.co","timestamp":"2026-03-10 13:06:42"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/search attempt 3/3 — getaddrinfo ENOTFOUND api.devfolio.co","timestamp":"2026-03-10 13:06:47"}
+{"level":"warn","message":"[Devfolio] API https://api.devfolio.co/api/hackathons/search failed: getaddrinfo ENOTFOUND api.devfolio.co","timestamp":"2026-03-10 13:06:47"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons?status=open&limit=30 attempt 1/3 — getaddrinfo ENOTFOUND api.devfolio.co","timestamp":"2026-03-10 13:06:47"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons?status=open&limit=30 attempt 2/3 — getaddrinfo ENOTFOUND api.devfolio.co","timestamp":"2026-03-10 13:06:49"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons?status=open&limit=30 attempt 3/3 — getaddrinfo ENOTFOUND api.devfolio.co","timestamp":"2026-03-10 13:06:53"}
+{"level":"warn","message":"[Devfolio] API https://api.devfolio.co/api/hackathons?status=open&limit=30 failed: getaddrinfo ENOTFOUND api.devfolio.co","timestamp":"2026-03-10 13:06:53"}
+{"level":"warn","message":"[Devfolio] GET https://devfolio.co/hackathons/open attempt 1/3 — getaddrinfo ENOTFOUND devfolio.co","timestamp":"2026-03-10 13:06:53"}
+{"level":"warn","message":"[Devfolio] GET https://devfolio.co/hackathons/open attempt 2/3 — getaddrinfo ENOTFOUND devfolio.co","timestamp":"2026-03-10 13:06:55"}
+{"level":"warn","message":"[Devfolio] GET https://devfolio.co/hackathons/open attempt 3/3 — getaddrinfo ENOTFOUND devfolio.co","timestamp":"2026-03-10 13:06:59"}
+{"level":"warn","message":"[Devfolio] HTML https://devfolio.co/hackathons/open failed: getaddrinfo ENOTFOUND devfolio.co","timestamp":"2026-03-10 13:06:59"}
+{"level":"warn","message":"[Devfolio] GET https://devfolio.co/hackathons attempt 1/3 — getaddrinfo ENOTFOUND devfolio.co","timestamp":"2026-03-10 13:06:59"}
+{"level":"warn","message":"[Devfolio] GET https://devfolio.co/hackathons attempt 2/3 — getaddrinfo ENOTFOUND devfolio.co","timestamp":"2026-03-10 13:07:01"}
+{"level":"warn","message":"[Devfolio] GET https://devfolio.co/hackathons attempt 3/3 — getaddrinfo ENOTFOUND devfolio.co","timestamp":"2026-03-10 13:07:05"}
+{"level":"warn","message":"[Devfolio] HTML https://devfolio.co/hackathons failed: getaddrinfo ENOTFOUND devfolio.co","timestamp":"2026-03-10 13:07:05"}
+{"level":"info","message":"[Devfolio] Returning 0 hackathons","timestamp":"2026-03-10 13:07:05"}
+{"level":"info","message":"  ✔ Devfolio: 0 hackathons","timestamp":"2026-03-10 13:07:05"}
+{"level":"info","message":"  → HackerEarth (Tier 3)…","timestamp":"2026-03-10 13:07:07"}
+{"level":"info","message":"[HackerEarth] Starting scrape…","timestamp":"2026-03-10 13:07:07"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/api/v4/challenges/?type=hackathon&status=ongoing,upcoming&limit=50 attempt 1/3 — getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:07"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/api/v4/challenges/?type=hackathon&status=ongoing,upcoming&limit=50 attempt 2/3 — getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:09"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/api/v4/challenges/?type=hackathon&status=ongoing,upcoming&limit=50 attempt 3/3 — getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:13"}
+{"level":"warn","message":"[HackerEarth] API https://www.hackerearth.com/api/v4/challenges/?type=hackathon&status=ongoing,upcoming&limit=50 failed: getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:13"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/api/v3/challenges/?type=hackathon&limit=50 attempt 1/3 — getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:13"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/api/v3/challenges/?type=hackathon&limit=50 attempt 2/3 — getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:15"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/api/v3/challenges/?type=hackathon&limit=50 attempt 3/3 — getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:19"}
+{"level":"warn","message":"[HackerEarth] API https://www.hackerearth.com/api/v3/challenges/?type=hackathon&limit=50 failed: getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:19"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/api/v2/challenges/?type=hackathon&limit=50 attempt 1/3 — getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:19"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/api/v2/challenges/?type=hackathon&limit=50 attempt 2/3 — getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:21"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/api/v2/challenges/?type=hackathon&limit=50 attempt 3/3 — getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:25"}
+{"level":"warn","message":"[HackerEarth] API https://www.hackerearth.com/api/v2/challenges/?type=hackathon&limit=50 failed: getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:25"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/data/?type=hackathon attempt 1/3 — getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:25"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/data/?type=hackathon attempt 2/3 — getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:27"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/data/?type=hackathon attempt 3/3 — getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:31"}
+{"level":"warn","message":"[HackerEarth] API https://www.hackerearth.com/challenges/data/?type=hackathon failed: getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:31"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/hackathon/ attempt 1/3 — getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:31"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/hackathon/ attempt 2/3 — getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:33"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/hackathon/ attempt 3/3 — getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:37"}
+{"level":"warn","message":"[HackerEarth] HTML failed: getaddrinfo ENOTFOUND www.hackerearth.com","timestamp":"2026-03-10 13:07:37"}
+{"level":"info","message":"[HackerEarth] Returning 0 hackathons","timestamp":"2026-03-10 13:07:37"}
+{"level":"info","message":"  ✔ HackerEarth: 0 hackathons","timestamp":"2026-03-10 13:07:37"}
+{"level":"info","message":"[Scrapers] Total hackathons scraped: 70","timestamp":"2026-03-10 13:07:40"}
+{"level":"error","message":"Hackathon scrape failed: getaddrinfo ENOTFOUND ac-emhgtax-shard-00-01.f4pz46k.mongodb.net","timestamp":"2026-03-10 13:08:10"}
+{"level":"info","message":"Running live internship scrapers…","timestamp":"2026-03-10 13:08:10"}
+{"level":"info","message":"[Scrapers] Running 2 internship scrapers…","timestamp":"2026-03-10 13:08:10"}
+{"level":"info","message":"  → Internshala…","timestamp":"2026-03-10 13:08:10"}
+{"level":"info","message":"[Internshala] Starting scrape…","timestamp":"2026-03-10 13:08:10"}
+{"level":"warn","message":"[Internshala] GET https://internshala.com/internships/computer-science-internship/ attempt 1/3 — getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:10"}
+{"level":"warn","message":"[Internshala] GET https://internshala.com/internships/computer-science-internship/ attempt 2/3 — getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:12"}
+{"level":"warn","message":"[Internshala] GET https://internshala.com/internships/computer-science-internship/ attempt 3/3 — getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:16"}
+{"level":"warn","message":"[Internshala] computer-science-internship failed: getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:16"}
+{"level":"warn","message":"[Internshala] GET https://internshala.com/internships/web-development-internship/ attempt 1/3 — getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:16"}
+{"level":"warn","message":"[Internshala] GET https://internshala.com/internships/web-development-internship/ attempt 2/3 — getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:18"}
+{"level":"warn","message":"[Internshala] GET https://internshala.com/internships/web-development-internship/ attempt 3/3 — getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:22"}
+{"level":"warn","message":"[Internshala] web-development-internship failed: getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:22"}
+{"level":"warn","message":"[Internshala] GET https://internshala.com/internships/machine-learning-internship/ attempt 1/3 — getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:22"}
+{"level":"warn","message":"[Internshala] GET https://internshala.com/internships/machine-learning-internship/ attempt 2/3 — getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:24"}
+{"level":"warn","message":"[Internshala] GET https://internshala.com/internships/machine-learning-internship/ attempt 3/3 — getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:28"}
+{"level":"warn","message":"[Internshala] machine-learning-internship failed: getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:28"}
+{"level":"warn","message":"[Internshala] GET https://internshala.com/internships/data-science-internship/ attempt 1/3 — getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:28"}
+{"level":"warn","message":"[Internshala] GET https://internshala.com/internships/data-science-internship/ attempt 2/3 — getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:30"}
+{"level":"warn","message":"[Internshala] GET https://internshala.com/internships/data-science-internship/ attempt 3/3 — getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:34"}
+{"level":"warn","message":"[Internshala] data-science-internship failed: getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:34"}
+{"level":"warn","message":"[Internshala] GET https://internshala.com/internships/android-development-internship/ attempt 1/3 — getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:34"}
+{"level":"warn","message":"[Internshala] GET https://internshala.com/internships/android-development-internship/ attempt 2/3 — getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:36"}
+{"level":"warn","message":"[Internshala] GET https://internshala.com/internships/android-development-internship/ attempt 3/3 — getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:40"}
+{"level":"warn","message":"[Internshala] android-development-internship failed: getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:40"}
+{"level":"warn","message":"[Internshala] GET https://internshala.com/internships/python-internship/ attempt 1/3 — getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:40"}
+{"level":"warn","message":"[Internshala] GET https://internshala.com/internships/python-internship/ attempt 2/3 — getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:42"}
+{"level":"warn","message":"[Internshala] GET https://internshala.com/internships/python-internship/ attempt 3/3 — getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:46"}
+{"level":"warn","message":"[Internshala] python-internship failed: getaddrinfo ENOTFOUND internshala.com","timestamp":"2026-03-10 13:08:46"}
+{"level":"info","message":"[Internshala] Total internships found: 0","timestamp":"2026-03-10 13:08:46"}
+{"level":"info","message":"  ✔ Internshala: 0 internships","timestamp":"2026-03-10 13:08:46"}
+{"level":"info","message":"  → Remotive…","timestamp":"2026-03-10 13:08:48"}
+{"level":"info","message":"[Remotive] Starting scrape…","timestamp":"2026-03-10 13:08:48"}
+{"level":"warn","message":"[Remotive] GET https://remotive.com/api/remote-jobs attempt 1/3 — getaddrinfo ENOTFOUND remotive.com","timestamp":"2026-03-10 13:08:48"}
+{"level":"warn","message":"[Remotive] GET https://remotive.com/api/remote-jobs attempt 2/3 — getaddrinfo ENOTFOUND remotive.com","timestamp":"2026-03-10 13:08:50"}
+{"level":"warn","message":"[Remotive] GET https://remotive.com/api/remote-jobs attempt 3/3 — getaddrinfo ENOTFOUND remotive.com","timestamp":"2026-03-10 13:08:54"}
+{"level":"warn","message":"[Remotive] software-dev failed: getaddrinfo ENOTFOUND remotive.com","timestamp":"2026-03-10 13:08:54"}
+{"level":"warn","message":"[Remotive] GET https://remotive.com/api/remote-jobs attempt 1/3 — getaddrinfo ENOTFOUND remotive.com","timestamp":"2026-03-10 13:08:54"}
+{"level":"warn","message":"[Remotive] GET https://remotive.com/api/remote-jobs attempt 2/3 — getaddrinfo ENOTFOUND remotive.com","timestamp":"2026-03-10 13:08:56"}
+{"level":"warn","message":"[Remotive] GET https://remotive.com/api/remote-jobs attempt 3/3 — getaddrinfo ENOTFOUND remotive.com","timestamp":"2026-03-10 13:09:00"}
+{"level":"warn","message":"[Remotive] data failed: getaddrinfo ENOTFOUND remotive.com","timestamp":"2026-03-10 13:09:00"}
+{"level":"warn","message":"[Remotive] GET https://remotive.com/api/remote-jobs attempt 1/3 — getaddrinfo ENOTFOUND remotive.com","timestamp":"2026-03-10 13:09:00"}
+{"level":"warn","message":"[Remotive] GET https://remotive.com/api/remote-jobs attempt 2/3 — getaddrinfo ENOTFOUND remotive.com","timestamp":"2026-03-10 13:09:02"}
+{"level":"warn","message":"[Remotive] GET https://remotive.com/api/remote-jobs attempt 3/3 — getaddrinfo ENOTFOUND remotive.com","timestamp":"2026-03-10 13:09:07"}
+{"level":"warn","message":"[Remotive] devops-sysadmin failed: getaddrinfo ENOTFOUND remotive.com","timestamp":"2026-03-10 13:09:07"}
+{"level":"warn","message":"[Remotive] GET https://remotive.com/api/remote-jobs attempt 1/3 — getaddrinfo ENOTFOUND remotive.com","timestamp":"2026-03-10 13:09:07"}
+{"level":"warn","message":"[Remotive] GET https://remotive.com/api/remote-jobs attempt 2/3 — getaddrinfo ENOTFOUND remotive.com","timestamp":"2026-03-10 13:09:09"}
+{"level":"warn","message":"[Remotive] GET https://remotive.com/api/remote-jobs attempt 3/3 — getaddrinfo ENOTFOUND remotive.com","timestamp":"2026-03-10 13:09:13"}
+{"level":"warn","message":"[Remotive] mobile-dev failed: getaddrinfo ENOTFOUND remotive.com","timestamp":"2026-03-10 13:09:13"}
+{"level":"info","message":"[Remotive] Total: 0","timestamp":"2026-03-10 13:09:13"}
+{"level":"info","message":"  ✔ Remotive: 0 internships","timestamp":"2026-03-10 13:09:13"}
+{"level":"info","message":"[Scrapers] Total internships scraped: 0","timestamp":"2026-03-10 13:09:15"}
+{"level":"warn","message":"⚠ No internships scraped — check scraper logs above","timestamp":"2026-03-10 13:09:15"}
+{"level":"info","message":"Running live event scrapers…","timestamp":"2026-03-10 13:09:15"}
+{"level":"info","message":"[Scrapers] Running 6 event scrapers…","timestamp":"2026-03-10 13:09:15"}
+{"level":"info","message":"  → Eventbrite…","timestamp":"2026-03-10 13:09:15"}
+{"level":"info","message":"[Eventbrite] Starting scrape…","timestamp":"2026-03-10 13:09:15"}
+{"level":"warn","message":"[Eventbrite] https://www.eventbrite.com/d/india/technology/ failed: getaddrinfo ENOTFOUND www.eventbrite.com","timestamp":"2026-03-10 13:09:15"}
+{"level":"warn","message":"[Eventbrite] https://www.eventbrite.com/d/india/free--science-and-tech--events/ failed: getaddrinfo ENOTFOUND www.eventbrite.com","timestamp":"2026-03-10 13:09:15"}
+{"level":"warn","message":"[Eventbrite] https://www.eventbrite.com/d/india/tech--conferences/ failed: getaddrinfo ENOTFOUND www.eventbrite.com","timestamp":"2026-03-10 13:09:15"}
+{"level":"info","message":"[Eventbrite] Total: 0 events","timestamp":"2026-03-10 13:09:15"}
+{"level":"info","message":"  ✔ Eventbrite: 0 events","timestamp":"2026-03-10 13:09:15"}
+{"level":"info","message":"  → GoogleDev…","timestamp":"2026-03-10 13:09:18"}
+{"level":"info","message":"[GoogleDev] Starting scrape…","timestamp":"2026-03-10 13:09:18"}
+{"level":"error","message":"[GoogleDev] HTML failed: getaddrinfo ENOTFOUND developers.google.com","timestamp":"2026-03-10 13:09:18"}
+{"level":"info","message":"  ✔ GoogleDev: 0 events","timestamp":"2026-03-10 13:09:18"}
+{"level":"info","message":"  → Luma…","timestamp":"2026-03-10 13:09:20"}
+{"level":"info","message":"[Luma] Starting scrape…","timestamp":"2026-03-10 13:09:20"}
+{"level":"warn","message":"[Luma] Discover https://api.lu.ma/discover/get-paginated-events?location=India&period=future&limit=50 failed: getaddrinfo ENOTFOUND api.lu.ma","timestamp":"2026-03-10 13:09:20"}
+{"level":"warn","message":"[Luma] Discover https://api.lu.ma/discover/events?geo_latitude=20.5937&geo_longitude=78.9629&radius=3000&limit=50 failed: getaddrinfo ENOTFOUND api.lu.ma","timestamp":"2026-03-10 13:09:20"}
+{"level":"warn","message":"[Luma] Discover https://lu.ma/api/discover/get-paginated-events?location=India&period=future&pagination_limit=50 failed: getaddrinfo ENOTFOUND lu.ma","timestamp":"2026-03-10 13:09:20"}
+{"level":"info","message":"[Luma] Total: 0 events","timestamp":"2026-03-10 13:09:27"}
+{"level":"info","message":"  ✔ Luma: 0 events","timestamp":"2026-03-10 13:09:27"}
+{"level":"info","message":"  → GDGCommunity…","timestamp":"2026-03-10 13:09:29"}
+{"level":"info","message":"[GDGCommunity] Starting scrape…","timestamp":"2026-03-10 13:09:29"}
+{"level":"warn","message":"[GDGCommunity] API failed: getaddrinfo ENOTFOUND gdg.community.dev","timestamp":"2026-03-10 13:09:29"}
+{"level":"warn","message":"[GDGCommunity] API failed: getaddrinfo ENOTFOUND gdg.community.dev","timestamp":"2026-03-10 13:09:29"}
+{"level":"warn","message":"[GDGCommunity] HTML failed: getaddrinfo ENOTFOUND gdg.community.dev","timestamp":"2026-03-10 13:09:29"}
+{"level":"info","message":"[GDGCommunity] Total: 0 events","timestamp":"2026-03-10 13:09:29"}
+{"level":"info","message":"  ✔ GDGCommunity: 0 events","timestamp":"2026-03-10 13:09:29"}
+{"level":"info","message":"  → DevEventsIN…","timestamp":"2026-03-10 13:09:32"}
+{"level":"info","message":"[DevEventsIndia] Starting scrape…","timestamp":"2026-03-10 13:09:32"}
+{"level":"warn","message":"[DevEventsIndia] /meetups/AS/IN/tech failed: getaddrinfo ENOTFOUND dev.events","timestamp":"2026-03-10 13:09:32"}
+{"level":"warn","message":"[DevEventsIndia] /meetups/AS/IN/ai failed: getaddrinfo ENOTFOUND dev.events","timestamp":"2026-03-10 13:09:32"}
+{"level":"warn","message":"[DevEventsIndia] /meetups/AS/IN/cloud failed: getaddrinfo ENOTFOUND dev.events","timestamp":"2026-03-10 13:09:32"}
+{"level":"warn","message":"[DevEventsIndia] /meetups/AS/IN/javascript failed: getaddrinfo ENOTFOUND dev.events","timestamp":"2026-03-10 13:09:32"}
+{"level":"warn","message":"[DevEventsIndia] /meetups/AS/IN/devops failed: getaddrinfo ENOTFOUND dev.events","timestamp":"2026-03-10 13:09:32"}
+{"level":"warn","message":"[DevEventsIndia] /conferences/AS/IN failed: getaddrinfo ENOTFOUND dev.events","timestamp":"2026-03-10 13:09:32"}
+{"level":"info","message":"[DevEventsIndia] Total: 0 events","timestamp":"2026-03-10 13:09:32"}
+{"level":"info","message":"  ✔ DevEventsIN: 0 events","timestamp":"2026-03-10 13:09:32"}
+{"level":"info","message":"  → HasGeek…","timestamp":"2026-03-10 13:09:34"}
+{"level":"info","message":"[HasGeek] Starting scrape…","timestamp":"2026-03-10 13:09:34"}
+{"level":"warn","message":"[HasGeek] https://hasgeek.com/ failed: getaddrinfo ENOTFOUND hasgeek.com","timestamp":"2026-03-10 13:09:34"}
+{"level":"warn","message":"[HasGeek] https://hasgeek.com/events failed: getaddrinfo ENOTFOUND hasgeek.com","timestamp":"2026-03-10 13:09:34"}
+{"level":"warn","message":"[HasGeek] https://hasgeek.com/upcoming failed: getaddrinfo ENOTFOUND hasgeek.com","timestamp":"2026-03-10 13:09:34"}
+{"level":"info","message":"[HasGeek] Total: 0 events","timestamp":"2026-03-10 13:09:34"}
+{"level":"info","message":"  ✔ HasGeek: 0 events","timestamp":"2026-03-10 13:09:34"}
+{"level":"info","message":"[Scrapers] Total events scraped: 0","timestamp":"2026-03-10 13:09:37"}
+{"level":"warn","message":"⚠ No events scraped — check scraper logs above","timestamp":"2026-03-10 13:09:37"}
+{"level":"error","message":"getaddrinfo ENOTFOUND ac-emhgtax-shard-00-01.f4pz46k.mongodb.net","timestamp":"2026-03-10 13:10:07"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2026-03-10 13:32:53"}
+{"level":"info","message":"Skipping DB clear — using upsert to preserve existing data","timestamp":"2026-03-10 13:32:53"}
+{"level":"info","message":"Running live hackathon scrapers…","timestamp":"2026-03-10 13:32:53"}
+{"level":"info","message":"[Scrapers] Running 7 hackathon scrapers…","timestamp":"2026-03-10 13:32:53"}
+{"level":"info","message":"  → Devpost (Tier 1)…","timestamp":"2026-03-10 13:32:53"}
+{"level":"info","message":"[Devpost] Starting scrape…","timestamp":"2026-03-10 13:32:53"}
+{"level":"info","message":"[Devpost] page 1 → 40 items","timestamp":"2026-03-10 13:32:57"}
+{"level":"info","message":"[Devpost] page 2 → 24 items","timestamp":"2026-03-10 13:32:59"}
+{"level":"info","message":"[Devpost] page 1 → 30 items","timestamp":"2026-03-10 13:33:01"}
+{"level":"info","message":"  ✔ Devpost: 64 hackathons","timestamp":"2026-03-10 13:33:02"}
+{"level":"info","message":"  → HackClub (Tier 1)…","timestamp":"2026-03-10 13:33:05"}
+{"level":"info","message":"[HackClub] Starting scrape…","timestamp":"2026-03-10 13:33:05"}
+{"level":"info","message":"[HackClub] API https://hackathons.hackclub.com/api/events/upcoming → 14 events","timestamp":"2026-03-10 13:33:10"}
+{"level":"info","message":"[HackClub] Returning 2","timestamp":"2026-03-10 13:33:10"}
+{"level":"info","message":"  ✔ HackClub: 2 hackathons","timestamp":"2026-03-10 13:33:10"}
+{"level":"info","message":"  → TAIKAI (Tier 1)…","timestamp":"2026-03-10 13:33:12"}
+{"level":"info","message":"[TAIKAI] Starting scrape…","timestamp":"2026-03-10 13:33:12"}
+{"level":"info","message":"[TAIKAI] HTML https://taikai.network/hackathons → 22 raw cards","timestamp":"2026-03-10 13:33:15"}
+{"level":"info","message":"[TAIKAI] Total: 1","timestamp":"2026-03-10 13:33:15"}
+{"level":"info","message":"  ✔ TAIKAI: 1 hackathons","timestamp":"2026-03-10 13:33:15"}
+{"level":"info","message":"  → Hackathon.com (Tier 2)…","timestamp":"2026-03-10 13:33:18"}
+{"level":"info","message":"[Hackathon.com] Starting scrape…","timestamp":"2026-03-10 13:33:18"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/online → 2","timestamp":"2026-03-10 13:33:19"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/india → 0","timestamp":"2026-03-10 13:33:22"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/ai → 6","timestamp":"2026-03-10 13:33:26"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/machine-learning → 0","timestamp":"2026-03-10 13:33:29"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/open-source → 0","timestamp":"2026-03-10 13:33:33"}
+{"level":"info","message":"[Hackathon.com] Total: 3","timestamp":"2026-03-10 13:33:35"}
+{"level":"info","message":"  ✔ Hackathon.com: 3 hackathons","timestamp":"2026-03-10 13:33:35"}
+{"level":"info","message":"  → DevEvents (Tier 2)…","timestamp":"2026-03-10 13:33:38"}
+{"level":"info","message":"[DevEvents] Starting scrape…","timestamp":"2026-03-10 13:33:38"}
+{"level":"info","message":"[DevEvents] HTML → 1 hackathons","timestamp":"2026-03-10 13:33:41"}
+{"level":"info","message":"[DevEvents] Total: 1","timestamp":"2026-03-10 13:33:41"}
+{"level":"info","message":"  ✔ DevEvents: 1 hackathons","timestamp":"2026-03-10 13:33:41"}
+{"level":"info","message":"  → Devfolio (Tier 3)…","timestamp":"2026-03-10 13:33:43"}
+{"level":"info","message":"[Devfolio] Starting scrape…","timestamp":"2026-03-10 13:33:43"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/search/hackathons attempt 1/3 — 404","timestamp":"2026-03-10 13:33:44"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/search/hackathons attempt 2/3 — 404","timestamp":"2026-03-10 13:33:46"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/search/hackathons attempt 3/3 — 404","timestamp":"2026-03-10 13:33:50"}
+{"level":"warn","message":"[Devfolio] API https://api.devfolio.co/api/search/hackathons failed: Request failed with status code 404","timestamp":"2026-03-10 13:33:50"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/search attempt 1/3 — 404","timestamp":"2026-03-10 13:33:50"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/search attempt 2/3 — 404","timestamp":"2026-03-10 13:33:52"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons/search attempt 3/3 — 404","timestamp":"2026-03-10 13:33:56"}
+{"level":"warn","message":"[Devfolio] API https://api.devfolio.co/api/hackathons/search failed: Request failed with status code 404","timestamp":"2026-03-10 13:33:56"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons?status=open&limit=30 attempt 1/3 — 422","timestamp":"2026-03-10 13:33:57"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons?status=open&limit=30 attempt 2/3 — 422","timestamp":"2026-03-10 13:33:59"}
+{"level":"warn","message":"[Devfolio] GET https://api.devfolio.co/api/hackathons?status=open&limit=30 attempt 3/3 — 422","timestamp":"2026-03-10 13:34:03"}
+{"level":"warn","message":"[Devfolio] API https://api.devfolio.co/api/hackathons?status=open&limit=30 failed: Request failed with status code 422","timestamp":"2026-03-10 13:34:03"}
+{"level":"info","message":"[Devfolio] https://devfolio.co/hackathons selector \"[class*='HackathonCard'], [class*='hackathon-card']\" → 31 cards","timestamp":"2026-03-10 13:34:04"}
+{"level":"info","message":"[Devfolio] Returning 26 hackathons","timestamp":"2026-03-10 13:34:04"}
+{"level":"info","message":"  ✔ Devfolio: 26 hackathons","timestamp":"2026-03-10 13:34:04"}
+{"level":"info","message":"  → HackerEarth (Tier 3)…","timestamp":"2026-03-10 13:34:07"}
+{"level":"info","message":"[HackerEarth] Starting scrape…","timestamp":"2026-03-10 13:34:07"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/data/?type=hackathon attempt 1/3 — 404","timestamp":"2026-03-10 13:34:10"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/data/?type=hackathon attempt 2/3 — 404","timestamp":"2026-03-10 13:34:12"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/data/?type=hackathon attempt 3/3 — 404","timestamp":"2026-03-10 13:34:17"}
+{"level":"warn","message":"[HackerEarth] API https://www.hackerearth.com/challenges/data/?type=hackathon failed: Request failed with status code 404","timestamp":"2026-03-10 13:34:17"}
+{"level":"info","message":"[HackerEarth] HTML cards → 162","timestamp":"2026-03-10 13:34:20"}
+{"level":"info","message":"[HackerEarth] Returning 15 hackathons","timestamp":"2026-03-10 13:34:20"}
+{"level":"info","message":"  ✔ HackerEarth: 15 hackathons","timestamp":"2026-03-10 13:34:20"}
+{"level":"info","message":"[Scrapers] Total hackathons scraped: 112","timestamp":"2026-03-10 13:34:23"}
+{"level":"info","message":"✅ Live hackathons: 0 new, 112 updated","timestamp":"2026-03-10 13:34:23"}
+{"level":"info","message":"Running live internship scrapers…","timestamp":"2026-03-10 13:34:23"}
+{"level":"info","message":"[Scrapers] Running 2 internship scrapers…","timestamp":"2026-03-10 13:34:23"}
+{"level":"info","message":"  → Internshala…","timestamp":"2026-03-10 13:34:23"}
+{"level":"info","message":"[Internshala] Starting scrape…","timestamp":"2026-03-10 13:34:23"}
+{"level":"info","message":"[Internshala] computer-science-internship HTML → 100 internships","timestamp":"2026-03-10 13:34:24"}
+{"level":"info","message":"[Internshala] web-development-internship HTML → 100 internships","timestamp":"2026-03-10 13:34:26"}
+{"level":"info","message":"[Internshala] machine-learning-internship HTML → 100 internships","timestamp":"2026-03-10 13:34:29"}
+{"level":"info","message":"[Internshala] data-science-internship HTML → 100 internships","timestamp":"2026-03-10 13:34:31"}
+{"level":"info","message":"[Internshala] android-development-internship HTML → 80 internships","timestamp":"2026-03-10 13:34:34"}
+{"level":"info","message":"[Internshala] python-internship HTML → 80 internships","timestamp":"2026-03-10 13:34:36"}
+{"level":"info","message":"[Internshala] Total internships found: 560","timestamp":"2026-03-10 13:34:38"}
+{"level":"info","message":"  ✔ Internshala: 560 internships","timestamp":"2026-03-10 13:34:38"}
+{"level":"info","message":"  → Remotive…","timestamp":"2026-03-10 13:34:41"}
+{"level":"info","message":"[Remotive] Starting scrape…","timestamp":"2026-03-10 13:34:41"}
+{"level":"info","message":"[Remotive] software-dev → 2 jobs","timestamp":"2026-03-10 13:34:50"}
+{"level":"info","message":"[Remotive] data → 0 jobs","timestamp":"2026-03-10 13:34:52"}
+{"level":"info","message":"[Remotive] devops-sysadmin → 2 jobs","timestamp":"2026-03-10 13:34:53"}
+{"level":"info","message":"[Remotive] mobile-dev → 2 jobs","timestamp":"2026-03-10 13:34:54"}
+{"level":"info","message":"[Remotive] Total: 6","timestamp":"2026-03-10 13:34:55"}
+{"level":"info","message":"  ✔ Remotive: 6 internships","timestamp":"2026-03-10 13:34:55"}
+{"level":"info","message":"[Scrapers] Total internships scraped: 566","timestamp":"2026-03-10 13:34:58"}
+{"level":"info","message":"✅ Live internships: 4 new, 331 updated","timestamp":"2026-03-10 13:34:58"}
+{"level":"info","message":"Running live event scrapers…","timestamp":"2026-03-10 13:34:58"}
+{"level":"info","message":"[Scrapers] Running 6 event scrapers…","timestamp":"2026-03-10 13:34:58"}
+{"level":"info","message":"  → Eventbrite…","timestamp":"2026-03-10 13:34:58"}
+{"level":"info","message":"[Eventbrite] Starting scrape…","timestamp":"2026-03-10 13:34:58"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india/technology/: 17 total so far","timestamp":"2026-03-10 13:35:02"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india/free--science-and-tech--events/: 31 total so far","timestamp":"2026-03-10 13:35:07"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india/tech--conferences/: 46 total so far","timestamp":"2026-03-10 13:35:11"}
+{"level":"info","message":"[Eventbrite] Total: 46 events","timestamp":"2026-03-10 13:35:13"}
+{"level":"info","message":"  ✔ Eventbrite: 46 events","timestamp":"2026-03-10 13:35:13"}
+{"level":"info","message":"  → GoogleDev…","timestamp":"2026-03-10 13:35:16"}
+{"level":"info","message":"[GoogleDev] Starting scrape…","timestamp":"2026-03-10 13:35:16"}
+{"level":"info","message":"[GoogleDev] HTML: 14 events","timestamp":"2026-03-10 13:35:17"}
+{"level":"info","message":"  ✔ GoogleDev: 14 events","timestamp":"2026-03-10 13:35:17"}
+{"level":"info","message":"  → Luma…","timestamp":"2026-03-10 13:35:19"}
+{"level":"info","message":"[Luma] Starting scrape…","timestamp":"2026-03-10 13:35:19"}
+{"level":"info","message":"[Luma] Discover https://api.lu.ma/discover/get-paginated-events?location=India&period=future&limit=50 → 40","timestamp":"2026-03-10 13:35:21"}
+{"level":"info","message":"[Luma] Total: 39 events","timestamp":"2026-03-10 13:35:33"}
+{"level":"info","message":"  ✔ Luma: 39 events","timestamp":"2026-03-10 13:35:33"}
+{"level":"info","message":"  → GDGCommunity…","timestamp":"2026-03-10 13:35:35"}
+{"level":"info","message":"[GDGCommunity] Starting scrape…","timestamp":"2026-03-10 13:35:35"}
+{"level":"warn","message":"[GDGCommunity] API failed: Request failed with status code 403","timestamp":"2026-03-10 13:35:36"}
+{"level":"info","message":"[GDGCommunity] API: 500 events","timestamp":"2026-03-10 13:35:42"}
+{"level":"info","message":"[GDGCommunity] Total: 203 events","timestamp":"2026-03-10 13:35:42"}
+{"level":"info","message":"  ✔ GDGCommunity: 203 events","timestamp":"2026-03-10 13:35:42"}
+{"level":"info","message":"  → DevEventsIN…","timestamp":"2026-03-10 13:35:44"}
+{"level":"info","message":"[DevEventsIndia] Starting scrape…","timestamp":"2026-03-10 13:35:44"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/tech: 34 events","timestamp":"2026-03-10 13:35:45"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/ai: 5 events","timestamp":"2026-03-10 13:35:47"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/cloud: 6 events","timestamp":"2026-03-10 13:35:50"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/javascript: 3 events","timestamp":"2026-03-10 13:35:52"}
+{"level":"info","message":"[DevEventsIndia] /meetups/AS/IN/devops: 5 events","timestamp":"2026-03-10 13:35:54"}
+{"level":"info","message":"[DevEventsIndia] /conferences/AS/IN: 87 events","timestamp":"2026-03-10 13:35:56"}
+{"level":"info","message":"[DevEventsIndia] Total: 140 events","timestamp":"2026-03-10 13:35:57"}
+{"level":"info","message":"  ✔ DevEventsIN: 140 events","timestamp":"2026-03-10 13:35:57"}
+{"level":"info","message":"  → HasGeek…","timestamp":"2026-03-10 13:36:00"}
+{"level":"info","message":"[HasGeek] Starting scrape…","timestamp":"2026-03-10 13:36:00"}
+{"level":"info","message":"[HasGeek] https://hasgeek.com/: 22 events","timestamp":"2026-03-10 13:36:00"}
+{"level":"info","message":"[HasGeek] Total: 22 events","timestamp":"2026-03-10 13:36:00"}
+{"level":"info","message":"  ✔ HasGeek: 22 events","timestamp":"2026-03-10 13:36:00"}
+{"level":"info","message":"[Scrapers] Total events scraped: 464","timestamp":"2026-03-10 13:36:03"}
+{"level":"info","message":"✅ Live events: 1 new, 463 updated","timestamp":"2026-03-10 13:36:03"}
+{"level":"info","message":"📊 Final DB: 150 hackathons, 505 internships, 552 events","timestamp":"2026-03-10 13:36:03"}
