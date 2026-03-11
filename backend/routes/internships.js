@@ -20,19 +20,22 @@ function shuffle(arr) {
 /* ── GET /api/internships ──────────────────────────────────────── */
 router.get("/", async (req, res) => {
   try {
-    const { search, skills, location, isRemote, page = 1, limit = 20 } = req.query;
+    const { search, skills, location, isRemote, page = 1, limit = 1000 } = req.query;
 
     const filter = {
-      status:   "OPEN",
-      isActive: true,
-      $or: [{ deadline: { $gte: new Date() } }, { deadline: null }],
+      // Accept any internship that isn't explicitly closed/inactive
+      $and: [
+        { $or: [{ status: { $ne: "CLOSED" } }, { status: null }, { status: { $exists: false } }] },
+        { $or: [{ isActive: { $ne: false } }, { isActive: null }, { isActive: { $exists: false } }] },
+        { $or: [{ deadline: { $gte: new Date() } }, { deadline: null }, { deadline: { $exists: false } }] },
+      ],
     };
 
     if (search) filter.$text = { $search: search };
     if (skills)  filter.skills   = { $in: skills.split(",").map(s => s.trim()) };
     if (isRemote === "true")  filter.isRemote  = true;
     if (location && location !== "All" && location !== "Remote") {
-      filter.location = { $regex: location, $options: "i" };
+      filter.location = { $regex: cityRegex(location), $options: "i" };
     }
 
     const skip  = (parseInt(page) - 1) * parseInt(limit);

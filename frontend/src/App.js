@@ -726,7 +726,7 @@ const HomePage = ({setPage}) => {
                 <div style={{fontSize:36}}>💼</div>
                 <div>
                   <div className="syne" style={{fontSize:18,fontWeight:800,color:"var(--green)"}}>Browse All Internships</div>
-                  <div style={{fontSize:13,color:"var(--text2)",marginTop:3}}>600+ live internships from Internshala · Filter by skill, city, and remote</div>
+                  <div style={{fontSize:13,color:"var(--text2)",marginTop:3}}>1000+ live internships from Internshala · Filter by skill, city, and remote</div>
                 </div>
               </div>
               <div style={{padding:"10px 26px",background:"var(--green)",color:"#000",borderRadius:10,fontWeight:700,fontSize:14,flexShrink:0}}>View All →</div>
@@ -783,7 +783,7 @@ const HomePage = ({setPage}) => {
    HACKATHONS PAGE
 ──────────────────────────────────────────────── */
 const DOMAIN_OPT = ["All","AI/ML","Web Dev","Blockchain","Cybersecurity","Data Science","Cloud","Mobile Apps","IoT"];
-const CITY_OPT   = ["All","Online","Bangalore","Delhi","Mumbai","Hyderabad","Trichy","Kharagpur","Pune","Chennai"];
+const CITY_OPT   = ["All","Online","Bengaluru","Delhi","Mumbai","Hyderabad","Pune","Chennai","Kolkata","Noida","Gurugram","Jaipur"];
 const MODE_OPT   = ["All","Online","Offline","Online + Offline"];
 const TEAM_OPT   = ["All","Solo","2–4","5+"];
 
@@ -944,7 +944,7 @@ const InternshipsPage = () => {
   const filtered = skill==="All" ? data : data.filter(i=>(i.skills||[]).some(s=>s.toLowerCase().includes(skill.toLowerCase())));
   const iPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((iPage-1)*ITEMS_PER_PAGE, iPage*ITEMS_PER_PAGE);
-  const LOCATIONS=["All","Bangalore","Mumbai","Delhi","Hyderabad","Pune","Chennai","Remote/WFH"];
+  const LOCATIONS=["All","Bengaluru","Mumbai","Delhi","Hyderabad","Pune","Chennai","Remote/WFH"];
   const SKILLS=["All","Python","React","JavaScript","Java","Data Science","ML/AI","Android","Node.js","Cloud/AWS"];
   const hasFilter = location!=="All"||skill!=="All"||isRemote!=="All"||search;
   // internLogo replaced by LogoBox component
@@ -1229,7 +1229,7 @@ const EventCard = ({e, compact=false}) => {
 ──────────────────────────────────────────────── */
 const EVENTS_PER_PAGE = 20;
 
-const INDIA_CITY_OPTS = ["All","Online","Bangalore","Mumbai","Delhi","Hyderabad","Pune","Chennai","Kolkata","Noida","Gurugram","Kochi","Ahmedabad","Jaipur","Indore","Surat","Chandigarh","Lucknow"];
+const INDIA_CITY_OPTS = ["All","Online","Bengaluru","Mumbai","Delhi","Hyderabad","Pune","Chennai","Kolkata","Noida","Gurugram","Kochi","Ahmedabad","Jaipur","Indore","Surat","Chandigarh","Lucknow"];
 const EVENT_DOMAIN_OPTS = ["All","AI/ML","Web Dev","Cloud","DevOps","Blockchain","Data Science","Mobile","Open Source","Security"];
 
 const EventsPage = () => {
