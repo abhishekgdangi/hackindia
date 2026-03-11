@@ -20,14 +20,18 @@ router.get("/", async (req, res) => {
       limit = 500,
     } = req.query;
 
-    const filter = { isActive: true };
+    const filter = {
+      $and: [
+        { $or: [{ isActive: { $ne: false } }, { isActive: { $exists: false } }] },
+      ],
+    };
 
     if (type     && type     !== "All") filter.eventType = type;
     if (price    && price    !== "All") filter.price     = price;
     if (location && location !== "All") {
       if (location === "Online")  filter.location = { $regex: /online/i };
       else if (location === "Offline") filter.location = { $not: /online/i };
-      else filter.location = { $regex: location, $options: "i" };
+      else filter.location = { $regex: cityRegex(location), $options: "i" };
     }
     if (search) filter.$text = { $search: search };
 

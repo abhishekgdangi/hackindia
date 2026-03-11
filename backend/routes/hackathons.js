@@ -30,8 +30,13 @@ router.get("/", async (req, res) => {
     } = req.query;
 
     const filter = {
-      status:   "OPEN",
-      isActive: true,
+      $and: [
+        { $or: [{ status: { $ne: "CLOSED" } }, { status: { $exists: false } }] },
+        { $or: [{ isActive: { $ne: false } }, { isActive: { $exists: false } }] },
+        { $or: [{ deadline: { $gte: new Date() } }, { deadline: null }, { deadline: { $exists: false } }] },
+      ],
+    
+     
       registrationDeadline: { $gte: new Date() },
     };
 
@@ -42,7 +47,7 @@ router.get("/", async (req, res) => {
 
     if (city && city !== "All") {
       if (city === "Online") filter.mode = "Online";
-      else                   filter.city = { $regex: city, $options: "i" };
+      else                   filter.city = { $regex: cityRegex(city), $options: "i" };
     }
 
     if (teamSize && teamSize !== "All") {
@@ -95,7 +100,7 @@ router.get("/featured", async (req, res) => {
   try {
     const data = await Hackathon
       .find({
-        status: "OPEN", isActive: true, isFeatured: true,
+        $or: [{ isActive: { $ne: false } }, { isActive: { $exists: false } }], isFeatured: true,
         registrationDeadline: { $gte: new Date() },
       })
       .sort({ qualityScore: -1, registrationDeadline: 1 })
@@ -111,7 +116,7 @@ router.get("/featured", async (req, res) => {
 router.get("/stats", async (req, res) => {
   try {
     const baseFilter = {
-      status: "OPEN", isActive: true,
+      $or: [{ isActive: { $ne: false } }, { isActive: { $exists: false } }],
       registrationDeadline: { $gte: new Date() },
     };
 
