@@ -10,3 +10,4 @@
 {"level":"error","message":"Hackathon scrape failed: getaddrinfo ENOTFOUND ac-emhgtax-shard-00-01.f4pz46k.mongodb.net","timestamp":"2026-03-10 13:08:10"}
 {"level":"error","message":"[GoogleDev] HTML failed: getaddrinfo ENOTFOUND developers.google.com","timestamp":"2026-03-10 13:09:18"}
 {"level":"error","message":"getaddrinfo ENOTFOUND ac-emhgtax-shard-00-01.f4pz46k.mongodb.net","timestamp":"2026-03-10 13:10:07"}
+{"level":"error","message":"Hackathon scrape failed: runAllScrapers is not a function","timestamp":"2026-03-11 06:20:29"}

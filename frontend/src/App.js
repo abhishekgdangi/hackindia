@@ -42,6 +42,44 @@ function shuffle(arr) {
   }
   return a;
 }
+// Shuffle within date groups so same platform doesn't cluster, but soonest still first
+function shuffleGroups(arr) {
+  if (!arr.length) return arr;
+  const groups = {};
+  arr.forEach(e => {
+    const key = e.date || "TBD";
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(e);
+  });
+  const result = [];
+  Object.keys(groups).forEach(k => {
+    const g = groups[k];
+    for (let i = g.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [g[i], g[j]] = [g[j], g[i]];
+    }
+    result.push(...g);
+  });
+  return result;
+}
+
+
+// Sort by date ascending (soonest first), TBD goes last
+function sortByDate(arr) {
+  return [...arr].sort((a, b) => {
+    const da = a.deadline || a.date || a.startDate || "";
+    const db = b.deadline || b.date || b.startDate || "";
+    if (!da && !db) return 0;
+    if (!da) return 1;
+    if (!db) return -1;
+    const ta = new Date(da).getTime();
+    const tb = new Date(db).getTime();
+    if (isNaN(ta) && isNaN(tb)) return 0;
+    if (isNaN(ta)) return 1;
+    if (isNaN(tb)) return -1;
+    return ta - tb;
+  });
+}
 
 function useHackathons(filters={}, page=1) {
   const [data,    setData]    = useState([]);
@@ -62,7 +100,7 @@ function useHackathons(filters={}, page=1) {
     apiFetch("/hackathons", { ...filters, limit:1000 })  // page handled client-side
       .then(j => {
         if (fetchId.current !== id) return;
-        setData(shuffle(j.data || []));
+        setData(shuffleGroups(sortByDate(j.data || [])));
         setTotal(j.total || 0);
         setOffline(false);
       })
@@ -137,7 +175,7 @@ function useEvents({type="", city="All", price="All", domain="All", search=""}={
     lastKey.current = key;
     const id = ++fetchId.current;
     setLoading(true);
-    const params = { limit:1000 };
+    const params = { limit:500 };
     if(type   && type   !=="All") params.type   = type;
     if(city   && city   !=="All") params.location = city;
     if(price  && price  !=="All") params.price  = price;
@@ -162,6 +200,8 @@ function useEvents({type="", city="All", price="All", domain="All", search=""}={
           if(!db) return -1;
           return da - db;
         });
+        // Shuffle within same-date groups to mix platforms
+        arr = shuffleGroups(arr);
         setData(shuffle(arr)); setTotal(j.total||0);
       })
       .catch(() => { if(fetchId.current===id) { setData([]); setTotal(0); } })
@@ -754,7 +794,16 @@ const HackathonsPage = () => {
   const [page,setPage]=useState(1);       const [modal,setModal]=useState(null);
   const [ds,setDs]=useState("");
   useEffect(()=>{const t=setTimeout(()=>setDs(search),350);return()=>clearTimeout(t);},[search]);
-  const {data,total,loading,offline} = useHackathons({domain,mode,city,teamSize:team,sort,search:ds},page);
+  const {data:rawHacks,total,loading,offline} = useHackathons({domain,mode,city,teamSize:team,sort,search:ds},page);
+  // Filter: keep online hackathons from anywhere, but offline only if India location
+  const INDIA_RE = /india|bangalore|bengaluru|mumbai|delhi|hyderabad|pune|chennai|kolkata|noida|gurugram|kochi|ahmedabad|jaipur/i;
+  const data = rawHacks.filter(h => {
+    const isOnline = (h.mode||"").toLowerCase()==="online" || (h.city||"").toLowerCase()==="online";
+    if (isOnline) return true;
+    // Offline: only show if India location or no location info
+    const loc = (h.city||h.location||h.name||"").toLowerCase();
+    return !loc || INDIA_RE.test(loc) || loc.includes("india");
+  });
   const HACK_PER_PAGE = 20;
   const pages = Math.ceil(data.length / HACK_PER_PAGE);
   const paginated = data.slice((page-1)*HACK_PER_PAGE, page*HACK_PER_PAGE);
