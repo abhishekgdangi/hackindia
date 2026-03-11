@@ -19,12 +19,24 @@ async function scrapeEventbrite() {
 
   // India-specific tech event URLs only
   const URLS = [
+    // India offline tech events
     "https://www.eventbrite.com/d/india/technology/",
     "https://www.eventbrite.com/d/india/free--science-and-tech--events/",
     "https://www.eventbrite.com/d/india/tech--conferences/",
     "https://www.eventbrite.com/d/india/science-and-tech--expos/",
     "https://www.eventbrite.com/d/india/science-and-tech--exhibitions/",
+    // City-specific — catches events missed by country-level
+    "https://www.eventbrite.com/d/india--bangalore/technology/",
+    "https://www.eventbrite.com/d/india--mumbai/technology/",
+    "https://www.eventbrite.com/d/india--delhi/technology/",
+    "https://www.eventbrite.com/d/india--hyderabad/technology/",
+    "https://www.eventbrite.com/d/india--pune/technology/",
+    // Online India tech events
     "https://www.eventbrite.com/d/online/tech--expos--india/",
+    "https://www.eventbrite.com/d/online/india--technology/",
+    // AI/ML specific
+    "https://www.eventbrite.com/d/india/artificial-intelligence/",
+    "https://www.eventbrite.com/d/india--bangalore/artificial-intelligence/",
   ];
 
   for (const url of URLS) {
