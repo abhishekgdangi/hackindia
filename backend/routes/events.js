@@ -11,6 +11,30 @@ const router  = express.Router();
 
 /* ── GET /api/events ─────────────────────────────────────────────
    Query params: type, location, price, search, limit, page       */
+
+// Fisher-Yates shuffle
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// Normalize city aliases for DB regex matching
+function cityRegex(city) {
+  const aliases = {
+    "bangalore": "bengaluru|bangalore",
+    "bengaluru": "bengaluru|bangalore",
+    "delhi": "delhi|new delhi",
+    "new delhi": "delhi|new delhi",
+    "gurugram": "gurugram|gurgaon",
+    "gurgaon":  "gurugram|gurgaon",
+    "mumbai":   "mumbai|bombay",
+  };
+  return aliases[city.toLowerCase()] || city;
+}
+
 router.get("/", async (req, res) => {
   try {
     const {
