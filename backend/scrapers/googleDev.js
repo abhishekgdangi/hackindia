@@ -11,9 +11,19 @@ const INDIA_KEYWORDS = ["india","bangalore","bengaluru","mumbai","delhi","hydera
   "pune","chennai","kolkata","noida","gurugram","gurgaon","kochi","ahmedabad",
   "jaipur","indore","chandigarh","lucknow"];
 
+const NON_INDIA_CITIES = ["berlin","warsaw","london","paris","tokyo","singapore","dubai",
+  "new york","san francisco","seattle","toronto","sydney","amsterdam","zurich",
+  "stockholm","oslo","helsinki","copenhagen","vienna","brussels","rome","madrid",
+  "barcelona","lisbon","prague","budapest","bucharest","lagos","nairobi","cairo"];
+
 function isIndia(text) {
   const t = (text || "").toLowerCase();
   return INDIA_KEYWORDS.some(k => t.includes(k));
+}
+
+function isNonIndia(text) {
+  const t = (text || "").toLowerCase();
+  return NON_INDIA_CITIES.some(k => t.includes(k));
 }
 
 async function scrapeGoogleDev() {
@@ -49,6 +59,8 @@ async function scrapeGoogleDev() {
 
           // Keep only India or Online events
           if (!isOnline && country && country.toLowerCase() !== "in" && !isIndia(loc)) continue;
+          // Also filter by title — skip if title contains a non-India city name
+          if (isNonIndia(title)) continue;
 
           const evtUrl = item.url || "";
           if (!evtUrl) continue;
@@ -85,6 +97,8 @@ async function scrapeGoogleDev() {
 
         // India-only filter
         if (!isOnline && locText && !isIndia(locText)) return;
+        // Skip if title contains non-India city
+        if (isNonIndia(title)) return;
 
         const uid = `googledev-html-${link.split("/").slice(-2).join("-").replace(/\W+/g,"-").slice(0,60)}`;
         if (results.some(r => r.uniqueId === uid)) return;
