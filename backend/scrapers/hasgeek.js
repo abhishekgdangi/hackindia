@@ -8,6 +8,37 @@ const axios   = require("axios");
 const cheerio = require("cheerio");
 const logger  = require("../utils/logger");
 
+
+// Normalize city name to proper Indian city
+function normalizeCity(text) {
+  if (!text) return null;
+  const t = text.toLowerCase();
+  if (t.includes("bengaluru") || t.includes("bangalore")) return "Bengaluru";
+  if (t.includes("mumbai") || t.includes("bombay")) return "Mumbai";
+  if (t.includes("delhi") || t.includes("new delhi")) return "New Delhi";
+  if (t.includes("hyderabad")) return "Hyderabad";
+  if (t.includes("pune")) return "Pune";
+  if (t.includes("chennai") || t.includes("madras")) return "Chennai";
+  if (t.includes("kolkata") || t.includes("calcutta")) return "Kolkata";
+  if (t.includes("noida")) return "Noida";
+  if (t.includes("gurugram") || t.includes("gurgaon")) return "Gurugram";
+  if (t.includes("ahmedabad")) return "Ahmedabad";
+  if (t.includes("jaipur")) return "Jaipur";
+  if (t.includes("kochi") || t.includes("cochin")) return "Kochi";
+  if (t.includes("chandigarh")) return "Chandigarh";
+  if (t.includes("indore")) return "Indore";
+  if (t.includes("bhopal")) return "Bhopal";
+  if (t.includes("lucknow")) return "Lucknow";
+  if (t.includes("surat")) return "Surat";
+  if (t.includes("nagpur")) return "Nagpur";
+  if (t.includes("coimbatore")) return "Coimbatore";
+  if (t.includes("visakhapatnam") || t.includes("vizag")) return "Visakhapatnam";
+  if (t.includes("online") || t.includes("virtual") || t.includes("remote")) return null; // handled separately
+  // Return cleaned version of original if it's a short city name
+  if (text.length < 30 && !text.includes(",")) return text.trim();
+  return null;
+}
+
 async function scrapeHasGeek() {
   logger.info("[HasGeek] Starting scrape…");
   const results = [];
@@ -15,9 +46,15 @@ async function scrapeHasGeek() {
   const now     = new Date();
 
   const urls = [
-    "https://hasgeek.com/",
-    "https://hasgeek.com/events",
-    "https://hasgeek.com/upcoming",
+    "https://hasgeek.com/",           // ✅ 22 events
+    "https://hasgeek.com/rootconf",   // ✅ 17 events
+    "https://hasgeek.com/jsfoo",      // ✅ 2 events
+    "https://hasgeek.com/metarefresh",// ✅ 1 event
+    "https://hasgeek.com/droidconin", // ✅ 1 event
+    "https://hasgeek.com/generativeAI",// ✅ 11 events
+    "https://hasgeek.com/fifthelephant",
+    "https://hasgeek.com/PyConIndia",
+    "https://hasgeek.com/aiconfindia",
   ];
 
   for (const url of urls) {
@@ -66,7 +103,7 @@ async function scrapeHasGeek() {
             eventType:   _classify(title),
             platform:    "HasGeek",
             date:        dateText,
-            location:    locText || "India",
+            location:    normalizeCity(locText) || "India",
             price:       "Unknown",
             registrationLink: link,
             imageUrl:    $card.find("img").first().attr("src") || "",
@@ -78,7 +115,6 @@ async function scrapeHasGeek() {
 
       if (added > 0) {
         logger.info(`[HasGeek] ${url}: ${added} events`);
-        break;
       }
     } catch (err) {
       logger.warn(`[HasGeek] ${url} failed: ${err.message}`);

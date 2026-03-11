@@ -16,7 +16,7 @@ class HackerEarthScraper extends BaseScraper {
       "https://www.hackerearth.com/api/v2/challenges/?type=hackathon&limit=50",
       "https://www.hackerearth.com/challenges/data/?type=hackathon",
     ];
-    this.htmlUrl = "https://www.hackerearth.com/challenges/hackathon/";
+    this.htmlUrls = ["https://www.hackerearth.com/challenges/", "https://www.hackerearth.com/challenges/hackathon/", "https://www.hackerearth.com/hackathon/"];
   }
 
   async scrape() {
@@ -55,7 +55,8 @@ class HackerEarthScraper extends BaseScraper {
 
     // Strategy 2: HTML scraping
     try {
-      const res = await this.get(this.htmlUrl, {
+      const htmlUrl = "https://www.hackerearth.com/challenges/hackathon/";
+      const res = await this.get(htmlUrl, {
         headers: {
           "User-Agent": "Mozilla/5.0 Chrome/125.0.0.0",
           Accept: "text/html",
@@ -84,7 +85,10 @@ class HackerEarthScraper extends BaseScraper {
       if (results.length > 0) { logger.info(`[HackerEarth] Returning ${results.length}`); return results; }
 
       // Card scraping fallback
-      const cards = $(".challenge-card, [class*='challenge'], [class*='hackathon'], article").toArray();
+      const cards = $(
+        ".challenge-card, .challenge-list-card, [class*='challenge-card'], [class*='challenge-list'], " +
+        "[class*='hackathon'], article, .card, [data-type='hackathon'], li.challenge"
+      ).toArray();
       logger.info(`[HackerEarth] HTML cards → ${cards.length}`);
       for (const el of cards) {
         const $el  = $(el);
@@ -96,7 +100,7 @@ class HackerEarthScraper extends BaseScraper {
         seen.add(name);
         results.push(this.normalise({
           name, organizer: "HackerEarth", mode: "Online", city: "Online",
-          applyLink: link, sourceUrl: this.htmlUrl,
+          applyLink: link, sourceUrl: htmlUrl || this.htmlUrls?.[0] || '',
           externalId: `he-${name.toLowerCase().replace(/\W+/g,"-").slice(0,60)}`,
           logo: "💻", tags: ["Hackathon", "Coding"],
         }));
@@ -129,7 +133,7 @@ class HackerEarthScraper extends BaseScraper {
       endDate: end, registrationDeadline: item.reg_end_time || end,
       prize: item.prize || (item.prize_amount ? `$${item.prize_amount}` : "TBA"),
       tags: [...tags, "Coding"], domains: tags,
-      applyLink: link, websiteLink: link, sourceUrl: this.htmlUrl,
+      applyLink: link, websiteLink: link, sourceUrl: htmlUrl || this.htmlUrls?.[0] || '',
       externalId: `he-${String(item.id || item.slug || title).slice(0,70)}`,
       logo: item.logo || item.cover_image || "💻",
       isFeatured: Boolean(item.is_featured),

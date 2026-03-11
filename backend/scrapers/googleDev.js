@@ -26,6 +26,37 @@ function isNonIndia(text) {
   return NON_INDIA_CITIES.some(k => t.includes(k));
 }
 
+
+// Normalize city name to proper Indian city
+function normalizeCity(text) {
+  if (!text) return null;
+  const t = text.toLowerCase();
+  if (t.includes("bengaluru") || t.includes("bangalore")) return "Bengaluru";
+  if (t.includes("mumbai") || t.includes("bombay")) return "Mumbai";
+  if (t.includes("delhi") || t.includes("new delhi")) return "New Delhi";
+  if (t.includes("hyderabad")) return "Hyderabad";
+  if (t.includes("pune")) return "Pune";
+  if (t.includes("chennai") || t.includes("madras")) return "Chennai";
+  if (t.includes("kolkata") || t.includes("calcutta")) return "Kolkata";
+  if (t.includes("noida")) return "Noida";
+  if (t.includes("gurugram") || t.includes("gurgaon")) return "Gurugram";
+  if (t.includes("ahmedabad")) return "Ahmedabad";
+  if (t.includes("jaipur")) return "Jaipur";
+  if (t.includes("kochi") || t.includes("cochin")) return "Kochi";
+  if (t.includes("chandigarh")) return "Chandigarh";
+  if (t.includes("indore")) return "Indore";
+  if (t.includes("bhopal")) return "Bhopal";
+  if (t.includes("lucknow")) return "Lucknow";
+  if (t.includes("surat")) return "Surat";
+  if (t.includes("nagpur")) return "Nagpur";
+  if (t.includes("coimbatore")) return "Coimbatore";
+  if (t.includes("visakhapatnam") || t.includes("vizag")) return "Visakhapatnam";
+  if (t.includes("online") || t.includes("virtual") || t.includes("remote")) return null; // handled separately
+  // Return cleaned version of original if it's a short city name
+  if (text.length < 30 && !text.includes(",")) return text.trim();
+  return null;
+}
+
 async function scrapeGoogleDev() {
   logger.info("[GoogleDev] Starting scrape…");
   const results = [];
@@ -72,7 +103,7 @@ async function scrapeGoogleDev() {
             eventType: _classifyGoogleEvent(title),
             platform: "Google Developers",
             date: item.startDate ? new Date(item.startDate).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}) : "",
-            location: isOnline ? "Online" : (loc || "India"),
+            location: isOnline ? "Online" : (normalizeCity(loc) || "India"),
             mode: isOnline ? "Online" : "Offline",
             price: "Free",
             registrationLink: evtUrl,
@@ -109,7 +140,7 @@ async function scrapeGoogleDev() {
           eventType: _classifyGoogleEvent(title),
           platform: "Google Developers",
           date: dateText,
-          location: isOnline ? "Online" : (locText || "India"),
+          location: isOnline ? "Online" : (normalizeCity(locText) || "India"),
           mode: isOnline ? "Online" : "Offline",
           price: "Free",
           registrationLink: link,

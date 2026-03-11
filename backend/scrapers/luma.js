@@ -7,6 +7,37 @@ const logger = require("../utils/logger");
 
 const INDIA_RE = /india|bangalore|bengaluru|mumbai|delhi|hyderabad|pune|chennai|kolkata|noida|gurugram|gurgaon|kochi|jaipur|ahmedabad|indore/i;
 
+
+// Normalize city name to proper Indian city
+function normalizeCity(text) {
+  if (!text) return null;
+  const t = text.toLowerCase();
+  if (t.includes("bengaluru") || t.includes("bangalore")) return "Bengaluru";
+  if (t.includes("mumbai") || t.includes("bombay")) return "Mumbai";
+  if (t.includes("delhi") || t.includes("new delhi")) return "New Delhi";
+  if (t.includes("hyderabad")) return "Hyderabad";
+  if (t.includes("pune")) return "Pune";
+  if (t.includes("chennai") || t.includes("madras")) return "Chennai";
+  if (t.includes("kolkata") || t.includes("calcutta")) return "Kolkata";
+  if (t.includes("noida")) return "Noida";
+  if (t.includes("gurugram") || t.includes("gurgaon")) return "Gurugram";
+  if (t.includes("ahmedabad")) return "Ahmedabad";
+  if (t.includes("jaipur")) return "Jaipur";
+  if (t.includes("kochi") || t.includes("cochin")) return "Kochi";
+  if (t.includes("chandigarh")) return "Chandigarh";
+  if (t.includes("indore")) return "Indore";
+  if (t.includes("bhopal")) return "Bhopal";
+  if (t.includes("lucknow")) return "Lucknow";
+  if (t.includes("surat")) return "Surat";
+  if (t.includes("nagpur")) return "Nagpur";
+  if (t.includes("coimbatore")) return "Coimbatore";
+  if (t.includes("visakhapatnam") || t.includes("vizag")) return "Visakhapatnam";
+  if (t.includes("online") || t.includes("virtual") || t.includes("remote")) return null; // handled separately
+  // Return cleaned version of original if it's a short city name
+  if (text.length < 30 && !text.includes(",")) return text.trim();
+  return null;
+}
+
 async function scrapeLuma() {
   logger.info("[Luma] Starting scrape…");
   const results = [];
@@ -22,8 +53,13 @@ async function scrapeLuma() {
   // Strategy 1: Luma discover API with India location filter
   const discoverUrls = [
     "https://api.lu.ma/discover/get-paginated-events?location=India&period=future&limit=50",
-    "https://api.lu.ma/discover/events?geo_latitude=20.5937&geo_longitude=78.9629&radius=3000&limit=50",
-    "https://lu.ma/api/discover/get-paginated-events?location=India&period=future&pagination_limit=50",
+    "https://api.lu.ma/discover/get-paginated-events?location=India&period=future&limit=50&after_cursor=50",
+    "https://api.lu.ma/discover/get-paginated-events?location=India&period=future&limit=50&after_cursor=100",
+    "https://api.lu.ma/discover/get-paginated-events?location=Bengaluru&period=future&limit=50",
+    "https://api.lu.ma/discover/get-paginated-events?location=Mumbai&period=future&limit=50",
+    "https://api.lu.ma/discover/get-paginated-events?location=Hyderabad&period=future&limit=50",
+    "https://api.lu.ma/discover/get-paginated-events?location=Pune&period=future&limit=50",
+    "https://api.lu.ma/discover/get-paginated-events?location=Chennai&period=future&limit=50",
   ];
   for (const url of discoverUrls) {
     try {
@@ -42,11 +78,11 @@ async function scrapeLuma() {
           seen.add(uid);
           results.push(_parseEvent(ev));
         }
-        if (results.length > 0) break;
       }
     } catch (err) {
       logger.warn(`[Luma] Discover ${url} failed: ${err.message}`);
     }
+    await new Promise(r => setTimeout(r, 1000));
   }
 
   // Strategy 2: Known India community calendar slugs
@@ -54,6 +90,9 @@ async function scrapeLuma() {
     "bangaloretech", "mumbai-tech", "delhi-tech-community",
     "gdg-bangalore", "gdg-mumbai", "gdg-delhi",
     "india-tech", "technation-india",
+    "bangalore-ai", "mumbai-startup", "hyderabad-tech",
+    "chennai-tech", "pune-tech", "india-founders",
+    "bengaluru-tech", "ai-india", "devs-india",
   ];
   for (const slug of calendarSlugs) {
     const apiUrls = [
@@ -84,7 +123,8 @@ async function scrapeLuma() {
 }
 
 function _parseEvent(ev) {
-  const city = ev.geo_address_info?.city_state || ev.location || ev.city || "India";
+  const rawCity = ev.geo_address_info?.city || ev.geo_address_info?.city_state || ev.location || ev.city || "";
+  const city = normalizeCity(rawCity) || "India";
   const isOnline = /online|virtual|remote/i.test(city + " " + (ev.meeting_url || ""));
   const slug = ev.url || ev.slug || ev.api_id || "";
   const link = slug ? (slug.startsWith("http") ? slug : `https://lu.ma/${slug}`) : "https://lu.ma";

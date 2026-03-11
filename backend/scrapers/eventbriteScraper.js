@@ -7,6 +7,37 @@ const axios   = require("axios");
 const cheerio = require("cheerio");
 const logger  = require("../utils/logger");
 
+
+// Normalize city name to proper Indian city
+function normalizeCity(text) {
+  if (!text) return null;
+  const t = text.toLowerCase();
+  if (t.includes("bengaluru") || t.includes("bangalore")) return "Bengaluru";
+  if (t.includes("mumbai") || t.includes("bombay")) return "Mumbai";
+  if (t.includes("delhi") || t.includes("new delhi")) return "New Delhi";
+  if (t.includes("hyderabad")) return "Hyderabad";
+  if (t.includes("pune")) return "Pune";
+  if (t.includes("chennai") || t.includes("madras")) return "Chennai";
+  if (t.includes("kolkata") || t.includes("calcutta")) return "Kolkata";
+  if (t.includes("noida")) return "Noida";
+  if (t.includes("gurugram") || t.includes("gurgaon")) return "Gurugram";
+  if (t.includes("ahmedabad")) return "Ahmedabad";
+  if (t.includes("jaipur")) return "Jaipur";
+  if (t.includes("kochi") || t.includes("cochin")) return "Kochi";
+  if (t.includes("chandigarh")) return "Chandigarh";
+  if (t.includes("indore")) return "Indore";
+  if (t.includes("bhopal")) return "Bhopal";
+  if (t.includes("lucknow")) return "Lucknow";
+  if (t.includes("surat")) return "Surat";
+  if (t.includes("nagpur")) return "Nagpur";
+  if (t.includes("coimbatore")) return "Coimbatore";
+  if (t.includes("visakhapatnam") || t.includes("vizag")) return "Visakhapatnam";
+  if (t.includes("online") || t.includes("virtual") || t.includes("remote")) return null; // handled separately
+  // Return cleaned version of original if it's a short city name
+  if (text.length < 30 && !text.includes(",")) return text.trim();
+  return null;
+}
+
 async function scrapeEventbrite() {
   logger.info("[Eventbrite] Starting scrape…");
   const results = [];
@@ -70,8 +101,8 @@ async function scrapeEventbrite() {
             const isOnlineEvent = !!evt.online_event;
             if (!isOnlineEvent && venueCountry && venueCountry !== "in" && venueCountry !== "india") continue;
 
-            const city = isOnlineEvent ? "Online"
-              : (evt.venue?.city || evt.primary_venue?.address?.city || "India");
+            const rawCity = evt.venue?.city || evt.venue?.address?.city || evt.primary_venue?.address?.city || "";
+            const city = isOnlineEvent ? "Online" : (normalizeCity(rawCity) || "India");
 
             const uid = `eventbrite-${evt.id || title.toLowerCase().replace(/\W+/g,"-").slice(0,60)}`;
             results.push({
@@ -128,7 +159,7 @@ async function scrapeEventbrite() {
           eventType: _classifyEvent(title),
           platform: "Eventbrite",
           date: dateText,
-          location: locText || "India",
+          location: normalizeCity(locText) || "India",
           mode: (locText||"").toLowerCase().includes("online") ? "Online" : "Offline",
           price: isFree ? "Free" : "Paid",
           registrationLink: link,

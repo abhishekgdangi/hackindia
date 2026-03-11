@@ -20,7 +20,11 @@ class DevpostScraper extends BaseScraper {
     const params = [
       { status: "open", per_page: 50, order_by: "deadline", page: 1 },
       { status: "open", per_page: 50, order_by: "deadline", page: 2 },
+      { status: "open", per_page: 50, order_by: "deadline", page: 3 },
       { status: "open", per_page: 30, q: "india",           page: 1 },
+      { status: "open", per_page: 30, q: "ai",              page: 1 },
+      { status: "open", per_page: 30, q: "machine learning",page: 1 },
+      { status: "open", per_page: 30, q: "open source",     page: 1 },
     ];
 
     for (const p of params) {
