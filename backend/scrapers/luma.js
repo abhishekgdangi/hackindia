@@ -50,39 +50,39 @@ async function scrapeLuma() {
     "x-luma-client-type": "web",
   };
 
-  // Strategy 1: Luma discover API with India location filter
-  const discoverUrls = [
-    "https://api.lu.ma/discover/get-paginated-events?location=India&period=future&limit=50",
-    "https://api.lu.ma/discover/get-paginated-events?location=India&period=future&limit=50&after_cursor=50",
-    "https://api.lu.ma/discover/get-paginated-events?location=India&period=future&limit=50&after_cursor=100",
-    "https://api.lu.ma/discover/get-paginated-events?location=Bengaluru&period=future&limit=50",
-    "https://api.lu.ma/discover/get-paginated-events?location=Mumbai&period=future&limit=50",
-    "https://api.lu.ma/discover/get-paginated-events?location=Hyderabad&period=future&limit=50",
-    "https://api.lu.ma/discover/get-paginated-events?location=Pune&period=future&limit=50",
-    "https://api.lu.ma/discover/get-paginated-events?location=Chennai&period=future&limit=50",
-  ];
-  for (const url of discoverUrls) {
-    try {
-      const res     = await axios.get(url, { headers, timeout: 15000 });
-      const entries = res.data?.entries || res.data?.events || (Array.isArray(res.data) ? res.data : []);
-      if (entries.length > 0) {
-        logger.info(`[Luma] Discover ${url} → ${entries.length}`);
+  // Strategy 1: Cursor-based pagination through India events
+  const cityQueries = ["India", "Bengaluru", "Mumbai", "Hyderabad", "Pune", "Chennai", "Delhi"];
+  for (const city of cityQueries) {
+    let cursor = null;
+    let page = 0;
+    while (page < 4) {
+      try {
+        const baseUrl = `https://api.lu.ma/discover/get-paginated-events?location=${encodeURIComponent(city)}&period=future&limit=50`;
+        const url = cursor ? `${baseUrl}&pagination_cursor=${encodeURIComponent(cursor)}` : baseUrl;
+        const res = await axios.get(url, { headers, timeout: 15000 });
+        const entries = res.data?.entries || [];
+        if (!entries.length) break;
+        logger.info(`[Luma] Discover ${city} page ${page+1} → ${entries.length}`);
+        let added = 0;
         for (const entry of entries) {
           const ev = entry.event || entry;
           if (!ev?.name) continue;
-          if (new Date(ev.start_at || ev.startAt || now) < now) continue;
-          const locStr = [ev.geo_address_info?.city_state, ev.location, ev.city].filter(Boolean).join(" ");
-          if (!INDIA_RE.test(locStr + " " + ev.name)) continue;
+          if (new Date(ev.start_at || now) < now) continue;
           const uid = ev.api_id || ev.id || ev.name;
           if (seen.has(uid)) continue;
           seen.add(uid);
           results.push(_parseEvent(ev));
+          added++;
         }
+        cursor = res.data?.next_cursor || res.data?.pagination?.next_cursor || null;
+        if (!cursor || added === 0) break;
+        page++;
+        await new Promise(r => setTimeout(r, 800));
+      } catch (err) {
+        logger.warn(`[Luma] Discover ${city} page ${page+1} failed: ${err.message}`);
+        break;
       }
-    } catch (err) {
-      logger.warn(`[Luma] Discover ${url} failed: ${err.message}`);
     }
-    await new Promise(r => setTimeout(r, 1000));
   }
 
   // Strategy 2: Known India community calendar slugs
