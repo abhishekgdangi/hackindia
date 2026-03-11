@@ -41,7 +41,7 @@ router.get("/", async (req, res) => {
       .find(filter)
       .sort({ deadline: 1, stipendNumeric: -1 })
       .skip(skip)
-      .limit(Math.min(parseInt(limit), 500))
+      .limit(Math.min(parseInt(limit), 1000))
       .lean();
 
     shuffle(data);

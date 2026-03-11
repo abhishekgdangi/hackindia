@@ -72,7 +72,7 @@ async function scrapeEventbrite() {
                 : (evt.start_date || ""),
               location: city,
               mode: isOnlineEvent ? "Online" : "Offline",
-              price: (evt.is_free || evt.ticket_availability?.is_free) ? "Free" : "Paid",
+              price: (evt.is_free === false && evt.ticket_availability?.is_free === false) ? "Paid" : "Free",
               registrationLink: evtUrl,
               imageUrl: evt.logo?.url || evt.image?.url || evt.logo?.original?.url || "",
               uniqueId: uid,
@@ -94,9 +94,18 @@ async function scrapeEventbrite() {
           || $(el).attr("aria-label") || "";
         if (!title || title.length < 5) return;
 
-        const dateText = $(el).find("time, [class*='date'], [class*='Date']").first().text().trim();
+        // Try multiple date selectors
+        const dateEl = $(el).find("time, [class*='date'], [class*='Date'], [class*='event-date'], p").filter((_, e) => {
+          const t = $(e).text().trim();
+          return t && (t.match(/\d{1,2}\s+[A-Za-z]+/) || t.match(/[A-Za-z]+\s+\d{1,2}/) || t.match(/\d{4}/));
+        }).first();
+        const dateText = dateEl.attr("datetime") 
+          ? new Date(dateEl.attr("datetime")).toLocaleDateString("en-IN", {day:"2-digit",month:"short",year:"numeric"})
+          : dateEl.text().trim();
         const locText  = $(el).find("[class*='location'], [class*='Location'], [class*='venue']").first().text().trim();
-        const isFree   = $(el).text().toLowerCase().includes("free");
+        const cardText = $(el).text().toLowerCase();
+        // Default to Free unless explicitly shows paid/ticket price
+        const isFree = !cardText.includes("paid") && !cardText.match(/₹\s*\d+/) && !cardText.match(/\$\s*\d+/) && !cardText.includes("register for");
 
         const uid = `eventbrite-html-${link.split("/e/")[1]?.split("/")[0] || title.toLowerCase().replace(/\W+/g,"-").slice(0,60)}`;
         if (results.some(r => r.uniqueId === uid)) return;

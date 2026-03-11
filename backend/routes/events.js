@@ -37,10 +37,11 @@ router.get("/", async (req, res) => {
       .find(filter)
       .sort({ scrapedAt: -1 })
       .skip(skip)
-      .limit(Math.min(parseInt(limit), 500))
+      .limit(Math.min(parseInt(limit), 1000))
       .select("-__v")
       .lean();
 
+    shuffle(data);
     res.json({
       success: true,
       total,

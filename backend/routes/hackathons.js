@@ -71,7 +71,7 @@ router.get("/", async (req, res) => {
       .find(filter)
       .sort(sortClause)
       .skip(skip)
-      .limit(Math.min(parseInt(limit), 500))
+      .limit(Math.min(parseInt(limit), 1000))
       .select("-__v -agentNotes")
       .lean();
 

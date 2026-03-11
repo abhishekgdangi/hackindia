@@ -175,7 +175,7 @@ function useEvents({type="", city="All", price="All", domain="All", search=""}={
     lastKey.current = key;
     const id = ++fetchId.current;
     setLoading(true);
-    const params = { limit:500 };
+    const params = { limit:1000 };
     if(type   && type   !=="All") params.type   = type;
     if(city   && city   !=="All") params.location = city;
     if(price  && price  !=="All") params.price  = price;
