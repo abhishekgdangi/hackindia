@@ -54,7 +54,6 @@ async function scrapeHasGeek() {
     "https://hasgeek.com/generativeAI",// ✅ 11 events
     "https://hasgeek.com/fifthelephant",
     "https://hasgeek.com/PyConIndia",
-    "https://hasgeek.com/aiconfindia",
   ];
 
   for (const url of urls) {

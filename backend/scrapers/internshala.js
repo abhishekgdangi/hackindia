@@ -27,6 +27,16 @@ class InternshalaInternshipScraper extends BaseScraper {
       "data-science-internship",
       "android-development-internship",
       "python-internship",
+      "work-from-home-internship",
+      "artificial-intelligence-internship",
+      "blockchain-internship",
+      "cloud-computing-internship",
+      "cybersecurity-internship",
+      "ui-ux-internship",
+      "java-internship",
+      "react-js-internship",
+      "node-js-internship",
+      "devops-internship",
     ];
 
     for (const cat of categories) {

@@ -23,6 +23,7 @@ const { scrapeGoogleDev }     = require("./googleDev");
 const { scrapeLuma }          = require("./luma");
 const { scrapeHasGeek }       = require("./hasgeek");
 const { scrapeIndiaExpos }     = require("./indiaExpos");
+const { scrapeAllEvents }      = require("./allevents");
 
 const logger = require("../utils/logger");
 
@@ -87,6 +88,7 @@ async function runEventScrapers() {
     { name: "Luma",       fn: scrapeLuma       },
     { name: "HasGeek",    fn: scrapeHasGeek    },
     { name: "IndiaExpos", fn: scrapeIndiaExpos },
+    { name: "AllEvents",  fn: scrapeAllEvents  },
   ];
 
   logger.info(`[Scrapers] Running ${scrapers.length} event scrapers…`);
