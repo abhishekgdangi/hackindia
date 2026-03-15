@@ -160,56 +160,7 @@ async function scrapeIndiaExpos() {
   const results = [...STATIC_EXPOS];
   const seen = new Set(STATIC_EXPOS.map(e => e.uniqueId));
 
-  // ── 10times.com — India's largest event aggregator ──────────────
-  const tenTimesUrls = [
-    "https://10times.com/india/technology",
-    "https://10times.com/india/ai-machine-learning",
-    "https://10times.com/india/computers-internet",
-  ];
-
-  for (const url of tenTimesUrls) {
-    try {
-      const res = await axios.get(url, { headers: HEADERS, timeout: 20000 });
-      const $ = cheerio.load(res.data);
-
-      // 10times event cards
-      $("table.tbl-result tr, .event-listing, [class*='event-row'], [class*='conference-row']").each((_, el) => {
-        const titleEl = $(el).find("a.event-name, a[class*='title'], h3 a, td.event-name a, .name a").first();
-        const title = titleEl.text().trim() || $(el).find("h2,h3,h4").first().text().trim();
-        if (!title || title.length < 5) return;
-
-        const href = titleEl.attr("href") || $(el).find("a[href*='10times']").first().attr("href") || "";
-        const link = href.startsWith("http") ? href : `https://10times.com${href}`;
-        if (!link.includes("10times.com") && !href) return;
-
-        const locText = $(el).find(".city, .location, [class*='location'], [class*='venue'], td.city").first().text().trim();
-        const dateText = $(el).find(".date, [class*='date'], time, td.date").first().text().trim();
-        const isOnline = locText.toLowerCase().includes("online") || locText.toLowerCase().includes("virtual");
-
-        const uid = `10times-${link.split("/").slice(-2).join("-").replace(/\W+/g,"-").slice(0,70)}`;
-        if (seen.has(uid)) return;
-        seen.add(uid);
-
-        results.push({
-          title,
-          description: $(el).find("p, [class*='desc'], [class*='summary']").first().text().trim().slice(0,200) || `Tech expo in ${locText || "India"}`,
-          eventType: classifyExpo(title),
-          platform: "10times",
-          date: dateText,
-          location: isOnline ? "Online" : (normalizeCity(locText) || "India"),
-          mode: isOnline ? "Online" : "Offline",
-          price: "Check site",
-          registrationLink: link,
-          imageUrl: $(el).find("img").first().attr("src") || "",
-          uniqueId: uid,
-        });
-      });
-
-      logger.info(`[IndiaExpos] 10times ${url.split("/").slice(-2).join("/")}: ${results.length} total`);
-      await new Promise(r => setTimeout(r, 2000));
-    } catch (err) {
-      logger.warn(`[IndiaExpos] 10times failed: ${err.message}`);
-    }
+  // 10times.com removed (always 403/timeout)
   }
 
   logger.info(`[IndiaExpos] Total: ${results.length} expos`);
