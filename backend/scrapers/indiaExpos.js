@@ -161,7 +161,6 @@ async function scrapeIndiaExpos() {
   const seen = new Set(STATIC_EXPOS.map(e => e.uniqueId));
 
   // 10times.com removed (always 403/timeout)
-  }
 
   logger.info(`[IndiaExpos] Total: ${results.length} expos`);
   return results;

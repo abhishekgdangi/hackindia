@@ -9064,3 +9064,12 @@
 {"level":"info","message":"[Scrapers] Total events scraped: 398","timestamp":"2026-03-15 22:25:37"}
 {"level":"info","message":"✅ Live events: 1 new, 397 updated","timestamp":"2026-03-15 22:25:38"}
 {"level":"info","message":"📊 Final DB: 166 hackathons, 1023 internships, 557 events","timestamp":"2026-03-15 22:25:38"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2026-03-15 22:28:54"}
+{"level":"info","message":"Skipping DB clear — using upsert to preserve existing data","timestamp":"2026-03-15 22:28:54"}
+{"level":"info","message":"Running live hackathon scrapers…","timestamp":"2026-03-15 22:28:54"}
+{"level":"error","message":"Hackathon scrape failed: Unexpected token '}'","timestamp":"2026-03-15 22:28:55"}
+{"level":"info","message":"Running live internship scrapers…","timestamp":"2026-03-15 22:28:55"}
+{"level":"error","message":"Internship scrape failed: Unexpected token '}'","timestamp":"2026-03-15 22:28:55"}
+{"level":"info","message":"Running live event scrapers…","timestamp":"2026-03-15 22:28:55"}
+{"level":"error","message":"Event scrape failed: Unexpected token '}'","timestamp":"2026-03-15 22:28:55"}
+{"level":"info","message":"📊 Final DB: 166 hackathons, 1023 internships, 557 events","timestamp":"2026-03-15 22:28:55"}
