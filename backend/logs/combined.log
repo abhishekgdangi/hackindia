@@ -8606,3 +8606,4 @@
 {"level":"info","message":"[Scrapers] Total events scraped: 440","timestamp":"2026-03-11 07:52:18"}
 {"level":"info","message":"✅ Live events: 119 new, 321 updated","timestamp":"2026-03-11 07:52:19"}
 {"level":"info","message":"📊 Final DB: 114 hackathons, 826 internships, 453 events","timestamp":"2026-03-11 07:52:19"}
+{"level":"error","message":"querySrv ECONNREFUSED _mongodb._tcp.cluster0.f4pz46k.mongodb.net","timestamp":"2026-03-15 22:02:33"}

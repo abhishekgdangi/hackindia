@@ -18,11 +18,11 @@ const CITY_URLS = [
   { city: "Mumbai",     url: "https://allevents.in/mumbai/tech" },
   { city: "Hyderabad",  url: "https://allevents.in/hyderabad/tech" },
   { city: "Delhi",      url: "https://allevents.in/delhi/tech" },
-  { city: "Pune",       url: "https://allevents.in/pune/tech" },
   { city: "Chennai",    url: "https://allevents.in/chennai/tech" },
   { city: "Bengaluru",  url: "https://allevents.in/bangalore/workshop" },
   { city: "Mumbai",     url: "https://allevents.in/mumbai/workshop" },
-  { city: "Bengaluru",  url: "https://allevents.in/bangalore/online-events/tech" },
+  { city: "Pune",       url: "https://allevents.in/pune/workshop" },
+  { city: "Kolkata",    url: "https://allevents.in/kolkata/tech" },
 ];
 
 async function scrapeAllEvents() {

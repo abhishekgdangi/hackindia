@@ -20,6 +20,7 @@ const eventSchema = new mongoose.Schema(
     },
     platform:         { type: String, default: "Unknown", trim: true },
     date:             { type: String, default: "" },
+    dateISO:          { type: Date,   default: null },
     location:         { type: String, default: "Online", trim: true },
     price:            { type: String, default: "Free", enum: ["Free", "Paid", "Unknown"] },
     registrationLink: { type: String, default: "" },

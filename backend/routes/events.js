@@ -43,8 +43,17 @@ router.get("/", async (req, res) => {
       limit = 1000,
     } = req.query;
 
-    // Accept all events — don't filter by isActive/status since scrapers don't set those
-    const filter = {};
+    // Only show future/undated events — filter out expired
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const filter = {
+      $or: [
+        { dateISO: { $gte: today } },           // future dated events
+        { dateISO: null },                        // no ISO date stored yet
+        { dateISO: { $exists: false } },          // legacy docs without field
+        { date: { $in: ["", "TBD", "On Demand", "Check site"] } }, // undated
+      ],
+    };
 
     if (type     && type     !== "All") filter.eventType = type;
     if (price    && price    !== "All") filter.price     = price;

@@ -1,5 +1,3 @@
-require("dns").setDefaultResultOrder("ipv4first");
-require("dns").setServers(["8.8.8.8","8.8.4.4"]);
 /**
  * jobs/seed.js
  * Wipes DB → runs all live scrapers (NO fake seed data)
@@ -67,10 +65,16 @@ async function seed() {
     const { runEventScrapers } = require("../scrapers");
     const items = await runEventScrapers();
     if (items.length) {
+      // Parse date strings → ISO Date for server-side expiry filtering
+      const parseEventDate = (dateStr) => {
+        if (!dateStr || ["TBD","","On Demand","Check site"].includes(dateStr)) return null;
+        const d = new Date(dateStr);
+        return isNaN(d) ? null : d;
+      };
       const ops = items.map(item => ({
         updateOne: {
           filter: { uniqueId: item.uniqueId },
-          update: { $set: { ...item, scrapedAt: new Date() } },
+          update: { $set: { ...item, dateISO: parseEventDate(item.date), scrapedAt: new Date() } },
           upsert: true,
         },
       }));
