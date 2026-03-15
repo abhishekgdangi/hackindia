@@ -85,6 +85,28 @@ async function seed() {
     }
   } catch (e) { logger.error(`Event scrape failed: ${e.message}`); }
 
+  // ── Auto-clean expired events ────────────────────────────────────
+  try {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(23, 59, 59, 999);
+
+    // Backfill dateISO for any events missing it
+    const noDates = await Event.find({ $or: [{ dateISO: { $exists: false } }, { dateISO: null }], date: { $nin: ["", "TBD", "On Demand", "Check site"] } }).lean();
+    const backfillOps = noDates
+      .map(ev => ({ ev, d: new Date(ev.date) }))
+      .filter(({ d }) => !isNaN(d))
+      .map(({ ev, d }) => ({ updateOne: { filter: { _id: ev._id }, update: { $set: { dateISO: d } } } }));
+    if (backfillOps.length) {
+      await Event.bulkWrite(backfillOps);
+      logger.info(`📅 Backfilled dateISO for ${backfillOps.length} events`);
+    }
+
+    // Delete past events
+    const del = await Event.deleteMany({ dateISO: { $lt: yesterday, $ne: null } });
+    if (del.deletedCount > 0) logger.info(`🗑  Removed ${del.deletedCount} expired events`);
+  } catch (e) { logger.error(`Cleanup failed: ${e.message}`); }
+
   const [fH, fI, fE] = await Promise.all([Hackathon.countDocuments(), Internship.countDocuments(), Event.countDocuments()]);
   logger.info(`📊 Final DB: ${fH} hackathons, ${fI} internships, ${fE} events`);
   await mongoose.disconnect();
