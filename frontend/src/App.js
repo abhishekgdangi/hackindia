@@ -1668,7 +1668,50 @@ const DSA_CATEGORIES = ["All", ...new Set(DSA_DATA.map(t => t.category))];
 
 const DIFF_COLOR = { Easy:"#00ff88", Medium:"#ffd60a", Hard:"#ff3d8a" };
 
-// Maps DSA_DATA slug → TUF_CHECKLIST section keys
+// Correct working search URLs for each platform — never 404
+function getProblemLinks(name) {
+  const q = encodeURIComponent(name);
+  return [
+    {
+      name:"LeetCode", color:"#f89f1b", logo:"https://leetcode.com/favicon.ico",
+      url:`https://leetcode.com/problemset/?search=${q}`,
+      note:"Largest problem set — essential for FAANG prep",
+      tag:"Interview Prep"
+    },
+    {
+      name:"GeeksforGeeks", color:"#2f8d46", logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",
+      url:`https://www.geeksforgeeks.org/explore?searchQuery=${q}`,
+      note:"Detailed articles & step-by-step explanations",
+      tag:"Beginner Friendly"
+    },
+    {
+      name:"NeetCode", color:"#00b8a3", logo:"https://neetcode.io/favicon.ico",
+      url:`https://neetcode.io/practice`,
+      note:"Video walkthroughs — search this problem manually",
+      tag:"Video Solutions"
+    },
+    {
+      name:"Codeforces", color:"#1a9eee", logo:"https://codeforces.com/favicon.ico",
+      url:`https://codeforces.com/problemset?search=${q}`,
+      note:"Competitive programming variants & rated problems",
+      tag:"Competitive"
+    },
+    {
+      name:"InterviewBit", color:"#e84393", logo:"https://www.interviewbit.com/favicon.ico",
+      url:`https://www.interviewbit.com/search/?q=${q}`,
+      note:"Company-tagged problems for interview prep",
+      tag:"Company Tags"
+    },
+    {
+      name:"CSES", color:"#4488cc", logo:"https://cses.fi/favicon.ico",
+      url:`https://cses.fi/problemset/`,
+      note:"Gold-standard classic problem set",
+      tag:"Gold Standard"
+    },
+  ];
+}
+
+// Maps DSA_DATA slug → TUF_CHECKLIST keys
 const SLUG_TO_CHECKLIST = {
   "arrays":           ["Arrays (Medium)", "Arrays (Hard)"],
   "binary-search":    ["Binary Search"],
@@ -1684,55 +1727,20 @@ const SLUG_TO_CHECKLIST = {
   "bst":              ["Binary Search Trees"],
   "tries":            ["Tries"],
   "bit-manipulation": ["Bit Manipulation"],
-  "string-algorithms":["Strings – Advanced"],
+  "string-algorithms":["Strings \u2013 Advanced"],
   "graphs":           ["Graphs"],
 };
 
-function toSlug(name) {
-  return name.toLowerCase().replace(/[^a-z0-9\s]/g,"").trim().replace(/\s+/g,"-");
-}
-
-function getProblemLinks(name) {
-  const q   = encodeURIComponent(name);
-  const slug = toSlug(name);
-  return [
-    { name:"LeetCode",      color:"#f89f1b", logo:"https://leetcode.com/favicon.ico",
-      url:`https://leetcode.com/problems/${slug}/`,
-      fallback:`https://leetcode.com/problemset/?search=${q}`,
-      note:"Best for interview prep & FAANG" },
-    { name:"GeeksforGeeks", color:"#2f8d46", logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",
-      url:`https://www.geeksforgeeks.org/problems/${slug}/`,
-      fallback:`https://www.geeksforgeeks.org/?s=${q}`,
-      note:"Detailed articles & explanations" },
-    { name:"NeetCode",      color:"#00b8a3", logo:"https://neetcode.io/favicon.ico",
-      url:`https://neetcode.io/problems/${slug}`,
-      fallback:`https://neetcode.io/practice`,
-      note:"Video walkthroughs & patterns" },
-    { name:"Codeforces",    color:"#1a9eee", logo:"https://codeforces.com/favicon.ico",
-      url:`https://codeforces.com/problemset?search=${q}`,
-      fallback:`https://codeforces.com/problemset?search=${q}`,
-      note:"Competitive programming variants" },
-    { name:"InterviewBit",  color:"#e84393", logo:"https://www.interviewbit.com/favicon.ico",
-      url:`https://www.interviewbit.com/problems/${slug}/`,
-      fallback:`https://www.interviewbit.com/search/?q=${q}`,
-      note:"Company-tagged interview problems" },
-    { name:"CSES",          color:"#4488cc", logo:"https://cses.fi/favicon.ico",
-      url:`https://cses.fi/problemset/`,
-      fallback:`https://cses.fi/problemset/`,
-      note:"Gold-standard classic problems" },
-  ];
-}
-
 const DSAPage = ({ setPage }) => {
-  const [cat,          setCat]          = useState("All");
-  const [search,       setSearch]       = useState("");
-  const [view,         setView]         = useState("topics");
-  const [selTopic,     setSelTopic]     = useState(null);
-  const [selProblem,   setSelProblem]   = useState(null);
-  const [tip,          setTip]          = useState("");
-  const [tipLoading,   setTipLoading]   = useState(false);
-  const [probSearch,   setProbSearch]   = useState("");
-  const [diffFilter,   setDiffFilter]   = useState("All");
+  const [cat,        setCat]        = useState("All");
+  const [search,     setSearch]     = useState("");
+  const [view,       setView]       = useState("topics");
+  const [selTopic,   setSelTopic]   = useState(null);
+  const [selProblem, setSelProblem] = useState(null);
+  const [tip,        setTip]        = useState("");
+  const [tipLoading, setTipLoading] = useState(false);
+  const [probSearch, setProbSearch] = useState("");
+  const [diffFilter, setDiffFilter] = useState("All");
 
   const filtered = DSA_DATA.filter(t =>
     (cat === "All" || t.category === cat) &&
@@ -1752,14 +1760,14 @@ const DSAPage = ({ setPage }) => {
       const r = await fetch(`/api/dsa/topics/${slug}/tip`, { method:"POST" });
       const j = await r.json();
       setTip(j.tip || "");
-    } catch { setTip("Could not load tip — check Groq API key."); }
+    } catch { setTip("Could not load tip \u2014 check Groq API key."); }
     setTipLoading(false);
   };
 
   const openTopic   = (t) => { setSelTopic(t); setSelProblem(null); setView("problems"); setProbSearch(""); setDiffFilter("All"); setTip(""); window.scrollTo(0,0); };
   const openProblem = (p) => { setSelProblem(p); setView("problem"); window.scrollTo(0,0); };
 
-  // ── TOPICS VIEW ──────────────────────────────────────────────
+  // ── TOPICS VIEW ───────────────────────────────────────────────
   if (view === "topics") return (
     <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
       <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"40px 24px 32px"}}>
@@ -1767,8 +1775,8 @@ const DSAPage = ({ setPage }) => {
           <div className="sl">Student Tools</div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:16,marginBottom:24}}>
             <div>
-              <h1 className="syne" style={{fontSize:34,fontWeight:800,marginBottom:6}}>🧠 DSA <span className="gtext">Problem Explorer</span></h1>
-              <p style={{color:"var(--text2)",fontSize:14}}>{DSA_DATA.length} topics · 8 platforms · AI study tips</p>
+              <h1 className="syne" style={{fontSize:34,fontWeight:800,marginBottom:6}}>\u{1F9E0} DSA <span className="gtext">Problem Explorer</span></h1>
+              <p style={{color:"var(--text2)",fontSize:14}}>{DSA_DATA.length} topics \u00b7 8 platforms \u00b7 AI study tips</p>
             </div>
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
               {[["LeetCode","#f89f1b"],["NeetCode","#00b8a3"],["GFG","#2f8d46"],["CSES","#4488cc"]].map(([p,c])=>(
@@ -1778,7 +1786,7 @@ const DSAPage = ({ setPage }) => {
           </div>
           <div style={{position:"relative",maxWidth:480}}>
             <span style={{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",color:"var(--text3)"}}>🔍</span>
-            <input className="input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search topics — Arrays, DP, Graphs…" style={{padding:"11px 16px 11px 40px",fontSize:14}}/>
+            <input className="input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search topics \u2014 Arrays, DP, Graphs\u2026" style={{padding:"11px 16px 11px 40px",fontSize:14}}/>
           </div>
           <div style={{display:"flex",gap:6,marginTop:16,flexWrap:"wrap"}}>
             {DSA_CATEGORIES.map(c=>(
@@ -1810,7 +1818,7 @@ const DSAPage = ({ setPage }) => {
     </div>
   );
 
-  // ── PROBLEMS VIEW ─────────────────────────────────────────────
+  // ── PROBLEMS VIEW ──────────────────────────────────────────────
   const problems = getTopicProblems(selTopic?.slug);
   const filteredProbs = problems.filter(p =>
     (diffFilter === "All" || p.diff === diffFilter) &&
@@ -1823,7 +1831,7 @@ const DSAPage = ({ setPage }) => {
         <div style={{maxWidth:1100,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16,fontSize:13,color:"var(--text3)"}}>
             <span style={{cursor:"pointer",color:"var(--cyan)"}} onClick={()=>setView("topics")}>DSA Explorer</span>
-            <span>›</span>
+            <span>\u203a</span>
             <span style={{color:"var(--text)"}}>{selTopic.topic}</span>
           </div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:16}}>
@@ -1840,7 +1848,7 @@ const DSAPage = ({ setPage }) => {
             </div>
             <button onClick={()=>fetchTip(selTopic.slug)} disabled={tipLoading}
               style={{padding:"9px 18px",borderRadius:10,border:"1px solid var(--yellow)",background:"rgba(255,214,10,.08)",color:"var(--yellow)",fontSize:12,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>
-              {tipLoading?"⏳ Loading…":"💡 AI Study Tip"}
+              {tipLoading?"⏳ Loading\u2026":"💡 AI Study Tip"}
             </button>
           </div>
           {tip && (
@@ -1852,7 +1860,7 @@ const DSAPage = ({ setPage }) => {
           <div style={{display:"flex",gap:10,marginTop:20,flexWrap:"wrap",alignItems:"center"}}>
             <div style={{position:"relative",flex:1,maxWidth:360}}>
               <span style={{position:"absolute",left:11,top:"50%",transform:"translateY(-50%)",color:"var(--text3)",fontSize:13}}>🔍</span>
-              <input className="input" value={probSearch} onChange={e=>setProbSearch(e.target.value)} placeholder="Search problems…" style={{padding:"9px 14px 9px 34px",fontSize:13}}/>
+              <input className="input" value={probSearch} onChange={e=>setProbSearch(e.target.value)} placeholder="Search problems\u2026" style={{padding:"9px 14px 9px 34px",fontSize:13}}/>
             </div>
             {["All","Easy","Medium","Hard"].map(d=>(
               <button key={d} onClick={()=>setDiffFilter(d)}
@@ -1875,7 +1883,7 @@ const DSAPage = ({ setPage }) => {
               {selTopic.platforms.map(p=>(
                 <a key={p.name} href={p.url} target="_blank" rel="noopener noreferrer"
                   style={{padding:"9px 18px",borderRadius:8,background:"var(--card)",border:"1px solid var(--border)",color:"var(--text)",fontSize:13,textDecoration:"none"}}>
-                  {p.name} →
+                  {p.name} \u2192
                 </a>
               ))}
             </div>
@@ -1883,7 +1891,7 @@ const DSAPage = ({ setPage }) => {
         ) : (
           <>
             <div style={{fontSize:12,color:"var(--text3)",marginBottom:16}}>
-              {filteredProbs.length} of {problems.length} problems — click any to see platform links
+              {filteredProbs.length} of {problems.length} problems \u2014 click any problem to find it across 6 platforms
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:10}}>
               {filteredProbs.map((p,i)=>(
@@ -1895,7 +1903,7 @@ const DSAPage = ({ setPage }) => {
                   </div>
                   <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
                     <span style={{fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:4,background:`${DIFF_COLOR[p.diff]}18`,color:DIFF_COLOR[p.diff],whiteSpace:"nowrap"}}>{p.diff}</span>
-                    <span style={{color:"var(--purple)",fontSize:14}}>›</span>
+                    <span style={{color:"var(--purple)",fontSize:14}}>\u203a</span>
                   </div>
                 </div>
               ))}
@@ -1907,7 +1915,7 @@ const DSAPage = ({ setPage }) => {
     </div>
   );
 
-  // ── PROBLEM DETAIL VIEW ───────────────────────────────────────
+  // ── PROBLEM DETAIL VIEW ────────────────────────────────────────
   const pLinks = getProblemLinks(selProblem.name);
   return (
     <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
@@ -1915,61 +1923,49 @@ const DSAPage = ({ setPage }) => {
         <div style={{maxWidth:900,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16,fontSize:13,color:"var(--text3)",flexWrap:"wrap"}}>
             <span style={{cursor:"pointer",color:"var(--cyan)"}} onClick={()=>setView("topics")}>DSA Explorer</span>
-            <span>›</span>
+            <span>\u203a</span>
             <span style={{cursor:"pointer",color:"var(--cyan)"}} onClick={()=>setView("problems")}>{selTopic.topic}</span>
-            <span>›</span>
+            <span>\u203a</span>
             <span style={{color:"var(--text)"}}>{selProblem.name}</span>
           </div>
           <h1 className="syne" style={{fontSize:26,fontWeight:800,marginBottom:12}}>{selProblem.name}</h1>
           <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
             <span style={{fontSize:11,padding:"4px 10px",borderRadius:6,background:`${DIFF_COLOR[selProblem.diff]}18`,color:DIFF_COLOR[selProblem.diff],fontWeight:700}}>{selProblem.diff}</span>
             <span style={{fontSize:11,padding:"4px 10px",borderRadius:6,background:"var(--bg3)",color:"var(--text2)"}}>{selTopic.topic}</span>
-            <span style={{fontSize:11,padding:"4px 10px",borderRadius:6,background:"var(--bg3)",color:"var(--text2)"}}>{selTopic.category}</span>
           </div>
-          <div style={{marginTop:12,fontSize:12,color:"var(--text3)"}}>
-            💡 Links open directly to the problem page. If a platform redirects, try the search fallback.
+          <div style={{marginTop:10,fontSize:12,color:"var(--text3)"}}>
+            🔗 Each link searches for <strong style={{color:"var(--text)"}}>{selProblem.name}</strong> on that platform
           </div>
         </div>
       </div>
       <div style={{maxWidth:900,margin:"0 auto",padding:"28px 24px"}}>
-        <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:16}}>Solve on these platforms</div>
+        <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:16}}>Find this problem on</div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12}}>
           {pLinks.map(l=>(
-            <div key={l.name} style={{borderRadius:14,border:"1px solid var(--border)",background:"var(--card)",overflow:"hidden",transition:"all .2s"}}
+            <a key={l.name} href={l.url} target="_blank" rel="noopener noreferrer"
+              style={{display:"flex",alignItems:"center",gap:14,padding:"18px",borderRadius:14,border:"1px solid var(--border)",background:"var(--card)",textDecoration:"none",transition:"all .2s"}}
               onMouseEnter={e=>{e.currentTarget.style.borderColor=l.color;e.currentTarget.style.background=`${l.color}12`;}}
               onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.background="var(--card)";}}>
-              <a href={l.url} target="_blank" rel="noopener noreferrer"
-                style={{display:"flex",alignItems:"center",gap:14,padding:"18px 18px 10px",textDecoration:"none"}}>
-                <div style={{width:42,height:42,borderRadius:10,background:`${l.color}18`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                  <img src={l.logo} alt={l.name} style={{width:22,height:22,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>
-                </div>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:14,fontWeight:700,color:"var(--text)",marginBottom:3}}>{l.name}</div>
-                  <div style={{fontSize:11,color:"var(--text3)"}}>{l.note}</div>
-                </div>
-                <span style={{fontSize:16,color:l.color,flexShrink:0}}>→</span>
-              </a>
-              {l.url !== l.fallback && (
-                <div style={{padding:"6px 18px 12px",display:"flex",gap:6,alignItems:"center"}}>
-                  <span style={{fontSize:10,color:"var(--text3)"}}>Can&apos;t find it?</span>
-                  <a href={l.fallback} target="_blank" rel="noopener noreferrer"
-                    style={{fontSize:10,color:"var(--cyan)",textDecoration:"none",fontWeight:600}}>
-                    Search instead →
-                  </a>
-                </div>
-              )}
-            </div>
+              <div style={{width:44,height:44,borderRadius:10,background:`${l.color}18`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                <img src={l.logo} alt={l.name} style={{width:24,height:24,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>
+              </div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:14,fontWeight:700,color:"var(--text)",marginBottom:3}}>{l.name}</div>
+                <div style={{fontSize:11,color:"var(--text3)",marginBottom:4}}>{l.note}</div>
+                <span style={{fontSize:9,padding:"2px 6px",borderRadius:3,background:`${l.color}18`,color:l.color,fontWeight:700}}>{l.tag}</span>
+              </div>
+              <span style={{fontSize:18,color:l.color,flexShrink:0}}>\u2192</span>
+            </a>
           ))}
         </div>
         <button onClick={()=>setView("problems")}
           style={{marginTop:28,padding:"10px 22px",borderRadius:10,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",fontSize:13,fontWeight:600,cursor:"pointer"}}>
-          ← Back to {selTopic.topic} problems
+          \u2190 Back to {selTopic.topic} problems
         </button>
       </div>
     </div>
   );
 };
-
 
 
 
