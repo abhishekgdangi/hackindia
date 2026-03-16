@@ -1989,44 +1989,72 @@ const PROBLEM_LINKS = {
   "Count Primes in Range L to R":           { lc:null,                                   gfg:"count-primes-in-range/1",                       nc:null,                                  ib:null, cn:null , cn:null },
 };
 
-function getProblemLinks(name) {
+function getProblemLinks(name, topicSlug) {
   const e = PROBLEM_LINKS[name] || {};
   const q = encodeURIComponent(name);
+  // Topic-level fallback URLs per platform
+  const NC_TOPIC = {
+    "arrays":"arrays-hashing","binary-search":"binary-search","two-pointers":"two-pointers",
+    "sliding-window":"sliding-window","linked-list":"linked-list","stack-queue":"stack","binary-trees":"trees",
+    "dp":"1-d-dp","greedy":"greedy","recursion":"backtracking","heaps":"heap-priority-queue",
+    "bst":"trees","tries":"tries","bit-manipulation":"bit-manipulation","string-algorithms":"string",
+    "graphs":"graphs","default":"practice"
+  };
+  const IB_TOPIC = {
+    "arrays":"arrays","binary-search":"binary-search","two-pointers":"two-pointers",
+    "sliding-window":"strings","linked-list":"linked-lists","stack-queue":"stacks-and-queues",
+    "binary-trees":"trees","dp":"dynamic-programming","greedy":"greedy-algorithm","recursion":"backtracking",
+    "heaps":"heaps-and-maps","bst":"trees","tries":"tries","bit-manipulation":"bit-manipulation",
+    "string-algorithms":"strings","graphs":"graph-data-structure-algorithms","default":"programming"
+  };
+  const HR_TOPIC = {
+    "arrays":"data-structures/arrays","binary-search":"algorithms/search","two-pointers":"algorithms/search",
+    "sliding-window":"algorithms/strings","linked-list":"data-structures/linked-lists",
+    "stack-queue":"data-structures/stacks","binary-trees":"data-structures/trees",
+    "dp":"algorithms/dynamic-programming","greedy":"algorithms/greedy","recursion":"algorithms/recursion-and-backtracking",
+    "heaps":"data-structures/heap","bst":"data-structures/trees","tries":"data-structures/trie",
+    "bit-manipulation":"algorithms/bit-manipulation","string-algorithms":"algorithms/strings",
+    "graphs":"algorithms/graph-theory","default":"domains/algorithms"
+  };
+  const t = topicSlug || "default";
+  const ncPath = NC_TOPIC[t] || NC_TOPIC["default"];
+  const ibPath = IB_TOPIC[t] || IB_TOPIC["default"];
+  const hrPath = HR_TOPIC[t] || HR_TOPIC["default"];
   return [
     {
       name:"LeetCode", color:"#f89f1b", logo:"https://leetcode.com/favicon.ico",
       url: e.lc ? `https://leetcode.com/problems/${e.lc}/` : `https://leetcode.com/problemset/?search=${q}`,
-      note: e.lc ? "Direct problem link" : "Search for this problem",
+      note: e.lc ? "Direct problem link" : "Search results on LeetCode",
       tag:"Interview Prep", direct:!!e.lc,
     },
     {
       name:"GeeksforGeeks", color:"#2f8d46", logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",
       url: e.gfg ? `https://www.geeksforgeeks.org/problems/${e.gfg}` : `https://www.geeksforgeeks.org/explore?searchQuery=${q}`,
-      note: e.gfg ? "Direct problem link" : "Search for this problem",
+      note: e.gfg ? "Direct problem link" : "Search results on GFG",
       tag:"Beginner Friendly", direct:!!e.gfg,
     },
     {
       name:"NeetCode", color:"#00b8a3", logo:"https://neetcode.io/favicon.ico",
-      url: e.nc ? `https://neetcode.io/problems/${e.nc}` : `https://neetcode.io/practice`,
-      note: e.nc ? "Direct problem link" : "Find in practice list",
+      url: e.nc ? `https://neetcode.io/problems/${e.nc}` : `https://neetcode.io/problems/${ncPath}`,
+      note: e.nc ? "Direct problem link" : "Topic practice list on NeetCode",
       tag:"Video Solutions", direct:!!e.nc,
     },
     {
       name:"InterviewBit", color:"#e84393", logo:"https://www.interviewbit.com/favicon.ico",
-      url: e.ib ? `https://www.interviewbit.com/problems/${e.ib}/` : `https://www.interviewbit.com/search/?q=${q}`,
-      note: e.ib ? "Direct problem link" : "Search for this problem",
+      url: e.ib ? `https://www.interviewbit.com/problems/${e.ib}/` : `https://www.interviewbit.com/courses/programming/${ibPath}/`,
+      note: e.ib ? "Direct problem link" : "Topic section on InterviewBit",
       tag:"Company Tags", direct:!!e.ib,
     },
     {
       name:"Code360", color:"#f5a623", logo:"https://files.codingninjas.in/public-assets/ninja-dashboard/favicon-light.ico",
       url: e.cn ? `https://www.naukri.com/code360/problems/${e.cn}` : `https://www.naukri.com/code360/problems?search=${q}`,
-      note: e.cn ? "Direct problem link" : "Search for this problem",
+      note: e.cn ? "Direct problem link" : "Search results on Code360",
       tag:"Indian Platform", direct:!!e.cn,
     },
     {
       name:"HackerRank", color:"#00ea64", logo:"https://hrcdn.net/fcore/assets/brand/logo_wordmark-13074b67e2.svg",
-      url:`https://www.hackerrank.com/domains/algorithms`,
-      note:"Beginner-friendly with guided tracks & certificates", tag:"Certificates", direct:false,
+      url:`https://www.hackerrank.com/domains/${hrPath}`,
+      note:"Topic section on HackerRank", tag:"Certificates", direct:false,
     },
   ];
 }
@@ -2236,7 +2264,7 @@ const DSAPage = ({ setPage }) => {
   );
 
   // ── PROBLEM DETAIL VIEW ────────────────────────────────────────
-  const pLinks = getProblemLinks(selProblem.name);
+  const pLinks = getProblemLinks(selProblem.name, selTopic?.slug);
   return (
     <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
       <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"32px 24px 28px"}}>
