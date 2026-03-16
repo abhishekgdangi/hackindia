@@ -571,9 +571,9 @@ const TOOLS_MENU = [
 ];
 
 const Navbar = ({page,setPage,dark,setDark}) => {
-  const [toolsOpen, setToolsOpen] = React.useState(false);
-  const toolsRef = React.useRef(null);
-  React.useEffect(()=>{
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const toolsRef = useRef(null);
+  useEffect(()=>{
     const handler = e => { if(toolsRef.current && !toolsRef.current.contains(e.target)) setToolsOpen(false); };
     document.addEventListener("mousedown", handler);
     return ()=>document.removeEventListener("mousedown", handler);
@@ -1671,11 +1671,11 @@ const DSA_CATEGORIES = ["All", ...new Set(DSA_DATA.map(t => t.category))];
 const DIFF_COLOR = { Easy:"#00ff88", Medium:"#ffd60a", Hard:"#ff3d8a" };
 
 const DSAPage = ({ setPage }) => {
-  const [cat, setCat] = React.useState("All");
-  const [search, setSearch] = React.useState("");
-  const [selected, setSelected] = React.useState(null);
-  const [tip, setTip] = React.useState("");
-  const [tipLoading, setTipLoading] = React.useState(false);
+  const [cat, setCat] = useState("All");
+  const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState(null);
+  const [tip, setTip] = useState("");
+  const [tipLoading, setTipLoading] = useState(false);
 
   const filtered = DSA_DATA.filter(t =>
     (cat === "All" || t.category === cat) &&
