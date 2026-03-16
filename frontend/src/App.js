@@ -2079,7 +2079,505 @@ const SLUG_TO_CHECKLIST = {
   "graphs":           ["Graphs"],
 };
 
+
+// ── PATTERNS DATA (14 Must-Master Patterns) ────────────────────────────────
+const PATTERNS_DATA = [
+  {
+    id:"two-pointers", icon:"👆👆", name:"Two Pointers", phase:"Arrays & Strings",
+    coreIdea:"Use two indices moving toward or away from each other to reduce O(n²) to O(n).",
+    where:"Arrays, Strings, Linked Lists",
+    problems:[
+      {name:"Two Sum II",lc:"two-sum-ii-input-array-is-sorted",diff:"Easy"},
+      {name:"Squares of a Sorted Array",lc:"squares-of-a-sorted-array",diff:"Easy"},
+      {name:"Remove Duplicates from Sorted Array",lc:"remove-duplicates-from-sorted-array",diff:"Easy"},
+      {name:"Move Zeroes",lc:"move-zeroes",diff:"Easy"},
+      {name:"Container With Most Water",lc:"container-with-most-water",diff:"Medium"},
+      {name:"3Sum",lc:"3sum",diff:"Medium"},
+      {name:"4Sum",lc:"4sum",diff:"Medium"},
+      {name:"Trapping Rain Water",lc:"trapping-rain-water",diff:"Hard"},
+      {name:"Minimum Window Substring",lc:"minimum-window-substring",diff:"Hard"},
+    ]
+  },
+  {
+    id:"sliding-window", icon:"🪟", name:"Sliding Window", phase:"Arrays & Strings",
+    coreIdea:"Maintain a window of elements and slide it to avoid recomputation.",
+    where:"Strings, Arrays",
+    problems:[
+      {name:"Longest Substring Without Repeating Characters",lc:"longest-substring-without-repeating-characters",diff:"Medium"},
+      {name:"Minimum Size Subarray Sum",lc:"minimum-size-subarray-sum",diff:"Medium"},
+      {name:"Longest Repeating Character Replacement",lc:"longest-repeating-character-replacement",diff:"Medium"},
+      {name:"Permutation in String",lc:"permutation-in-string",diff:"Medium"},
+      {name:"Minimum Window Substring",lc:"minimum-window-substring",diff:"Hard"},
+      {name:"Sliding Window Maximum",lc:"sliding-window-maximum",diff:"Hard"},
+      {name:"Fruit Into Baskets",lc:"fruit-into-baskets",diff:"Medium"},
+      {name:"Max Consecutive Ones III",lc:"max-consecutive-ones-iii",diff:"Medium"},
+    ]
+  },
+  {
+    id:"fast-slow-pointers", icon:"🐢🐇", name:"Fast & Slow Pointers", phase:"Linked Lists",
+    coreIdea:"Use two pointers at different speeds to detect cycles or find midpoints.",
+    where:"Linked Lists, Arrays",
+    problems:[
+      {name:"Linked List Cycle",lc:"linked-list-cycle",diff:"Easy"},
+      {name:"Middle of the Linked List",lc:"middle-of-the-linked-list",diff:"Easy"},
+      {name:"Linked List Cycle II",lc:"linked-list-cycle-ii",diff:"Medium"},
+      {name:"Happy Number",lc:"happy-number",diff:"Easy"},
+      {name:"Find the Duplicate Number",lc:"find-the-duplicate-number",diff:"Medium"},
+      {name:"Palindrome Linked List",lc:"palindrome-linked-list",diff:"Easy"},
+      {name:"Reorder List",lc:"reorder-list",diff:"Medium"},
+    ]
+  },
+  {
+    id:"prefix-sum", icon:"➕", name:"Prefix / Cumulative Sum", phase:"Arrays & Strings",
+    coreIdea:"Precompute cumulative sums to answer range queries in O(1).",
+    where:"Arrays",
+    problems:[
+      {name:"Subarray Sum Equals K",lc:"subarray-sum-equals-k",diff:"Medium"},
+      {name:"Find Pivot Index",lc:"find-pivot-index",diff:"Easy"},
+      {name:"Range Sum Query - Immutable",lc:"range-sum-query-immutable",diff:"Easy"},
+      {name:"Product of Array Except Self",lc:"product-of-array-except-self",diff:"Medium"},
+      {name:"Continuous Subarray Sum",lc:"continuous-subarray-sum",diff:"Medium"},
+      {name:"Count Number of Nice Subarrays",lc:"count-number-of-nice-subarrays",diff:"Medium"},
+      {name:"Binary Subarrays With Sum",lc:"binary-subarrays-with-sum",diff:"Medium"},
+    ]
+  },
+  {
+    id:"monotonic-stack", icon:"📚", name:"Monotonic Stack", phase:"Stacks",
+    coreIdea:"Maintain a stack in increasing/decreasing order to find next greater/smaller elements.",
+    where:"Stacks, Arrays",
+    problems:[
+      {name:"Daily Temperatures",lc:"daily-temperatures",diff:"Medium"},
+      {name:"Next Greater Element I",lc:"next-greater-element-i",diff:"Easy"},
+      {name:"Next Greater Element II",lc:"next-greater-element-ii",diff:"Medium"},
+      {name:"Largest Rectangle in Histogram",lc:"largest-rectangle-in-histogram",diff:"Hard"},
+      {name:"Trapping Rain Water",lc:"trapping-rain-water",diff:"Hard"},
+      {name:"Sum of Subarray Minimums",lc:"sum-of-subarray-minimums",diff:"Medium"},
+      {name:"Remove K Digits",lc:"remove-k-digits",diff:"Medium"},
+      {name:"Asteroid Collision",lc:"asteroid-collision",diff:"Medium"},
+    ]
+  },
+  {
+    id:"bfs-dfs", icon:"🌊🔍", name:"BFS / DFS", phase:"Trees & Graphs",
+    coreIdea:"BFS uses a queue for level-order traversal; DFS uses a stack/recursion for depth-first.",
+    where:"Trees, Graphs",
+    problems:[
+      {name:"Binary Tree Level Order Traversal",lc:"binary-tree-level-order-traversal",diff:"Medium"},
+      {name:"Number of Islands",lc:"number-of-islands",diff:"Medium"},
+      {name:"Flood Fill",lc:"flood-fill",diff:"Easy"},
+      {name:"Clone Graph",lc:"clone-graph",diff:"Medium"},
+      {name:"Word Ladder",lc:"word-ladder",diff:"Hard"},
+      {name:"Rotting Oranges",lc:"rotting-oranges",diff:"Medium"},
+      {name:"01 Matrix",lc:"01-matrix",diff:"Medium"},
+      {name:"Course Schedule",lc:"course-schedule",diff:"Medium"},
+      {name:"Pacific Atlantic Water Flow",lc:"pacific-atlantic-water-flow",diff:"Medium"},
+    ]
+  },
+  {
+    id:"binary-search", icon:"🔢", name:"Binary Search", phase:"Arrays",
+    coreIdea:"Repeatedly halve the search space by comparing the target with the middle element.",
+    where:"Arrays, DP",
+    problems:[
+      {name:"Binary Search",lc:"binary-search",diff:"Easy"},
+      {name:"Search Insert Position",lc:"search-insert-position",diff:"Easy"},
+      {name:"Find Minimum in Rotated Sorted Array",lc:"find-minimum-in-rotated-sorted-array",diff:"Medium"},
+      {name:"Search in Rotated Sorted Array",lc:"search-in-rotated-sorted-array",diff:"Medium"},
+      {name:"Koko Eating Bananas",lc:"koko-eating-bananas",diff:"Medium"},
+      {name:"Find Peak Element",lc:"find-peak-element",diff:"Medium"},
+      {name:"Median of Two Sorted Arrays",lc:"median-of-two-sorted-arrays",diff:"Hard"},
+      {name:"Split Array Largest Sum",lc:"split-array-largest-sum",diff:"Hard"},
+    ]
+  },
+  {
+    id:"topological-sort", icon:"🗺️", name:"Topological Sort", phase:"Graphs",
+    coreIdea:"Linear ordering of nodes such that for every directed edge u→v, u comes before v.",
+    where:"Graphs (DAGs)",
+    problems:[
+      {name:"Course Schedule",lc:"course-schedule",diff:"Medium"},
+      {name:"Course Schedule II",lc:"course-schedule-ii",diff:"Medium"},
+      {name:"Alien Dictionary",lc:"alien-dictionary",diff:"Hard"},
+      {name:"Find Eventual Safe States",lc:"find-eventual-safe-states",diff:"Medium"},
+      {name:"Parallel Courses",lc:"parallel-courses",diff:"Medium"},
+      {name:"Sequence Reconstruction",lc:"sequence-reconstruction",diff:"Medium"},
+    ]
+  },
+  {
+    id:"union-find", icon:"🤝", name:"Union Find (Disjoint Set)", phase:"Graphs",
+    coreIdea:"Track connected components efficiently using union and find operations with path compression.",
+    where:"Graphs",
+    problems:[
+      {name:"Number of Connected Components",lc:"number-of-connected-components-in-an-undirected-graph",diff:"Medium"},
+      {name:"Redundant Connection",lc:"redundant-connection",diff:"Medium"},
+      {name:"Accounts Merge",lc:"accounts-merge",diff:"Medium"},
+      {name:"Making a Large Island",lc:"making-a-large-island",diff:"Hard"},
+      {name:"Number of Islands II",lc:"number-of-islands-ii",diff:"Hard"},
+      {name:"Most Stones Removed",lc:"most-stones-removed-with-same-row-or-column",diff:"Medium"},
+    ]
+  },
+  {
+    id:"backtracking", icon:"↩️", name:"Backtracking", phase:"Recursion",
+    coreIdea:"Explore all possibilities by building solutions incrementally and undoing choices that fail.",
+    where:"Strings, Combinations, Grids",
+    problems:[
+      {name:"Subsets",lc:"subsets",diff:"Medium"},
+      {name:"Permutations",lc:"permutations",diff:"Medium"},
+      {name:"Combination Sum",lc:"combination-sum",diff:"Medium"},
+      {name:"Combination Sum II",lc:"combination-sum-ii",diff:"Medium"},
+      {name:"Word Search",lc:"word-search",diff:"Medium"},
+      {name:"N-Queens",lc:"n-queens",diff:"Hard"},
+      {name:"Sudoku Solver",lc:"sudoku-solver",diff:"Hard"},
+      {name:"Palindrome Partitioning",lc:"palindrome-partitioning",diff:"Medium"},
+      {name:"Letter Combinations of a Phone Number",lc:"letter-combinations-of-a-phone-number",diff:"Medium"},
+    ]
+  },
+  {
+    id:"kadanes", icon:"📈", name:"Kadane's Algorithm", phase:"Arrays & DP",
+    coreIdea:"Track max subarray sum ending at each index; reset when sum goes negative.",
+    where:"Arrays, DP",
+    problems:[
+      {name:"Maximum Subarray",lc:"maximum-subarray",diff:"Medium"},
+      {name:"Best Time to Buy and Sell Stock",lc:"best-time-to-buy-and-sell-stock",diff:"Easy"},
+      {name:"Maximum Product Subarray",lc:"maximum-product-subarray",diff:"Medium"},
+      {name:"Maximum Sum Circular Subarray",lc:"maximum-sum-circular-subarray",diff:"Medium"},
+      {name:"Longest Turbulent Subarray",lc:"longest-turbulent-subarray",diff:"Medium"},
+    ]
+  },
+  {
+    id:"dynamic-programming", icon:"💡", name:"Dynamic Programming", phase:"DP",
+    coreIdea:"Break problems into overlapping subproblems and store results to avoid recomputation.",
+    where:"Arrays, Strings, Grids",
+    problems:[
+      {name:"Climbing Stairs",lc:"climbing-stairs",diff:"Easy"},
+      {name:"House Robber",lc:"house-robber",diff:"Medium"},
+      {name:"Coin Change",lc:"coin-change",diff:"Medium"},
+      {name:"Longest Common Subsequence",lc:"longest-common-subsequence",diff:"Medium"},
+      {name:"Longest Increasing Subsequence",lc:"longest-increasing-subsequence",diff:"Medium"},
+      {name:"Edit Distance",lc:"edit-distance",diff:"Hard"},
+      {name:"Unique Paths",lc:"unique-paths",diff:"Medium"},
+      {name:"Partition Equal Subset Sum",lc:"partition-equal-subset-sum",diff:"Medium"},
+      {name:"Word Break",lc:"word-break",diff:"Medium"},
+      {name:"Burst Balloons",lc:"burst-balloons",diff:"Hard"},
+      {name:"Regular Expression Matching",lc:"regular-expression-matching",diff:"Hard"},
+    ]
+  },
+  {
+    id:"greedy", icon:"🤑", name:"Greedy", phase:"Greedy + Intervals",
+    coreIdea:"Make the locally optimal choice at each step to reach a globally optimal solution.",
+    where:"Intervals, Strings",
+    problems:[
+      {name:"Jump Game",lc:"jump-game",diff:"Medium"},
+      {name:"Jump Game II",lc:"jump-game-ii",diff:"Medium"},
+      {name:"Merge Intervals",lc:"merge-intervals",diff:"Medium"},
+      {name:"Non-overlapping Intervals",lc:"non-overlapping-intervals",diff:"Medium"},
+      {name:"Insert Interval",lc:"insert-interval",diff:"Medium"},
+      {name:"Candy",lc:"candy",diff:"Hard"},
+      {name:"Gas Station",lc:"gas-station",diff:"Medium"},
+      {name:"Task Scheduler",lc:"task-scheduler",diff:"Medium"},
+    ]
+  },
+  {
+    id:"heap", icon:"⛰️", name:"Heap / Priority Queue", phase:"Heaps",
+    coreIdea:"Use a min/max heap to efficiently retrieve the smallest/largest element.",
+    where:"K-th problems, Streams",
+    problems:[
+      {name:"Kth Largest Element in an Array",lc:"kth-largest-element-in-an-array",diff:"Medium"},
+      {name:"Top K Frequent Elements",lc:"top-k-frequent-elements",diff:"Medium"},
+      {name:"Merge K Sorted Lists",lc:"merge-k-sorted-lists",diff:"Hard"},
+      {name:"Find Median from Data Stream",lc:"find-median-from-data-stream",diff:"Hard"},
+      {name:"Task Scheduler",lc:"task-scheduler",diff:"Medium"},
+      {name:"K Closest Points to Origin",lc:"k-closest-points-to-origin",diff:"Medium"},
+      {name:"Reorganize String",lc:"reorganize-string",diff:"Medium"},
+      {name:"Kth Smallest Element in BST",lc:"kth-smallest-element-in-a-bst",diff:"Medium"},
+    ]
+  },
+];
+
+// ── BLIND 75 DATA ─────────────────────────────────────────────────────────
+const BLIND75 = [
+  { cat:"Arrays & Hashing", problems:[
+    {name:"Two Sum",lc:"two-sum",diff:"Easy"},
+    {name:"Best Time to Buy & Sell Stock",lc:"best-time-to-buy-and-sell-stock",diff:"Easy"},
+    {name:"Contains Duplicate",lc:"contains-duplicate",diff:"Easy"},
+    {name:"Product of Array Except Self",lc:"product-of-array-except-self",diff:"Medium"},
+    {name:"Maximum Subarray",lc:"maximum-subarray",diff:"Medium"},
+    {name:"Maximum Product Subarray",lc:"maximum-product-subarray",diff:"Medium"},
+    {name:"Find Minimum in Rotated Sorted Array",lc:"find-minimum-in-rotated-sorted-array",diff:"Medium"},
+    {name:"Search in Rotated Sorted Array",lc:"search-in-rotated-sorted-array",diff:"Medium"},
+    {name:"3Sum",lc:"3sum",diff:"Medium"},
+    {name:"Container With Most Water",lc:"container-with-most-water",diff:"Medium"},
+  ]},
+  { cat:"Binary", problems:[
+    {name:"Sum of Two Integers",lc:"sum-of-two-integers",diff:"Medium"},
+    {name:"Number of 1 Bits",lc:"number-of-1-bits",diff:"Easy"},
+    {name:"Counting Bits",lc:"counting-bits",diff:"Easy"},
+    {name:"Missing Number",lc:"missing-number",diff:"Easy"},
+    {name:"Reverse Bits",lc:"reverse-bits",diff:"Easy"},
+  ]},
+  { cat:"Dynamic Programming", problems:[
+    {name:"Climbing Stairs",lc:"climbing-stairs",diff:"Easy"},
+    {name:"Coin Change",lc:"coin-change",diff:"Medium"},
+    {name:"Longest Increasing Subsequence",lc:"longest-increasing-subsequence",diff:"Medium"},
+    {name:"Longest Common Subsequence",lc:"longest-common-subsequence",diff:"Medium"},
+    {name:"Word Break",lc:"word-break",diff:"Medium"},
+    {name:"Combination Sum IV",lc:"combination-sum-iv",diff:"Medium"},
+    {name:"House Robber",lc:"house-robber",diff:"Medium"},
+    {name:"House Robber II",lc:"house-robber-ii",diff:"Medium"},
+    {name:"Decode Ways",lc:"decode-ways",diff:"Medium"},
+    {name:"Unique Paths",lc:"unique-paths",diff:"Medium"},
+    {name:"Jump Game",lc:"jump-game",diff:"Medium"},
+  ]},
+  { cat:"Graphs", problems:[
+    {name:"Clone Graph",lc:"clone-graph",diff:"Medium"},
+    {name:"Course Schedule",lc:"course-schedule",diff:"Medium"},
+    {name:"Pacific Atlantic Water Flow",lc:"pacific-atlantic-water-flow",diff:"Medium"},
+    {name:"Number of Islands",lc:"number-of-islands",diff:"Medium"},
+    {name:"Longest Consecutive Sequence",lc:"longest-consecutive-sequence",diff:"Medium"},
+    {name:"Alien Dictionary",lc:"alien-dictionary",diff:"Hard"},
+    {name:"Graph Valid Tree",lc:"graph-valid-tree",diff:"Medium"},
+    {name:"Number of Connected Components",lc:"number-of-connected-components-in-an-undirected-graph",diff:"Medium"},
+  ]},
+  { cat:"Intervals", problems:[
+    {name:"Insert Interval",lc:"insert-interval",diff:"Medium"},
+    {name:"Merge Intervals",lc:"merge-intervals",diff:"Medium"},
+    {name:"Non-overlapping Intervals",lc:"non-overlapping-intervals",diff:"Medium"},
+    {name:"Meeting Rooms",lc:"meeting-rooms",diff:"Easy"},
+    {name:"Meeting Rooms II",lc:"meeting-rooms-ii",diff:"Medium"},
+  ]},
+  { cat:"Linked Lists", problems:[
+    {name:"Reverse Linked List",lc:"reverse-linked-list",diff:"Easy"},
+    {name:"Detect Cycle in Linked List",lc:"linked-list-cycle",diff:"Easy"},
+    {name:"Merge Two Sorted Lists",lc:"merge-two-sorted-lists",diff:"Easy"},
+    {name:"Merge K Sorted Lists",lc:"merge-k-sorted-lists",diff:"Hard"},
+    {name:"Remove Nth Node From End",lc:"remove-nth-node-from-end-of-list",diff:"Medium"},
+    {name:"Reorder List",lc:"reorder-list",diff:"Medium"},
+  ]},
+  { cat:"Matrix", problems:[
+    {name:"Set Matrix Zeroes",lc:"set-matrix-zeroes",diff:"Medium"},
+    {name:"Spiral Matrix",lc:"spiral-matrix",diff:"Medium"},
+    {name:"Rotate Image",lc:"rotate-image",diff:"Medium"},
+    {name:"Word Search",lc:"word-search",diff:"Medium"},
+  ]},
+  { cat:"Strings", problems:[
+    {name:"Longest Substring Without Repeating Characters",lc:"longest-substring-without-repeating-characters",diff:"Medium"},
+    {name:"Longest Repeating Character Replacement",lc:"longest-repeating-character-replacement",diff:"Medium"},
+    {name:"Minimum Window Substring",lc:"minimum-window-substring",diff:"Hard"},
+    {name:"Valid Anagram",lc:"valid-anagram",diff:"Easy"},
+    {name:"Group Anagrams",lc:"group-anagrams",diff:"Medium"},
+    {name:"Valid Parentheses",lc:"valid-parentheses",diff:"Easy"},
+    {name:"Valid Palindrome",lc:"valid-palindrome",diff:"Easy"},
+    {name:"Longest Palindromic Substring",lc:"longest-palindromic-substring",diff:"Medium"},
+    {name:"Palindromic Substrings",lc:"palindromic-substrings",diff:"Medium"},
+    {name:"Encode and Decode Strings",lc:"encode-and-decode-strings",diff:"Medium"},
+  ]},
+  { cat:"Trees", problems:[
+    {name:"Maximum Depth of Binary Tree",lc:"maximum-depth-of-binary-tree",diff:"Easy"},
+    {name:"Same Tree",lc:"same-tree",diff:"Easy"},
+    {name:"Invert Binary Tree",lc:"invert-binary-tree",diff:"Easy"},
+    {name:"Binary Tree Maximum Path Sum",lc:"binary-tree-maximum-path-sum",diff:"Hard"},
+    {name:"Binary Tree Level Order Traversal",lc:"binary-tree-level-order-traversal",diff:"Medium"},
+    {name:"Serialize and Deserialize Binary Tree",lc:"serialize-and-deserialize-binary-tree",diff:"Hard"},
+    {name:"Subtree of Another Tree",lc:"subtree-of-another-tree",diff:"Easy"},
+    {name:"Construct Tree from Preorder and Inorder",lc:"construct-binary-tree-from-preorder-and-inorder-traversal",diff:"Medium"},
+    {name:"Validate Binary Search Tree",lc:"validate-binary-search-tree",diff:"Medium"},
+    {name:"Kth Smallest Element in BST",lc:"kth-smallest-element-in-a-bst",diff:"Medium"},
+    {name:"Lowest Common Ancestor of BST",lc:"lowest-common-ancestor-of-a-binary-search-tree",diff:"Medium"},
+    {name:"Implement Trie",lc:"implement-trie-prefix-tree",diff:"Medium"},
+    {name:"Design Add and Search Words",lc:"design-add-and-search-words-data-structure",diff:"Medium"},
+    {name:"Word Search II",lc:"word-search-ii",diff:"Hard"},
+  ]},
+  { cat:"Heap", problems:[
+    {name:"Merge K Sorted Lists",lc:"merge-k-sorted-lists",diff:"Hard"},
+    {name:"Top K Frequent Elements",lc:"top-k-frequent-elements",diff:"Medium"},
+    {name:"Find Median from Data Stream",lc:"find-median-from-data-stream",diff:"Hard"},
+  ]},
+];
+
+// ── COMPANY WISE DATA ─────────────────────────────────────────────────────
+const COMPANY_DATA = [
+  {
+    name:"Google", logo:"https://www.google.com/favicon.ico", color:"#4285f4",
+    hires:"SWE, ML, Data", rounds:"3-5 DSA rounds",
+    problems:[
+      {name:"Trapping Rain Water",lc:"trapping-rain-water",diff:"Hard"},
+      {name:"Word Ladder",lc:"word-ladder",diff:"Hard"},
+      {name:"LRU Cache",lc:"lru-cache",diff:"Medium"},
+      {name:"Find Median from Data Stream",lc:"find-median-from-data-stream",diff:"Hard"},
+      {name:"Skyline Problem",lc:"the-skyline-problem",diff:"Hard"},
+      {name:"Meeting Rooms II",lc:"meeting-rooms-ii",diff:"Medium"},
+      {name:"Next Permutation",lc:"next-permutation",diff:"Medium"},
+      {name:"Decode Ways",lc:"decode-ways",diff:"Medium"},
+      {name:"Strobogrammatic Number II",lc:"strobogrammatic-number-ii",diff:"Medium"},
+      {name:"Minimum Window Substring",lc:"minimum-window-substring",diff:"Hard"},
+      {name:"Largest Rectangle in Histogram",lc:"largest-rectangle-in-histogram",diff:"Hard"},
+      {name:"Serialize and Deserialize Binary Tree",lc:"serialize-and-deserialize-binary-tree",diff:"Hard"},
+    ]
+  },
+  {
+    name:"Amazon", logo:"https://www.amazon.com/favicon.ico", color:"#ff9900",
+    hires:"SDE I/II, Data", rounds:"2-4 DSA rounds",
+    problems:[
+      {name:"Two Sum",lc:"two-sum",diff:"Easy"},
+      {name:"LRU Cache",lc:"lru-cache",diff:"Medium"},
+      {name:"Number of Islands",lc:"number-of-islands",diff:"Medium"},
+      {name:"Reorder Data in Log Files",lc:"reorder-data-in-log-files",diff:"Medium"},
+      {name:"Top K Frequent Words",lc:"top-k-frequent-words",diff:"Medium"},
+      {name:"Prison Cells After N Days",lc:"prison-cells-after-n-days",diff:"Medium"},
+      {name:"Merge Intervals",lc:"merge-intervals",diff:"Medium"},
+      {name:"Course Schedule",lc:"course-schedule",diff:"Medium"},
+      {name:"Min Cost to Connect All Points",lc:"min-cost-to-connect-all-points",diff:"Medium"},
+      {name:"Longest Substring Without Repeating",lc:"longest-substring-without-repeating-characters",diff:"Medium"},
+      {name:"Trapping Rain Water",lc:"trapping-rain-water",diff:"Hard"},
+      {name:"Sliding Window Maximum",lc:"sliding-window-maximum",diff:"Hard"},
+    ]
+  },
+  {
+    name:"Microsoft", logo:"https://www.microsoft.com/favicon.ico", color:"#00a4ef",
+    hires:"SWE, SDET", rounds:"2-3 DSA rounds",
+    problems:[
+      {name:"Reverse Linked List",lc:"reverse-linked-list",diff:"Easy"},
+      {name:"Valid Parentheses",lc:"valid-parentheses",diff:"Easy"},
+      {name:"Binary Tree Level Order Traversal",lc:"binary-tree-level-order-traversal",diff:"Medium"},
+      {name:"LRU Cache",lc:"lru-cache",diff:"Medium"},
+      {name:"Clone Graph",lc:"clone-graph",diff:"Medium"},
+      {name:"Max Area of Island",lc:"max-area-of-island",diff:"Medium"},
+      {name:"Word Search",lc:"word-search",diff:"Medium"},
+      {name:"Merge Intervals",lc:"merge-intervals",diff:"Medium"},
+      {name:"Course Schedule II",lc:"course-schedule-ii",diff:"Medium"},
+      {name:"Serialize and Deserialize BST",lc:"serialize-and-deserialize-bst",diff:"Medium"},
+    ]
+  },
+  {
+    name:"Meta (Facebook)", logo:"https://www.facebook.com/favicon.ico", color:"#1877f2",
+    hires:"SWE, Infra", rounds:"2 DSA + system design",
+    problems:[
+      {name:"Add and Search Word",lc:"design-add-and-search-words-data-structure",diff:"Medium"},
+      {name:"Regular Expression Matching",lc:"regular-expression-matching",diff:"Hard"},
+      {name:"Find All Anagrams in String",lc:"find-all-anagrams-in-a-string",diff:"Medium"},
+      {name:"Move Zeroes",lc:"move-zeroes",diff:"Easy"},
+      {name:"Merge K Sorted Lists",lc:"merge-k-sorted-lists",diff:"Hard"},
+      {name:"Binary Tree Right Side View",lc:"binary-tree-right-side-view",diff:"Medium"},
+      {name:"Product of Array Except Self",lc:"product-of-array-except-self",diff:"Medium"},
+      {name:"Valid Palindrome II",lc:"valid-palindrome-ii",diff:"Easy"},
+      {name:"Random Pick with Weight",lc:"random-pick-with-weight",diff:"Medium"},
+      {name:"Accounts Merge",lc:"accounts-merge",diff:"Medium"},
+      {name:"Minimum Remove to Make Valid Parentheses",lc:"minimum-remove-to-make-valid-parentheses",diff:"Medium"},
+    ]
+  },
+  {
+    name:"Apple", logo:"https://www.apple.com/favicon.ico", color:"#555",
+    hires:"SWE, iOS/macOS", rounds:"3-5 rounds",
+    problems:[
+      {name:"Two Sum",lc:"two-sum",diff:"Easy"},
+      {name:"Reverse Linked List",lc:"reverse-linked-list",diff:"Easy"},
+      {name:"3Sum",lc:"3sum",diff:"Medium"},
+      {name:"Number of Islands",lc:"number-of-islands",diff:"Medium"},
+      {name:"Word Break",lc:"word-break",diff:"Medium"},
+      {name:"Longest Palindromic Substring",lc:"longest-palindromic-substring",diff:"Medium"},
+      {name:"Merge Intervals",lc:"merge-intervals",diff:"Medium"},
+      {name:"Kth Largest Element",lc:"kth-largest-element-in-an-array",diff:"Medium"},
+      {name:"Trapping Rain Water",lc:"trapping-rain-water",diff:"Hard"},
+    ]
+  },
+  {
+    name:"Flipkart", logo:"https://www.flipkart.com/favicon.ico", color:"#2874f0",
+    hires:"SDE I/II", rounds:"2-3 DSA rounds",
+    problems:[
+      {name:"Maximum Subarray",lc:"maximum-subarray",diff:"Medium"},
+      {name:"Merge Intervals",lc:"merge-intervals",diff:"Medium"},
+      {name:"LRU Cache",lc:"lru-cache",diff:"Medium"},
+      {name:"Lowest Common Ancestor",lc:"lowest-common-ancestor-of-a-binary-tree",diff:"Medium"},
+      {name:"Serialize/Deserialize Binary Tree",lc:"serialize-and-deserialize-binary-tree",diff:"Hard"},
+      {name:"Word Break",lc:"word-break",diff:"Medium"},
+      {name:"Next Permutation",lc:"next-permutation",diff:"Medium"},
+      {name:"Clone a Graph",lc:"clone-graph",diff:"Medium"},
+      {name:"Median from Data Stream",lc:"find-median-from-data-stream",diff:"Hard"},
+    ]
+  },
+  {
+    name:"Adobe", logo:"https://www.adobe.com/favicon.ico", color:"#e1251b",
+    hires:"SWE, MTS", rounds:"2-3 DSA rounds",
+    problems:[
+      {name:"Two Sum",lc:"two-sum",diff:"Easy"},
+      {name:"Valid Parentheses",lc:"valid-parentheses",diff:"Easy"},
+      {name:"Best Time to Buy and Sell Stock",lc:"best-time-to-buy-and-sell-stock",diff:"Easy"},
+      {name:"Maximum Subarray",lc:"maximum-subarray",diff:"Medium"},
+      {name:"3Sum",lc:"3sum",diff:"Medium"},
+      {name:"Merge Intervals",lc:"merge-intervals",diff:"Medium"},
+      {name:"Word Search",lc:"word-search",diff:"Medium"},
+      {name:"Minimum Window Substring",lc:"minimum-window-substring",diff:"Hard"},
+    ]
+  },
+  {
+    name:"Infosys", logo:"https://www.infosys.com/favicon.ico", color:"#007cc3",
+    hires:"SE, SSE", rounds:"1-2 DSA rounds",
+    problems:[
+      {name:"Two Sum",lc:"two-sum",diff:"Easy"},
+      {name:"Reverse Linked List",lc:"reverse-linked-list",diff:"Easy"},
+      {name:"Valid Parentheses",lc:"valid-parentheses",diff:"Easy"},
+      {name:"Merge Two Sorted Lists",lc:"merge-two-sorted-lists",diff:"Easy"},
+      {name:"Maximum Subarray",lc:"maximum-subarray",diff:"Medium"},
+      {name:"Number of Islands",lc:"number-of-islands",diff:"Medium"},
+    ]
+  },
+  {
+    name:"TCS", logo:"https://www.tcs.com/favicon.ico", color:"#1a1a7e",
+    hires:"ASE, Systems", rounds:"1-2 DSA rounds",
+    problems:[
+      {name:"Find Missing Number",lc:"missing-number",diff:"Easy"},
+      {name:"Reverse Array",lc:"reverse-string",diff:"Easy"},
+      {name:"Two Sum",lc:"two-sum",diff:"Easy"},
+      {name:"Fibonacci Number",lc:"fibonacci-number",diff:"Easy"},
+      {name:"Binary Search",lc:"binary-search",diff:"Easy"},
+      {name:"Palindrome Number",lc:"palindrome-number",diff:"Easy"},
+    ]
+  },
+  {
+    name:"Walmart", logo:"https://www.walmart.com/favicon.ico", color:"#0071ce",
+    hires:"SWE, Data", rounds:"2-3 DSA rounds",
+    problems:[
+      {name:"Two Sum",lc:"two-sum",diff:"Easy"},
+      {name:"Number of Islands",lc:"number-of-islands",diff:"Medium"},
+      {name:"LRU Cache",lc:"lru-cache",diff:"Medium"},
+      {name:"Top K Frequent Elements",lc:"top-k-frequent-elements",diff:"Medium"},
+      {name:"Merge K Sorted Lists",lc:"merge-k-sorted-lists",diff:"Hard"},
+      {name:"Course Schedule",lc:"course-schedule",diff:"Medium"},
+      {name:"Minimum Window Substring",lc:"minimum-window-substring",diff:"Hard"},
+    ]
+  },
+];
+
+// ── VISUALIZERS DATA ──────────────────────────────────────────────────────
+const VISUALIZERS_DATA = [
+  {
+    name:"VisuAlgo", url:"https://visualgo.net/en", color:"#00b8a3",
+    icon:"🎬", tag:"Most Comprehensive",
+    desc:"Visualize sorting, BST, graph algorithms, DP, and 20+ more. Best for understanding traversal step by step.",
+    topics:["Sorting","BST","Graph","DP","Hashing","Linked List","Binary Heap"],
+  },
+  {
+    name:"Algorithm Visualizer", url:"https://algorithm-visualizer.seancoughlin.me/", color:"#7c4dff",
+    icon:"🔬", tag:"Interactive Code",
+    desc:"Run algorithm code step-by-step with live visualization. Great for seeing exactly how code executes.",
+    topics:["BFS","DFS","Dijkstra","Sorting","Dynamic Programming"],
+  },
+  {
+    name:"USFCA Visualizations", url:"https://www.cs.usfca.edu/~galles/visualization/Algorithms.html", color:"#f5a623",
+    icon:"🏛️", tag:"Classic Reference",
+    desc:"Classic university tool covering AVL trees, B-trees, heaps, and advanced data structures.",
+    topics:["AVL Tree","B-Tree","Heap","Red-Black Tree","Hash Tables","Trie"],
+  },
+];
+
+// ── RESOURCES DATA ────────────────────────────────────────────────────────
+const DSA_RESOURCES = [
+  { name:"Company-Wise LeetCode Questions", url:"https://github.com/krishnadey30/LeetCode-Questions-CompanyWise", icon:"🏢", desc:"GitHub repo with LeetCode questions sorted by company — Google, Amazon, Meta, and 50+ more.", tag:"Company Prep" },
+  { name:"15 Patterns to Master Interviews", url:"https://manralai.medium.com/only-15-patterns-to-master-any-coding-interview-570a3afc9042", icon:"🧩", desc:"Medium article explaining 15 core patterns that cover almost every coding interview problem.", tag:"Patterns" },
+  { name:"Striver's SDE Sheet", url:"https://takeuforward.org/dsa/strivers-sde-sheet-top-coding-interview-problems", icon:"📋", desc:"Top 191 coding interview problems curated by Striver — the most trusted sheet for SDE prep.", tag:"Top Sheet" },
+  { name:"DSA Revision Sheet (Google Drive)", url:"https://drive.google.com/file/d/1CBdqMvkgjZGiWmlHZMX8aF1AbSEPaulI/view", icon:"📄", desc:"Comprehensive DSA revision notes PDF covering all major topics with examples.", tag:"Notes" },
+  { name:"DSA Problem Spreadsheet", url:"https://docs.google.com/spreadsheets/d/1hzP8j7matoUiJ15N-RhsL5Dmig8_E3aP/htmlview", icon:"📊", desc:"Google Sheets tracker with 300+ problems organized by topic, difficulty, and company tag.", tag:"Tracker" },
+];
+
 const DSAPage = ({ setPage }) => {
+  const [tab,        setTab]        = useState("topics");
   const [cat,        setCat]        = useState("All");
   const [search,     setSearch]     = useState("");
   const [view,       setView]       = useState("topics");
@@ -2089,6 +2587,11 @@ const DSAPage = ({ setPage }) => {
   const [tipLoading, setTipLoading] = useState(false);
   const [probSearch, setProbSearch] = useState("");
   const [diffFilter, setDiffFilter] = useState("All");
+  const [selPattern, setSelPattern] = useState(null);
+  const [selCompany, setSelCompany] = useState(null);
+  const [b75Cat,     setB75Cat]     = useState("All");
+
+  const DIFF_C = { Easy:"#00ff88", Medium:"#ffd60a", Hard:"#ff3d8a" };
 
   const filtered = DSA_DATA.filter(t =>
     (cat === "All" || t.category === cat) &&
@@ -2115,42 +2618,435 @@ const DSAPage = ({ setPage }) => {
   const openTopic   = (t) => { setSelTopic(t); setSelProblem(null); setView("problems"); setProbSearch(""); setDiffFilter("All"); setTip(""); window.scrollTo(0,0); };
   const openProblem = (p) => { setSelProblem(p); setView("problem"); window.scrollTo(0,0); };
 
-  // ── TOPICS VIEW ───────────────────────────────────────────────
-  if (view === "topics") return (
-    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
-      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"40px 24px 32px"}}>
-        <div style={{maxWidth:1200,margin:"0 auto"}}>
-          <div className="sl">Student Tools</div>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:16,marginBottom:24}}>
-            <div>
-              <h1 className="syne" style={{fontSize:34,fontWeight:800,marginBottom:6}}>🧠 DSA <span className="gtext">Problem Explorer</span></h1>
-              <p style={{color:"var(--text2)",fontSize:14}}>{DSA_DATA.length} topics · 8 platforms · AI study tips</p>
+  // Shared header with tabs
+  const isDeepView = (tab === "topics" && view !== "topics");
+  const Header = () => (
+    <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"32px 24px 0"}}>
+      <div style={{maxWidth:1200,margin:"0 auto"}}>
+        <div className="sl">Student Tools</div>
+        <h1 className="syne" style={{fontSize:30,fontWeight:800,marginBottom:4}}>🧠 DSA <span className="gtext">Problem Explorer</span></h1>
+        <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Topics · Patterns · Blind 75 · Company Wise · Visualizers</p>
+        {!isDeepView && (
+          <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+            {[["topics","📚 Topics"],["patterns","🧩 Patterns"],["blind75","🎯 Blind 75"],["company","🏢 Company Wise"],["visualizers","🎬 Visualizers"]].map(([t,l])=>(
+              <button key={t} onClick={()=>{setTab(t);setView("topics");}} style={{padding:"10px 18px",borderBottom:`3px solid ${tab===t?"var(--purple)":"transparent"}`,background:"transparent",border:"none",borderBottom:`3px solid ${tab===t?"var(--purple)":"transparent"}`,color:tab===t?"var(--purple)":"var(--text2)",fontWeight:tab===t?700:500,fontSize:13,cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'DM Sans',sans-serif"}}>
+                {l}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  // ── DRILL DOWN: PROBLEM DETAIL ─────────────────────────────────────────
+  if (view === "problem") {
+    const pLinks = getProblemLinks(selProblem.name, selTopic?.slug);
+    return (
+      <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+        <Header/>
+        <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"24px 24px 20px"}}>
+          <div style={{maxWidth:900,margin:"0 auto"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12,fontSize:13,color:"var(--text3)",flexWrap:"wrap"}}>
+              <span style={{cursor:"pointer",color:"var(--cyan)"}} onClick={()=>{setView("topics");setTab("topics");}}>DSA Explorer</span>
+              <span>›</span>
+              <span style={{cursor:"pointer",color:"var(--cyan)"}} onClick={()=>setView("problems")}>{selTopic.topic}</span>
+              <span>›</span>
+              <span style={{color:"var(--text)"}}>{selProblem.name}</span>
             </div>
+            <h2 className="syne" style={{fontSize:22,fontWeight:800,marginBottom:10}}>{selProblem.name}</h2>
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-              {[["LeetCode","#f89f1b"],["NeetCode","#00b8a3"],["GFG","#2f8d46"],["HackerRank","#00ea64"]].map(([p,c])=>(
-                <span key={p} style={{padding:"4px 10px",borderRadius:6,fontSize:11,fontWeight:700,background:`${c}18`,color:c,border:`1px solid ${c}30`}}>{p}</span>
+              <span style={{fontSize:11,padding:"3px 10px",borderRadius:6,background:`${DIFF_C[selProblem.diff]}18`,color:DIFF_C[selProblem.diff],fontWeight:700}}>{selProblem.diff}</span>
+              <span style={{fontSize:11,padding:"3px 10px",borderRadius:6,background:"var(--bg3)",color:"var(--text2)"}}>{selTopic.topic}</span>
+            </div>
+          </div>
+        </div>
+        <div style={{maxWidth:900,margin:"0 auto",padding:"24px"}}>
+          <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:14}}>Solve this problem on</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12}}>
+            {pLinks.map(l=>(
+              <a key={l.name} href={l.url} target="_blank" rel="noopener noreferrer"
+                style={{display:"flex",alignItems:"center",gap:14,padding:"16px",borderRadius:14,border:`1px solid ${l.direct?"var(--border2)":"var(--border)"}`,background:"var(--card)",textDecoration:"none",transition:"all .2s",position:"relative"}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor=l.color;e.currentTarget.style.background=`${l.color}12`;}}
+                onMouseLeave={e=>{e.currentTarget.style.borderColor=l.direct?"var(--border2)":"var(--border)";e.currentTarget.style.background="var(--card)";}}>
+                {l.direct && <span style={{position:"absolute",top:8,right:8,fontSize:8,padding:"2px 5px",borderRadius:3,background:"rgba(0,255,136,.15)",color:"#00ff88",fontWeight:700}}>DIRECT</span>}
+                <div style={{width:40,height:40,borderRadius:10,background:`${l.color}18`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                  <img src={l.logo} alt={l.name} style={{width:22,height:22,objectFit:"contain"}} onError={e=>{e.target.style.display="none";const fb=e.target.parentNode.querySelector(".logo-fb");if(fb)fb.style.display="flex";}}/>
+                  <span className="logo-fb" style={{display:"none",width:22,height:22,borderRadius:4,background:l.color,color:"#fff",fontSize:8,fontWeight:800,alignItems:"center",justifyContent:"center"}}>{l.name.slice(0,2).toUpperCase()}</span>
+                </div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:2}}>{l.name}</div>
+                  <div style={{fontSize:10,color:"var(--text3)",marginBottom:3}}>{l.note}</div>
+                  <span style={{fontSize:8,padding:"1px 5px",borderRadius:3,background:`${l.color}18`,color:l.color,fontWeight:700}}>{l.tag}</span>
+                </div>
+                <span style={{fontSize:16,color:l.color}}>→</span>
+              </a>
+            ))}
+          </div>
+          <button onClick={()=>setView("problems")} style={{marginTop:24,padding:"9px 20px",borderRadius:10,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",fontSize:13,fontWeight:600,cursor:"pointer"}}>← Back to {selTopic.topic}</button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── DRILL DOWN: PROBLEMS LIST ──────────────────────────────────────────
+  if (view === "problems") {
+    const problems = getTopicProblems(selTopic?.slug);
+    const filteredProbs = problems.filter(p =>
+      (diffFilter === "All" || p.diff === diffFilter) &&
+      (!probSearch || p.name.toLowerCase().includes(probSearch.toLowerCase()))
+    );
+    return (
+      <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+        <Header/>
+        <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"24px"}}>
+          <div style={{maxWidth:1100,margin:"0 auto"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12,fontSize:13,color:"var(--text3)"}}>
+              <span style={{cursor:"pointer",color:"var(--cyan)"}} onClick={()=>{setView("topics");setTab("topics");}}>DSA Explorer</span>
+              <span>›</span><span style={{color:"var(--text)"}}>{selTopic.topic}</span>
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:16}}>
+              <div style={{display:"flex",alignItems:"center",gap:12}}>
+                <span style={{fontSize:32}}>{selTopic.icon}</span>
+                <div>
+                  <h2 className="syne" style={{fontSize:24,fontWeight:800,marginBottom:4}}>{selTopic.topic}</h2>
+                  <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                    <span style={{fontSize:11,padding:"2px 8px",borderRadius:5,background:"var(--bg3)",color:"var(--text2)"}}>{selTopic.category}</span>
+                    <span style={{fontSize:11,padding:"2px 8px",borderRadius:5,background:`${DIFF_C[selTopic.difficulty]}18`,color:DIFF_C[selTopic.difficulty],fontWeight:700}}>{selTopic.difficulty}</span>
+                    <span style={{fontSize:11,color:"var(--text3)"}}>{problems.length} problems</span>
+                  </div>
+                </div>
+              </div>
+              <button onClick={()=>fetchTip(selTopic.slug)} disabled={tipLoading} style={{padding:"8px 16px",borderRadius:10,border:"1px solid var(--yellow)",background:"rgba(255,214,10,.08)",color:"var(--yellow)",fontSize:12,fontWeight:700,cursor:"pointer"}}>
+                {tipLoading?"⏳ Loading…":"💡 AI Study Tip"}
+              </button>
+            </div>
+            {tip && <div style={{marginTop:14,background:"rgba(255,214,10,.06)",border:"1px solid rgba(255,214,10,.2)",borderRadius:10,padding:14,maxWidth:700}}><div style={{fontSize:10,fontWeight:700,color:"var(--yellow)",marginBottom:6}}>💡 AI Strategy</div><div style={{fontSize:12,color:"var(--text)",lineHeight:1.7,whiteSpace:"pre-wrap"}}>{tip}</div></div>}
+            <div style={{display:"flex",gap:8,marginTop:16,flexWrap:"wrap",alignItems:"center"}}>
+              <div style={{position:"relative",flex:1,maxWidth:320}}>
+                <span style={{position:"absolute",left:10,top:"50%",transform:"translateY(-50%)",color:"var(--text3)",fontSize:12}}>🔍</span>
+                <input className="input" value={probSearch} onChange={e=>setProbSearch(e.target.value)} placeholder="Search problems…" style={{padding:"8px 12px 8px 30px",fontSize:13}}/>
+              </div>
+              {["All","Easy","Medium","Hard"].map(d=>(
+                <button key={d} onClick={()=>setDiffFilter(d)} style={{padding:"6px 12px",borderRadius:20,fontSize:12,fontWeight:600,border:"1px solid var(--border)",cursor:"pointer",background:diffFilter===d?(d==="Easy"?"rgba(0,255,136,.2)":d==="Medium"?"rgba(255,214,10,.2)":d==="Hard"?"rgba(255,61,138,.2)":"var(--purple)"):"var(--card)",color:diffFilter===d?(d==="Easy"?"#00ff88":d==="Medium"?"#ffd60a":d==="Hard"?"#ff3d8a":"#fff"):"var(--text2)"}}>
+                  {d}
+                </button>
               ))}
             </div>
           </div>
-          <div style={{position:"relative",maxWidth:480}}>
-            <span style={{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",color:"var(--text3)"}}>🔍</span>
-            <input className="input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search topics — Arrays, DP, Graphs…" style={{padding:"11px 16px 11px 40px",fontSize:14}}/>
+        </div>
+        <div style={{maxWidth:1100,margin:"0 auto",padding:"20px 24px"}}>
+          {problems.length === 0 ? (
+            <div style={{textAlign:"center",padding:"60px 20px",color:"var(--text3)"}}>
+              <div style={{fontSize:36,marginBottom:10}}>🔧</div>
+              <div style={{fontSize:15,fontWeight:600,color:"var(--text)",marginBottom:6}}>Problem list coming soon for {selTopic.topic}</div>
+              <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap",marginTop:16}}>
+                {selTopic.platforms.map(p=>(
+                  <a key={p.name} href={p.url} target="_blank" rel="noopener noreferrer" style={{padding:"8px 16px",borderRadius:8,background:"var(--card)",border:"1px solid var(--border)",color:"var(--text)",fontSize:13,textDecoration:"none"}}>{p.name} →</a>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <>
+              <div style={{fontSize:12,color:"var(--text3)",marginBottom:14}}>{filteredProbs.length} of {problems.length} problems</div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:10}}>
+                {filteredProbs.map((p,i)=>(
+                  <div key={i} onClick={()=>openProblem(p)} className="hcard" style={{padding:"12px 16px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,border:"1px solid var(--border)",background:"var(--card)",transition:"all .2s"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:10,minWidth:0}}>
+                      <span style={{fontSize:11,color:"var(--text3)",flexShrink:0,minWidth:18,textAlign:"right"}}>{i+1}</span>
+                      <div style={{fontSize:13,fontWeight:600,color:"var(--text)",lineHeight:1.3}}>{p.name}</div>
+                    </div>
+                    <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0}}>
+                      <span style={{fontSize:10,fontWeight:700,padding:"2px 6px",borderRadius:4,background:`${DIFF_C[p.diff]}18`,color:DIFF_C[p.diff]}}>{p.diff}</span>
+                      <span style={{color:"var(--purple)",fontSize:14}}>›</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ── PATTERNS TAB ───────────────────────────────────────────────────────
+  if (tab === "patterns") return (
+    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+      <Header/>
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"28px 24px"}}>
+        {!selPattern ? (
+          <>
+            <div style={{marginBottom:20}}>
+              <div className="syne" style={{fontSize:20,fontWeight:800,marginBottom:6}}>🧩 14 Must-Master Patterns</div>
+              <p style={{color:"var(--text2)",fontSize:13}}>Every coding interview reduces to these patterns. Master the pattern, solve any problem.</p>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12}}>
+              {PATTERNS_DATA.map(p=>(
+                <div key={p.id} onClick={()=>setSelPattern(p)} className="hcard" style={{padding:20,cursor:"pointer",border:"1px solid var(--border)",background:"var(--card)",transition:"all .2s"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+                    <span style={{fontSize:24}}>{p.icon}</span>
+                    <div>
+                      <div className="syne" style={{fontSize:14,fontWeight:700}}>{p.name}</div>
+                      <div style={{fontSize:10,color:"var(--cyan)"}}>{p.phase}</div>
+                    </div>
+                  </div>
+                  <p style={{fontSize:12,color:"var(--text2)",lineHeight:1.5,marginBottom:10}}>{p.coreIdea}</p>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <span style={{fontSize:11,color:"var(--text3)"}}>{p.problems.length} problems</span>
+                    <span style={{fontSize:11,padding:"2px 8px",borderRadius:4,background:"rgba(124,77,255,.15)",color:"var(--purple)",fontWeight:600}}>{p.where}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:20,fontSize:13,color:"var(--text3)"}}>
+              <span style={{cursor:"pointer",color:"var(--cyan)"}} onClick={()=>setSelPattern(null)}>Patterns</span>
+              <span>›</span><span style={{color:"var(--text)"}}>{selPattern.name}</span>
+            </div>
+            <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:8}}>
+              <span style={{fontSize:32}}>{selPattern.icon}</span>
+              <div>
+                <h2 className="syne" style={{fontSize:24,fontWeight:800,marginBottom:4}}>{selPattern.name}</h2>
+                <span style={{fontSize:12,color:"var(--cyan)"}}>{selPattern.phase}</span>
+              </div>
+            </div>
+            <div style={{background:"rgba(124,77,255,.08)",border:"1px solid rgba(124,77,255,.2)",borderRadius:12,padding:16,marginBottom:24,maxWidth:700}}>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--purple)",marginBottom:6}}>💡 Core Idea</div>
+              <div style={{fontSize:13,color:"var(--text)",lineHeight:1.6}}>{selPattern.coreIdea}</div>
+              <div style={{marginTop:8,fontSize:12,color:"var(--text3)"}}>Appears in: <span style={{color:"var(--cyan)"}}>{selPattern.where}</span></div>
+            </div>
+            <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:14}}>Practice Problems — ordered by difficulty</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:10}}>
+              {selPattern.problems.map((p,i)=>(
+                <a key={i} href={`https://leetcode.com/problems/${p.lc}/`} target="_blank" rel="noopener noreferrer"
+                  style={{padding:"12px 16px",borderRadius:12,border:"1px solid var(--border)",background:"var(--card)",textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,transition:"all .2s"}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor="#f89f1b";e.currentTarget.style.background="rgba(248,159,27,.06)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.background="var(--card)";}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10}}>
+                    <span style={{fontSize:11,color:"var(--text3)",minWidth:18,textAlign:"right"}}>{i+1}</span>
+                    <div style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{p.name}</div>
+                  </div>
+                  <span style={{fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:4,background:`${DIFF_C[p.diff]}18`,color:DIFF_C[p.diff],flexShrink:0}}>{p.diff}</span>
+                </a>
+              ))}
+            </div>
+            <button onClick={()=>setSelPattern(null)} style={{marginTop:24,padding:"9px 20px",borderRadius:10,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",fontSize:13,fontWeight:600,cursor:"pointer"}}>← All Patterns</button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+
+  // ── BLIND 75 TAB ────────────────────────────────────────────────────────
+  if (tab === "blind75") {
+    const cats = ["All", ...BLIND75.map(c=>c.cat)];
+    const total = BLIND75.reduce((a,c)=>a+c.problems.length,0);
+    const shown = b75Cat === "All" ? BLIND75 : BLIND75.filter(c=>c.cat===b75Cat);
+    return (
+      <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+        <Header/>
+        <div style={{maxWidth:1200,margin:"0 auto",padding:"28px 24px"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:16,marginBottom:24}}>
+            <div>
+              <div className="syne" style={{fontSize:20,fontWeight:800,marginBottom:6}}>🎯 Blind 75 — Must-Solve Problems</div>
+              <p style={{color:"var(--text2)",fontSize:13}}>{total} carefully curated problems that cover every major interview pattern. Solve these and you are ready for any FAANG interview.</p>
+            </div>
+            <a href="https://neetcode.io/practice" target="_blank" rel="noopener noreferrer" style={{padding:"9px 18px",borderRadius:10,background:"rgba(0,184,163,.15)",border:"1px solid rgba(0,184,163,.3)",color:"#00b8a3",fontSize:13,fontWeight:700,textDecoration:"none"}}>🚀 Solve on NeetCode</a>
           </div>
-          <div style={{display:"flex",gap:6,marginTop:16,flexWrap:"wrap"}}>
-            {DSA_CATEGORIES.map(c=>(
-              <button key={c} onClick={()=>setCat(c)} style={{padding:"6px 14px",borderRadius:20,fontSize:12,fontWeight:600,border:"1px solid var(--border)",background:cat===c?"var(--purple)":"var(--card)",color:cat===c?"#fff":"var(--text2)",cursor:"pointer",transition:"all .15s"}}>{c}</button>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:24}}>
+            {cats.map(c=>(
+              <button key={c} onClick={()=>setB75Cat(c)} style={{padding:"6px 14px",borderRadius:20,fontSize:12,fontWeight:600,border:"1px solid var(--border)",background:b75Cat===c?"var(--purple)":"var(--card)",color:b75Cat===c?"#fff":"var(--text2)",cursor:"pointer",transition:"all .15s"}}>{c}</button>
+            ))}
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:20}}>
+            {shown.map(cat=>(
+              <div key={cat.cat}>
+                <div style={{fontSize:13,fontWeight:700,color:"var(--cyan)",marginBottom:10,display:"flex",alignItems:"center",gap:8}}>
+                  <span>{cat.cat}</span>
+                  <span style={{fontSize:11,color:"var(--text3)",fontWeight:400}}>{cat.problems.length} problems</span>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:8}}>
+                  {cat.problems.map((p,i)=>(
+                    <a key={i} href={`https://leetcode.com/problems/${p.lc}/`} target="_blank" rel="noopener noreferrer"
+                      style={{padding:"10px 14px",borderRadius:10,border:"1px solid var(--border)",background:"var(--card)",textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,transition:"all .2s"}}
+                      onMouseEnter={e=>{e.currentTarget.style.borderColor="#f89f1b";e.currentTarget.style.background="rgba(248,159,27,.06)";}}
+                      onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.background="var(--card)";}}>
+                      <div style={{display:"flex",alignItems:"center",gap:8}}>
+                        <img src="https://leetcode.com/favicon.ico" alt="LC" style={{width:14,height:14,objectFit:"contain"}}/>
+                        <span style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{p.name}</span>
+                      </div>
+                      <span style={{fontSize:10,fontWeight:700,padding:"2px 6px",borderRadius:4,background:`${DIFF_C[p.diff]}18`,color:DIFF_C[p.diff],flexShrink:0}}>{p.diff}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </div>
+    );
+  }
+
+  // ── COMPANY WISE TAB ───────────────────────────────────────────────────
+  if (tab === "company") return (
+    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+      <Header/>
       <div style={{maxWidth:1200,margin:"0 auto",padding:"28px 24px"}}>
+        {!selCompany ? (
+          <>
+            <div style={{marginBottom:20}}>
+              <div className="syne" style={{fontSize:20,fontWeight:800,marginBottom:6}}>🏢 Company-Wise Problems</div>
+              <p style={{color:"var(--text2)",fontSize:13}}>Most frequently asked problems at top tech companies. Click a company to see their interview questions.</p>
+              <a href="https://github.com/krishnadey30/LeetCode-Questions-CompanyWise" target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:6,marginTop:8,padding:"7px 14px",borderRadius:8,background:"var(--card)",border:"1px solid var(--border)",color:"var(--text)",fontSize:12,textDecoration:"none"}}>
+                📦 Full company list on GitHub →
+              </a>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:12}}>
+              {COMPANY_DATA.map(c=>(
+                <div key={c.name} onClick={()=>setSelCompany(c)} className="hcard" style={{padding:20,cursor:"pointer",border:`1px solid var(--border)`,background:"var(--card)",transition:"all .2s"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
+                    <div style={{width:36,height:36,borderRadius:8,background:`${c.color}18`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                      <img src={c.logo} alt={c.name} style={{width:20,height:20,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>
+                    </div>
+                    <div>
+                      <div className="syne" style={{fontSize:14,fontWeight:700}}>{c.name}</div>
+                      <div style={{fontSize:10,color:"var(--text3)"}}>{c.hires}</div>
+                    </div>
+                  </div>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <span style={{fontSize:11,color:"var(--text3)"}}>{c.problems.length} top problems</span>
+                    <span style={{fontSize:11,padding:"2px 8px",borderRadius:4,background:`${c.color}18`,color:c.color,fontWeight:600}}>{c.rounds}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:20,fontSize:13,color:"var(--text3)"}}>
+              <span style={{cursor:"pointer",color:"var(--cyan)"}} onClick={()=>setSelCompany(null)}>Company Wise</span>
+              <span>›</span><span style={{color:"var(--text)"}}>{selCompany.name}</span>
+            </div>
+            <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:20}}>
+              <div style={{width:52,height:52,borderRadius:12,background:`${selCompany.color}18`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <img src={selCompany.logo} alt={selCompany.name} style={{width:28,height:28,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>
+              </div>
+              <div>
+                <h2 className="syne" style={{fontSize:24,fontWeight:800,marginBottom:4}}>{selCompany.name}</h2>
+                <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                  <span style={{fontSize:11,padding:"2px 8px",borderRadius:4,background:`${selCompany.color}18`,color:selCompany.color}}>{selCompany.rounds}</span>
+                  <span style={{fontSize:11,padding:"2px 8px",borderRadius:4,background:"var(--bg3)",color:"var(--text2)"}}>{selCompany.hires}</span>
+                </div>
+              </div>
+            </div>
+            <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:14}}>Top Asked Problems</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:10}}>
+              {selCompany.problems.map((p,i)=>(
+                <a key={i} href={`https://leetcode.com/problems/${p.lc}/`} target="_blank" rel="noopener noreferrer"
+                  style={{padding:"12px 16px",borderRadius:12,border:"1px solid var(--border)",background:"var(--card)",textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,transition:"all .2s"}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor=selCompany.color;e.currentTarget.style.background=`${selCompany.color}08`;}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.background="var(--card)";}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10}}>
+                    <span style={{fontSize:11,color:"var(--text3)",minWidth:18,textAlign:"right"}}>{i+1}</span>
+                    <div style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{p.name}</div>
+                  </div>
+                  <span style={{fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:4,background:`${DIFF_C[p.diff]}18`,color:DIFF_C[p.diff],flexShrink:0}}>{p.diff}</span>
+                </a>
+              ))}
+            </div>
+            <button onClick={()=>setSelCompany(null)} style={{marginTop:24,padding:"9px 20px",borderRadius:10,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",fontSize:13,fontWeight:600,cursor:"pointer"}}>← All Companies</button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+
+  // ── VISUALIZERS TAB ────────────────────────────────────────────────────
+  if (tab === "visualizers") return (
+    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+      <Header/>
+      <div style={{maxWidth:1100,margin:"0 auto",padding:"28px 24px"}}>
+        <div style={{marginBottom:24}}>
+          <div className="syne" style={{fontSize:20,fontWeight:800,marginBottom:6}}>🎬 DSA Visualizers</div>
+          <p style={{color:"var(--text2)",fontSize:13}}>See algorithms come alive. Visualizers make abstract concepts click instantly.</p>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:16,marginBottom:36}}>
+          {VISUALIZERS_DATA.map(v=>(
+            <a key={v.name} href={v.url} target="_blank" rel="noopener noreferrer"
+              style={{display:"flex",flexDirection:"column",gap:14,padding:24,borderRadius:16,border:"1px solid var(--border)",background:"var(--card)",textDecoration:"none",transition:"all .2s"}}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor=v.color;e.currentTarget.style.background=`${v.color}08`;}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.background="var(--card)";}}>
+              <div style={{display:"flex",alignItems:"center",gap:12}}>
+                <span style={{fontSize:32}}>{v.icon}</span>
+                <div>
+                  <div className="syne" style={{fontSize:16,fontWeight:800,color:"var(--text)",marginBottom:3}}>{v.name}</div>
+                  <span style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:`${v.color}18`,color:v.color,fontWeight:700}}>{v.tag}</span>
+                </div>
+              </div>
+              <p style={{fontSize:13,color:"var(--text2)",lineHeight:1.6,margin:0}}>{v.desc}</p>
+              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                {v.topics.map(t=>(
+                  <span key={t} style={{fontSize:10,padding:"2px 8px",borderRadius:4,background:"var(--bg3)",color:"var(--text3)"}}>{t}</span>
+                ))}
+              </div>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginTop:"auto"}}>
+                <span style={{fontSize:12,color:v.color,fontWeight:600}}>Open Visualizer</span>
+                <span style={{fontSize:16,color:v.color}}>→</span>
+              </div>
+            </a>
+          ))}
+        </div>
+        <div style={{borderTop:"1px solid var(--border)",paddingTop:28}}>
+          <div className="syne" style={{fontSize:16,fontWeight:800,marginBottom:16}}>📚 Curated DSA Resources</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:12}}>
+            {DSA_RESOURCES.map(r=>(
+              <a key={r.name} href={r.url} target="_blank" rel="noopener noreferrer"
+                style={{display:"flex",alignItems:"flex-start",gap:14,padding:"16px",borderRadius:14,border:"1px solid var(--border)",background:"var(--card)",textDecoration:"none",transition:"all .2s"}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.background="rgba(0,212,255,.04)";}}
+                onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.background="var(--card)";}}>
+                <span style={{fontSize:24,flexShrink:0}}>{r.icon}</span>
+                <div>
+                  <div style={{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:4}}>{r.name}</div>
+                  <div style={{fontSize:11,color:"var(--text3)",lineHeight:1.5,marginBottom:6}}>{r.desc}</div>
+                  <span style={{fontSize:9,padding:"2px 6px",borderRadius:3,background:"rgba(0,212,255,.12)",color:"var(--cyan)",fontWeight:700}}>{r.tag}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── TOPICS TAB (default) ────────────────────────────────────────────────
+  return (
+    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+      <Header/>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"20px 24px"}}>
+        <div style={{maxWidth:1200,margin:"0 auto"}}>
+          <div style={{display:"flex",gap:12,flexWrap:"wrap",alignItems:"center"}}>
+            <div style={{position:"relative",flex:1,maxWidth:400}}>
+              <span style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",color:"var(--text3)"}}>🔍</span>
+              <input className="input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search topics — Arrays, DP, Graphs…" style={{padding:"10px 16px 10px 38px",fontSize:14}}/>
+            </div>
+            <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+              {DSA_CATEGORIES.map(c=>(
+                <button key={c} onClick={()=>setCat(c)} style={{padding:"6px 12px",borderRadius:20,fontSize:12,fontWeight:600,border:"1px solid var(--border)",background:cat===c?"var(--purple)":"var(--card)",color:cat===c?"#fff":"var(--text2)",cursor:"pointer",transition:"all .15s"}}>{c}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"24px"}}>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:12}}>
           {filtered.map(t=>(
-            <div key={t.slug} onClick={()=>openTopic(t)} className="hcard"
-              style={{padding:20,cursor:"pointer",border:"1px solid var(--border)",background:"var(--card)",transition:"all .2s"}}>
+            <div key={t.slug} onClick={()=>openTopic(t)} className="hcard" style={{padding:20,cursor:"pointer",border:"1px solid var(--border)",background:"var(--card)",transition:"all .2s"}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
                 <span style={{fontSize:22,lineHeight:1}}>{t.icon}</span>
-                <span style={{fontSize:10,fontWeight:700,padding:"3px 7px",borderRadius:4,background:`${DIFF_COLOR[t.difficulty]}18`,color:DIFF_COLOR[t.difficulty]}}>{t.difficulty}</span>
+                <span style={{fontSize:10,fontWeight:700,padding:"3px 7px",borderRadius:4,background:`${DIFF_C[t.difficulty]}18`,color:DIFF_C[t.difficulty]}}>{t.difficulty}</span>
               </div>
               <div className="syne" style={{fontSize:14,fontWeight:700,marginBottom:4}}>{t.topic}</div>
               <div style={{fontSize:11,color:"var(--text3)",marginBottom:10}}>{t.category}</div>
@@ -2165,156 +3061,9 @@ const DSAPage = ({ setPage }) => {
       </div>
     </div>
   );
-
-  // ── PROBLEMS VIEW ──────────────────────────────────────────────
-  const problems = getTopicProblems(selTopic?.slug);
-  const filteredProbs = problems.filter(p =>
-    (diffFilter === "All" || p.diff === diffFilter) &&
-    (!probSearch || p.name.toLowerCase().includes(probSearch.toLowerCase()))
-  );
-
-  if (view === "problems") return (
-    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
-      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"32px 24px 24px"}}>
-        <div style={{maxWidth:1100,margin:"0 auto"}}>
-          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16,fontSize:13,color:"var(--text3)"}}>
-            <span style={{cursor:"pointer",color:"var(--cyan)"}} onClick={()=>setView("topics")}>DSA Explorer</span>
-            <span>›</span>
-            <span style={{color:"var(--text)"}}>{selTopic.topic}</span>
-          </div>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:16}}>
-            <div style={{display:"flex",alignItems:"center",gap:14}}>
-              <span style={{fontSize:36}}>{selTopic.icon}</span>
-              <div>
-                <h1 className="syne" style={{fontSize:28,fontWeight:800,marginBottom:6}}>{selTopic.topic}</h1>
-                <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
-                  <span style={{fontSize:11,padding:"3px 8px",borderRadius:5,background:"var(--bg3)",color:"var(--text2)"}}>{selTopic.category}</span>
-                  <span style={{fontSize:11,padding:"3px 8px",borderRadius:5,background:`${DIFF_COLOR[selTopic.difficulty]}18`,color:DIFF_COLOR[selTopic.difficulty],fontWeight:700}}>{selTopic.difficulty}</span>
-                  <span style={{fontSize:11,color:"var(--text3)"}}>{problems.length} problems</span>
-                </div>
-              </div>
-            </div>
-            <button onClick={()=>fetchTip(selTopic.slug)} disabled={tipLoading}
-              style={{padding:"9px 18px",borderRadius:10,border:"1px solid var(--yellow)",background:"rgba(255,214,10,.08)",color:"var(--yellow)",fontSize:12,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>
-              {tipLoading?"⏳ Loading…":"💡 AI Study Tip"}
-            </button>
-          </div>
-          {tip && (
-            <div style={{marginTop:16,background:"rgba(255,214,10,.06)",border:"1px solid rgba(255,214,10,.2)",borderRadius:12,padding:16,maxWidth:700}}>
-              <div style={{fontSize:11,fontWeight:700,color:"var(--yellow)",marginBottom:8}}>💡 AI Study Strategy</div>
-              <div style={{fontSize:12,color:"var(--text)",lineHeight:1.7,whiteSpace:"pre-wrap"}}>{tip}</div>
-            </div>
-          )}
-          <div style={{display:"flex",gap:10,marginTop:20,flexWrap:"wrap",alignItems:"center"}}>
-            <div style={{position:"relative",flex:1,maxWidth:360}}>
-              <span style={{position:"absolute",left:11,top:"50%",transform:"translateY(-50%)",color:"var(--text3)",fontSize:13}}>🔍</span>
-              <input className="input" value={probSearch} onChange={e=>setProbSearch(e.target.value)} placeholder="Search problems…" style={{padding:"9px 14px 9px 34px",fontSize:13}}/>
-            </div>
-            {["All","Easy","Medium","Hard"].map(d=>(
-              <button key={d} onClick={()=>setDiffFilter(d)}
-                style={{padding:"6px 14px",borderRadius:20,fontSize:12,fontWeight:600,border:"1px solid var(--border)",cursor:"pointer",
-                  background:diffFilter===d?(d==="Easy"?"rgba(0,255,136,.2)":d==="Medium"?"rgba(255,214,10,.2)":d==="Hard"?"rgba(255,61,138,.2)":"var(--purple)"):"var(--card)",
-                  color:diffFilter===d?(d==="Easy"?"#00ff88":d==="Medium"?"#ffd60a":d==="Hard"?"#ff3d8a":"#fff"):"var(--text2)"}}>
-                {d}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-      <div style={{maxWidth:1100,margin:"0 auto",padding:"24px"}}>
-        {problems.length === 0 ? (
-          <div style={{textAlign:"center",padding:"60px 20px",color:"var(--text3)"}}>
-            <div style={{fontSize:40,marginBottom:12}}>🔧</div>
-            <div style={{fontSize:16,fontWeight:600,color:"var(--text)",marginBottom:8}}>Problem list coming soon for {selTopic.topic}</div>
-            <div style={{fontSize:13,marginBottom:20}}>Practice directly on these platforms:</div>
-            <div style={{display:"flex",gap:10,justifyContent:"center",flexWrap:"wrap"}}>
-              {selTopic.platforms.map(p=>(
-                <a key={p.name} href={p.url} target="_blank" rel="noopener noreferrer"
-                  style={{padding:"9px 18px",borderRadius:8,background:"var(--card)",border:"1px solid var(--border)",color:"var(--text)",fontSize:13,textDecoration:"none"}}>
-                  {p.name} →
-                </a>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <>
-            <div style={{fontSize:12,color:"var(--text3)",marginBottom:16}}>
-              {filteredProbs.length} of {problems.length} problems — click any to open on your preferred platform
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:10}}>
-              {filteredProbs.map((p,i)=>(
-                <div key={i} onClick={()=>openProblem(p)} className="hcard"
-                  style={{padding:"14px 18px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,border:"1px solid var(--border)",background:"var(--card)",transition:"all .2s"}}>
-                  <div style={{display:"flex",alignItems:"center",gap:12,minWidth:0}}>
-                    <span style={{fontSize:11,color:"var(--text3)",flexShrink:0,minWidth:20,textAlign:"right"}}>{i+1}</span>
-                    <div style={{fontSize:13,fontWeight:600,color:"var(--text)",lineHeight:1.3}}>{p.name}</div>
-                  </div>
-                  <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
-                    <span style={{fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:4,background:`${DIFF_COLOR[p.diff]}18`,color:DIFF_COLOR[p.diff],whiteSpace:"nowrap"}}>{p.diff}</span>
-                    <span style={{color:"var(--purple)",fontSize:14}}>›</span>
-                  </div>
-                </div>
-              ))}
-              {filteredProbs.length===0&&<div style={{gridColumn:"1/-1",textAlign:"center",padding:"40px",color:"var(--text3)"}}>No problems match your filters</div>}
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  );
-
-  // ── PROBLEM DETAIL VIEW ────────────────────────────────────────
-  const pLinks = getProblemLinks(selProblem.name, selTopic?.slug);
-  return (
-    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
-      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"32px 24px 28px"}}>
-        <div style={{maxWidth:900,margin:"0 auto"}}>
-          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16,fontSize:13,color:"var(--text3)",flexWrap:"wrap"}}>
-            <span style={{cursor:"pointer",color:"var(--cyan)"}} onClick={()=>setView("topics")}>DSA Explorer</span>
-            <span>›</span>
-            <span style={{cursor:"pointer",color:"var(--cyan)"}} onClick={()=>setView("problems")}>{selTopic.topic}</span>
-            <span>›</span>
-            <span style={{color:"var(--text)"}}>{selProblem.name}</span>
-          </div>
-          <h1 className="syne" style={{fontSize:26,fontWeight:800,marginBottom:12}}>{selProblem.name}</h1>
-          <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
-            <span style={{fontSize:11,padding:"4px 10px",borderRadius:6,background:`${DIFF_COLOR[selProblem.diff]}18`,color:DIFF_COLOR[selProblem.diff],fontWeight:700}}>{selProblem.diff}</span>
-            <span style={{fontSize:11,padding:"4px 10px",borderRadius:6,background:"var(--bg3)",color:"var(--text2)"}}>{selTopic.topic}</span>
-          </div>
-        </div>
-      </div>
-      <div style={{maxWidth:900,margin:"0 auto",padding:"28px 24px"}}>
-        <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:16}}>Solve this problem on</div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12}}>
-          {pLinks.map(l=>(
-            <a key={l.name} href={l.url} target="_blank" rel="noopener noreferrer"
-              style={{display:"flex",alignItems:"center",gap:14,padding:"18px",borderRadius:14,border:`1px solid ${l.direct?"var(--border2)":"var(--border)"}`,background:"var(--card)",textDecoration:"none",transition:"all .2s",position:"relative"}}
-              onMouseEnter={e=>{e.currentTarget.style.borderColor=l.color;e.currentTarget.style.background=`${l.color}12`;}}
-              onMouseLeave={e=>{e.currentTarget.style.borderColor=l.direct?"var(--border2)":"var(--border)";e.currentTarget.style.background="var(--card)";}}>
-              {l.direct && (
-                <span style={{position:"absolute",top:10,right:10,fontSize:9,padding:"2px 6px",borderRadius:3,background:"rgba(0,255,136,.15)",color:"#00ff88",fontWeight:700}}>DIRECT</span>
-              )}
-              <div style={{width:44,height:44,borderRadius:10,background:`${l.color}18`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                <img src={l.logo} alt={l.name} style={{width:24,height:24,objectFit:"contain"}} onError={e=>{e.target.style.display="none";const fb=e.target.parentNode.querySelector(".logo-fb");if(fb)fb.style.display="flex";}}/>
-                <span className="logo-fb" style={{display:"none",width:24,height:24,borderRadius:4,background:l.color,color:"#fff",fontSize:9,fontWeight:800,alignItems:"center",justifyContent:"center",flexShrink:0}}>{l.name.slice(0,2).toUpperCase()}</span>
-              </div>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{fontSize:14,fontWeight:700,color:"var(--text)",marginBottom:3}}>{l.name}</div>
-                <div style={{fontSize:11,color:"var(--text3)",marginBottom:4}}>{l.note}</div>
-                <span style={{fontSize:9,padding:"2px 6px",borderRadius:3,background:`${l.color}18`,color:l.color,fontWeight:700}}>{l.tag}</span>
-              </div>
-              <span style={{fontSize:18,color:l.color,flexShrink:0}}>→</span>
-            </a>
-          ))}
-        </div>
-        <button onClick={()=>setView("problems")}
-          style={{marginTop:28,padding:"10px 22px",borderRadius:10,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",fontSize:13,fontWeight:600,cursor:"pointer"}}>
-          ← Back to {selTopic.topic} problems
-        </button>
-      </div>
-    </div>
-  );
 };
+
+
 
 
 
