@@ -567,7 +567,7 @@ const AgentStatus = () => {
 ──────────────────────────────────────────────── */
 const TOOLS_MENU = [
   { id:"tools", icon:"🛠️", label:"All Tools", desc:"Browse all student tools" },
-  { id:"dsa", icon:"🧠", label:"DSA Explorer", desc:"TUF-aligned problem finder" },
+  { id:"dsa", icon:"🧠", label:"DSA Explorer", desc:"Problem finder" },
 ];
 
 const Navbar = ({page,setPage,dark,setDark}) => {
@@ -587,7 +587,7 @@ const Navbar = ({page,setPage,dark,setDark}) => {
       <span className="badge b-open" style={{fontSize:9}}>LIVE</span>
     </div>
     <div className="hm" style={{display:"flex",gap:4,alignItems:"center"}}>
-      {[["home","◈ Home"],["hackathons","⚡ Hackathons"],["internships","💼 Internships"],["events","🗓️ Events"]].map(([id,lbl])=>(
+      {[["home","◈ Home"],["hackathons","⚡ Hackathons"],["internships","💼 Internships"],["events","🗓️ Events"],["resources","📚 Resources"]].map(([id,lbl])=>(
         <button key={id} className={`nav-link ${page===id?"act":""}`} onClick={()=>setPage(id)}>{lbl}</button>
       ))}
       {/* Student Tools dropdown */}
@@ -617,7 +617,6 @@ const Navbar = ({page,setPage,dark,setDark}) => {
           </div>
         )}
       </div>
-      <button className={`nav-link ${page==="resources"?"act":""}`} onClick={()=>setPage("resources")}>📚 Resources</button>
     </div>
     <div style={{display:"flex",alignItems:"center",gap:10}}>
       <button onClick={()=>setDark(!dark)} style={{width:34,height:34,borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15}}>{dark?"☀️":"🌙"}</button>
@@ -1708,7 +1707,7 @@ const DSAPage = ({ setPage }) => {
                 🧠 DSA <span className="gtext">Problem Explorer</span>
               </h1>
               <p style={{color:"var(--text2)",fontSize:14}}>
-                {DSA_DATA.length} topics · 8 platforms · TUF+ aligned · AI study tips
+                {DSA_DATA.length} topics · 8 platforms · AI study tips
               </p>
             </div>
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
@@ -1748,7 +1747,7 @@ const DSAPage = ({ setPage }) => {
                 <div className="syne" style={{fontSize:14,fontWeight:700,marginBottom:4}}>{t.topic}</div>
                 <div style={{fontSize:11,color:"var(--text3)",marginBottom:10}}>{t.category}</div>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                  <span style={{fontSize:11,color:"var(--text2)"}}>🧩 {t.tuf} TUF problems</span>
+                  <span style={{fontSize:11,color:"var(--text2)"}}>🧩 {t.tuf} problems</span>
                   <span style={{fontSize:11,color:"var(--purple)"}}>📚 {t.platforms.length} sites</span>
                 </div>
               </div>
@@ -1774,7 +1773,7 @@ const DSAPage = ({ setPage }) => {
                 <div style={{display:"flex",gap:6}}>
                   <span style={{fontSize:10,padding:"3px 8px",borderRadius:5,background:"var(--bg3)",color:"var(--text2)"}}>{selected.category}</span>
                   <span style={{fontSize:10,padding:"3px 8px",borderRadius:5,background:`${DIFF_COLOR[selected.difficulty]}18`,color:DIFF_COLOR[selected.difficulty],fontWeight:700}}>{selected.difficulty}</span>
-                  <span style={{fontSize:10,padding:"3px 8px",borderRadius:5,background:"rgba(124,77,255,.15)",color:"var(--purple)",fontWeight:700}}>🧩 {selected.tuf} TUF</span>
+                  <span style={{fontSize:10,padding:"3px 8px",borderRadius:5,background:"rgba(124,77,255,.15)",color:"var(--purple)",fontWeight:700}}>🧩 {selected.tuf} problems</span>
                 </div>
               </div>
               <button onClick={()=>setSelected(null)} style={{width:28,height:28,borderRadius:8,border:"1px solid var(--border)",background:"var(--bg2)",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center",color:"var(--text2)",flexShrink:0}}>✕</button>
@@ -2196,7 +2195,7 @@ const STUDENT_TOOLS = [
     id: "dsa",
     icon: "🧠",
     title: "DSA Problem Explorer",
-    desc: "Navigate TUF+ aligned DSA topics with problems from LeetCode, GFG, NeetCode & more. Includes AI study tips.",
+    desc: "Navigate DSA topics with problems from LeetCode, GFG, NeetCode & more. Includes AI study tips.",
     badge: "299 problems",
     badgeColor: "var(--cyan)",
     tags: ["LeetCode", "NeetCode", "GFG", "CSES"],
