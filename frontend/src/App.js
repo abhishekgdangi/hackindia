@@ -1666,6 +1666,7 @@ const DSA_DATA = [
 
 const DSA_CATEGORIES = ["All", ...new Set(DSA_DATA.map(t => t.category))];
 
+// eslint-disable-next-line no-unused-vars
 const DIFF_COLOR = { Easy:"#00ff88", Medium:"#ffd60a", Hard:"#ff3d8a" };
 
 // ── COMPREHENSIVE PROBLEM LINKS ──────────────────────────────────────────────
@@ -2289,6 +2290,92 @@ const PATTERNS_DATA = [
       {name:"Kth Smallest Element in BST",lc:"kth-smallest-element-in-a-bst",diff:"Medium"},
     ]
   },
+  {
+    id:"hash-map", icon:"🗂️", name:"Hash Map / Set", phase:"Arrays & Strings",
+    coreIdea:"Use O(1) lookups to count frequencies, detect duplicates, or group elements.",
+    where:"Arrays, Strings",
+    problems:[
+      {name:"Two Sum",lc:"two-sum",diff:"Easy"},
+      {name:"Valid Anagram",lc:"valid-anagram",diff:"Easy"},
+      {name:"Contains Duplicate",lc:"contains-duplicate",diff:"Easy"},
+      {name:"Group Anagrams",lc:"group-anagrams",diff:"Medium"},
+      {name:"Top K Frequent Elements",lc:"top-k-frequent-elements",diff:"Medium"},
+      {name:"Longest Consecutive Sequence",lc:"longest-consecutive-sequence",diff:"Medium"},
+      {name:"Subarray Sum Equals K",lc:"subarray-sum-equals-k",diff:"Medium"},
+      {name:"4Sum II",lc:"4sum-ii",diff:"Medium"},
+    ]
+  },
+  {
+    id:"tree-dp", icon:"🌲", name:"Tree DP (DFS on Trees)", phase:"Trees",
+    coreIdea:"Run DFS post-order and return values up the tree — combine child results at each node.",
+    where:"Binary Trees, BST",
+    problems:[
+      {name:"Diameter of Binary Tree",lc:"diameter-of-binary-tree",diff:"Easy"},
+      {name:"Maximum Path Sum",lc:"binary-tree-maximum-path-sum",diff:"Hard"},
+      {name:"Balanced Binary Tree",lc:"balanced-binary-tree",diff:"Easy"},
+      {name:"House Robber III",lc:"house-robber-iii",diff:"Medium"},
+      {name:"Longest Univalue Path",lc:"longest-univalue-path",diff:"Medium"},
+      {name:"Binary Tree Cameras",lc:"binary-tree-cameras",diff:"Hard"},
+      {name:"Count Good Nodes in Binary Tree",lc:"count-good-nodes-in-binary-tree",diff:"Medium"},
+    ]
+  },
+  {
+    id:"bit-manipulation", icon:"⚙️", name:"Bit Manipulation", phase:"Algorithms",
+    coreIdea:"Use XOR, AND, OR, and shifts to solve problems without extra space — often O(1).",
+    where:"Arrays, Numbers",
+    problems:[
+      {name:"Single Number",lc:"single-number",diff:"Easy"},
+      {name:"Number of 1 Bits",lc:"number-of-1-bits",diff:"Easy"},
+      {name:"Counting Bits",lc:"counting-bits",diff:"Easy"},
+      {name:"Reverse Bits",lc:"reverse-bits",diff:"Easy"},
+      {name:"Missing Number",lc:"missing-number",diff:"Easy"},
+      {name:"Sum of Two Integers",lc:"sum-of-two-integers",diff:"Medium"},
+      {name:"Single Number II",lc:"single-number-ii",diff:"Medium"},
+      {name:"Find the Duplicate Number",lc:"find-the-duplicate-number",diff:"Medium"},
+    ]
+  },
+  {
+    id:"merge-intervals", icon:"📏", name:"Merge Intervals", phase:"Greedy + Intervals",
+    coreIdea:"Sort intervals by start time, then greedily merge overlapping ones.",
+    where:"Arrays, Intervals",
+    problems:[
+      {name:"Merge Intervals",lc:"merge-intervals",diff:"Medium"},
+      {name:"Insert Interval",lc:"insert-interval",diff:"Medium"},
+      {name:"Non-overlapping Intervals",lc:"non-overlapping-intervals",diff:"Medium"},
+      {name:"Meeting Rooms",lc:"meeting-rooms",diff:"Easy"},
+      {name:"Meeting Rooms II",lc:"meeting-rooms-ii",diff:"Medium"},
+      {name:"Minimum Number of Arrows to Burst Balloons",lc:"minimum-number-of-arrows-to-burst-balloons",diff:"Medium"},
+      {name:"Employee Free Time",lc:"employee-free-time",diff:"Hard"},
+    ]
+  },
+  {
+    id:"trie", icon:"🌐", name:"Trie (Prefix Tree)", phase:"Advanced DS",
+    coreIdea:"A tree where each node represents a character — enables O(L) prefix search.",
+    where:"Strings, Dictionaries",
+    problems:[
+      {name:"Implement Trie",lc:"implement-trie-prefix-tree",diff:"Medium"},
+      {name:"Design Add and Search Words",lc:"design-add-and-search-words-data-structure",diff:"Medium"},
+      {name:"Word Search II",lc:"word-search-ii",diff:"Hard"},
+      {name:"Replace Words",lc:"replace-words",diff:"Medium"},
+      {name:"Map Sum Pairs",lc:"map-sum-pairs",diff:"Medium"},
+      {name:"Maximum XOR of Two Numbers",lc:"maximum-xor-of-two-numbers-in-an-array",diff:"Medium"},
+    ]
+  },
+  {
+    id:"matrix-traversal", icon:"🗺️", name:"Matrix Traversal / Island Pattern", phase:"Graphs",
+    coreIdea:"Treat 2D grids as graphs — BFS/DFS in 4 directions to explore connected regions.",
+    where:"2D Grids, Matrices",
+    problems:[
+      {name:"Number of Islands",lc:"number-of-islands",diff:"Medium"},
+      {name:"Flood Fill",lc:"flood-fill",diff:"Easy"},
+      {name:"Max Area of Island",lc:"max-area-of-island",diff:"Medium"},
+      {name:"Surrounded Regions",lc:"surrounded-regions",diff:"Medium"},
+      {name:"Pacific Atlantic Water Flow",lc:"pacific-atlantic-water-flow",diff:"Medium"},
+      {name:"Rotting Oranges",lc:"rotting-oranges",diff:"Medium"},
+      {name:"Shortest Path in Binary Matrix",lc:"shortest-path-in-binary-matrix",diff:"Medium"},
+      {name:"Word Search",lc:"word-search",diff:"Medium"},
+    ]
+  },
 ];
 
 // ── BLIND 75 DATA ─────────────────────────────────────────────────────────
@@ -2629,7 +2716,7 @@ const DSAPage = ({ setPage }) => {
         {!isDeepView && (
           <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
             {[["topics","📚 Topics"],["patterns","🧩 Patterns"],["blind75","🎯 Blind 75"],["company","🏢 Company Wise"],["visualizers","🎬 Visualizers"]].map(([t,l])=>(
-              <button key={t} onClick={()=>{setTab(t);setView("topics");}} style={{padding:"10px 18px",borderBottom:`3px solid ${tab===t?"var(--purple)":"transparent"}`,background:"transparent",border:"none",borderBottom:`3px solid ${tab===t?"var(--purple)":"transparent"}`,color:tab===t?"var(--purple)":"var(--text2)",fontWeight:tab===t?700:500,fontSize:13,cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'DM Sans',sans-serif"}}>
+              <button key={t} onClick={()=>{setTab(t);setView("topics");}} style={{padding:"10px 18px",background:"transparent",border:"none",borderBottom:`3px solid ${tab===t?"var(--purple)":"transparent"}`,color:tab===t?"var(--purple)":"var(--text2)",fontWeight:tab===t?700:500,fontSize:13,cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'DM Sans',sans-serif"}}>
                 {l}
               </button>
             ))}
@@ -2778,7 +2865,7 @@ const DSAPage = ({ setPage }) => {
         {!selPattern ? (
           <>
             <div style={{marginBottom:20}}>
-              <div className="syne" style={{fontSize:20,fontWeight:800,marginBottom:6}}>🧩 14 Must-Master Patterns</div>
+              <div className="syne" style={{fontSize:20,fontWeight:800,marginBottom:6}}>🧩 20 Must-Master Patterns</div>
               <p style={{color:"var(--text2)",fontSize:13}}>Every coding interview reduces to these patterns. Master the pattern, solve any problem.</p>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12}}>
