@@ -566,6 +566,7 @@ const AgentStatus = () => {
    NAVBAR
 ──────────────────────────────────────────────── */
 const TOOLS_MENU = [
+  { id:"tools", icon:"🛠️", label:"All Tools", desc:"Browse all student tools" },
   { id:"dsa", icon:"🧠", label:"DSA Explorer", desc:"TUF-aligned problem finder" },
 ];
 
@@ -1845,6 +1846,451 @@ const DSAPage = ({ setPage }) => {
 };
 
 
+
+// ═══════════════════════════════════════════════════════════
+//  STUDENT TOOLS
+// ═══════════════════════════════════════════════════════════
+
+const TUF_CHECKLIST = {
+  "Arrays (Medium)": [
+    {name:"Majority Element I",diff:"Easy"},
+    {name:"Leaders in an Array",diff:"Easy"},
+    {name:"Rearrange Array Elements by Sign",diff:"Medium"},
+    {name:"Spiral Matrix",diff:"Medium"},
+    {name:"Pascal\'s Triangle I",diff:"Easy"},
+    {name:"Pascal\'s Triangle II",diff:"Easy"},
+    {name:"Pascal\'s Triangle III",diff:"Medium"},
+    {name:"Rotate Matrix by 90°",diff:"Medium"},
+    {name:"Two Sum",diff:"Easy"},
+    {name:"3 Sum",diff:"Medium"},
+    {name:"4 Sum",diff:"Medium"},
+    {name:"Sort Array of 0s, 1s, 2s",diff:"Easy"},
+    {name:"Kadane\'s Algorithm",diff:"Medium"},
+    {name:"Next Permutation",diff:"Medium"},
+    {name:"Longest Consecutive Sequence",diff:"Medium"},
+    {name:"Longest Subarray with Sum K",diff:"Medium"},
+    {name:"Count Subarrays with Given Sum",diff:"Medium"},
+    {name:"Count Subarrays with XOR = K",diff:"Medium"},
+  ],
+  "Arrays (Hard)": [
+    {name:"Majority Element II",diff:"Hard"},
+    {name:"Find Repeating and Missing Number",diff:"Hard"},
+    {name:"Count Inversions",diff:"Hard"},
+    {name:"Reverse Pairs",diff:"Hard"},
+    {name:"Maximum Product Subarray",diff:"Hard"},
+    {name:"Merge Two Sorted Arrays Without Extra Space",diff:"Hard"},
+  ],
+  "Binary Search": [
+    {name:"Search X in Sorted Array",diff:"Easy"},
+    {name:"Lower Bound",diff:"Easy"},
+    {name:"Upper Bound",diff:"Easy"},
+    {name:"Search Insert Position",diff:"Easy"},
+    {name:"Floor and Ceil in Sorted Array",diff:"Easy"},
+    {name:"First and Last Occurrence",diff:"Easy"},
+    {name:"Search in Rotated Sorted Array I",diff:"Medium"},
+    {name:"Search in Rotated Sorted Array II",diff:"Medium"},
+    {name:"Find Minimum in Rotated Sorted Array",diff:"Medium"},
+    {name:"Find How Many Times Array is Rotated",diff:"Medium"},
+    {name:"Single Element in Sorted Array",diff:"Medium"},
+    {name:"Find Square Root of a Number",diff:"Easy"},
+    {name:"Find Nth Root of a Number",diff:"Medium"},
+    {name:"Find the Smallest Divisor",diff:"Medium"},
+    {name:"Koko Eating Bananas",diff:"Medium"},
+    {name:"Minimum Days to Make M Bouquets",diff:"Medium"},
+    {name:"Aggressive Cows",diff:"Hard"},
+    {name:"Book Allocation Problem",diff:"Hard"},
+    {name:"Find Peak Element",diff:"Medium"},
+    {name:"Median of 2 Sorted Arrays",diff:"Hard"},
+    {name:"Kth Element of 2 Sorted Arrays",diff:"Hard"},
+    {name:"Minimize Max Distance to Gas Station",diff:"Hard"},
+    {name:"Split Array - Largest Sum",diff:"Hard"},
+    {name:"Find Row with Maximum 1s",diff:"Easy"},
+    {name:"Search in a 2D Matrix",diff:"Medium"},
+    {name:"Search in 2D Matrix II",diff:"Medium"},
+    {name:"Find Peak Element II",diff:"Hard"},
+    {name:"Matrix Median",diff:"Hard"},
+  ],
+  "Recursion & Backtracking": [
+    {name:"Pow(x,n)",diff:"Medium"},
+    {name:"Generate Parentheses",diff:"Medium"},
+    {name:"Power Set",diff:"Medium"},
+    {name:"Check if Subsequence with Sum K Exists",diff:"Easy"},
+    {name:"Count All Subsequences with Sum K",diff:"Medium"},
+    {name:"Combination Sum",diff:"Medium"},
+    {name:"Combination Sum II",diff:"Medium"},
+    {name:"Subsets I",diff:"Medium"},
+    {name:"Subsets II",diff:"Medium"},
+    {name:"Combination Sum III",diff:"Medium"},
+    {name:"Letter Combinations of a Phone Number",diff:"Medium"},
+    {name:"Palindrome Partitioning",diff:"Hard"},
+    {name:"Word Search",diff:"Hard"},
+    {name:"N-Queens",diff:"Hard"},
+    {name:"Rat in a Maze",diff:"Hard"},
+    {name:"M Coloring Problem",diff:"Hard"},
+    {name:"Sudoku Solver",diff:"Hard"},
+  ],
+  "Linked List": [
+    {name:"Introduction & Traversal",diff:"Easy"},
+    {name:"Deletion in LL",diff:"Easy"},
+    {name:"Insertion in LL",diff:"Easy"},
+    {name:"Delete Head / Tail / Kth Node",diff:"Easy"},
+    {name:"Delete Node with Value X",diff:"Easy"},
+    {name:"Insert at Head / Tail / Kth Position",diff:"Easy"},
+    {name:"Doubly LL – Insertion & Deletion",diff:"Easy"},
+    {name:"Add Two Numbers in LL",diff:"Medium"},
+    {name:"Segregate Odd and Even Nodes",diff:"Medium"},
+    {name:"Sort LL of 0s, 1s, and 2s",diff:"Medium"},
+    {name:"Remove Nth Node from Back",diff:"Medium"},
+    {name:"Reverse a Linked List",diff:"Easy"},
+    {name:"Add One to Number in LL",diff:"Medium"},
+    {name:"Find Middle of LL",diff:"Easy"},
+    {name:"Delete Middle Node",diff:"Medium"},
+    {name:"Check if LL is Palindrome",diff:"Medium"},
+    {name:"Intersection Point of Y LL",diff:"Medium"},
+    {name:"Detect Loop in LL",diff:"Medium"},
+    {name:"Find Starting Point of Loop",diff:"Medium"},
+    {name:"Length of Loop",diff:"Medium"},
+    {name:"Reverse LL in Groups of K",diff:"Hard"},
+    {name:"Rotate a Linked List",diff:"Medium"},
+    {name:"Merge Two Sorted Lists",diff:"Medium"},
+    {name:"Flatten a Linked List",diff:"Hard"},
+    {name:"Sort LL",diff:"Hard"},
+    {name:"Clone LL with Random & Next Pointer",diff:"Hard"},
+    {name:"Delete All Occurrences of Key in DLL",diff:"Medium"},
+    {name:"Remove Duplicates from Sorted DLL",diff:"Medium"},
+  ],
+  "Bit Manipulation": [
+    {name:"Intro to Bits & Tricks",diff:"Easy"},
+    {name:"Minimum Bit Flips to Convert Number",diff:"Easy"},
+    {name:"Single Number I",diff:"Easy"},
+    {name:"Single Number II",diff:"Medium"},
+    {name:"Single Number III",diff:"Medium"},
+    {name:"Divide Without Multiplication/Division",diff:"Medium"},
+    {name:"Power Set using Bits",diff:"Medium"},
+    {name:"XOR of Numbers in a Given Range",diff:"Medium"},
+  ],
+  "Greedy": [
+    {name:"Assign Cookies",diff:"Easy"},
+    {name:"Lemonade Change",diff:"Easy"},
+    {name:"Jump Game I",diff:"Medium"},
+    {name:"Shortest Job First",diff:"Medium"},
+    {name:"Job Sequencing Problem",diff:"Medium"},
+    {name:"N Meetings in One Room",diff:"Medium"},
+    {name:"Non-overlapping Intervals",diff:"Medium"},
+    {name:"Insert Interval",diff:"Medium"},
+    {name:"Minimum Platforms for Railway",diff:"Medium"},
+    {name:"Valid Parenthesis Checker",diff:"Medium"},
+    {name:"Candy",diff:"Hard"},
+    {name:"Maximum Points from Cards",diff:"Medium"},
+  ],
+  "Sliding Window": [
+    {name:"Longest Substring Without Repeating Characters",diff:"Medium"},
+    {name:"Max Consecutive Ones III",diff:"Medium"},
+    {name:"Fruits Into Baskets",diff:"Medium"},
+    {name:"Longest Substring with At Most K Distinct Characters",diff:"Medium"},
+    {name:"Longest Repeating Character Replacement",diff:"Medium"},
+    {name:"Minimum Window Substring",diff:"Hard"},
+    {name:"Number of Substrings Containing All 3 Characters",diff:"Medium"},
+    {name:"Binary Subarrays with Sum",diff:"Medium"},
+    {name:"Count Number of Nice Subarrays",diff:"Medium"},
+  ],
+  "Stack & Queue": [
+    {name:"Implement Stack using Arrays",diff:"Easy"},
+    {name:"Implement Queue using Arrays",diff:"Easy"},
+    {name:"Implement Stack using Queue",diff:"Easy"},
+    {name:"Implement Queue using Stack",diff:"Easy"},
+    {name:"Stack using Linked List",diff:"Easy"},
+    {name:"Queue using Linked List",diff:"Easy"},
+    {name:"Balanced Parenthesis",diff:"Easy"},
+    {name:"Next Greater Element I",diff:"Medium"},
+    {name:"Next Greater Element II",diff:"Medium"},
+    {name:"Asteroid Collision",diff:"Medium"},
+    {name:"Sum of Subarray Minimums",diff:"Hard"},
+    {name:"Sum of Subarray Ranges",diff:"Medium"},
+    {name:"Remove K Digits",diff:"Medium"},
+    {name:"Implement Min Stack",diff:"Medium"},
+    {name:"Sliding Window Maximum",diff:"Hard"},
+    {name:"Trapping Rainwater",diff:"Hard"},
+    {name:"Largest Rectangle in Histogram",diff:"Hard"},
+    {name:"Maximum Rectangle",diff:"Hard"},
+    {name:"Stock Span Problem",diff:"Medium"},
+    {name:"Celebrity Problem",diff:"Medium"},
+    {name:"LRU Cache",diff:"Hard"},
+    {name:"LFU Cache",diff:"Hard"},
+  ],
+  "Binary Trees": [
+    {name:"Inorder / Preorder / Postorder Traversal",diff:"Easy"},
+    {name:"Level Order Traversal",diff:"Easy"},
+    {name:"Pre, Post, Inorder in One Traversal",diff:"Medium"},
+    {name:"Maximum Depth of BT",diff:"Easy"},
+    {name:"Check if Two Trees are Identical",diff:"Easy"},
+    {name:"Check for Balanced Binary Tree",diff:"Medium"},
+    {name:"Diameter of Binary Tree",diff:"Easy"},
+    {name:"Maximum Path Sum",diff:"Hard"},
+    {name:"Check for Symmetrical BTs",diff:"Easy"},
+    {name:"Zig Zag / Spiral Traversal",diff:"Medium"},
+    {name:"Boundary Traversal",diff:"Medium"},
+    {name:"Vertical Order Traversal",diff:"Hard"},
+    {name:"Top / Bottom View of BT",diff:"Medium"},
+    {name:"Right / Left View of BT",diff:"Easy"},
+    {name:"Print Root to Node Path",diff:"Medium"},
+    {name:"LCA in BT",diff:"Medium"},
+    {name:"Maximum Width of BT",diff:"Medium"},
+    {name:"All Nodes at Distance K",diff:"Medium"},
+    {name:"Min Time to Burn BT from a Node",diff:"Hard"},
+    {name:"Count Total Nodes in Complete BT",diff:"Medium"},
+    {name:"Requirements to Construct Unique BT",diff:"Easy"},
+    {name:"Construct BT from Preorder & Inorder",diff:"Medium"},
+    {name:"Construct BT from Postorder & Inorder",diff:"Medium"},
+    {name:"Serialize and Deserialize BT",diff:"Hard"},
+    {name:"Morris Inorder Traversal",diff:"Medium"},
+    {name:"Morris Preorder Traversal",diff:"Medium"},
+  ],
+  "Binary Search Trees": [
+    {name:"Introduction to BST",diff:"Easy"},
+    {name:"Search in BST",diff:"Easy"},
+    {name:"Floor and Ceil in BST",diff:"Medium"},
+    {name:"Insert a Node in BST",diff:"Easy"},
+    {name:"Delete a Node in BST",diff:"Medium"},
+    {name:"Kth Smallest and Largest Element",diff:"Medium"},
+    {name:"Check if Tree is BST",diff:"Medium"},
+    {name:"LCA in BST",diff:"Easy"},
+    {name:"Construct BST from Preorder Traversal",diff:"Medium"},
+    {name:"Inorder Successor and Predecessor",diff:"Medium"},
+    {name:"BST Iterator",diff:"Medium"},
+    {name:"Two Sum in BST",diff:"Medium"},
+    {name:"Correct BST with Two Swapped Nodes",diff:"Hard"},
+    {name:"Largest BST in Binary Tree",diff:"Hard"},
+  ],
+  "Heaps": [
+    {name:"Heapify Algorithm",diff:"Easy"},
+    {name:"Build Heap from Array",diff:"Easy"},
+    {name:"Implement Min / Max Heap",diff:"Easy"},
+    {name:"Check if Array Represents Min Heap",diff:"Easy"},
+    {name:"Convert Min Heap to Max Heap",diff:"Medium"},
+    {name:"Heap Sort",diff:"Medium"},
+    {name:"Kth Largest Element in Array",diff:"Medium"},
+    {name:"Kth Largest in Running Stream",diff:"Hard"},
+  ],
+  "Graphs": [
+    {name:"BFS & DFS Traversal",diff:"Easy"},
+    {name:"Connected Components",diff:"Easy"},
+    {name:"Number of Provinces",diff:"Medium"},
+    {name:"Number of Islands",diff:"Medium"},
+    {name:"Flood Fill Algorithm",diff:"Easy"},
+    {name:"Number of Enclaves",diff:"Medium"},
+    {name:"Rotten Oranges",diff:"Medium"},
+    {name:"Distance of Nearest Cell with 1",diff:"Medium"},
+    {name:"Surrounded Regions",diff:"Medium"},
+    {name:"Number of Distinct Islands",diff:"Medium"},
+    {name:"Detect Cycle in Undirected Graph",diff:"Medium"},
+    {name:"Bipartite Graph",diff:"Medium"},
+    {name:"Topological Sort / Kahn\'s Algorithm",diff:"Medium"},
+    {name:"Detect Cycle in Directed Graph",diff:"Medium"},
+    {name:"Find Eventual Safe States",diff:"Medium"},
+    {name:"Course Schedule I & II",diff:"Medium"},
+    {name:"Alien Dictionary",diff:"Hard"},
+    {name:"Shortest Path in DAG",diff:"Medium"},
+    {name:"Shortest Path in Undirected Graph",diff:"Easy"},
+    {name:"Word Ladder I & II",diff:"Hard"},
+    {name:"Dijkstra\'s Algorithm",diff:"Medium"},
+    {name:"Print Shortest Path",diff:"Medium"},
+    {name:"Shortest Distance in Binary Maze",diff:"Medium"},
+    {name:"Path with Minimum Effort",diff:"Medium"},
+    {name:"Cheapest Flights within K Stops",diff:"Hard"},
+    {name:"Minimum Multiplications to Reach End",diff:"Hard"},
+    {name:"Number of Ways to Arrive at Destination",diff:"Hard"},
+    {name:"Bellman Ford Algorithm",diff:"Medium"},
+    {name:"Floyd Warshall Algorithm",diff:"Medium"},
+    {name:"City with Smallest Number of Neighbors",diff:"Medium"},
+    {name:"MST – Prim\'s / Kruskal\'s",diff:"Medium"},
+    {name:"Disjoint Set (Union-Find)",diff:"Medium"},
+    {name:"Number of Operations to Connect Network",diff:"Medium"},
+    {name:"Accounts Merge",diff:"Hard"},
+    {name:"Number of Islands II",diff:"Hard"},
+    {name:"Making a Large Island",diff:"Hard"},
+    {name:"Most Stones Removed",diff:"Hard"},
+    {name:"Kosaraju\'s Algorithm (SCC)",diff:"Hard"},
+    {name:"Bridges in Graph",diff:"Hard"},
+    {name:"Articulation Points",diff:"Hard"},
+  ],
+  "Dynamic Programming": [
+    {name:"Climbing Stairs",diff:"Easy"},
+    {name:"Frog Jump",diff:"Easy"},
+    {name:"Frog Jump with K Distances",diff:"Medium"},
+    {name:"Maximum Sum of Non-Adjacent Elements",diff:"Medium"},
+    {name:"House Robber",diff:"Medium"},
+    {name:"Ninja\'s Training (2D DP)",diff:"Medium"},
+    {name:"Grid Unique Paths",diff:"Medium"},
+    {name:"Unique Paths II",diff:"Medium"},
+    {name:"Minimum Falling Path Sum",diff:"Medium"},
+    {name:"Triangle (DP)",diff:"Medium"},
+    {name:"Cherry Pickup II",diff:"Hard"},
+    {name:"Best Time to Buy and Sell Stock I",diff:"Easy"},
+    {name:"Best Time to Buy and Sell Stock II",diff:"Medium"},
+    {name:"Best Time to Buy and Sell Stock III",diff:"Hard"},
+    {name:"Best Time to Buy and Sell Stock IV",diff:"Hard"},
+    {name:"Stock with Transaction Fees",diff:"Medium"},
+    {name:"Subset Sum Equals to Target",diff:"Medium"},
+    {name:"Partition Equal Subset Sum",diff:"Medium"},
+    {name:"Partition into Two Subsets – Min Diff",diff:"Hard"},
+    {name:"Count Subsets with Sum K",diff:"Medium"},
+    {name:"Count Partitions with Given Difference",diff:"Medium"},
+    {name:"0-1 Knapsack",diff:"Medium"},
+    {name:"Minimum Coins",diff:"Medium"},
+    {name:"Target Sum",diff:"Medium"},
+    {name:"Coin Change II",diff:"Medium"},
+    {name:"Unbounded Knapsack",diff:"Medium"},
+    {name:"Rod Cutting Problem",diff:"Medium"},
+    {name:"Longest Increasing Subsequence",diff:"Medium"},
+    {name:"Print LIS",diff:"Medium"},
+    {name:"Largest Divisible Subset",diff:"Medium"},
+    {name:"Longest String Chain",diff:"Medium"},
+    {name:"Longest Bitonic Subsequence",diff:"Medium"},
+    {name:"Number of Longest Increasing Subsequences",diff:"Hard"},
+    {name:"Longest Common Subsequence",diff:"Medium"},
+    {name:"Longest Common Substring",diff:"Medium"},
+    {name:"Longest Palindromic Subsequence",diff:"Medium"},
+    {name:"Min Insertions to Make Palindrome",diff:"Medium"},
+    {name:"Min Insertions/Deletions to Convert A to B",diff:"Hard"},
+    {name:"Shortest Common Supersequence",diff:"Hard"},
+    {name:"Distinct Subsequences",diff:"Hard"},
+    {name:"Edit Distance",diff:"Hard"},
+    {name:"Wildcard Matching",diff:"Hard"},
+    {name:"Matrix Chain Multiplication",diff:"Hard"},
+    {name:"Minimum Cost to Cut the Stick",diff:"Hard"},
+    {name:"Burst Balloons",diff:"Hard"},
+    {name:"Palindrome Partitioning II",diff:"Hard"},
+  ],
+  "Tries": [
+    {name:"Trie Implementation and Operations",diff:"Medium"},
+    {name:"Trie – Advanced Operations",diff:"Medium"},
+    {name:"Longest Word with All Prefixes",diff:"Medium"},
+    {name:"Number of Distinct Substrings",diff:"Hard"},
+    {name:"Maximum XOR of Two Numbers",diff:"Medium"},
+    {name:"Maximum XOR with Element from Array",diff:"Hard"},
+  ],
+  "Strings – Advanced": [
+    {name:"Reverse Every Word in a String",diff:"Easy"},
+    {name:"Minimum Bracket Reversals",diff:"Hard"},
+    {name:"Count and Say",diff:"Medium"},
+    {name:"Rabin Karp Algorithm",diff:"Medium"},
+    {name:"Z Function",diff:"Medium"},
+    {name:"KMP Algorithm / LPS Array",diff:"Medium"},
+    {name:"Shortest Palindrome",diff:"Hard"},
+    {name:"Longest Happy Prefix",diff:"Hard"},
+  ],
+  "Mathematics": [
+    {name:"Print All Primes till N (Sieve)",diff:"Easy"},
+    {name:"Prime Factorisation of a Number",diff:"Easy"},
+    {name:"Count Primes in Range L to R",diff:"Medium"},
+  ],
+};
+
+const TUF_SECTION_TO_SLUG = {
+  "Arrays (Medium)":        "arrays",
+  "Arrays (Hard)":          "arrays",
+  "Binary Search":          "binary-search",
+  "Recursion & Backtracking":"recursion",
+  "Linked List":            "linked-list",
+  "Bit Manipulation":       "bit-manipulation",
+  "Greedy":                 "greedy",
+  "Sliding Window":         "sliding-window",
+  "Stack & Queue":          "stack-queue",
+  "Binary Trees":           "binary-trees",
+  "Binary Search Trees":    "bst",
+  "Heaps":                  "heaps",
+  "Graphs":                 "graphs",
+  "Dynamic Programming":    "dynamic-programming",
+  "Tries":                  "tries",
+  "Strings – Advanced":     "string-algorithms",
+  "Mathematics":            "math",
+};
+
+// ── Student Tools Landing Page ──────────────────────────────
+const STUDENT_TOOLS = [
+  {
+    id: "dsa",
+    icon: "🧠",
+    title: "DSA Problem Explorer",
+    desc: "Navigate TUF+ aligned DSA topics with problems from LeetCode, GFG, NeetCode & more. Includes AI study tips.",
+    badge: "299 problems",
+    badgeColor: "var(--cyan)",
+    tags: ["LeetCode", "NeetCode", "GFG", "CSES"],
+    stats: [{ label: "Topics", value: "17" }, { label: "Platforms", value: "8" }, { label: "Problems", value: "299" }],
+    color: "var(--cyan)",
+    gradient: "linear-gradient(135deg,rgba(0,212,255,.15),rgba(0,212,255,.03))",
+  },
+];
+
+const StudentToolsPage = ({ setPage }) => (
+  <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+    {/* Header */}
+    <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"48px 24px 40px"}}>
+      <div style={{maxWidth:1200,margin:"0 auto"}}>
+        <div className="sl">For Students</div>
+        <h1 className="syne" style={{fontSize:38,fontWeight:800,marginBottom:10}}>
+          🛠️ Student <span className="gtext">Tools</span>
+        </h1>
+        <p style={{color:"var(--text2)",fontSize:15,maxWidth:560,lineHeight:1.7}}>
+          Free tools built for Indian CS students — placement prep, DSA practice, and more. All tools are completely free.
+        </p>
+      </div>
+    </div>
+
+    {/* Tools Grid */}
+    <div style={{maxWidth:1200,margin:"0 auto",padding:"40px 24px"}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))",gap:20}}>
+        {STUDENT_TOOLS.map(tool=>(
+          <div key={tool.id} onClick={()=>setPage(tool.id)}
+            className="hcard"
+            style={{padding:28,cursor:"pointer",background:tool.gradient,border:`1px solid ${tool.color}25`,transition:"all .25s",position:"relative",overflow:"hidden"}}
+            onMouseEnter={e=>{e.currentTarget.style.border=`1px solid ${tool.color}60`;e.currentTarget.style.transform="translateY(-2px)";}}
+            onMouseLeave={e=>{e.currentTarget.style.border=`1px solid ${tool.color}25`;e.currentTarget.style.transform="translateY(0)";}}>
+            {/* Glow */}
+            <div style={{position:"absolute",top:-40,right:-40,width:120,height:120,borderRadius:"50%",background:tool.color,opacity:.06,filter:"blur(30px)",pointerEvents:"none"}}/>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}}>
+              <span style={{fontSize:36}}>{tool.icon}</span>
+              <span style={{fontSize:11,fontWeight:700,padding:"4px 10px",borderRadius:6,background:`${tool.badgeColor}18`,color:tool.badgeColor,border:`1px solid ${tool.badgeColor}30`}}>{tool.badge}</span>
+            </div>
+            <h2 className="syne" style={{fontSize:18,fontWeight:800,marginBottom:8}}>{tool.title}</h2>
+            <p style={{fontSize:13,color:"var(--text2)",lineHeight:1.65,marginBottom:16}}>{tool.desc}</p>
+            {/* Stats */}
+            <div style={{display:"flex",gap:16,marginBottom:16}}>
+              {tool.stats.map(s=>(
+                <div key={s.label} style={{textAlign:"center"}}>
+                  <div className="syne" style={{fontSize:18,fontWeight:800,color:tool.color}}>{s.value}</div>
+                  <div style={{fontSize:10,color:"var(--text3)"}}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+            {/* Tags */}
+            <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:18}}>
+              {tool.tags.map(t=>(
+                <span key={t} style={{fontSize:10,padding:"3px 8px",borderRadius:5,background:"var(--bg3)",color:"var(--text2)",border:"1px solid var(--border)"}}>{t}</span>
+              ))}
+            </div>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <span style={{fontSize:12,color:"var(--text3)"}}>100% Free · No login required</span>
+              <span style={{fontSize:13,fontWeight:700,color:tool.color}}>Open Tool →</span>
+            </div>
+          </div>
+        ))}
+
+        {/* Coming Soon placeholder */}
+        {["Resume Builder","CP Contest Tracker","Interview Prep Roadmap"].map(name=>(
+          <div key={name} style={{padding:28,border:"1px dashed var(--border)",borderRadius:16,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:200,opacity:.5,textAlign:"center"}}>
+            <div style={{fontSize:32,marginBottom:12}}>🔜</div>
+            <div className="syne" style={{fontSize:14,fontWeight:700,marginBottom:6}}>{name}</div>
+            <div style={{fontSize:12,color:"var(--text3)"}}>Coming soon</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+// ── DSA Data ─────────────────────────────────────────────────
 /* ────────────────────────────────────────────────
    APP ROOT
 ──────────────────────────────────────────────── */
@@ -1870,6 +2316,7 @@ export default function App() {
           {page==="internships" && <InternshipsPage/>}
           {page==="events"      && <EventsPage/>}
           {page==="resources"   && <ResourcesPage/>}
+          {page==="tools" && <StudentToolsPage setPage={setPage}/>}
           {page==="dsa" && <DSAPage setPage={setPage}/>}
         </main>
         <Footer setPage={setPage}/>
