@@ -566,6 +566,7 @@ const AgentStatus = () => {
    NAVBAR
 ──────────────────────────────────────────────── */
 const TOOLS_MENU = [
+  { id:"tools", icon:"🛠️", label:"All Tools", desc:"Browse all student tools" },
   { id:"dsa", icon:"🧠", label:"DSA Explorer", desc:"TUF-aligned problem finder" },
 ];
 
@@ -586,24 +587,18 @@ const Navbar = ({page,setPage,dark,setDark}) => {
       <span className="badge b-open" style={{fontSize:9}}>LIVE</span>
     </div>
     <div className="hm" style={{display:"flex",gap:4,alignItems:"center"}}>
-      {[["home","◈ Home"],["hackathons","⚡ Hackathons"],["internships","💼 Internships"],["events","🗓️ Events"],["resources","📚 Resources"]].map(([id,lbl])=>(
+      {[["home","◈ Home"],["hackathons","⚡ Hackathons"],["internships","💼 Internships"],["events","🗓️ Events"]].map(([id,lbl])=>(
         <button key={id} className={`nav-link ${page===id?"act":""}`} onClick={()=>setPage(id)}>{lbl}</button>
       ))}
       {/* Student Tools dropdown */}
       <div ref={toolsRef} style={{position:"relative"}}>
-        <div className={`nav-link ${isToolsActive?"act":""}`}
-          style={{display:"inline-flex",alignItems:"center",gap:0,padding:0,cursor:"default"}}>
-          <span
-            onClick={()=>{ setPage("tools"); setToolsOpen(false); }}
-            style={{padding:"6px 4px 6px 12px",cursor:"pointer"}}>
-            🛠️ Tools
-          </span>
-          <span
-            onClick={()=>setToolsOpen(o=>!o)}
-            style={{fontSize:9,opacity:.7,padding:"6px 10px 6px 4px",cursor:"pointer",transform:toolsOpen?"rotate(180deg)":"rotate(0deg)",transition:"transform .2s",display:"inline-block"}}>
-            ▼
-          </span>
-        </div>
+        <button
+          className={`nav-link ${isToolsActive?"act":""}`}
+          onClick={()=>setToolsOpen(o=>!o)}
+          style={{display:"inline-flex",alignItems:"center",gap:5}}>
+          🛠️ Tools
+          <span style={{fontSize:9,opacity:.7,transform:toolsOpen?"rotate(180deg)":"rotate(0deg)",transition:"transform .2s",display:"inline-block"}}>▼</span>
+        </button>
         {toolsOpen && (
           <div style={{position:"absolute",top:"calc(100% + 8px)",right:0,background:"var(--card)",border:"1px solid var(--border2)",borderRadius:14,padding:8,minWidth:220,boxShadow:"0 12px 40px rgba(0,0,0,.4)",zIndex:200,animation:"fade-in .15s ease"}}>
             <div style={{fontSize:9,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",padding:"4px 10px 8px"}}>Student Tools</div>
@@ -622,6 +617,7 @@ const Navbar = ({page,setPage,dark,setDark}) => {
           </div>
         )}
       </div>
+      <button className={`nav-link ${page==="resources"?"act":""}`} onClick={()=>setPage("resources")}>📚 Resources</button>
     </div>
     <div style={{display:"flex",alignItems:"center",gap:10}}>
       <button onClick={()=>setDark(!dark)} style={{width:34,height:34,borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15}}>{dark?"☀️":"🌙"}</button>
