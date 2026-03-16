@@ -1775,7 +1775,7 @@ const DSAPage = ({ setPage }) => {
           <div className="sl">Student Tools</div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:16,marginBottom:24}}>
             <div>
-              <h1 className="syne" style={{fontSize:34,fontWeight:800,marginBottom:6}}>\u{1F9E0} DSA <span className="gtext">Problem Explorer</span></h1>
+              <h1 className="syne" style={{fontSize:34,fontWeight:800,marginBottom:6}}>🧠 DSA <span className="gtext">Problem Explorer</span></h1>
               <p style={{color:"var(--text2)",fontSize:14}}>{DSA_DATA.length} topics \u00b7 8 platforms \u00b7 AI study tips</p>
             </div>
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
