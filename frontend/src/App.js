@@ -1727,7 +1727,7 @@ const SLUG_TO_CHECKLIST = {
   "bst":              ["Binary Search Trees"],
   "tries":            ["Tries"],
   "bit-manipulation": ["Bit Manipulation"],
-  "string-algorithms":["Strings \u2013 Advanced"],
+  "string-algorithms":["Strings – Advanced"],
   "graphs":           ["Graphs"],
 };
 
@@ -1760,7 +1760,7 @@ const DSAPage = ({ setPage }) => {
       const r = await fetch(`/api/dsa/topics/${slug}/tip`, { method:"POST" });
       const j = await r.json();
       setTip(j.tip || "");
-    } catch { setTip("Could not load tip \u2014 check Groq API key."); }
+    } catch { setTip("Could not load tip — check Groq API key."); }
     setTipLoading(false);
   };
 
@@ -1776,7 +1776,7 @@ const DSAPage = ({ setPage }) => {
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:16,marginBottom:24}}>
             <div>
               <h1 className="syne" style={{fontSize:34,fontWeight:800,marginBottom:6}}>🧠 DSA <span className="gtext">Problem Explorer</span></h1>
-              <p style={{color:"var(--text2)",fontSize:14}}>{DSA_DATA.length} topics \u00b7 8 platforms \u00b7 AI study tips</p>
+              <p style={{color:"var(--text2)",fontSize:14}}>{DSA_DATA.length} topics · 8 platforms · AI study tips</p>
             </div>
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
               {[["LeetCode","#f89f1b"],["NeetCode","#00b8a3"],["GFG","#2f8d46"],["CSES","#4488cc"]].map(([p,c])=>(
@@ -1786,7 +1786,7 @@ const DSAPage = ({ setPage }) => {
           </div>
           <div style={{position:"relative",maxWidth:480}}>
             <span style={{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",color:"var(--text3)"}}>🔍</span>
-            <input className="input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search topics \u2014 Arrays, DP, Graphs\u2026" style={{padding:"11px 16px 11px 40px",fontSize:14}}/>
+            <input className="input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search topics — Arrays, DP, Graphs…" style={{padding:"11px 16px 11px 40px",fontSize:14}}/>
           </div>
           <div style={{display:"flex",gap:6,marginTop:16,flexWrap:"wrap"}}>
             {DSA_CATEGORIES.map(c=>(
@@ -1831,7 +1831,7 @@ const DSAPage = ({ setPage }) => {
         <div style={{maxWidth:1100,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16,fontSize:13,color:"var(--text3)"}}>
             <span style={{cursor:"pointer",color:"var(--cyan)"}} onClick={()=>setView("topics")}>DSA Explorer</span>
-            <span>\u203a</span>
+            <span>›</span>
             <span style={{color:"var(--text)"}}>{selTopic.topic}</span>
           </div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:16}}>
@@ -1848,7 +1848,7 @@ const DSAPage = ({ setPage }) => {
             </div>
             <button onClick={()=>fetchTip(selTopic.slug)} disabled={tipLoading}
               style={{padding:"9px 18px",borderRadius:10,border:"1px solid var(--yellow)",background:"rgba(255,214,10,.08)",color:"var(--yellow)",fontSize:12,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>
-              {tipLoading?"⏳ Loading\u2026":"💡 AI Study Tip"}
+              {tipLoading?"⏳ Loading…":"💡 AI Study Tip"}
             </button>
           </div>
           {tip && (
@@ -1860,7 +1860,7 @@ const DSAPage = ({ setPage }) => {
           <div style={{display:"flex",gap:10,marginTop:20,flexWrap:"wrap",alignItems:"center"}}>
             <div style={{position:"relative",flex:1,maxWidth:360}}>
               <span style={{position:"absolute",left:11,top:"50%",transform:"translateY(-50%)",color:"var(--text3)",fontSize:13}}>🔍</span>
-              <input className="input" value={probSearch} onChange={e=>setProbSearch(e.target.value)} placeholder="Search problems\u2026" style={{padding:"9px 14px 9px 34px",fontSize:13}}/>
+              <input className="input" value={probSearch} onChange={e=>setProbSearch(e.target.value)} placeholder="Search problems…" style={{padding:"9px 14px 9px 34px",fontSize:13}}/>
             </div>
             {["All","Easy","Medium","Hard"].map(d=>(
               <button key={d} onClick={()=>setDiffFilter(d)}
@@ -1883,7 +1883,7 @@ const DSAPage = ({ setPage }) => {
               {selTopic.platforms.map(p=>(
                 <a key={p.name} href={p.url} target="_blank" rel="noopener noreferrer"
                   style={{padding:"9px 18px",borderRadius:8,background:"var(--card)",border:"1px solid var(--border)",color:"var(--text)",fontSize:13,textDecoration:"none"}}>
-                  {p.name} \u2192
+                  {p.name} →
                 </a>
               ))}
             </div>
@@ -1891,7 +1891,7 @@ const DSAPage = ({ setPage }) => {
         ) : (
           <>
             <div style={{fontSize:12,color:"var(--text3)",marginBottom:16}}>
-              {filteredProbs.length} of {problems.length} problems \u2014 click any problem to find it across 6 platforms
+              {filteredProbs.length} of {problems.length} problems — click any problem to find it across 6 platforms
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:10}}>
               {filteredProbs.map((p,i)=>(
@@ -1903,7 +1903,7 @@ const DSAPage = ({ setPage }) => {
                   </div>
                   <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
                     <span style={{fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:4,background:`${DIFF_COLOR[p.diff]}18`,color:DIFF_COLOR[p.diff],whiteSpace:"nowrap"}}>{p.diff}</span>
-                    <span style={{color:"var(--purple)",fontSize:14}}>\u203a</span>
+                    <span style={{color:"var(--purple)",fontSize:14}}>›</span>
                   </div>
                 </div>
               ))}
@@ -1923,9 +1923,9 @@ const DSAPage = ({ setPage }) => {
         <div style={{maxWidth:900,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16,fontSize:13,color:"var(--text3)",flexWrap:"wrap"}}>
             <span style={{cursor:"pointer",color:"var(--cyan)"}} onClick={()=>setView("topics")}>DSA Explorer</span>
-            <span>\u203a</span>
+            <span>›</span>
             <span style={{cursor:"pointer",color:"var(--cyan)"}} onClick={()=>setView("problems")}>{selTopic.topic}</span>
-            <span>\u203a</span>
+            <span>›</span>
             <span style={{color:"var(--text)"}}>{selProblem.name}</span>
           </div>
           <h1 className="syne" style={{fontSize:26,fontWeight:800,marginBottom:12}}>{selProblem.name}</h1>
@@ -1954,13 +1954,13 @@ const DSAPage = ({ setPage }) => {
                 <div style={{fontSize:11,color:"var(--text3)",marginBottom:4}}>{l.note}</div>
                 <span style={{fontSize:9,padding:"2px 6px",borderRadius:3,background:`${l.color}18`,color:l.color,fontWeight:700}}>{l.tag}</span>
               </div>
-              <span style={{fontSize:18,color:l.color,flexShrink:0}}>\u2192</span>
+              <span style={{fontSize:18,color:l.color,flexShrink:0}}>→</span>
             </a>
           ))}
         </div>
         <button onClick={()=>setView("problems")}
           style={{marginTop:28,padding:"10px 22px",borderRadius:10,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",fontSize:13,fontWeight:600,cursor:"pointer"}}>
-          \u2190 Back to {selTopic.topic} problems
+          ← Back to {selTopic.topic} problems
         </button>
       </div>
     </div>
