@@ -566,7 +566,6 @@ const AgentStatus = () => {
    NAVBAR
 ──────────────────────────────────────────────── */
 const TOOLS_MENU = [
-  { id:"tools", icon:"🛠️", label:"All Tools", desc:"Browse all student tools" },
   { id:"dsa", icon:"🧠", label:"DSA Explorer", desc:"TUF-aligned problem finder" },
 ];
 
@@ -592,13 +591,19 @@ const Navbar = ({page,setPage,dark,setDark}) => {
       ))}
       {/* Student Tools dropdown */}
       <div ref={toolsRef} style={{position:"relative"}}>
-        <button
-          className={`nav-link ${isToolsActive?"act":""}`}
-          onClick={()=>setToolsOpen(o=>!o)}
-          style={{display:"inline-flex",alignItems:"center",gap:5}}>
-          🛠️ Tools
-          <span style={{fontSize:9,opacity:.7,transform:toolsOpen?"rotate(180deg)":"rotate(0deg)",transition:"transform .2s",display:"inline-block"}}>▼</span>
-        </button>
+        <div className={`nav-link ${isToolsActive?"act":""}`}
+          style={{display:"inline-flex",alignItems:"center",gap:0,padding:0,cursor:"default"}}>
+          <span
+            onClick={()=>{ setPage("tools"); setToolsOpen(false); }}
+            style={{padding:"6px 4px 6px 12px",cursor:"pointer"}}>
+            🛠️ Tools
+          </span>
+          <span
+            onClick={()=>setToolsOpen(o=>!o)}
+            style={{fontSize:9,opacity:.7,padding:"6px 10px 6px 4px",cursor:"pointer",transform:toolsOpen?"rotate(180deg)":"rotate(0deg)",transition:"transform .2s",display:"inline-block"}}>
+            ▼
+          </span>
+        </div>
         {toolsOpen && (
           <div style={{position:"absolute",top:"calc(100% + 8px)",right:0,background:"var(--card)",border:"1px solid var(--border2)",borderRadius:14,padding:8,minWidth:220,boxShadow:"0 12px 40px rgba(0,0,0,.4)",zIndex:200,animation:"fade-in .15s ease"}}>
             <div style={{fontSize:9,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",padding:"4px 10px 8px"}}>Student Tools</div>
