@@ -1508,9 +1508,9 @@ const DSA_DATA = [
       {name:"LeetCode",url:"https://leetcode.com/tag/array/",logo:"https://leetcode.com/favicon.ico",count:1500,easy:450,med:750,hard:300,tags:["Interview Prep","FAANG"],note:"Largest array problem set — essential for interviews"},
       {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Arrays",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:400,easy:200,med:150,hard:50,tags:["Beginner Friendly","Articles"],note:"Best articles + problems for learning concepts"},
       {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:50,easy:15,med:25,hard:10,tags:["Video Solutions","Blind 75"],note:"Curated 150 problems with video explanations"},
-      {name:"Code360",url:"https://www.naukri.com/code360/problems?search=array",logo:"https://files.codingninjas.in/public-assets/ninja-dashboard/favicon-light.ico",count:200,easy:80,med:90,hard:30,tags:["Indian Platform","Ninja Courses"],note:"Coding Ninjas platform — popular for Indian placements"},
+      {name:"Code360",url:"https://www.naukri.com/code360/problems?search=array",logo:"https://www.naukri.com/favicon.ico",count:200,easy:80,med:90,hard:30,tags:["Indian Platform","Ninja Courses"],note:"Coding Ninjas platform — popular for Indian placements"},
       {name:"InterviewBit",url:"https://www.interviewbit.com/courses/programming/arrays/",logo:"https://www.interviewbit.com/favicon.ico",count:80,easy:20,med:45,hard:15,tags:["Interview Prep","Company Tags"],note:"Company-wise interview problems"},
-      {name:"HackerRank",url:"https://www.hackerrank.com/domains/data-structures",logo:"https://hrcdn.net/fcore/assets/brand/logo_wordmark-13074b67e2.svg",count:120,easy:50,med:50,hard:20,tags:["Beginner Friendly","Certificates"],note:"Great for beginners & earning certificates"},
+      {name:"HackerRank",url:"https://www.hackerrank.com/domains/data-structures",logo:"https://hrcdn.net/fcore/assets/brand/favicon-ddc852f75a.png",count:120,easy:50,med:50,hard:20,tags:["Beginner Friendly","Certificates"],note:"Great for beginners & earning certificates"},
     ]
   },
   {
@@ -1520,8 +1520,8 @@ const DSA_DATA = [
       {name:"LeetCode",url:"https://leetcode.com/tag/binary-search/",logo:"https://leetcode.com/favicon.ico",count:230,easy:55,med:130,hard:45,tags:["Interview Prep","FAANG"],note:"Excellent tag with classic + advanced BS problems"},
       {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Binary+Search",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:120,easy:60,med:45,hard:15,tags:["Beginner Friendly"],note:"Good conceptual articles with problems"},
       {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:18,easy:5,med:10,hard:3,tags:["Video Solutions","Blind 75"],note:"All key binary search patterns covered"},
-      {name:"Code360",url:"https://www.naukri.com/code360/problems?search=binary+search",logo:"https://files.codingninjas.in/public-assets/ninja-dashboard/favicon-light.ico",count:80,easy:30,med:40,hard:10,tags:["Indian Platform"],note:"Coding Ninjas — curated binary search problems"},
-      {name:"HackerRank",url:"https://www.hackerrank.com/domains/algorithms/search",logo:"https://hrcdn.net/fcore/assets/brand/logo_wordmark-13074b67e2.svg",count:40,easy:15,med:20,hard:5,tags:["Beginner Friendly"],note:"Binary search & algorithm challenges"},
+      {name:"Code360",url:"https://www.naukri.com/code360/problems?search=binary+search",logo:"https://www.naukri.com/favicon.ico",count:80,easy:30,med:40,hard:10,tags:["Indian Platform"],note:"Coding Ninjas — curated binary search problems"},
+      {name:"HackerRank",url:"https://www.hackerrank.com/domains/algorithms/search",logo:"https://hrcdn.net/fcore/assets/brand/favicon-ddc852f75a.png",count:40,easy:15,med:20,hard:5,tags:["Beginner Friendly"],note:"Binary search & algorithm challenges"},
     ]
   },
   {
@@ -1560,7 +1560,7 @@ const DSA_DATA = [
       {name:"LeetCode",url:"https://leetcode.com/tag/stack/",logo:"https://leetcode.com/favicon.ico",count:200,easy:50,med:110,hard:40,tags:["Interview Prep","FAANG"],note:"Stack is everywhere — monotonic, calculator, etc."},
       {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Stack",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:100,easy:45,med:45,hard:10,tags:["Beginner Friendly"],note:"Best articles on stack applications"},
       {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:13,easy:3,med:8,hard:2,tags:["Video Solutions"],note:"Monotonic stack patterns covered well"},
-      {name:"HackerRank",url:"https://www.hackerrank.com/domains/data-structures/stacks",logo:"https://hrcdn.net/fcore/assets/brand/logo_wordmark-13074b67e2.svg",count:25,easy:10,med:12,hard:3,tags:["Beginner Friendly"],note:"Stack & queue challenges with guided tracks"},
+      {name:"HackerRank",url:"https://www.hackerrank.com/domains/data-structures/stacks",logo:"https://hrcdn.net/fcore/assets/brand/favicon-ddc852f75a.png",count:25,easy:10,med:12,hard:3,tags:["Beginner Friendly"],note:"Stack & queue challenges with guided tracks"},
     ]
   },
   {
@@ -1571,7 +1571,7 @@ const DSA_DATA = [
       {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Tree",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:200,easy:80,med:90,hard:30,tags:["Beginner Friendly"],note:"Excellent tree traversal tutorials"},
       {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:20,easy:6,med:11,hard:3,tags:["Video Solutions","Blind 75"],note:"All Blind 75 tree problems with visuals"},
       {name:"InterviewBit",url:"https://www.interviewbit.com/courses/programming/trees/",logo:"https://www.interviewbit.com/favicon.ico",count:45,easy:15,med:22,hard:8,tags:["Interview Prep"],note:"Interview-focused tree problems"},
-      {name:"HackerRank",url:"https://www.hackerrank.com/domains/data-structures/trees",logo:"https://hrcdn.net/fcore/assets/brand/logo_wordmark-13074b67e2.svg",count:30,easy:10,med:15,hard:5,tags:["Beginner Friendly"],note:"Tree problems with beginner-friendly tracks"},
+      {name:"HackerRank",url:"https://www.hackerrank.com/domains/data-structures/trees",logo:"https://hrcdn.net/fcore/assets/brand/favicon-ddc852f75a.png",count:30,easy:10,med:15,hard:5,tags:["Beginner Friendly"],note:"Tree problems with beginner-friendly tracks"},
     ]
   },
   {
@@ -1581,8 +1581,8 @@ const DSA_DATA = [
       {name:"LeetCode",url:"https://leetcode.com/tag/graph/",logo:"https://leetcode.com/favicon.ico",count:320,easy:50,med:190,hard:80,tags:["Interview Prep","FAANG"],note:"Complete graph algorithms — BFS, DFS, Dijkstra, Union Find"},
       {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Graph",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:300,easy:100,med:150,hard:50,tags:["Beginner Friendly"],note:"Best resource for learning graph algorithms"},
       {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:20,easy:3,med:13,hard:4,tags:["Video Solutions","Blind 75"],note:"All graph patterns with clean video explanations"},
-      {name:"Code360",url:"https://www.naukri.com/code360/problems?search=graph",logo:"https://files.codingninjas.in/public-assets/ninja-dashboard/favicon-light.ico",count:150,easy:50,med:70,hard:30,tags:["Indian Platform"],note:"Graph problems curated for placements"},
-      {name:"HackerRank",url:"https://www.hackerrank.com/domains/algorithms/graph-theory",logo:"https://hrcdn.net/fcore/assets/brand/logo_wordmark-13074b67e2.svg",count:45,easy:15,med:22,hard:8,tags:["Beginner Friendly"],note:"Graph theory challenges with visual problem sets"},
+      {name:"Code360",url:"https://www.naukri.com/code360/problems?search=graph",logo:"https://www.naukri.com/favicon.ico",count:150,easy:50,med:70,hard:30,tags:["Indian Platform"],note:"Graph problems curated for placements"},
+      {name:"HackerRank",url:"https://www.hackerrank.com/domains/algorithms/graph-theory",logo:"https://hrcdn.net/fcore/assets/brand/favicon-ddc852f75a.png",count:45,easy:15,med:22,hard:8,tags:["Beginner Friendly"],note:"Graph theory challenges with visual problem sets"},
     ]
   },
   {
@@ -1592,8 +1592,8 @@ const DSA_DATA = [
       {name:"LeetCode",url:"https://leetcode.com/tag/dynamic-programming/",logo:"https://leetcode.com/favicon.ico",count:600,easy:90,med:370,hard:140,tags:["Interview Prep","FAANG"],note:"Most comprehensive DP collection — all patterns"},
       {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Dynamic+Programming",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:350,easy:100,med:200,hard:50,tags:["Beginner Friendly"],note:"Best articles for understanding DP patterns"},
       {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:28,easy:4,med:18,hard:6,tags:["Video Solutions","Blind 75"],note:"Pattern-based DP with visual state transitions"},
-      {name:"Code360",url:"https://www.naukri.com/code360/problems?search=dynamic+programming",logo:"https://files.codingninjas.in/public-assets/ninja-dashboard/favicon-light.ico",count:180,easy:60,med:90,hard:30,tags:["Indian Platform"],note:"DP problems with detailed editorial solutions"},
-      {name:"HackerRank",url:"https://www.hackerrank.com/domains/algorithms/dynamic-programming",logo:"https://hrcdn.net/fcore/assets/brand/logo_wordmark-13074b67e2.svg",count:50,easy:18,med:25,hard:7,tags:["Beginner Friendly"],note:"DP challenges from easy to hard with hints"},
+      {name:"Code360",url:"https://www.naukri.com/code360/problems?search=dynamic+programming",logo:"https://www.naukri.com/favicon.ico",count:180,easy:60,med:90,hard:30,tags:["Indian Platform"],note:"DP problems with detailed editorial solutions"},
+      {name:"HackerRank",url:"https://www.hackerrank.com/domains/algorithms/dynamic-programming",logo:"https://hrcdn.net/fcore/assets/brand/favicon-ddc852f75a.png",count:50,easy:18,med:25,hard:7,tags:["Beginner Friendly"],note:"DP challenges from easy to hard with hints"},
       {name:"InterviewBit",url:"https://www.interviewbit.com/courses/programming/dynamic-programming/",logo:"https://www.interviewbit.com/favicon.ico",count:60,easy:15,med:35,hard:10,tags:["Interview Prep"],note:"Interview DP with company tags"},
     ]
   },
@@ -1603,7 +1603,7 @@ const DSA_DATA = [
     platforms:[
       {name:"LeetCode",url:"https://leetcode.com/tag/greedy/",logo:"https://leetcode.com/favicon.ico",count:280,easy:70,med:160,hard:50,tags:["Interview Prep","FAANG"],note:"Greedy is frequently asked in product companies"},
       {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Greedy",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:120,easy:50,med:55,hard:15,tags:["Beginner Friendly"],note:"Good greedy proof techniques explained"},
-      {name:"Code360",url:"https://www.naukri.com/code360/problems?search=greedy",logo:"https://files.codingninjas.in/public-assets/ninja-dashboard/favicon-light.ico",count:100,easy:35,med:50,hard:15,tags:["Indian Platform"],note:"Greedy problems for placement prep"},
+      {name:"Code360",url:"https://www.naukri.com/code360/problems?search=greedy",logo:"https://www.naukri.com/favicon.ico",count:100,easy:35,med:50,hard:15,tags:["Indian Platform"],note:"Greedy problems for placement prep"},
       {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:8,easy:2,med:5,hard:1,tags:["Video Solutions"],note:"Key greedy patterns covered"},
     ]
   },
@@ -1649,7 +1649,7 @@ const DSA_DATA = [
     platforms:[
       {name:"LeetCode",url:"https://leetcode.com/tag/bit-manipulation/",logo:"https://leetcode.com/favicon.ico",count:175,easy:65,med:85,hard:25,tags:["Interview Prep","FAANG"],note:"Bit tricks asked in product company interviews"},
       {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Bit+Magic",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:80,easy:35,med:35,hard:10,tags:["Beginner Friendly"],note:"All bit manipulation tricks explained"},
-      {name:"Code360",url:"https://www.naukri.com/code360/problems?search=bit+manipulation",logo:"https://files.codingninjas.in/public-assets/ninja-dashboard/favicon-light.ico",count:60,easy:25,med:25,hard:10,tags:["Indian Platform"],note:"Bit manipulation problems with hints"},
+      {name:"Code360",url:"https://www.naukri.com/code360/problems?search=bit+manipulation",logo:"https://www.naukri.com/favicon.ico",count:60,easy:25,med:25,hard:10,tags:["Indian Platform"],note:"Bit manipulation problems with hints"},
     ]
   },
   {
@@ -1659,7 +1659,7 @@ const DSA_DATA = [
       {name:"LeetCode",url:"https://leetcode.com/tag/string/",logo:"https://leetcode.com/favicon.ico",count:550,easy:175,med:285,hard:90,tags:["Interview Prep","FAANG"],note:"Strings are most common in OA rounds"},
       {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Strings",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:200,easy:80,med:90,hard:30,tags:["Beginner Friendly"],note:"KMP, Z-algorithm, Rabin-Karp explained"},
       {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:16,easy:5,med:9,hard:2,tags:["Video Solutions","Blind 75"],note:"String manipulation patterns"},
-      {name:"HackerRank",url:"https://www.hackerrank.com/domains/algorithms/strings",logo:"https://hrcdn.net/fcore/assets/brand/logo_wordmark-13074b67e2.svg",count:40,easy:15,med:18,hard:7,tags:["Beginner Friendly"],note:"String algorithm challenges with guided tracks"},
+      {name:"HackerRank",url:"https://www.hackerrank.com/domains/algorithms/strings",logo:"https://hrcdn.net/fcore/assets/brand/favicon-ddc852f75a.png",count:40,easy:15,med:18,hard:7,tags:["Beginner Friendly"],note:"String algorithm challenges with guided tracks"},
     ]
   },
 ];
@@ -2046,13 +2046,13 @@ function getProblemLinks(name, topicSlug) {
       tag:"Company Tags", direct:!!e.ib,
     },
     {
-      name:"Code360", color:"#f5a623", logo:"https://files.codingninjas.in/public-assets/ninja-dashboard/favicon-light.ico",
+      name:"Code360", color:"#f5a623", logo:"https://www.naukri.com/favicon.ico",
       url: e.cn ? `https://www.naukri.com/code360/problems/${e.cn}` : `https://www.naukri.com/code360/problems?search=${q}`,
       note: e.cn ? "Direct problem link" : "Search results on Code360",
       tag:"Indian Platform", direct:!!e.cn,
     },
     {
-      name:"HackerRank", color:"#00ea64", logo:"https://hrcdn.net/fcore/assets/brand/logo_wordmark-13074b67e2.svg",
+      name:"HackerRank", color:"#00ea64", logo:"https://hrcdn.net/fcore/assets/brand/favicon-ddc852f75a.png",
       url:`https://www.hackerrank.com/domains/${hrPath}`,
       note:"Topic section on HackerRank", tag:"Certificates", direct:false,
     },
@@ -2295,7 +2295,8 @@ const DSAPage = ({ setPage }) => {
                 <span style={{position:"absolute",top:10,right:10,fontSize:9,padding:"2px 6px",borderRadius:3,background:"rgba(0,255,136,.15)",color:"#00ff88",fontWeight:700}}>DIRECT</span>
               )}
               <div style={{width:44,height:44,borderRadius:10,background:`${l.color}18`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                <img src={l.logo} alt={l.name} style={{width:24,height:24,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>
+                <img src={l.logo} alt={l.name} style={{width:24,height:24,objectFit:"contain"}} onError={e=>{e.target.style.display="none";const fb=e.target.parentNode.querySelector(".logo-fb");if(fb)fb.style.display="flex";}}/>
+                <span className="logo-fb" style={{display:"none",width:24,height:24,borderRadius:4,background:l.color,color:"#fff",fontSize:9,fontWeight:800,alignItems:"center",justifyContent:"center",flexShrink:0}}>{l.name.slice(0,2).toUpperCase()}</span>
               </div>
               <div style={{flex:1,minWidth:0}}>
                 <div style={{fontSize:14,fontWeight:700,color:"var(--text)",marginBottom:3}}>{l.name}</div>
