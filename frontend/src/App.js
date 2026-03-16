@@ -1510,7 +1510,7 @@ const DSA_DATA = [
       {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:50,easy:15,med:25,hard:10,tags:["Video Solutions","Blind 75"],note:"Curated 150 problems with video explanations"},
       {name:"Codeforces",url:"https://codeforces.com/problemset?tags=arrays",logo:"https://codeforces.com/favicon.ico",count:800,easy:200,med:400,hard:200,tags:["Competitive","Rated"],note:"Competitive programming array problems"},
       {name:"InterviewBit",url:"https://www.interviewbit.com/courses/programming/arrays/",logo:"https://www.interviewbit.com/favicon.ico",count:80,easy:20,med:45,hard:15,tags:["Interview Prep","Company Tags"],note:"Company-wise interview problems"},
-      {name:"CSES",url:"https://cses.fi/problemset/",logo:"https://cses.fi/favicon.ico",count:20,easy:8,med:8,hard:4,tags:["Gold Standard","Competitive"],note:"Classic problems every CP coder must solve"},
+      {name:"HackerRank",url:"https://www.hackerrank.com/domains/data-structures",logo:"https://hrcdn.net/fcore/assets/brand/logo_wordmark-13074b67e2.svg",count:120,easy:50,med:50,hard:20,tags:["Beginner Friendly","Certificates"],note:"Great for beginners & earning certificates"},
     ]
   },
   {
@@ -1521,7 +1521,7 @@ const DSA_DATA = [
       {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Binary+Search",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:120,easy:60,med:45,hard:15,tags:["Beginner Friendly"],note:"Good conceptual articles with problems"},
       {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:18,easy:5,med:10,hard:3,tags:["Video Solutions","Blind 75"],note:"All key binary search patterns covered"},
       {name:"Codeforces",url:"https://codeforces.com/problemset?tags=binary+search",logo:"https://codeforces.com/favicon.ico",count:500,easy:100,med:250,hard:150,tags:["Competitive"],note:"Advanced BS on answers problems"},
-      {name:"CSES",url:"https://cses.fi/problemset/",logo:"https://cses.fi/favicon.ico",count:8,easy:2,med:4,hard:2,tags:["Gold Standard"],note:"Essential binary search problems"},
+      {name:"HackerRank",url:"https://www.hackerrank.com/domains/algorithms/search",logo:"https://hrcdn.net/fcore/assets/brand/logo_wordmark-13074b67e2.svg",count:40,easy:15,med:20,hard:5,tags:["Beginner Friendly"],note:"Binary search & algorithm challenges"},
     ]
   },
   {
@@ -1560,7 +1560,7 @@ const DSA_DATA = [
       {name:"LeetCode",url:"https://leetcode.com/tag/stack/",logo:"https://leetcode.com/favicon.ico",count:200,easy:50,med:110,hard:40,tags:["Interview Prep","FAANG"],note:"Stack is everywhere — monotonic, calculator, etc."},
       {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Stack",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:100,easy:45,med:45,hard:10,tags:["Beginner Friendly"],note:"Best articles on stack applications"},
       {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:13,easy:3,med:8,hard:2,tags:["Video Solutions"],note:"Monotonic stack patterns covered well"},
-      {name:"CSES",url:"https://cses.fi/problemset/",logo:"https://cses.fi/favicon.ico",count:5,easy:2,med:2,hard:1,tags:["Gold Standard"],note:"Classic stack problems"},
+      {name:"HackerRank",url:"https://www.hackerrank.com/domains/data-structures/stacks",logo:"https://hrcdn.net/fcore/assets/brand/logo_wordmark-13074b67e2.svg",count:25,easy:10,med:12,hard:3,tags:["Beginner Friendly"],note:"Stack & queue challenges with guided tracks"},
     ]
   },
   {
@@ -1571,7 +1571,7 @@ const DSA_DATA = [
       {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Tree",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:200,easy:80,med:90,hard:30,tags:["Beginner Friendly"],note:"Excellent tree traversal tutorials"},
       {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:20,easy:6,med:11,hard:3,tags:["Video Solutions","Blind 75"],note:"All Blind 75 tree problems with visuals"},
       {name:"InterviewBit",url:"https://www.interviewbit.com/courses/programming/trees/",logo:"https://www.interviewbit.com/favicon.ico",count:45,easy:15,med:22,hard:8,tags:["Interview Prep"],note:"Interview-focused tree problems"},
-      {name:"CSES",url:"https://cses.fi/problemset/",logo:"https://cses.fi/favicon.ico",count:12,easy:3,med:6,hard:3,tags:["Gold Standard"],note:"Competitive tree problems"},
+      {name:"HackerRank",url:"https://www.hackerrank.com/domains/data-structures/trees",logo:"https://hrcdn.net/fcore/assets/brand/logo_wordmark-13074b67e2.svg",count:30,easy:10,med:15,hard:5,tags:["Beginner Friendly"],note:"Tree problems with beginner-friendly tracks"},
     ]
   },
   {
@@ -1582,7 +1582,7 @@ const DSA_DATA = [
       {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Graph",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:300,easy:100,med:150,hard:50,tags:["Beginner Friendly"],note:"Best resource for learning graph algorithms"},
       {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:20,easy:3,med:13,hard:4,tags:["Video Solutions","Blind 75"],note:"All graph patterns with clean video explanations"},
       {name:"Codeforces",url:"https://codeforces.com/problemset?tags=graphs",logo:"https://codeforces.com/favicon.ico",count:1200,easy:200,med:600,hard:400,tags:["Competitive","Rated"],note:"Competitive graph problems — advanced techniques"},
-      {name:"CSES",url:"https://cses.fi/problemset/",logo:"https://cses.fi/favicon.ico",count:36,easy:8,med:18,hard:10,tags:["Gold Standard"],note:"The gold standard graph section for CP"},
+      {name:"HackerRank",url:"https://www.hackerrank.com/domains/algorithms/graph-theory",logo:"https://hrcdn.net/fcore/assets/brand/logo_wordmark-13074b67e2.svg",count:45,easy:15,med:22,hard:8,tags:["Beginner Friendly"],note:"Graph theory challenges with visual problem sets"},
     ]
   },
   {
@@ -1593,7 +1593,7 @@ const DSA_DATA = [
       {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Dynamic+Programming",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:350,easy:100,med:200,hard:50,tags:["Beginner Friendly"],note:"Best articles for understanding DP patterns"},
       {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:28,easy:4,med:18,hard:6,tags:["Video Solutions","Blind 75"],note:"Pattern-based DP with visual state transitions"},
       {name:"Codeforces",url:"https://codeforces.com/problemset?tags=dp",logo:"https://codeforces.com/favicon.ico",count:1500,easy:300,med:800,hard:400,tags:["Competitive","Rated"],note:"Advanced DP — bitmask, digit DP, tree DP"},
-      {name:"CSES",url:"https://cses.fi/problemset/",logo:"https://cses.fi/favicon.ico",count:19,easy:4,med:10,hard:5,tags:["Gold Standard"],note:"Classic DP problems — every one is a gem"},
+      {name:"HackerRank",url:"https://www.hackerrank.com/domains/algorithms/dynamic-programming",logo:"https://hrcdn.net/fcore/assets/brand/logo_wordmark-13074b67e2.svg",count:50,easy:18,med:25,hard:7,tags:["Beginner Friendly"],note:"DP challenges from easy to hard with hints"},
       {name:"InterviewBit",url:"https://www.interviewbit.com/courses/programming/dynamic-programming/",logo:"https://www.interviewbit.com/favicon.ico",count:60,easy:15,med:35,hard:10,tags:["Interview Prep"],note:"Interview DP with company tags"},
     ]
   },
@@ -1659,7 +1659,7 @@ const DSA_DATA = [
       {name:"LeetCode",url:"https://leetcode.com/tag/string/",logo:"https://leetcode.com/favicon.ico",count:550,easy:175,med:285,hard:90,tags:["Interview Prep","FAANG"],note:"Strings are most common in OA rounds"},
       {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Strings",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:200,easy:80,med:90,hard:30,tags:["Beginner Friendly"],note:"KMP, Z-algorithm, Rabin-Karp explained"},
       {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:16,easy:5,med:9,hard:2,tags:["Video Solutions","Blind 75"],note:"String manipulation patterns"},
-      {name:"CSES",url:"https://cses.fi/problemset/",logo:"https://cses.fi/favicon.ico",count:12,easy:2,med:6,hard:4,tags:["Gold Standard"],note:"Hashing + KMP for competitive programming"},
+      {name:"HackerRank",url:"https://www.hackerrank.com/domains/algorithms/strings",logo:"https://hrcdn.net/fcore/assets/brand/logo_wordmark-13074b67e2.svg",count:40,easy:15,med:18,hard:7,tags:["Beginner Friendly"],note:"String algorithm challenges with guided tracks"},
     ]
   },
 ];
@@ -2023,9 +2023,9 @@ function getProblemLinks(name) {
       note:"Search competitive variants", tag:"Competitive", direct:false,
     },
     {
-      name:"CSES", color:"#4488cc", logo:"https://cses.fi/favicon.ico",
-      url:`https://cses.fi/problemset/`,
-      note:"Classic problem set — Ctrl+F to find", tag:"Gold Standard", direct:false,
+      name:"HackerRank", color:"#00ea64", logo:"https://hrcdn.net/fcore/assets/brand/logo_wordmark-13074b67e2.svg",
+      url:`https://www.hackerrank.com/domains/algorithms`,
+      note:"Beginner-friendly with guided tracks & certificates", tag:"Certificates", direct:false,
     },
   ];
 }
@@ -2098,7 +2098,7 @@ const DSAPage = ({ setPage }) => {
               <p style={{color:"var(--text2)",fontSize:14}}>{DSA_DATA.length} topics · 8 platforms · AI study tips</p>
             </div>
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-              {[["LeetCode","#f89f1b"],["NeetCode","#00b8a3"],["GFG","#2f8d46"],["CSES","#4488cc"]].map(([p,c])=>(
+              {[["LeetCode","#f89f1b"],["NeetCode","#00b8a3"],["GFG","#2f8d46"],["HackerRank","#00ea64"]].map(([p,c])=>(
                 <span key={p} style={{padding:"4px 10px",borderRadius:6,fontSize:11,fontWeight:700,background:`${c}18`,color:c,border:`1px solid ${c}30`}}>{p}</span>
               ))}
             </div>
@@ -2639,7 +2639,7 @@ const STUDENT_TOOLS = [
     desc: "Navigate DSA topics with problems from LeetCode, GFG, NeetCode & more. Includes AI study tips.",
     badge: "299 problems",
     badgeColor: "var(--cyan)",
-    tags: ["LeetCode", "NeetCode", "GFG", "CSES"],
+    tags: ["LeetCode", "NeetCode", "GFG", "HackerRank"],
     stats: [{ label: "Topics", value: "17" }, { label: "Platforms", value: "8" }, { label: "Problems", value: "299" }],
     color: "var(--cyan)",
     gradient: "linear-gradient(135deg,rgba(0,212,255,.15),rgba(0,212,255,.03))",
