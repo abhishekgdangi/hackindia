@@ -1,5 +1,3 @@
-require("dns").setDefaultResultOrder("ipv4first");
-require("dns").setServers(["8.8.8.8","8.8.4.4"]);
 /**
  * server.js
  * HackIndia Express API server.
@@ -46,6 +44,7 @@ app.use((req, _res, next) => {
 });
 
 /* ── Routes ────────────────────────────────────────────────────── */
+app.use("/api/dsa",         require("./routes/dsa"));
 app.use("/api/hackathons",  require("./routes/hackathons"));
 app.use("/api/internships", require("./routes/internships"));
 app.use("/api/events",      require("./routes/events"));
@@ -126,16 +125,28 @@ app.use((err, _req, res, _next) => {
 async function start() {
   const MONGO_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/hackindia";
 
-  try {
-    await mongoose.connect(MONGO_URI, {
-      serverSelectionTimeoutMS: 10000,
-      socketTimeoutMS:          45000,
-    });
-    logger.info(`✅ MongoDB connected: ${MONGO_URI.replace(/\/\/.*@/, "//***@")}`);
-  } catch (err) {
-    logger.error(`❌ MongoDB connection failed: ${err.message}`);
-    logger.error("   → Make sure MongoDB is running: sudo systemctl start mongod");
-    process.exit(1);
+  // Retry MongoDB connection — don't crash on cold start timeout
+  let mongoConnected = false;
+  for (let attempt = 1; attempt <= 5; attempt++) {
+    try {
+      await mongoose.connect(MONGO_URI, {
+        serverSelectionTimeoutMS: 15000,
+        socketTimeoutMS:          60000,
+      });
+      logger.info(`✅ MongoDB connected: ${MONGO_URI.replace(/\/\/.*@/, "//***@")}`);
+      mongoConnected = true;
+      break;
+    } catch (err) {
+      logger.error(`❌ MongoDB attempt ${attempt}/5 failed: ${err.message}`);
+      if (attempt < 5) {
+        logger.info(`   Retrying in 3s...`);
+        await new Promise(r => setTimeout(r, 3000));
+      }
+    }
+  }
+  if (!mongoConnected) {
+    logger.error("   → All MongoDB connection attempts failed. Starting without DB.");
+    // Don't exit — let Render keep the process alive for health checks
   }
 
   app.listen(PORT, () => {

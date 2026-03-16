@@ -565,24 +565,64 @@ const AgentStatus = () => {
 /* ────────────────────────────────────────────────
    NAVBAR
 ──────────────────────────────────────────────── */
-const Navbar = ({page,setPage,dark,setDark}) => (
+const TOOLS_MENU = [
+  { id:"dsa", icon:"🧠", label:"DSA Explorer", desc:"TUF-aligned problem finder" },
+];
+
+const Navbar = ({page,setPage,dark,setDark}) => {
+  const [toolsOpen, setToolsOpen] = React.useState(false);
+  const toolsRef = React.useRef(null);
+  React.useEffect(()=>{
+    const handler = e => { if(toolsRef.current && !toolsRef.current.contains(e.target)) setToolsOpen(false); };
+    document.addEventListener("mousedown", handler);
+    return ()=>document.removeEventListener("mousedown", handler);
+  },[]);
+  const isToolsActive = TOOLS_MENU.some(t=>t.id===page);
+  return (
   <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,background:"var(--nav-bg)",backdropFilter:"blur(20px)",borderBottom:"1px solid var(--border)",padding:"0 24px",height:64,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
     <div style={{display:"flex",alignItems:"center",gap:12,cursor:"pointer"}} onClick={()=>setPage("home")}>
       <div style={{width:34,height:34,borderRadius:9,background:"linear-gradient(135deg,var(--cyan),var(--green))",display:"flex",alignItems:"center",justifyContent:"center",fontSize:17}}>⚡</div>
       <span className="syne" style={{fontSize:18,fontWeight:800}}>Hack<span style={{color:"var(--cyan)"}}>India</span></span>
       <span className="badge b-open" style={{fontSize:9}}>LIVE</span>
     </div>
-    <div className="hm" style={{display:"flex",gap:4}}>
+    <div className="hm" style={{display:"flex",gap:4,alignItems:"center"}}>
       {[["home","◈ Home"],["hackathons","⚡ Hackathons"],["internships","💼 Internships"],["events","🗓️ Events"],["resources","📚 Resources"]].map(([id,lbl])=>(
         <button key={id} className={`nav-link ${page===id?"act":""}`} onClick={()=>setPage(id)}>{lbl}</button>
       ))}
+      {/* Student Tools dropdown */}
+      <div ref={toolsRef} style={{position:"relative"}}>
+        <button
+          className={`nav-link ${isToolsActive?"act":""}`}
+          onClick={()=>setToolsOpen(o=>!o)}
+          style={{display:"inline-flex",alignItems:"center",gap:5}}>
+          🛠️ Tools
+          <span style={{fontSize:9,opacity:.7,transform:toolsOpen?"rotate(180deg)":"rotate(0deg)",transition:"transform .2s",display:"inline-block"}}>▼</span>
+        </button>
+        {toolsOpen && (
+          <div style={{position:"absolute",top:"calc(100% + 8px)",right:0,background:"var(--card)",border:"1px solid var(--border2)",borderRadius:14,padding:8,minWidth:220,boxShadow:"0 12px 40px rgba(0,0,0,.4)",zIndex:200,animation:"fade-in .15s ease"}}>
+            <div style={{fontSize:9,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",padding:"4px 10px 8px"}}>Student Tools</div>
+            {TOOLS_MENU.map(t=>(
+              <button key={t.id} onClick={()=>{setPage(t.id);setToolsOpen(false);}}
+                style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"9px 12px",borderRadius:9,border:"none",background:page===t.id?"rgba(124,77,255,.15)":"transparent",cursor:"pointer",textAlign:"left",transition:"background .15s"}}>
+                <span style={{fontSize:18,flexShrink:0}}>{t.icon}</span>
+                <div>
+                  <div style={{fontSize:13,fontWeight:600,color:page===t.id?"var(--purple)":"var(--text)"}}>{t.label}</div>
+                  <div style={{fontSize:11,color:"var(--text3)"}}>{t.desc}</div>
+                </div>
+              </button>
+            ))}
+            <div style={{margin:"6px 0",height:1,background:"var(--border)"}}/>
+            <div style={{padding:"6px 10px",fontSize:10,color:"var(--text3)"}}>More tools coming soon…</div>
+          </div>
+        )}
+      </div>
     </div>
     <div style={{display:"flex",alignItems:"center",gap:10}}>
       <button onClick={()=>setDark(!dark)} style={{width:34,height:34,borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15}}>{dark?"☀️":"🌙"}</button>
-      
     </div>
   </nav>
-);
+  );
+};
 
 /* ────────────────────────────────────────────────
    HOME PAGE
@@ -1458,6 +1498,353 @@ const Footer = ({setPage}) => (
   </footer>
 );
 
+// ── DSA TOPIC EXPLORER PAGE ─────────────────────────────────────────────────
+// Self-contained — no backend needed, all data hardcoded
+
+const DSA_DATA = [
+  {
+    slug:"arrays", topic:"Arrays", category:"Foundations", difficulty:"Easy",
+    tuf:25, icon:"▦",
+    platforms:[
+      {name:"LeetCode",url:"https://leetcode.com/tag/array/",logo:"https://leetcode.com/favicon.ico",count:1500,easy:450,med:750,hard:300,tags:["Interview Prep","FAANG"],note:"Largest array problem set — essential for interviews"},
+      {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Arrays",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:400,easy:200,med:150,hard:50,tags:["Beginner Friendly","Articles"],note:"Best articles + problems for learning concepts"},
+      {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:50,easy:15,med:25,hard:10,tags:["Video Solutions","Blind 75"],note:"Curated 150 problems with video explanations"},
+      {name:"Codeforces",url:"https://codeforces.com/problemset?tags=arrays",logo:"https://codeforces.com/favicon.ico",count:800,easy:200,med:400,hard:200,tags:["Competitive","Rated"],note:"Competitive programming array problems"},
+      {name:"InterviewBit",url:"https://www.interviewbit.com/courses/programming/arrays/",logo:"https://www.interviewbit.com/favicon.ico",count:80,easy:20,med:45,hard:15,tags:["Interview Prep","Company Tags"],note:"Company-wise interview problems"},
+      {name:"CSES",url:"https://cses.fi/problemset/",logo:"https://cses.fi/favicon.ico",count:20,easy:8,med:8,hard:4,tags:["Gold Standard","Competitive"],note:"Classic problems every CP coder must solve"},
+    ]
+  },
+  {
+    slug:"binary-search", topic:"Binary Search", category:"Searching", difficulty:"Medium",
+    tuf:32, icon:"⟨⟩",
+    platforms:[
+      {name:"LeetCode",url:"https://leetcode.com/tag/binary-search/",logo:"https://leetcode.com/favicon.ico",count:230,easy:55,med:130,hard:45,tags:["Interview Prep","FAANG"],note:"Excellent tag with classic + advanced BS problems"},
+      {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Binary+Search",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:120,easy:60,med:45,hard:15,tags:["Beginner Friendly"],note:"Good conceptual articles with problems"},
+      {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:18,easy:5,med:10,hard:3,tags:["Video Solutions","Blind 75"],note:"All key binary search patterns covered"},
+      {name:"Codeforces",url:"https://codeforces.com/problemset?tags=binary+search",logo:"https://codeforces.com/favicon.ico",count:500,easy:100,med:250,hard:150,tags:["Competitive"],note:"Advanced BS on answers problems"},
+      {name:"CSES",url:"https://cses.fi/problemset/",logo:"https://cses.fi/favicon.ico",count:8,easy:2,med:4,hard:2,tags:["Gold Standard"],note:"Essential binary search problems"},
+    ]
+  },
+  {
+    slug:"two-pointers", topic:"Two Pointers", category:"Searching", difficulty:"Medium",
+    tuf:14, icon:"⇔",
+    platforms:[
+      {name:"LeetCode",url:"https://leetcode.com/tag/two-pointers/",logo:"https://leetcode.com/favicon.ico",count:230,easy:55,med:130,hard:45,tags:["Interview Prep","FAANG"],note:"Most commonly asked pattern in FAANG interviews"},
+      {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=two-pointer-technique",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:80,easy:30,med:40,hard:10,tags:["Beginner Friendly"],note:"Great technique articles and practice"},
+      {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:12,easy:3,med:7,hard:2,tags:["Video Solutions","Blind 75"],note:"All Blind 75 two-pointer problems covered"},
+      {name:"InterviewBit",url:"https://www.interviewbit.com/courses/programming/two-pointers/",logo:"https://www.interviewbit.com/favicon.ico",count:25,easy:8,med:13,hard:4,tags:["Interview Prep"],note:"Interview-focused two pointer problems"},
+    ]
+  },
+  {
+    slug:"sliding-window", topic:"Sliding Window", category:"Searching", difficulty:"Medium",
+    tuf:12, icon:"⊡",
+    platforms:[
+      {name:"LeetCode",url:"https://leetcode.com/tag/sliding-window/",logo:"https://leetcode.com/favicon.ico",count:120,easy:20,med:75,hard:25,tags:["Interview Prep","FAANG"],note:"Critical pattern for string + subarray problems"},
+      {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=sliding-window",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:55,easy:25,med:25,hard:5,tags:["Beginner Friendly"],note:"Good explanations for fixed + variable window"},
+      {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:11,easy:2,med:8,hard:1,tags:["Video Solutions","Blind 75"],note:"All classic sliding window patterns"},
+    ]
+  },
+  {
+    slug:"linked-list", topic:"Linked List", category:"Data Structures", difficulty:"Medium",
+    tuf:31, icon:"⬡",
+    platforms:[
+      {name:"LeetCode",url:"https://leetcode.com/tag/linked-list/",logo:"https://leetcode.com/favicon.ico",count:180,easy:60,med:90,hard:30,tags:["Interview Prep","FAANG"],note:"All major linked list patterns covered"},
+      {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Linked+List",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:150,easy:70,med:60,hard:20,tags:["Beginner Friendly"],note:"Best resource for learning LL from scratch"},
+      {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:15,easy:5,med:8,hard:2,tags:["Video Solutions","Blind 75"],note:"Clean visual explanations for pointer tricks"},
+      {name:"InterviewBit",url:"https://www.interviewbit.com/courses/programming/linked-lists/",logo:"https://www.interviewbit.com/favicon.ico",count:35,easy:12,med:18,hard:5,tags:["Interview Prep"],note:"Company-tagged LL problems"},
+    ]
+  },
+  {
+    slug:"stack-queue", topic:"Stack & Queue", category:"Data Structures", difficulty:"Medium",
+    tuf:23, icon:"⊞",
+    platforms:[
+      {name:"LeetCode",url:"https://leetcode.com/tag/stack/",logo:"https://leetcode.com/favicon.ico",count:200,easy:50,med:110,hard:40,tags:["Interview Prep","FAANG"],note:"Stack is everywhere — monotonic, calculator, etc."},
+      {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Stack",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:100,easy:45,med:45,hard:10,tags:["Beginner Friendly"],note:"Best articles on stack applications"},
+      {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:13,easy:3,med:8,hard:2,tags:["Video Solutions"],note:"Monotonic stack patterns covered well"},
+      {name:"CSES",url:"https://cses.fi/problemset/",logo:"https://cses.fi/favicon.ico",count:5,easy:2,med:2,hard:1,tags:["Gold Standard"],note:"Classic stack problems"},
+    ]
+  },
+  {
+    slug:"binary-trees", topic:"Binary Trees", category:"Trees", difficulty:"Medium",
+    tuf:39, icon:"⌥",
+    platforms:[
+      {name:"LeetCode",url:"https://leetcode.com/tag/binary-tree/",logo:"https://leetcode.com/favicon.ico",count:290,easy:90,med:155,hard:45,tags:["Interview Prep","FAANG"],note:"Most diverse tree problem collection"},
+      {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Tree",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:200,easy:80,med:90,hard:30,tags:["Beginner Friendly"],note:"Excellent tree traversal tutorials"},
+      {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:20,easy:6,med:11,hard:3,tags:["Video Solutions","Blind 75"],note:"All Blind 75 tree problems with visuals"},
+      {name:"InterviewBit",url:"https://www.interviewbit.com/courses/programming/trees/",logo:"https://www.interviewbit.com/favicon.ico",count:45,easy:15,med:22,hard:8,tags:["Interview Prep"],note:"Interview-focused tree problems"},
+      {name:"CSES",url:"https://cses.fi/problemset/",logo:"https://cses.fi/favicon.ico",count:12,easy:3,med:6,hard:3,tags:["Gold Standard"],note:"Competitive tree problems"},
+    ]
+  },
+  {
+    slug:"graphs", topic:"Graphs", category:"Graphs", difficulty:"Hard",
+    tuf:54, icon:"◎",
+    platforms:[
+      {name:"LeetCode",url:"https://leetcode.com/tag/graph/",logo:"https://leetcode.com/favicon.ico",count:320,easy:50,med:190,hard:80,tags:["Interview Prep","FAANG"],note:"Complete graph algorithms — BFS, DFS, Dijkstra, Union Find"},
+      {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Graph",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:300,easy:100,med:150,hard:50,tags:["Beginner Friendly"],note:"Best resource for learning graph algorithms"},
+      {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:20,easy:3,med:13,hard:4,tags:["Video Solutions","Blind 75"],note:"All graph patterns with clean video explanations"},
+      {name:"Codeforces",url:"https://codeforces.com/problemset?tags=graphs",logo:"https://codeforces.com/favicon.ico",count:1200,easy:200,med:600,hard:400,tags:["Competitive","Rated"],note:"Competitive graph problems — advanced techniques"},
+      {name:"CSES",url:"https://cses.fi/problemset/",logo:"https://cses.fi/favicon.ico",count:36,easy:8,med:18,hard:10,tags:["Gold Standard"],note:"The gold standard graph section for CP"},
+    ]
+  },
+  {
+    slug:"dynamic-programming", topic:"Dynamic Programming", category:"DP", difficulty:"Hard",
+    tuf:56, icon:"◈",
+    platforms:[
+      {name:"LeetCode",url:"https://leetcode.com/tag/dynamic-programming/",logo:"https://leetcode.com/favicon.ico",count:600,easy:90,med:370,hard:140,tags:["Interview Prep","FAANG"],note:"Most comprehensive DP collection — all patterns"},
+      {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Dynamic+Programming",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:350,easy:100,med:200,hard:50,tags:["Beginner Friendly"],note:"Best articles for understanding DP patterns"},
+      {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:28,easy:4,med:18,hard:6,tags:["Video Solutions","Blind 75"],note:"Pattern-based DP with visual state transitions"},
+      {name:"Codeforces",url:"https://codeforces.com/problemset?tags=dp",logo:"https://codeforces.com/favicon.ico",count:1500,easy:300,med:800,hard:400,tags:["Competitive","Rated"],note:"Advanced DP — bitmask, digit DP, tree DP"},
+      {name:"CSES",url:"https://cses.fi/problemset/",logo:"https://cses.fi/favicon.ico",count:19,easy:4,med:10,hard:5,tags:["Gold Standard"],note:"Classic DP problems — every one is a gem"},
+      {name:"InterviewBit",url:"https://www.interviewbit.com/courses/programming/dynamic-programming/",logo:"https://www.interviewbit.com/favicon.ico",count:60,easy:15,med:35,hard:10,tags:["Interview Prep"],note:"Interview DP with company tags"},
+    ]
+  },
+  {
+    slug:"greedy", topic:"Greedy", category:"Algorithms", difficulty:"Medium",
+    tuf:16, icon:"⚡",
+    platforms:[
+      {name:"LeetCode",url:"https://leetcode.com/tag/greedy/",logo:"https://leetcode.com/favicon.ico",count:280,easy:70,med:160,hard:50,tags:["Interview Prep","FAANG"],note:"Greedy is frequently asked in product companies"},
+      {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Greedy",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:120,easy:50,med:55,hard:15,tags:["Beginner Friendly"],note:"Good greedy proof techniques explained"},
+      {name:"Codeforces",url:"https://codeforces.com/problemset?tags=greedy",logo:"https://codeforces.com/favicon.ico",count:1800,easy:400,med:900,hard:500,tags:["Competitive","Rated"],note:"Largest greedy collection for CP"},
+      {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:8,easy:2,med:5,hard:1,tags:["Video Solutions"],note:"Key greedy patterns covered"},
+    ]
+  },
+  {
+    slug:"recursion", topic:"Recursion", category:"Foundations", difficulty:"Easy",
+    tuf:24, icon:"↺",
+    platforms:[
+      {name:"LeetCode",url:"https://leetcode.com/tag/recursion/",logo:"https://leetcode.com/favicon.ico",count:90,easy:30,med:45,hard:15,tags:["Interview Prep"],note:"Recursion + backtracking fundamentals"},
+      {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Recursion",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:80,easy:40,med:30,hard:10,tags:["Beginner Friendly"],note:"Best place to learn recursion from scratch"},
+      {name:"InterviewBit",url:"https://www.interviewbit.com/courses/programming/backtracking/",logo:"https://www.interviewbit.com/favicon.ico",count:20,easy:5,med:12,hard:3,tags:["Interview Prep"],note:"Backtracking interview problems"},
+    ]
+  },
+  {
+    slug:"heaps", topic:"Heaps", category:"Data Structures", difficulty:"Hard",
+    tuf:18, icon:"△",
+    platforms:[
+      {name:"LeetCode",url:"https://leetcode.com/tag/heap-priority-queue/",logo:"https://leetcode.com/favicon.ico",count:220,easy:25,med:135,hard:60,tags:["Interview Prep","FAANG"],note:"Priority queues appear in almost every FAANG round"},
+      {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Heap",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:80,easy:30,med:40,hard:10,tags:["Beginner Friendly"],note:"Heap construction and heap sort explained"},
+      {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:12,easy:2,med:8,hard:2,tags:["Video Solutions","Blind 75"],note:"Top K pattern problems well covered"},
+    ]
+  },
+  {
+    slug:"bst", topic:"BST", category:"Trees", difficulty:"Medium",
+    tuf:26, icon:"⌂",
+    platforms:[
+      {name:"LeetCode",url:"https://leetcode.com/tag/binary-search-tree/",logo:"https://leetcode.com/favicon.ico",count:130,easy:40,med:75,hard:15,tags:["Interview Prep","FAANG"],note:"BST insertion, deletion, validation patterns"},
+      {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Binary+Search+Tree",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:90,easy:40,med:40,hard:10,tags:["Beginner Friendly"],note:"Excellent BST theory + practice"},
+      {name:"InterviewBit",url:"https://www.interviewbit.com/courses/programming/tree-data-structure/",logo:"https://www.interviewbit.com/favicon.ico",count:30,easy:10,med:16,hard:4,tags:["Interview Prep"],note:"Company-tagged BST problems"},
+    ]
+  },
+  {
+    slug:"tries", topic:"Tries", category:"Advanced DS", difficulty:"Hard",
+    tuf:10, icon:"⊳",
+    platforms:[
+      {name:"LeetCode",url:"https://leetcode.com/tag/trie/",logo:"https://leetcode.com/favicon.ico",count:55,easy:8,med:32,hard:15,tags:["Interview Prep","FAANG"],note:"Trie problems appear in Google/Amazon interviews"},
+      {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Trie",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:30,easy:10,med:15,hard:5,tags:["Beginner Friendly"],note:"Build trie from scratch articles"},
+      {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:5,easy:1,med:3,hard:1,tags:["Video Solutions","Blind 75"],note:"All Blind 75 trie problems"},
+    ]
+  },
+  {
+    slug:"bit-manipulation", topic:"Bit Manipulation", category:"Algorithms", difficulty:"Medium",
+    tuf:20, icon:"⊕",
+    platforms:[
+      {name:"LeetCode",url:"https://leetcode.com/tag/bit-manipulation/",logo:"https://leetcode.com/favicon.ico",count:175,easy:65,med:85,hard:25,tags:["Interview Prep","FAANG"],note:"Bit tricks asked in product company interviews"},
+      {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Bit+Magic",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:80,easy:35,med:35,hard:10,tags:["Beginner Friendly"],note:"All bit manipulation tricks explained"},
+      {name:"Codeforces",url:"https://codeforces.com/problemset?tags=bitmasks",logo:"https://codeforces.com/favicon.ico",count:300,easy:60,med:150,hard:90,tags:["Competitive"],note:"Bitmask DP and XOR problems for CP"},
+    ]
+  },
+  {
+    slug:"string-algorithms", topic:"String Algorithms", category:"Algorithms", difficulty:"Hard",
+    tuf:22, icon:"Aa",
+    platforms:[
+      {name:"LeetCode",url:"https://leetcode.com/tag/string/",logo:"https://leetcode.com/favicon.ico",count:550,easy:175,med:285,hard:90,tags:["Interview Prep","FAANG"],note:"Strings are most common in OA rounds"},
+      {name:"GeeksforGeeks",url:"https://www.geeksforgeeks.org/explore?topic=Strings",logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",count:200,easy:80,med:90,hard:30,tags:["Beginner Friendly"],note:"KMP, Z-algorithm, Rabin-Karp explained"},
+      {name:"NeetCode",url:"https://neetcode.io/practice",logo:"https://neetcode.io/favicon.ico",count:16,easy:5,med:9,hard:2,tags:["Video Solutions","Blind 75"],note:"String manipulation patterns"},
+      {name:"CSES",url:"https://cses.fi/problemset/",logo:"https://cses.fi/favicon.ico",count:12,easy:2,med:6,hard:4,tags:["Gold Standard"],note:"Hashing + KMP for competitive programming"},
+    ]
+  },
+];
+
+const DSA_CATEGORIES = ["All", ...new Set(DSA_DATA.map(t => t.category))];
+
+const DIFF_COLOR = { Easy:"#00ff88", Medium:"#ffd60a", Hard:"#ff3d8a" };
+
+const DSAPage = ({ setPage }) => {
+  const [cat, setCat] = React.useState("All");
+  const [search, setSearch] = React.useState("");
+  const [selected, setSelected] = React.useState(null);
+  const [tip, setTip] = React.useState("");
+  const [tipLoading, setTipLoading] = React.useState(false);
+
+  const filtered = DSA_DATA.filter(t =>
+    (cat === "All" || t.category === cat) &&
+    (!search || t.topic.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  const fetchTip = async (slug) => {
+    setTipLoading(true);
+    setTip("");
+    try {
+      const r = await fetch(`/api/dsa/topics/${slug}/tip`, { method:"POST" });
+      const j = await r.json();
+      setTip(j.tip || "");
+    } catch {
+      setTip("Could not load tip — check your Groq API key is configured.");
+    }
+    setTipLoading(false);
+  };
+
+  return (
+    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+      {/* Header */}
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"40px 24px 32px"}}>
+        <div style={{maxWidth:1200,margin:"0 auto"}}>
+          <div className="sl">Student Tools</div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:16,marginBottom:24}}>
+            <div>
+              <h1 className="syne" style={{fontSize:34,fontWeight:800,marginBottom:6}}>
+                🧠 DSA <span className="gtext">Problem Explorer</span>
+              </h1>
+              <p style={{color:"var(--text2)",fontSize:14}}>
+                {DSA_DATA.length} topics · 8 platforms · TUF+ aligned · AI study tips
+              </p>
+            </div>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+              {[["LeetCode","#f89f1b"],["NeetCode","#00b8a3"],["GFG","#2f8d46"],["CSES","#4488cc"]].map(([p,c])=>(
+                <span key={p} style={{padding:"4px 10px",borderRadius:6,fontSize:11,fontWeight:700,background:`${c}18`,color:c,border:`1px solid ${c}30`}}>{p}</span>
+              ))}
+            </div>
+          </div>
+          {/* Search */}
+          <div style={{position:"relative",maxWidth:480}}>
+            <span style={{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",color:"var(--text3)"}}>🔍</span>
+            <input className="input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search topics — Arrays, DP, Graphs…" style={{padding:"11px 16px 11px 40px",fontSize:14}}/>
+          </div>
+          {/* Category tabs */}
+          <div style={{display:"flex",gap:6,marginTop:16,flexWrap:"wrap"}}>
+            {DSA_CATEGORIES.map(c=>(
+              <button key={c} onClick={()=>setCat(c)} style={{padding:"6px 14px",borderRadius:20,fontSize:12,fontWeight:600,border:"1px solid var(--border)",background:cat===c?"var(--purple)":"var(--card)",color:cat===c?"#fff":"var(--text2)",cursor:"pointer",transition:"all .15s"}}>
+                {c}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Grid + Detail Panel */}
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"28px 24px",display:"flex",gap:24,alignItems:"flex-start"}}>
+        {/* Topic Grid */}
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:12}}>
+            {filtered.map(t=>(
+              <div key={t.slug} onClick={()=>{setSelected(t);setTip("");}} className="hcard"
+                style={{padding:20,cursor:"pointer",border:`1px solid ${selected?.slug===t.slug?"var(--purple)":"var(--border)"}`,background:selected?.slug===t.slug?"rgba(124,77,255,.08)":"var(--card)",transition:"all .2s"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
+                  <span style={{fontSize:22,lineHeight:1}}>{t.icon}</span>
+                  <span style={{fontSize:10,fontWeight:700,padding:"3px 7px",borderRadius:4,background:`${DIFF_COLOR[t.difficulty]}18`,color:DIFF_COLOR[t.difficulty]}}>{t.difficulty}</span>
+                </div>
+                <div className="syne" style={{fontSize:14,fontWeight:700,marginBottom:4}}>{t.topic}</div>
+                <div style={{fontSize:11,color:"var(--text3)",marginBottom:10}}>{t.category}</div>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <span style={{fontSize:11,color:"var(--text2)"}}>🧩 {t.tuf} TUF problems</span>
+                  <span style={{fontSize:11,color:"var(--purple)"}}>📚 {t.platforms.length} sites</span>
+                </div>
+              </div>
+            ))}
+            {filtered.length===0&&(
+              <div style={{gridColumn:"1/-1",textAlign:"center",padding:"60px 20px",color:"var(--text2)"}}>
+                No topics found for "{search}"
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Detail Panel */}
+        {selected && (
+          <div style={{width:420,flexShrink:0,background:"var(--card)",border:"1px solid var(--border2)",borderRadius:18,padding:24,position:"sticky",top:80,maxHeight:"calc(100vh - 100px)",overflowY:"auto"}}>
+            {/* Header */}
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:18}}>
+              <div>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                  <span style={{fontSize:28}}>{selected.icon}</span>
+                  <h2 className="syne" style={{fontSize:20,fontWeight:800}}>{selected.topic}</h2>
+                </div>
+                <div style={{display:"flex",gap:6}}>
+                  <span style={{fontSize:10,padding:"3px 8px",borderRadius:5,background:"var(--bg3)",color:"var(--text2)"}}>{selected.category}</span>
+                  <span style={{fontSize:10,padding:"3px 8px",borderRadius:5,background:`${DIFF_COLOR[selected.difficulty]}18`,color:DIFF_COLOR[selected.difficulty],fontWeight:700}}>{selected.difficulty}</span>
+                  <span style={{fontSize:10,padding:"3px 8px",borderRadius:5,background:"rgba(124,77,255,.15)",color:"var(--purple)",fontWeight:700}}>🧩 {selected.tuf} TUF</span>
+                </div>
+              </div>
+              <button onClick={()=>setSelected(null)} style={{width:28,height:28,borderRadius:8,border:"1px solid var(--border)",background:"var(--bg2)",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center",color:"var(--text2)",flexShrink:0}}>✕</button>
+            </div>
+
+            <div style={{height:1,background:"var(--border)",margin:"0 0 18px"}}/>
+
+            {/* Platforms */}
+            <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>Practice Platforms</div>
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              {selected.platforms.map(p=>{
+                const total = p.easy+p.med+p.hard;
+                const ep = Math.round(p.easy/total*100), mp = Math.round(p.med/total*100), hp = 100-ep-mp;
+                return (
+                  <div key={p.name} style={{background:"var(--bg2)",borderRadius:12,padding:14,border:"1px solid var(--border)"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                      <div style={{display:"flex",alignItems:"center",gap:8}}>
+                        <img src={p.logo} alt={p.name} style={{width:18,height:18,borderRadius:4,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>
+                        <span style={{fontWeight:700,fontSize:13}}>{p.name}</span>
+                      </div>
+                      <span style={{fontSize:11,color:"var(--text3)"}}>{p.count}+ problems</span>
+                    </div>
+                    {/* Difficulty bar */}
+                    <div style={{display:"flex",height:5,borderRadius:3,overflow:"hidden",gap:1,marginBottom:8}}>
+                      <div style={{width:`${ep}%`,background:"#00ff88"}}/>
+                      <div style={{width:`${mp}%`,background:"#ffd60a"}}/>
+                      <div style={{width:`${hp}%`,background:"#ff3d8a"}}/>
+                    </div>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
+                      <div style={{display:"flex",gap:8}}>
+                        <span style={{fontSize:10,color:"#00ff88"}}>E:{p.easy}</span>
+                        <span style={{fontSize:10,color:"#ffd60a"}}>M:{p.med}</span>
+                        <span style={{fontSize:10,color:"#ff3d8a"}}>H:{p.hard}</span>
+                      </div>
+                      <div style={{display:"flex",gap:4,flexWrap:"wrap",justifyContent:"flex-end"}}>
+                        {p.tags.slice(0,2).map(t=>(
+                          <span key={t} style={{fontSize:9,padding:"2px 5px",borderRadius:3,background:"rgba(0,212,255,.1)",color:"var(--cyan)"}}>{t}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <div style={{fontSize:11,color:"var(--text2)",marginBottom:10,lineHeight:1.5}}>{p.note}</div>
+                    <a href={p.url} target="_blank" rel="noopener noreferrer"
+                      style={{display:"block",textAlign:"center",padding:"7px",borderRadius:8,background:"var(--purple)",color:"#fff",fontSize:12,fontWeight:600,textDecoration:"none",transition:"opacity .15s"}}
+                      onMouseEnter={e=>e.target.style.opacity=".85"} onMouseLeave={e=>e.target.style.opacity="1"}>
+                      Open Problems →
+                    </a>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* AI Tip */}
+            <div style={{marginTop:18}}>
+              <button onClick={()=>fetchTip(selected.slug)} disabled={tipLoading}
+                style={{width:"100%",padding:"11px",borderRadius:10,border:"1px solid var(--yellow)",background:"rgba(255,214,10,.08)",color:"var(--yellow)",fontSize:13,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,transition:"all .2s"}}>
+                {tipLoading ? "⏳ Generating tip…" : "💡 Get AI Study Tip"}
+              </button>
+              {tip && (
+                <div style={{marginTop:12,background:"rgba(255,214,10,.06)",border:"1px solid rgba(255,214,10,.2)",borderRadius:12,padding:14}}>
+                  <div style={{fontSize:11,fontWeight:700,color:"var(--yellow)",marginBottom:8}}>💡 AI Study Strategy</div>
+                  <div style={{fontSize:12,color:"var(--text)",lineHeight:1.7,whiteSpace:"pre-wrap"}}>{tip}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+
 /* ────────────────────────────────────────────────
    APP ROOT
 ──────────────────────────────────────────────── */
@@ -1483,6 +1870,7 @@ export default function App() {
           {page==="internships" && <InternshipsPage/>}
           {page==="events"      && <EventsPage/>}
           {page==="resources"   && <ResourcesPage/>}
+          {page==="dsa" && <DSAPage setPage={setPage}/>}
         </main>
         <Footer setPage={setPage}/>
         <HackBot hackathons={allHacks}/>

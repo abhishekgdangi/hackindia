@@ -9222,3 +9222,153 @@
 {"level":"info","message":"[Scrapers] Total events scraped: 399","timestamp":"2026-03-15 22:36:50"}
 {"level":"info","message":"✅ Live events: 3 new, 396 updated","timestamp":"2026-03-15 22:36:57"}
 {"level":"info","message":"📊 Final DB: 166 hackathons, 1025 internships, 560 events","timestamp":"2026-03-15 22:36:57"}
+{"level":"info","message":"Connected to MongoDB","timestamp":"2026-03-15 23:04:30"}
+{"level":"info","message":"Skipping DB clear — using upsert to preserve existing data","timestamp":"2026-03-15 23:04:30"}
+{"level":"info","message":"Running live hackathon scrapers…","timestamp":"2026-03-15 23:04:30"}
+{"level":"info","message":"[Scrapers] Running 6 hackathon scrapers…","timestamp":"2026-03-15 23:04:30"}
+{"level":"info","message":"  → Devpost (Tier 1)…","timestamp":"2026-03-15 23:04:30"}
+{"level":"info","message":"[Devpost] Starting scrape…","timestamp":"2026-03-15 23:04:30"}
+{"level":"info","message":"[Devpost] page 1 → 40 items","timestamp":"2026-03-15 23:04:42"}
+{"level":"info","message":"[Devpost] page 2 → 32 items","timestamp":"2026-03-15 23:04:45"}
+{"level":"info","message":"[Devpost] page 3 → 0 items","timestamp":"2026-03-15 23:04:48"}
+{"level":"info","message":"[Devpost] page 1 → 30 items","timestamp":"2026-03-15 23:04:51"}
+{"level":"info","message":"[Devpost] page 1 → 30 items","timestamp":"2026-03-15 23:04:53"}
+{"level":"info","message":"[Devpost] page 1 → 30 items","timestamp":"2026-03-15 23:04:55"}
+{"level":"info","message":"[Devpost] page 1 → 30 items","timestamp":"2026-03-15 23:04:58"}
+{"level":"info","message":"  ✔ Devpost: 72 hackathons","timestamp":"2026-03-15 23:05:00"}
+{"level":"info","message":"  → HackClub (Tier 1)…","timestamp":"2026-03-15 23:05:02"}
+{"level":"info","message":"[HackClub] Starting scrape…","timestamp":"2026-03-15 23:05:02"}
+{"level":"info","message":"[HackClub] API https://hackathons.hackclub.com/api/events/upcoming → 16 events","timestamp":"2026-03-15 23:05:07"}
+{"level":"info","message":"[HackClub] Returning 2","timestamp":"2026-03-15 23:05:07"}
+{"level":"info","message":"  ✔ HackClub: 2 hackathons","timestamp":"2026-03-15 23:05:07"}
+{"level":"info","message":"  → TAIKAI (Tier 1)…","timestamp":"2026-03-15 23:05:09"}
+{"level":"info","message":"[TAIKAI] Starting scrape…","timestamp":"2026-03-15 23:05:09"}
+{"level":"info","message":"[TAIKAI] HTML https://taikai.network/hackathons → 22 raw cards","timestamp":"2026-03-15 23:05:12"}
+{"level":"info","message":"[TAIKAI] Total: 1","timestamp":"2026-03-15 23:05:12"}
+{"level":"info","message":"  ✔ TAIKAI: 1 hackathons","timestamp":"2026-03-15 23:05:12"}
+{"level":"info","message":"  → Hackathon.com (Tier 2)…","timestamp":"2026-03-15 23:05:14"}
+{"level":"info","message":"[Hackathon.com] Starting scrape…","timestamp":"2026-03-15 23:05:14"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/online → 2","timestamp":"2026-03-15 23:05:16"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/india → 0","timestamp":"2026-03-15 23:05:20"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/ai → 4","timestamp":"2026-03-15 23:05:27"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/machine-learning → 0","timestamp":"2026-03-15 23:05:34"}
+{"level":"info","message":"[Hackathon.com] https://www.hackathon.com/theme/open-source → 0","timestamp":"2026-03-15 23:05:40"}
+{"level":"info","message":"[Hackathon.com] Total: 2","timestamp":"2026-03-15 23:05:42"}
+{"level":"info","message":"  ✔ Hackathon.com: 2 hackathons","timestamp":"2026-03-15 23:05:42"}
+{"level":"info","message":"  → DevEvents (Tier 2)…","timestamp":"2026-03-15 23:05:45"}
+{"level":"info","message":"[DevEvents] Starting scrape…","timestamp":"2026-03-15 23:05:45"}
+{"level":"info","message":"[DevEvents] HTML → 1 hackathons","timestamp":"2026-03-15 23:05:52"}
+{"level":"info","message":"[DevEvents] Total: 1","timestamp":"2026-03-15 23:05:52"}
+{"level":"info","message":"  ✔ DevEvents: 1 hackathons","timestamp":"2026-03-15 23:05:52"}
+{"level":"info","message":"  → HackerEarth (Tier 3)…","timestamp":"2026-03-15 23:05:54"}
+{"level":"info","message":"[HackerEarth] Starting scrape…","timestamp":"2026-03-15 23:05:54"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/data/?type=hackathon attempt 1/3 — 404","timestamp":"2026-03-15 23:06:02"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/data/?type=hackathon attempt 2/3 — 404","timestamp":"2026-03-15 23:06:05"}
+{"level":"warn","message":"[HackerEarth] GET https://www.hackerearth.com/challenges/data/?type=hackathon attempt 3/3 — 404","timestamp":"2026-03-15 23:06:09"}
+{"level":"warn","message":"[HackerEarth] API https://www.hackerearth.com/challenges/data/?type=hackathon failed: Request failed with status code 404","timestamp":"2026-03-15 23:06:09"}
+{"level":"info","message":"[HackerEarth] HTML cards → 77","timestamp":"2026-03-15 23:06:12"}
+{"level":"info","message":"[HackerEarth] Returning 14 hackathons","timestamp":"2026-03-15 23:06:12"}
+{"level":"info","message":"  ✔ HackerEarth: 14 hackathons","timestamp":"2026-03-15 23:06:12"}
+{"level":"info","message":"[Scrapers] Total hackathons scraped: 92","timestamp":"2026-03-15 23:06:15"}
+{"level":"info","message":"✅ Live hackathons: 0 new, 92 updated","timestamp":"2026-03-15 23:06:17"}
+{"level":"info","message":"Running live internship scrapers…","timestamp":"2026-03-15 23:06:17"}
+{"level":"info","message":"[Scrapers] Running 2 internship scrapers…","timestamp":"2026-03-15 23:06:17"}
+{"level":"info","message":"  → Internshala…","timestamp":"2026-03-15 23:06:17"}
+{"level":"info","message":"[Internshala] Starting scrape…","timestamp":"2026-03-15 23:06:17"}
+{"level":"info","message":"[Internshala] computer-science-internship HTML → 100 internships","timestamp":"2026-03-15 23:06:18"}
+{"level":"info","message":"[Internshala] web-development-internship HTML → 100 internships","timestamp":"2026-03-15 23:06:22"}
+{"level":"info","message":"[Internshala] machine-learning-internship HTML → 100 internships","timestamp":"2026-03-15 23:06:25"}
+{"level":"info","message":"[Internshala] data-science-internship HTML → 100 internships","timestamp":"2026-03-15 23:06:27"}
+{"level":"info","message":"[Internshala] android-development-internship HTML → 80 internships","timestamp":"2026-03-15 23:06:31"}
+{"level":"info","message":"[Internshala] python-internship HTML → 84 internships","timestamp":"2026-03-15 23:06:33"}
+{"level":"info","message":"[Internshala] work-from-home-internship HTML → 80 internships","timestamp":"2026-03-15 23:06:36"}
+{"level":"info","message":"[Internshala] artificial-intelligence-internship HTML → 80 internships","timestamp":"2026-03-15 23:06:39"}
+{"level":"info","message":"[Internshala] blockchain-internship HTML → 12 internships","timestamp":"2026-03-15 23:06:41"}
+{"level":"info","message":"[Internshala] cloud-computing-internship HTML → 74 internships","timestamp":"2026-03-15 23:06:44"}
+{"level":"info","message":"[Internshala] cybersecurity-internship HTML → 50 internships","timestamp":"2026-03-15 23:06:54"}
+{"level":"info","message":"[Internshala] ui-ux-internship HTML → 100 internships","timestamp":"2026-03-15 23:07:05"}
+{"level":"info","message":"[Internshala] java-internship HTML → 102 internships","timestamp":"2026-03-15 23:07:13"}
+{"level":"info","message":"[Internshala] react-js-internship HTML → 80 internships","timestamp":"2026-03-15 23:07:18"}
+{"level":"info","message":"[Internshala] node-js-internship HTML → 80 internships","timestamp":"2026-03-15 23:07:23"}
+{"level":"info","message":"[Internshala] devops-internship HTML → 22 internships","timestamp":"2026-03-15 23:07:28"}
+{"level":"info","message":"[Internshala] Total internships found: 1244","timestamp":"2026-03-15 23:07:30"}
+{"level":"info","message":"  ✔ Internshala: 1244 internships","timestamp":"2026-03-15 23:07:30"}
+{"level":"info","message":"  → Remotive…","timestamp":"2026-03-15 23:07:32"}
+{"level":"info","message":"[Remotive] Starting scrape…","timestamp":"2026-03-15 23:07:32"}
+{"level":"info","message":"[Remotive] software-dev → 2 jobs","timestamp":"2026-03-15 23:07:33"}
+{"level":"info","message":"[Remotive] data → 0 jobs","timestamp":"2026-03-15 23:07:35"}
+{"level":"info","message":"[Remotive] devops-sysadmin → 2 jobs","timestamp":"2026-03-15 23:07:39"}
+{"level":"info","message":"[Remotive] mobile-dev → 2 jobs","timestamp":"2026-03-15 23:07:45"}
+{"level":"info","message":"[Remotive] Total: 6","timestamp":"2026-03-15 23:07:46"}
+{"level":"info","message":"  ✔ Remotive: 6 internships","timestamp":"2026-03-15 23:07:46"}
+{"level":"info","message":"[Scrapers] Total internships scraped: 1250","timestamp":"2026-03-15 23:07:48"}
+{"level":"info","message":"✅ Live internships: 3 new, 800 updated","timestamp":"2026-03-15 23:08:20"}
+{"level":"info","message":"Running live event scrapers…","timestamp":"2026-03-15 23:08:20"}
+{"level":"info","message":"[Scrapers] Running 6 event scrapers…","timestamp":"2026-03-15 23:08:20"}
+{"level":"info","message":"  → Eventbrite…","timestamp":"2026-03-15 23:08:20"}
+{"level":"info","message":"[Eventbrite] Starting scrape…","timestamp":"2026-03-15 23:08:20"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india/technology/: 17 total so far","timestamp":"2026-03-15 23:08:29"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india/free--science-and-tech--events/: 31 total so far","timestamp":"2026-03-15 23:08:47"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india/tech--conferences/: 45 total so far","timestamp":"2026-03-15 23:09:28"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india/science-and-tech--expos/: 50 total so far","timestamp":"2026-03-15 23:09:40"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india/science-and-tech--exhibitions/: 50 total so far","timestamp":"2026-03-15 23:09:57"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india--bangalore/technology/: 59 total so far","timestamp":"2026-03-15 23:11:14"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india--mumbai/technology/: 68 total so far","timestamp":"2026-03-15 23:11:27"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india--delhi/technology/: 78 total so far","timestamp":"2026-03-15 23:11:48"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india--hyderabad/technology/: 87 total so far","timestamp":"2026-03-15 23:11:57"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india--pune/technology/: 93 total so far","timestamp":"2026-03-15 23:12:03"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/online/tech--expos--india/: 105 total so far","timestamp":"2026-03-15 23:12:08"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/online/india--technology/: 112 total so far","timestamp":"2026-03-15 23:12:15"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india/artificial-intelligence/: 116 total so far","timestamp":"2026-03-15 23:12:21"}
+{"level":"info","message":"[Eventbrite] https://www.eventbrite.com/d/india--bangalore/artificial-intelligence/: 121 total so far","timestamp":"2026-03-15 23:12:26"}
+{"level":"info","message":"[Eventbrite] Total: 121 events","timestamp":"2026-03-15 23:12:28"}
+{"level":"info","message":"  ✔ Eventbrite: 121 events","timestamp":"2026-03-15 23:12:28"}
+{"level":"info","message":"  → GoogleDev…","timestamp":"2026-03-15 23:12:30"}
+{"level":"info","message":"[GoogleDev] Starting scrape…","timestamp":"2026-03-15 23:12:30"}
+{"level":"info","message":"[GoogleDev] HTML: 11 events","timestamp":"2026-03-15 23:12:31"}
+{"level":"info","message":"  ✔ GoogleDev: 11 events","timestamp":"2026-03-15 23:12:31"}
+{"level":"info","message":"  → Luma…","timestamp":"2026-03-15 23:12:33"}
+{"level":"info","message":"[Luma] Starting scrape…","timestamp":"2026-03-15 23:12:33"}
+{"level":"info","message":"[Luma] Discover India page 1 → 39","timestamp":"2026-03-15 23:12:34"}
+{"level":"info","message":"[Luma] Discover India page 2 → 41","timestamp":"2026-03-15 23:12:35"}
+{"level":"info","message":"[Luma] Discover Bengaluru page 1 → 39","timestamp":"2026-03-15 23:12:37"}
+{"level":"info","message":"[Luma] Discover Mumbai page 1 → 39","timestamp":"2026-03-15 23:12:37"}
+{"level":"info","message":"[Luma] Discover Hyderabad page 1 → 39","timestamp":"2026-03-15 23:12:37"}
+{"level":"info","message":"[Luma] Discover Pune page 1 → 39","timestamp":"2026-03-15 23:12:38"}
+{"level":"info","message":"[Luma] Discover Chennai page 1 → 39","timestamp":"2026-03-15 23:12:38"}
+{"level":"info","message":"[Luma] Discover Delhi page 1 → 39","timestamp":"2026-03-15 23:12:39"}
+{"level":"info","message":"[Luma] Total: 80 events","timestamp":"2026-03-15 23:13:05"}
+{"level":"info","message":"  ✔ Luma: 80 events","timestamp":"2026-03-15 23:13:05"}
+{"level":"info","message":"  → HasGeek…","timestamp":"2026-03-15 23:13:07"}
+{"level":"info","message":"[HasGeek] Starting scrape…","timestamp":"2026-03-15 23:13:07"}
+{"level":"info","message":"[HasGeek] https://hasgeek.com/: 21 events","timestamp":"2026-03-15 23:13:08"}
+{"level":"info","message":"[HasGeek] https://hasgeek.com/rootconf: 17 events","timestamp":"2026-03-15 23:13:08"}
+{"level":"info","message":"[HasGeek] https://hasgeek.com/jsfoo: 2 events","timestamp":"2026-03-15 23:13:08"}
+{"level":"info","message":"[HasGeek] https://hasgeek.com/metarefresh: 1 events","timestamp":"2026-03-15 23:13:08"}
+{"level":"info","message":"[HasGeek] https://hasgeek.com/droidconin: 1 events","timestamp":"2026-03-15 23:13:08"}
+{"level":"info","message":"[HasGeek] https://hasgeek.com/generativeAI: 11 events","timestamp":"2026-03-15 23:13:08"}
+{"level":"info","message":"[HasGeek] https://hasgeek.com/fifthelephant: 12 events","timestamp":"2026-03-15 23:13:09"}
+{"level":"info","message":"[HasGeek] https://hasgeek.com/PyConIndia: 1 events","timestamp":"2026-03-15 23:13:09"}
+{"level":"info","message":"[HasGeek] Total: 66 events","timestamp":"2026-03-15 23:13:09"}
+{"level":"info","message":"  ✔ HasGeek: 66 events","timestamp":"2026-03-15 23:13:09"}
+{"level":"info","message":"  → IndiaExpos…","timestamp":"2026-03-15 23:13:11"}
+{"level":"info","message":"[IndiaExpos] Starting scrape…","timestamp":"2026-03-15 23:13:11"}
+{"level":"info","message":"[IndiaExpos] Total: 8 expos","timestamp":"2026-03-15 23:13:11"}
+{"level":"info","message":"  ✔ IndiaExpos: 8 events","timestamp":"2026-03-15 23:13:11"}
+{"level":"info","message":"  → AllEvents…","timestamp":"2026-03-15 23:13:13"}
+{"level":"info","message":"[AllEvents] Starting scrape…","timestamp":"2026-03-15 23:13:13"}
+{"level":"info","message":"[AllEvents] Bengaluru (tech): +11 events","timestamp":"2026-03-15 23:13:14"}
+{"level":"info","message":"[AllEvents] Mumbai (tech): +8 events","timestamp":"2026-03-15 23:13:16"}
+{"level":"info","message":"[AllEvents] Hyderabad (tech): +15 events","timestamp":"2026-03-15 23:13:18"}
+{"level":"info","message":"[AllEvents] Delhi (tech): +48 events","timestamp":"2026-03-15 23:13:20"}
+{"level":"info","message":"[AllEvents] Chennai (tech): +1 events","timestamp":"2026-03-15 23:13:22"}
+{"level":"info","message":"[AllEvents] Bengaluru (workshop): +15 events","timestamp":"2026-03-15 23:13:25"}
+{"level":"info","message":"[AllEvents] Mumbai (workshop): +15 events","timestamp":"2026-03-15 23:13:27"}
+{"level":"info","message":"[AllEvents] Kolkata (tech): +1 events","timestamp":"2026-03-15 23:13:29"}
+{"level":"info","message":"[AllEvents] Total: 114 events","timestamp":"2026-03-15 23:13:31"}
+{"level":"info","message":"  ✔ AllEvents: 114 events","timestamp":"2026-03-15 23:13:31"}
+{"level":"info","message":"[Scrapers] Total events scraped: 400","timestamp":"2026-03-15 23:13:33"}
+{"level":"info","message":"✅ Live events: 1 new, 399 updated","timestamp":"2026-03-15 23:13:33"}
+{"level":"info","message":"📅 Backfilled dateISO for 95 events","timestamp":"2026-03-15 23:13:33"}
+{"level":"info","message":"🗑  Removed 76 expired events","timestamp":"2026-03-15 23:13:33"}
+{"level":"info","message":"📊 Final DB: 166 hackathons, 1028 internships, 485 events","timestamp":"2026-03-15 23:13:33"}
