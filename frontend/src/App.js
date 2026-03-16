@@ -1668,50 +1668,210 @@ const DSA_CATEGORIES = ["All", ...new Set(DSA_DATA.map(t => t.category))];
 
 const DIFF_COLOR = { Easy:"#00ff88", Medium:"#ffd60a", Hard:"#ff3d8a" };
 
-// Correct working search URLs for each platform — never 404
+// ── PROBLEM LINKS LOOKUP ─────────────────────────────────────────────────────
+// lc = LeetCode slug, gfg = GFG slug (used in geeksforgeeks.org/problems/{slug}/1)
+// If lc is null → falls back to LeetCode tag search for that topic
+const PROBLEM_LINKS = {
+  // Arrays
+  "Majority Element I":                     { lc:"majority-element",                          gfg:"majority-element/1" },
+  "Leaders in an Array":                    { lc:null,                                         gfg:"leaders-in-an-array/1" },
+  "Rearrange Array Elements by Sign":       { lc:"rearrange-array-elements-by-sign",          gfg:"rearrange-array-elements-by-sign/1" },
+  "Spiral Matrix":                          { lc:"spiral-matrix",                             gfg:"spirally-traversing-a-matrix-1587115621/1" },
+  "Pascal's Triangle I":                    { lc:"pascals-triangle",                          gfg:"pascal-triangle0652/1" },
+  "Pascal's Triangle II":                   { lc:"pascals-triangle-ii",                       gfg:"pascal-triangle0652/1" },
+  "Pascal's Triangle III":                  { lc:null,                                         gfg:"pascal-triangle0652/1" },
+  "Rotate Matrix by 90°":                   { lc:"rotate-image",                              gfg:"rotate-by-90-degree/1" },
+  "Two Sum":                                { lc:"two-sum",                                    gfg:"key-pair5616/1" },
+  "3 Sum":                                  { lc:"3sum",                                       gfg:"triplet-sum-in-array/1" },
+  "4 Sum":                                  { lc:"4sum",                                       gfg:"find-all-four-sum-numbers/1" },
+  "Sort Array of 0s, 1s, 2s":              { lc:"sort-colors",                               gfg:"sort-an-array-of-0s-1s-and-2s/1" },
+  "Kadane's Algorithm":                     { lc:"maximum-subarray",                          gfg:"kadanes-algorithm-1587115620/1" },
+  "Next Permutation":                       { lc:"next-permutation",                          gfg:"next-permutation5226/1" },
+  "Longest Consecutive Sequence":           { lc:"longest-consecutive-sequence",              gfg:"consecutive-elements/1" },
+  "Longest Subarray with Sum K":            { lc:null,                                         gfg:"longest-sub-array-with-sum-k/1" },
+  "Count Subarrays with Given Sum":         { lc:"subarray-sum-equals-k",                     gfg:"subarray-with-given-sum/1" },
+  "Count Subarrays with XOR = K":          { lc:null,                                         gfg:"count-subarray-with-given-xor/1" },
+  "Majority Element II":                    { lc:"majority-element-ii",                        gfg:"majority-vote/1" },
+  "Find Repeating and Missing Number":      { lc:null,                                         gfg:"find-missing-and-repeating/1" },
+  "Count Inversions":                       { lc:null,                                         gfg:"inversion-of-array-1587115620/1" },
+  "Reverse Pairs":                          { lc:"reverse-pairs",                             gfg:"count-inversions/1" },
+  "Maximum Product Subarray":               { lc:"maximum-product-subarray",                  gfg:"maximum-product-subarray3604/1" },
+  "Merge Two Sorted Arrays Without Extra Space": { lc:"merge-sorted-array",                   gfg:"merge-two-sorted-arrays-in-o1-extra-space/1" },
+  // Binary Search
+  "Search X in Sorted Array":              { lc:"binary-search",                              gfg:"who-will-win-1587115621/1" },
+  "Search Insert Position":                 { lc:"search-insert-position",                    gfg:"search-insert-position-of-k-in-a-sorted-array/1" },
+  "First and Last Occurrence":              { lc:"find-first-and-last-position-of-element-in-sorted-array", gfg:"first-and-last-occurrences-of-x/1" },
+  "Search in Rotated Sorted Array I":       { lc:"search-in-rotated-sorted-array",            gfg:"search-in-a-rotated-array/1" },
+  "Search in Rotated Sorted Array II":      { lc:"search-in-rotated-sorted-array-ii",         gfg:"search-in-a-rotated-array/1" },
+  "Find Minimum in Rotated Sorted Array":   { lc:"find-minimum-in-rotated-sorted-array",      gfg:"minimum-element-in-a-sorted-and-rotated-array/1" },
+  "Single Element in Sorted Array":         { lc:"single-element-in-a-sorted-array",          gfg:"find-the-element-that-appears-once-in-sorted-array/1" },
+  "Find Square Root of a Number":           { lc:"sqrtx",                                      gfg:"square-root/1" },
+  "Find Nth Root of a Number":              { lc:null,                                         gfg:"nth-root-of-m/1" },
+  "Koko Eating Bananas":                    { lc:"koko-eating-bananas",                        gfg:null },
+  "Find Peak Element":                      { lc:"find-peak-element",                         gfg:"peak-element/1" },
+  "Median of 2 Sorted Arrays":              { lc:"median-of-two-sorted-arrays",               gfg:"median-of-two-sorted-arrays/1" },
+  "Kth Element of 2 Sorted Arrays":         { lc:null,                                         gfg:"kth-element-of-two-sorted-array/1" },
+  "Split Array - Largest Sum":              { lc:"split-array-largest-sum",                   gfg:"allocate-minimum-number-of-pages/1" },
+  "Search in a 2D Matrix":                  { lc:"search-a-2d-matrix",                        gfg:"search-in-a-matrix/1" },
+  "Search in 2D Matrix II":                 { lc:"search-a-2d-matrix-ii",                     gfg:"search-in-a-matrix/1" },
+  "Find Peak Element II":                   { lc:"find-a-peak-element-ii",                    gfg:null },
+  // Linked List
+  "Reverse a Linked List":                  { lc:"reverse-linked-list",                       gfg:"reverse-a-linked-list/1" },
+  "Find Middle of LL":                      { lc:"middle-of-the-linked-list",                 gfg:"finding-middle-element-in-a-linked-list/1" },
+  "Detect Loop in LL":                      { lc:"linked-list-cycle",                         gfg:"detect-loop-in-linked-list/1" },
+  "Find Starting Point of Loop":            { lc:"linked-list-cycle-ii",                      gfg:"find-the-first-node-of-loop-in-linked-list/1" },
+  "Remove Nth Node from Back":              { lc:"remove-nth-node-from-end-of-list",          gfg:"nth-node-from-end-of-linked-list/1" },
+  "Merge Two Sorted Lists":                 { lc:"merge-two-sorted-lists",                    gfg:"merge-two-sorted-linked-lists/1" },
+  "Check if LL is Palindrome":              { lc:"palindrome-linked-list",                    gfg:"check-if-linked-list-is-pallindrome/1" },
+  "Intersection Point of Y LL":             { lc:"intersection-of-two-linked-lists",          gfg:"intersection-point-in-y-shapped-linked-lists/1" },
+  "Rotate a Linked List":                   { lc:"rotate-list",                               gfg:"rotate-a-linked-list/1" },
+  "Reverse LL in Groups of K":              { lc:"reverse-nodes-in-k-group",                  gfg:"reverse-a-linked-list-in-groups-of-given-size/1" },
+  "Flatten a Linked List":                  { lc:null,                                         gfg:"flattening-a-linked-list/1" },
+  "Sort LL":                                { lc:"sort-list",                                  gfg:"sort-a-linked-list/1" },
+  "Clone LL with Random & Next Pointer":    { lc:"copy-list-with-random-pointer",             gfg:"clone-a-linked-list-with-next-and-random-pointer/1" },
+  "Add Two Numbers in LL":                  { lc:"add-two-numbers",                           gfg:"add-two-numbers-represented-by-linked-lists/1" },
+  // Bit Manipulation
+  "Single Number I":                        { lc:"single-number",                              gfg:"single-number/1" },
+  "Single Number II":                       { lc:"single-number-ii",                          gfg:null },
+  "Single Number III":                      { lc:"single-number-iii",                         gfg:null },
+  "Power Set using Bits":                   { lc:"subsets",                                    gfg:"power-set4302/1" },
+  // Greedy
+  "Assign Cookies":                         { lc:"assign-cookies",                             gfg:null },
+  "Lemonade Change":                        { lc:"lemonade-change",                            gfg:null },
+  "Jump Game I":                            { lc:"jump-game",                                  gfg:"jump-game/1" },
+  "N Meetings in One Room":                 { lc:null,                                         gfg:"n-meetings-in-one-room/1" },
+  "Non-overlapping Intervals":              { lc:"non-overlapping-intervals",                  gfg:null },
+  "Insert Interval":                        { lc:"insert-interval",                            gfg:null },
+  "Minimum Platforms for Railway":          { lc:null,                                         gfg:"minimum-platforms/1" },
+  "Candy":                                  { lc:"candy",                                      gfg:null },
+  // Sliding Window
+  "Longest Substring Without Repeating Characters": { lc:"longest-substring-without-repeating-characters", gfg:"length-of-the-longest-substring/1" },
+  "Max Consecutive Ones III":               { lc:"max-consecutive-ones-iii",                  gfg:null },
+  "Fruits Into Baskets":                    { lc:"fruit-into-baskets",                        gfg:"fruit-into-baskets/1" },
+  "Minimum Window Substring":               { lc:"minimum-window-substring",                  gfg:"smallest-window-in-a-string-containing-all-the-characters-of-another-string/1" },
+  // Stack & Queue
+  "Balanced Parenthesis":                   { lc:"valid-parentheses",                         gfg:"parenthesis-checker2744/1" },
+  "Next Greater Element I":                 { lc:"next-greater-element-i",                    gfg:"next-larger-element/1" },
+  "Next Greater Element II":                { lc:"next-greater-element-ii",                   gfg:"next-greater-element/1" },
+  "Implement Min Stack":                    { lc:"min-stack",                                  gfg:"get-minimum-element-from-stack/1" },
+  "Sliding Window Maximum":                 { lc:"sliding-window-maximum",                    gfg:"maximum-of-all-subarrays-of-size-k3/1" },
+  "Trapping Rainwater":                     { lc:"trapping-rain-water",                       gfg:"trapping-rain-water/1" },
+  "Largest Rectangle in Histogram":         { lc:"largest-rectangle-in-histogram",            gfg:"maximum-rectangular-area-in-a-histogram-1587115620/1" },
+  "LRU Cache":                              { lc:"lru-cache",                                  gfg:"lru-cache/1" },
+  "LFU Cache":                              { lc:"lfu-cache",                                  gfg:null },
+  // Binary Trees
+  "Maximum Depth of BT":                    { lc:"maximum-depth-of-binary-tree",              gfg:"height-of-binary-tree/1" },
+  "Diameter of Binary Tree":                { lc:"diameter-of-binary-tree",                   gfg:"diameter-of-binary-tree/1" },
+  "Maximum Path Sum":                       { lc:"binary-tree-maximum-path-sum",              gfg:"maximum-path-sum-from-any-node/1" },
+  "LCA in BT":                              { lc:"lowest-common-ancestor-of-a-binary-tree",   gfg:"lowest-common-ancestor-in-a-binary-tree/1" },
+  "Serialize and Deserialize BT":           { lc:"serialize-and-deserialize-binary-tree",     gfg:"serialize-and-deserialize-a-binary-tree/1" },
+  "Construct BT from Preorder & Inorder":   { lc:"construct-binary-tree-from-preorder-and-inorder-traversal", gfg:"construct-tree-1/1" },
+  "Construct BT from Postorder & Inorder":  { lc:"construct-binary-tree-from-inorder-and-postorder-traversal", gfg:"construct-tree-from-inorder-and-postorder/1" },
+  // BST
+  "Search in BST":                          { lc:"search-in-a-binary-search-tree",            gfg:"search-a-node-in-bst/1" },
+  "Delete a Node in BST":                   { lc:"delete-node-in-a-bst",                      gfg:"delete-a-node-from-bst/1" },
+  "LCA in BST":                             { lc:"lowest-common-ancestor-of-a-binary-search-tree", gfg:"lowest-common-ancestor-in-a-bst/1" },
+  "Kth Smallest and Largest Element":       { lc:"kth-smallest-element-in-a-bst",             gfg:"kth-largest-element-in-bst/1" },
+  "Two Sum in BST":                         { lc:"two-sum-iv-input-is-a-bst",                 gfg:null },
+  // Heaps
+  "Kth Largest Element in Array":           { lc:"kth-largest-element-in-an-array",           gfg:"kth-largest-element-in-an-array/1" },
+  "Kth Largest in Running Stream":          { lc:"kth-largest-element-in-a-stream",           gfg:null },
+  // Graphs
+  "Number of Islands":                      { lc:"number-of-islands",                         gfg:"find-the-number-of-islands/1" },
+  "Flood Fill Algorithm":                   { lc:"flood-fill",                                 gfg:"flood-fill-algorithm/1" },
+  "Rotten Oranges":                         { lc:"rotting-oranges",                           gfg:"rotten-oranges/1" },
+  "Surrounded Regions":                     { lc:"surrounded-regions",                        gfg:"replace-os-with-xs/1" },
+  "Bipartite Graph":                        { lc:"is-graph-bipartite",                        gfg:"bipartite-graph/1" },
+  "Course Schedule I & II":                 { lc:"course-schedule",                           gfg:"course-schedule/1" },
+  "Alien Dictionary":                       { lc:null,                                         gfg:"alien-dictionary/1" },
+  "Dijkstra's Algorithm":                   { lc:null,                                         gfg:"implementing-dijkstra-set-1-adjacency-matrix/1" },
+  "Cheapest Flights within K Stops":        { lc:"cheapest-flights-within-k-stops",           gfg:null },
+  "Accounts Merge":                         { lc:"accounts-merge",                             gfg:null },
+  "Bridges in Graph":                       { lc:"critical-connections-in-a-network",         gfg:"bridge-edge-in-graph/1" },
+  // Dynamic Programming
+  "Climbing Stairs":                        { lc:"climbing-stairs",                            gfg:"count-ways-to-reach-the-nth-stair-1587115620/1" },
+  "House Robber":                           { lc:"house-robber",                               gfg:"house-robber/1" },
+  "Grid Unique Paths":                      { lc:"unique-paths",                               gfg:"number-of-unique-paths5339/1" },
+  "Unique Paths II":                        { lc:"unique-paths-ii",                           gfg:null },
+  "Longest Increasing Subsequence":         { lc:"longest-increasing-subsequence",            gfg:"longest-increasing-subsequence/1" },
+  "Longest Common Subsequence":             { lc:"longest-common-subsequence",                gfg:"longest-common-subsequence-1587115620/1" },
+  "Edit Distance":                          { lc:"edit-distance",                              gfg:"edit-distance3702/1" },
+  "0-1 Knapsack":                           { lc:null,                                         gfg:"0-1-knapsack-problem/1" },
+  "Coin Change II":                         { lc:"coin-change-ii",                            gfg:"coin-change2448/1" },
+  "Subset Sum Equals to Target":            { lc:null,                                         gfg:"subset-sum-problem-1611555638/1" },
+  "Minimum Coins":                          { lc:"coin-change",                               gfg:"number-of-coins/1" },
+  "Wildcard Matching":                      { lc:"wildcard-matching",                         gfg:"wildcard-string-matching/1" },
+  "Burst Balloons":                         { lc:"burst-balloons",                             gfg:null },
+  "Partition Equal Subset Sum":             { lc:"partition-equal-subset-sum",                gfg:"subset-sum-problem/1" },
+  "Best Time to Buy and Sell Stock I":      { lc:"best-time-to-buy-and-sell-stock",           gfg:"stock-buy-and-sell/1" },
+  "Best Time to Buy and Sell Stock II":     { lc:"best-time-to-buy-and-sell-stock-ii",        gfg:"stock-buy-and-sell2/1" },
+  // Tries
+  "Maximum XOR of Two Numbers":             { lc:"maximum-xor-of-two-numbers-in-an-array",    gfg:"maximum-xor-of-two-numbers-in-an-array/1" },
+  // Strings
+  "Reverse Every Word in a String":         { lc:"reverse-words-in-a-string",                 gfg:"reverse-words-in-a-given-string/1" },
+  "KMP Algorithm / LPS Array":              { lc:"find-the-index-of-the-first-occurrence-in-a-string", gfg:"implement-kmp-algorithm/1" },
+  "Shortest Palindrome":                    { lc:"shortest-palindrome",                       gfg:null },
+  // Recursion
+  "Pow(x,n)":                               { lc:"powx-n",                                    gfg:"power-of-numbers/1" },
+  "Generate Parentheses":                   { lc:"generate-parentheses",                      gfg:"generate-all-possible-parentheses/1" },
+  "Combination Sum":                        { lc:"combination-sum",                           gfg:"combination-sum/1" },
+  "Combination Sum II":                     { lc:"combination-sum-ii",                        gfg:null },
+  "Subsets I":                              { lc:"subsets",                                    gfg:"find-subsets/1" },
+  "Subsets II":                             { lc:"subsets-ii",                                gfg:null },
+  "Letter Combinations of a Phone Number":  { lc:"letter-combinations-of-a-phone-number",     gfg:"possible-words-from-phone-digits-1587115620/1" },
+  "Palindrome Partitioning":                { lc:"palindrome-partitioning",                   gfg:"palindromic-patitioning4845/1" },
+  "Word Search":                            { lc:"word-search",                               gfg:"word-search/1" },
+  "N-Queens":                               { lc:"n-queens",                                  gfg:"n-queen-problem0315/1" },
+  "Sudoku Solver":                          { lc:"sudoku-solver",                             gfg:"solve-the-sudoku/1" },
+};
+
 function getProblemLinks(name) {
+  const entry = PROBLEM_LINKS[name] || {};
   const q = encodeURIComponent(name);
+  const lcSlug = entry.lc;
+  const gfgSlug = entry.gfg;
+
   return [
     {
       name:"LeetCode", color:"#f89f1b", logo:"https://leetcode.com/favicon.ico",
-      url:`https://leetcode.com/problemset/?search=${q}`,
-      note:"Largest problem set — essential for FAANG prep",
-      tag:"Interview Prep"
+      url: lcSlug
+        ? `https://leetcode.com/problems/${lcSlug}/`
+        : `https://leetcode.com/problemset/?search=${q}`,
+      note: lcSlug ? "Direct problem link" : "Search results for this problem",
+      tag:"Interview Prep", direct: !!lcSlug,
     },
     {
       name:"GeeksforGeeks", color:"#2f8d46", logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",
-      url:`https://www.geeksforgeeks.org/explore?searchQuery=${q}`,
-      note:"Detailed articles & step-by-step explanations",
-      tag:"Beginner Friendly"
+      url: gfgSlug
+        ? `https://www.geeksforgeeks.org/problems/${gfgSlug}`
+        : `https://www.geeksforgeeks.org/explore?searchQuery=${q}`,
+      note: gfgSlug ? "Direct problem link" : "Search results for this problem",
+      tag:"Beginner Friendly", direct: !!gfgSlug,
     },
     {
       name:"NeetCode", color:"#00b8a3", logo:"https://neetcode.io/favicon.ico",
       url:`https://neetcode.io/practice`,
-      note:"Video walkthroughs — search this problem manually",
-      tag:"Video Solutions"
+      note:"Search this problem name after opening", tag:"Video Solutions", direct:false,
     },
     {
       name:"Codeforces", color:"#1a9eee", logo:"https://codeforces.com/favicon.ico",
       url:`https://codeforces.com/problemset?search=${q}`,
-      note:"Competitive programming variants & rated problems",
-      tag:"Competitive"
+      note:"Competitive programming variants", tag:"Competitive", direct:false,
     },
     {
       name:"InterviewBit", color:"#e84393", logo:"https://www.interviewbit.com/favicon.ico",
       url:`https://www.interviewbit.com/search/?q=${q}`,
-      note:"Company-tagged problems for interview prep",
-      tag:"Company Tags"
+      note:"Company-tagged interview problems", tag:"Company Tags", direct:false,
     },
     {
       name:"CSES", color:"#4488cc", logo:"https://cses.fi/favicon.ico",
       url:`https://cses.fi/problemset/`,
-      note:"Gold-standard classic problem set",
-      tag:"Gold Standard"
+      note:"Classic competitive problem set", tag:"Gold Standard", direct:false,
     },
   ];
 }
 
-// Maps DSA_DATA slug → TUF_CHECKLIST keys
+// Maps DSA_DATA slug to TUF_CHECKLIST keys
 const SLUG_TO_CHECKLIST = {
   "arrays":           ["Arrays (Medium)", "Arrays (Hard)"],
   "binary-search":    ["Binary Search"],
@@ -1891,7 +2051,7 @@ const DSAPage = ({ setPage }) => {
         ) : (
           <>
             <div style={{fontSize:12,color:"var(--text3)",marginBottom:16}}>
-              {filteredProbs.length} of {problems.length} problems — click any problem to find it across 6 platforms
+              {filteredProbs.length} of {problems.length} problems — click any to open on your preferred platform
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:10}}>
               {filteredProbs.map((p,i)=>(
@@ -1933,19 +2093,19 @@ const DSAPage = ({ setPage }) => {
             <span style={{fontSize:11,padding:"4px 10px",borderRadius:6,background:`${DIFF_COLOR[selProblem.diff]}18`,color:DIFF_COLOR[selProblem.diff],fontWeight:700}}>{selProblem.diff}</span>
             <span style={{fontSize:11,padding:"4px 10px",borderRadius:6,background:"var(--bg3)",color:"var(--text2)"}}>{selTopic.topic}</span>
           </div>
-          <div style={{marginTop:10,fontSize:12,color:"var(--text3)"}}>
-            🔗 Each link searches for <strong style={{color:"var(--text)"}}>{selProblem.name}</strong> on that platform
-          </div>
         </div>
       </div>
       <div style={{maxWidth:900,margin:"0 auto",padding:"28px 24px"}}>
-        <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:16}}>Find this problem on</div>
+        <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:16}}>Solve this problem on</div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12}}>
           {pLinks.map(l=>(
             <a key={l.name} href={l.url} target="_blank" rel="noopener noreferrer"
-              style={{display:"flex",alignItems:"center",gap:14,padding:"18px",borderRadius:14,border:"1px solid var(--border)",background:"var(--card)",textDecoration:"none",transition:"all .2s"}}
+              style={{display:"flex",alignItems:"center",gap:14,padding:"18px",borderRadius:14,border:`1px solid ${l.direct?"var(--border2)":"var(--border)"}`,background:"var(--card)",textDecoration:"none",transition:"all .2s",position:"relative"}}
               onMouseEnter={e=>{e.currentTarget.style.borderColor=l.color;e.currentTarget.style.background=`${l.color}12`;}}
-              onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.background="var(--card)";}}>
+              onMouseLeave={e=>{e.currentTarget.style.borderColor=l.direct?"var(--border2)":"var(--border)";e.currentTarget.style.background="var(--card)";}}>
+              {l.direct && (
+                <span style={{position:"absolute",top:10,right:10,fontSize:9,padding:"2px 6px",borderRadius:3,background:"rgba(0,255,136,.15)",color:"#00ff88",fontWeight:700}}>DIRECT</span>
+              )}
               <div style={{width:44,height:44,borderRadius:10,background:`${l.color}18`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
                 <img src={l.logo} alt={l.name} style={{width:24,height:24,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>
               </div>
