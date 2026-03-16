@@ -5,7 +5,7 @@
  * Falls back to static seed data if the backend is unreachable
  */
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 
 /* ────────────────────────────────────────────────
    CONFIG
@@ -1851,21 +1851,22 @@ const DSAPage = ({ setPage }) => {
 //  STUDENT TOOLS
 // ═══════════════════════════════════════════════════════════
 
+// eslint-disable-next-line no-unused-vars
 const TUF_CHECKLIST = {
   "Arrays (Medium)": [
     {name:"Majority Element I",diff:"Easy"},
     {name:"Leaders in an Array",diff:"Easy"},
     {name:"Rearrange Array Elements by Sign",diff:"Medium"},
     {name:"Spiral Matrix",diff:"Medium"},
-    {name:"Pascal\'s Triangle I",diff:"Easy"},
-    {name:"Pascal\'s Triangle II",diff:"Easy"},
-    {name:"Pascal\'s Triangle III",diff:"Medium"},
+    {name:"Pascal's Triangle I",diff:"Easy"},
+    {name:"Pascal's Triangle II",diff:"Easy"},
+    {name:"Pascal's Triangle III",diff:"Medium"},
     {name:"Rotate Matrix by 90°",diff:"Medium"},
     {name:"Two Sum",diff:"Easy"},
     {name:"3 Sum",diff:"Medium"},
     {name:"4 Sum",diff:"Medium"},
     {name:"Sort Array of 0s, 1s, 2s",diff:"Easy"},
-    {name:"Kadane\'s Algorithm",diff:"Medium"},
+    {name:"Kadane's Algorithm",diff:"Medium"},
     {name:"Next Permutation",diff:"Medium"},
     {name:"Longest Consecutive Sequence",diff:"Medium"},
     {name:"Longest Subarray with Sum K",diff:"Medium"},
@@ -2085,7 +2086,7 @@ const TUF_CHECKLIST = {
     {name:"Number of Distinct Islands",diff:"Medium"},
     {name:"Detect Cycle in Undirected Graph",diff:"Medium"},
     {name:"Bipartite Graph",diff:"Medium"},
-    {name:"Topological Sort / Kahn\'s Algorithm",diff:"Medium"},
+    {name:"Topological Sort / Kahn's Algorithm",diff:"Medium"},
     {name:"Detect Cycle in Directed Graph",diff:"Medium"},
     {name:"Find Eventual Safe States",diff:"Medium"},
     {name:"Course Schedule I & II",diff:"Medium"},
@@ -2093,7 +2094,7 @@ const TUF_CHECKLIST = {
     {name:"Shortest Path in DAG",diff:"Medium"},
     {name:"Shortest Path in Undirected Graph",diff:"Easy"},
     {name:"Word Ladder I & II",diff:"Hard"},
-    {name:"Dijkstra\'s Algorithm",diff:"Medium"},
+    {name:"Dijkstra's Algorithm",diff:"Medium"},
     {name:"Print Shortest Path",diff:"Medium"},
     {name:"Shortest Distance in Binary Maze",diff:"Medium"},
     {name:"Path with Minimum Effort",diff:"Medium"},
@@ -2103,14 +2104,14 @@ const TUF_CHECKLIST = {
     {name:"Bellman Ford Algorithm",diff:"Medium"},
     {name:"Floyd Warshall Algorithm",diff:"Medium"},
     {name:"City with Smallest Number of Neighbors",diff:"Medium"},
-    {name:"MST – Prim\'s / Kruskal\'s",diff:"Medium"},
+    {name:"MST – Prim's / Kruskal's",diff:"Medium"},
     {name:"Disjoint Set (Union-Find)",diff:"Medium"},
     {name:"Number of Operations to Connect Network",diff:"Medium"},
     {name:"Accounts Merge",diff:"Hard"},
     {name:"Number of Islands II",diff:"Hard"},
     {name:"Making a Large Island",diff:"Hard"},
     {name:"Most Stones Removed",diff:"Hard"},
-    {name:"Kosaraju\'s Algorithm (SCC)",diff:"Hard"},
+    {name:"Kosaraju's Algorithm (SCC)",diff:"Hard"},
     {name:"Bridges in Graph",diff:"Hard"},
     {name:"Articulation Points",diff:"Hard"},
   ],
@@ -2120,7 +2121,7 @@ const TUF_CHECKLIST = {
     {name:"Frog Jump with K Distances",diff:"Medium"},
     {name:"Maximum Sum of Non-Adjacent Elements",diff:"Medium"},
     {name:"House Robber",diff:"Medium"},
-    {name:"Ninja\'s Training (2D DP)",diff:"Medium"},
+    {name:"Ninja's Training (2D DP)",diff:"Medium"},
     {name:"Grid Unique Paths",diff:"Medium"},
     {name:"Unique Paths II",diff:"Medium"},
     {name:"Minimum Falling Path Sum",diff:"Medium"},
@@ -2187,25 +2188,6 @@ const TUF_CHECKLIST = {
   ],
 };
 
-const TUF_SECTION_TO_SLUG = {
-  "Arrays (Medium)":        "arrays",
-  "Arrays (Hard)":          "arrays",
-  "Binary Search":          "binary-search",
-  "Recursion & Backtracking":"recursion",
-  "Linked List":            "linked-list",
-  "Bit Manipulation":       "bit-manipulation",
-  "Greedy":                 "greedy",
-  "Sliding Window":         "sliding-window",
-  "Stack & Queue":          "stack-queue",
-  "Binary Trees":           "binary-trees",
-  "Binary Search Trees":    "bst",
-  "Heaps":                  "heaps",
-  "Graphs":                 "graphs",
-  "Dynamic Programming":    "dynamic-programming",
-  "Tries":                  "tries",
-  "Strings – Advanced":     "string-algorithms",
-  "Mathematics":            "math",
-};
 
 // ── Student Tools Landing Page ──────────────────────────────
 const STUDENT_TOOLS = [
