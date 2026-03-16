@@ -566,7 +566,6 @@ const AgentStatus = () => {
    NAVBAR
 ──────────────────────────────────────────────── */
 const TOOLS_MENU = [
-  { id:"tools", icon:"🛠️", label:"All Tools", desc:"Browse all student tools" },
   { id:"dsa", icon:"🧠", label:"DSA Explorer", desc:"Problem finder" },
 ];
 
@@ -587,18 +586,16 @@ const Navbar = ({page,setPage,dark,setDark}) => {
       <span className="badge b-open" style={{fontSize:9}}>LIVE</span>
     </div>
     <div className="hm" style={{display:"flex",gap:4,alignItems:"center"}}>
-      {[["home","◈ Home"],["hackathons","⚡ Hackathons"],["internships","💼 Internships"],["events","🗓️ Events"],["resources","📚 Resources"]].map(([id,lbl])=>(
+      {[["home","◈ Home"],["hackathons","⚡ Hackathons"],["internships","💼 Internships"],["events","🗓️ Events"]].map(([id,lbl])=>(
         <button key={id} className={`nav-link ${page===id?"act":""}`} onClick={()=>setPage(id)}>{lbl}</button>
       ))}
       {/* Student Tools dropdown */}
       <div ref={toolsRef} style={{position:"relative"}}>
-        <button
-          className={`nav-link ${isToolsActive?"act":""}`}
-          onClick={()=>setToolsOpen(o=>!o)}
-          style={{display:"inline-flex",alignItems:"center",gap:5}}>
-          🛠️ Tools
-          <span style={{fontSize:9,opacity:.7,transform:toolsOpen?"rotate(180deg)":"rotate(0deg)",transition:"transform .2s",display:"inline-block"}}>▼</span>
-        </button>
+        <div className={`nav-link ${isToolsActive?"act":""}`}
+          style={{display:"inline-flex",alignItems:"center",gap:0,padding:0,cursor:"default"}}>
+          <span onClick={()=>{ setPage("tools"); setToolsOpen(false); }} style={{padding:"6px 4px 6px 12px",cursor:"pointer"}}>🛠️ Tools</span>
+          <span onClick={()=>setToolsOpen(o=>!o)} style={{fontSize:9,opacity:.7,padding:"6px 10px 6px 4px",cursor:"pointer",transform:toolsOpen?"rotate(180deg)":"rotate(0deg)",transition:"transform .2s",display:"inline-block"}}>▼</span>
+        </div>
         {toolsOpen && (
           <div style={{position:"absolute",top:"calc(100% + 8px)",right:0,background:"var(--card)",border:"1px solid var(--border2)",borderRadius:14,padding:8,minWidth:220,boxShadow:"0 12px 40px rgba(0,0,0,.4)",zIndex:200,animation:"fade-in .15s ease"}}>
             <div style={{fontSize:9,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",padding:"4px 10px 8px"}}>Student Tools</div>
@@ -617,6 +614,7 @@ const Navbar = ({page,setPage,dark,setDark}) => {
           </div>
         )}
       </div>
+      <button className={`nav-link ${page==="resources"?"act":""}`} onClick={()=>setPage("resources")}>📚 Resources</button>
     </div>
     <div style={{display:"flex",alignItems:"center",gap:10}}>
       <button onClick={()=>setDark(!dark)} style={{width:34,height:34,borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15}}>{dark?"☀️":"🌙"}</button>
@@ -1670,45 +1668,90 @@ const DSA_CATEGORIES = ["All", ...new Set(DSA_DATA.map(t => t.category))];
 
 const DIFF_COLOR = { Easy:"#00ff88", Medium:"#ffd60a", Hard:"#ff3d8a" };
 
+// Maps DSA_DATA slug → TUF_CHECKLIST section keys
+const SLUG_TO_CHECKLIST = {
+  "arrays":           ["Arrays (Medium)", "Arrays (Hard)"],
+  "binary-search":    ["Binary Search"],
+  "two-pointers":     [],
+  "sliding-window":   ["Sliding Window"],
+  "linked-list":      ["Linked List"],
+  "stack-queue":      ["Stack & Queue"],
+  "binary-trees":     ["Binary Trees"],
+  "dp":               ["Dynamic Programming"],
+  "greedy":           ["Greedy"],
+  "recursion":        ["Recursion & Backtracking"],
+  "heaps":            ["Heaps"],
+  "bst":              ["Binary Search Trees"],
+  "tries":            ["Tries"],
+  "bit-manipulation": ["Bit Manipulation"],
+  "string-algorithms":["Strings – Advanced"],
+  "graphs":           ["Graphs"],
+};
+
+function getProblemLinks(name) {
+  const q = encodeURIComponent(name);
+  return [
+    { name:"LeetCode",      color:"#f89f1b", logo:"https://leetcode.com/favicon.ico",
+      url:`https://leetcode.com/search/?q=${q}`,                          note:"Best for interview prep & FAANG" },
+    { name:"GeeksforGeeks", color:"#2f8d46", logo:"https://media.geeksforgeeks.org/gfg-gg-logo.svg",
+      url:`https://www.geeksforgeeks.org/?s=${q}`,                        note:"Detailed articles & explanations" },
+    { name:"NeetCode",      color:"#00b8a3", logo:"https://neetcode.io/favicon.ico",
+      url:`https://neetcode.io/practice`,                                  note:"Video walkthroughs & patterns" },
+    { name:"Codeforces",    color:"#1a9eee", logo:"https://codeforces.com/favicon.ico",
+      url:`https://codeforces.com/problemset?search=${q}`,                note:"Competitive programming variants" },
+    { name:"InterviewBit",  color:"#e84393", logo:"https://www.interviewbit.com/favicon.ico",
+      url:`https://www.interviewbit.com/search/?q=${q}`,                  note:"Company-tagged interview problems" },
+    { name:"CSES",          color:"#4488cc", logo:"https://cses.fi/favicon.ico",
+      url:`https://cses.fi/problemset/`,                                   note:"Gold-standard classic problems" },
+  ];
+}
+
 const DSAPage = ({ setPage }) => {
-  const [cat, setCat] = useState("All");
-  const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState(null);
-  const [tip, setTip] = useState("");
-  const [tipLoading, setTipLoading] = useState(false);
+  const [cat,          setCat]          = useState("All");
+  const [search,       setSearch]       = useState("");
+  const [view,         setView]         = useState("topics");   // topics | problems | problem
+  const [selTopic,     setSelTopic]     = useState(null);
+  const [selProblem,   setSelProblem]   = useState(null);
+  const [tip,          setTip]          = useState("");
+  const [tipLoading,   setTipLoading]   = useState(false);
+  const [probSearch,   setProbSearch]   = useState("");
+  const [diffFilter,   setDiffFilter]   = useState("All");
 
   const filtered = DSA_DATA.filter(t =>
     (cat === "All" || t.category === cat) &&
     (!search || t.topic.toLowerCase().includes(search.toLowerCase()))
   );
 
+  const getTopicProblems = (slug) => {
+    const keys = SLUG_TO_CHECKLIST[slug] || [];
+    const all = [];
+    keys.forEach(k => { if (TUF_CHECKLIST[k]) all.push(...TUF_CHECKLIST[k]); });
+    return all;
+  };
+
   const fetchTip = async (slug) => {
-    setTipLoading(true);
-    setTip("");
+    setTipLoading(true); setTip("");
     try {
       const r = await fetch(`/api/dsa/topics/${slug}/tip`, { method:"POST" });
       const j = await r.json();
       setTip(j.tip || "");
-    } catch {
-      setTip("Could not load tip — check your Groq API key is configured.");
-    }
+    } catch { setTip("Could not load tip — check Groq API key."); }
     setTipLoading(false);
   };
 
-  return (
+  const openTopic = (t) => { setSelTopic(t); setSelProblem(null); setView("problems"); setProbSearch(""); setDiffFilter("All"); setTip(""); window.scrollTo(0,0); };
+  const openProblem = (p) => { setSelProblem(p); setView("problem"); window.scrollTo(0,0); };
+
+  // ── TOPICS VIEW ─────────────────────────────────────────────
+  if (view === "topics") return (
     <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
-      {/* Header */}
       <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"40px 24px 32px"}}>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
           <div className="sl">Student Tools</div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:16,marginBottom:24}}>
             <div>
-              <h1 className="syne" style={{fontSize:34,fontWeight:800,marginBottom:6}}>
-                🧠 DSA <span className="gtext">Problem Explorer</span>
-              </h1>
-              <p style={{color:"var(--text2)",fontSize:14}}>
-                {DSA_DATA.length} topics · 8 platforms · AI study tips
-              </p>
+              <h1 className="syne" style={{fontSize:34,fontWeight:800,marginBottom:6}}>🧠 DSA <span className="gtext">Problem Explorer</span></h1>
+              <p style={{color:"var(--text2)",fontSize:14}}>{DSA_DATA.length} topics · 8 platforms · AI study tips</p>
             </div>
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
               {[["LeetCode","#f89f1b"],["NeetCode","#00b8a3"],["GFG","#2f8d46"],["CSES","#4488cc"]].map(([p,c])=>(
@@ -1716,130 +1759,181 @@ const DSAPage = ({ setPage }) => {
               ))}
             </div>
           </div>
-          {/* Search */}
           <div style={{position:"relative",maxWidth:480}}>
             <span style={{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",color:"var(--text3)"}}>🔍</span>
             <input className="input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search topics — Arrays, DP, Graphs…" style={{padding:"11px 16px 11px 40px",fontSize:14}}/>
           </div>
-          {/* Category tabs */}
           <div style={{display:"flex",gap:6,marginTop:16,flexWrap:"wrap"}}>
             {DSA_CATEGORIES.map(c=>(
-              <button key={c} onClick={()=>setCat(c)} style={{padding:"6px 14px",borderRadius:20,fontSize:12,fontWeight:600,border:"1px solid var(--border)",background:cat===c?"var(--purple)":"var(--card)",color:cat===c?"#fff":"var(--text2)",cursor:"pointer",transition:"all .15s"}}>
-                {c}
+              <button key={c} onClick={()=>setCat(c)} style={{padding:"6px 14px",borderRadius:20,fontSize:12,fontWeight:600,border:"1px solid var(--border)",background:cat===c?"var(--purple)":"var(--card)",color:cat===c?"#fff":"var(--text2)",cursor:"pointer",transition:"all .15s"}}>{c}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"28px 24px"}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:12}}>
+          {filtered.map(t=>(
+            <div key={t.slug} onClick={()=>openTopic(t)} className="hcard"
+              style={{padding:20,cursor:"pointer",border:"1px solid var(--border)",background:"var(--card)",transition:"all .2s"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
+                <span style={{fontSize:22,lineHeight:1}}>{t.icon}</span>
+                <span style={{fontSize:10,fontWeight:700,padding:"3px 7px",borderRadius:4,background:`${DIFF_COLOR[t.difficulty]}18`,color:DIFF_COLOR[t.difficulty]}}>{t.difficulty}</span>
+              </div>
+              <div className="syne" style={{fontSize:14,fontWeight:700,marginBottom:4}}>{t.topic}</div>
+              <div style={{fontSize:11,color:"var(--text3)",marginBottom:10}}>{t.category}</div>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <span style={{fontSize:11,color:"var(--text2)"}}>🧩 {t.tuf} problems</span>
+                <span style={{fontSize:11,color:"var(--purple)"}}>📚 {t.platforms.length} sites</span>
+              </div>
+            </div>
+          ))}
+          {filtered.length===0&&<div style={{gridColumn:"1/-1",textAlign:"center",padding:"60px 20px",color:"var(--text2)"}}>No topics found for &quot;{search}&quot;</div>}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── PROBLEMS VIEW ────────────────────────────────────────────
+  const problems = getTopicProblems(selTopic?.slug);
+  const filteredProbs = problems.filter(p =>
+    (diffFilter === "All" || p.diff === diffFilter) &&
+    (!probSearch || p.name.toLowerCase().includes(probSearch.toLowerCase()))
+  );
+
+  if (view === "problems") return (
+    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"32px 24px 24px"}}>
+        <div style={{maxWidth:1100,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16,fontSize:13,color:"var(--text3)"}}>
+            <span style={{cursor:"pointer",color:"var(--cyan)"}} onClick={()=>setView("topics")}>DSA Explorer</span>
+            <span>›</span>
+            <span style={{color:"var(--text)"}}>{selTopic.topic}</span>
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:16}}>
+            <div style={{display:"flex",alignItems:"center",gap:14}}>
+              <span style={{fontSize:36}}>{selTopic.icon}</span>
+              <div>
+                <h1 className="syne" style={{fontSize:28,fontWeight:800,marginBottom:6}}>{selTopic.topic}</h1>
+                <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
+                  <span style={{fontSize:11,padding:"3px 8px",borderRadius:5,background:"var(--bg3)",color:"var(--text2)"}}>{selTopic.category}</span>
+                  <span style={{fontSize:11,padding:"3px 8px",borderRadius:5,background:`${DIFF_COLOR[selTopic.difficulty]}18`,color:DIFF_COLOR[selTopic.difficulty],fontWeight:700}}>{selTopic.difficulty}</span>
+                  <span style={{fontSize:11,color:"var(--text3)"}}>{problems.length} problems</span>
+                </div>
+              </div>
+            </div>
+            <button onClick={()=>fetchTip(selTopic.slug)} disabled={tipLoading}
+              style={{padding:"9px 18px",borderRadius:10,border:"1px solid var(--yellow)",background:"rgba(255,214,10,.08)",color:"var(--yellow)",fontSize:12,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>
+              {tipLoading?"⏳ Loading…":"💡 AI Study Tip"}
+            </button>
+          </div>
+          {tip && (
+            <div style={{marginTop:16,background:"rgba(255,214,10,.06)",border:"1px solid rgba(255,214,10,.2)",borderRadius:12,padding:16,maxWidth:700}}>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--yellow)",marginBottom:8}}>💡 AI Study Strategy</div>
+              <div style={{fontSize:12,color:"var(--text)",lineHeight:1.7,whiteSpace:"pre-wrap"}}>{tip}</div>
+            </div>
+          )}
+          <div style={{display:"flex",gap:10,marginTop:20,flexWrap:"wrap",alignItems:"center"}}>
+            <div style={{position:"relative",flex:1,maxWidth:360}}>
+              <span style={{position:"absolute",left:11,top:"50%",transform:"translateY(-50%)",color:"var(--text3)",fontSize:13}}>🔍</span>
+              <input className="input" value={probSearch} onChange={e=>setProbSearch(e.target.value)} placeholder="Search problems…" style={{padding:"9px 14px 9px 34px",fontSize:13}}/>
+            </div>
+            {["All","Easy","Medium","Hard"].map(d=>(
+              <button key={d} onClick={()=>setDiffFilter(d)}
+                style={{padding:"6px 14px",borderRadius:20,fontSize:12,fontWeight:600,border:"1px solid var(--border)",cursor:"pointer",
+                  background:diffFilter===d?(d==="Easy"?"rgba(0,255,136,.2)":d==="Medium"?"rgba(255,214,10,.2)":d==="Hard"?"rgba(255,61,138,.2)":"var(--purple)"):"var(--card)",
+                  color:diffFilter===d?(d==="Easy"?"#00ff88":d==="Medium"?"#ffd60a":d==="Hard"?"#ff3d8a":"#fff"):"var(--text2)"}}>
+                {d}
               </button>
             ))}
           </div>
         </div>
       </div>
+      <div style={{maxWidth:1100,margin:"0 auto",padding:"24px"}}>
+        {problems.length === 0 ? (
+          <div style={{textAlign:"center",padding:"60px 20px",color:"var(--text3)"}}>
+            <div style={{fontSize:40,marginBottom:12}}>🔧</div>
+            <div style={{fontSize:16,fontWeight:600,color:"var(--text)",marginBottom:8}}>Problem list coming soon for {selTopic.topic}</div>
+            <div style={{fontSize:13,marginBottom:20}}>Practice directly on these platforms:</div>
+            <div style={{display:"flex",gap:10,justifyContent:"center",flexWrap:"wrap"}}>
+              {selTopic.platforms.map(p=>(
+                <a key={p.name} href={p.url} target="_blank" rel="noopener noreferrer"
+                  style={{padding:"9px 18px",borderRadius:8,background:"var(--card)",border:"1px solid var(--border)",color:"var(--text)",fontSize:13,textDecoration:"none"}}>
+                  {p.name} →
+                </a>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <>
+            <div style={{fontSize:12,color:"var(--text3)",marginBottom:16}}>
+              {filteredProbs.length} of {problems.length} problems — click any to see platform links
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:10}}>
+              {filteredProbs.map((p,i)=>(
+                <div key={i} onClick={()=>openProblem(p)} className="hcard"
+                  style={{padding:"14px 18px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,border:"1px solid var(--border)",background:"var(--card)",transition:"all .2s"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:12,minWidth:0}}>
+                    <span style={{fontSize:11,color:"var(--text3)",flexShrink:0,minWidth:20,textAlign:"right"}}>{i+1}</span>
+                    <div style={{fontSize:13,fontWeight:600,color:"var(--text)",lineHeight:1.3}}>{p.name}</div>
+                  </div>
+                  <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
+                    <span style={{fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:4,background:`${DIFF_COLOR[p.diff]}18`,color:DIFF_COLOR[p.diff],whiteSpace:"nowrap"}}>{p.diff}</span>
+                    <span style={{color:"var(--purple)",fontSize:14}}>›</span>
+                  </div>
+                </div>
+              ))}
+              {filteredProbs.length===0&&<div style={{gridColumn:"1/-1",textAlign:"center",padding:"40px",color:"var(--text3)"}}>No problems match your filters</div>}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
 
-      {/* Grid + Detail Panel */}
-      <div style={{maxWidth:1200,margin:"0 auto",padding:"28px 24px",display:"flex",gap:24,alignItems:"flex-start"}}>
-        {/* Topic Grid */}
-        <div style={{flex:1,minWidth:0}}>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:12}}>
-            {filtered.map(t=>(
-              <div key={t.slug} onClick={()=>{setSelected(t);setTip("");}} className="hcard"
-                style={{padding:20,cursor:"pointer",border:`1px solid ${selected?.slug===t.slug?"var(--purple)":"var(--border)"}`,background:selected?.slug===t.slug?"rgba(124,77,255,.08)":"var(--card)",transition:"all .2s"}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
-                  <span style={{fontSize:22,lineHeight:1}}>{t.icon}</span>
-                  <span style={{fontSize:10,fontWeight:700,padding:"3px 7px",borderRadius:4,background:`${DIFF_COLOR[t.difficulty]}18`,color:DIFF_COLOR[t.difficulty]}}>{t.difficulty}</span>
-                </div>
-                <div className="syne" style={{fontSize:14,fontWeight:700,marginBottom:4}}>{t.topic}</div>
-                <div style={{fontSize:11,color:"var(--text3)",marginBottom:10}}>{t.category}</div>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                  <span style={{fontSize:11,color:"var(--text2)"}}>🧩 {t.tuf} problems</span>
-                  <span style={{fontSize:11,color:"var(--purple)"}}>📚 {t.platforms.length} sites</span>
-                </div>
-              </div>
-            ))}
-            {filtered.length===0&&(
-              <div style={{gridColumn:"1/-1",textAlign:"center",padding:"60px 20px",color:"var(--text2)"}}>
-                No topics found for "{search}"
-              </div>
-            )}
+  // ── PROBLEM DETAIL VIEW ──────────────────────────────────────
+  const pLinks = getProblemLinks(selProblem.name);
+  return (
+    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"32px 24px 28px"}}>
+        <div style={{maxWidth:900,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16,fontSize:13,color:"var(--text3)",flexWrap:"wrap"}}>
+            <span style={{cursor:"pointer",color:"var(--cyan)"}} onClick={()=>setView("topics")}>DSA Explorer</span>
+            <span>›</span>
+            <span style={{cursor:"pointer",color:"var(--cyan)"}} onClick={()=>setView("problems")}>{selTopic.topic}</span>
+            <span>›</span>
+            <span style={{color:"var(--text)"}}>{selProblem.name}</span>
+          </div>
+          <h1 className="syne" style={{fontSize:26,fontWeight:800,marginBottom:12}}>{selProblem.name}</h1>
+          <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
+            <span style={{fontSize:11,padding:"4px 10px",borderRadius:6,background:`${DIFF_COLOR[selProblem.diff]}18`,color:DIFF_COLOR[selProblem.diff],fontWeight:700}}>{selProblem.diff}</span>
+            <span style={{fontSize:11,padding:"4px 10px",borderRadius:6,background:"var(--bg3)",color:"var(--text2)"}}>{selTopic.topic}</span>
+            <span style={{fontSize:11,padding:"4px 10px",borderRadius:6,background:"var(--bg3)",color:"var(--text2)"}}>{selTopic.category}</span>
           </div>
         </div>
-
-        {/* Detail Panel */}
-        {selected && (
-          <div style={{width:420,flexShrink:0,background:"var(--card)",border:"1px solid var(--border2)",borderRadius:18,padding:24,position:"sticky",top:80,maxHeight:"calc(100vh - 100px)",overflowY:"auto"}}>
-            {/* Header */}
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:18}}>
-              <div>
-                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
-                  <span style={{fontSize:28}}>{selected.icon}</span>
-                  <h2 className="syne" style={{fontSize:20,fontWeight:800}}>{selected.topic}</h2>
-                </div>
-                <div style={{display:"flex",gap:6}}>
-                  <span style={{fontSize:10,padding:"3px 8px",borderRadius:5,background:"var(--bg3)",color:"var(--text2)"}}>{selected.category}</span>
-                  <span style={{fontSize:10,padding:"3px 8px",borderRadius:5,background:`${DIFF_COLOR[selected.difficulty]}18`,color:DIFF_COLOR[selected.difficulty],fontWeight:700}}>{selected.difficulty}</span>
-                  <span style={{fontSize:10,padding:"3px 8px",borderRadius:5,background:"rgba(124,77,255,.15)",color:"var(--purple)",fontWeight:700}}>🧩 {selected.tuf} problems</span>
-                </div>
+      </div>
+      <div style={{maxWidth:900,margin:"0 auto",padding:"28px 24px"}}>
+        <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:16}}>Solve on these platforms</div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12}}>
+          {pLinks.map(l=>(
+            <a key={l.name} href={l.url} target="_blank" rel="noopener noreferrer"
+              style={{display:"flex",alignItems:"center",gap:14,padding:"18px",borderRadius:14,border:"1px solid var(--border)",background:"var(--card)",textDecoration:"none",transition:"all .2s"}}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor=l.color;e.currentTarget.style.background=`${l.color}12`;}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.background="var(--card)";}}>
+              <div style={{width:42,height:42,borderRadius:10,background:`${l.color}18`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                <img src={l.logo} alt={l.name} style={{width:22,height:22,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>
               </div>
-              <button onClick={()=>setSelected(null)} style={{width:28,height:28,borderRadius:8,border:"1px solid var(--border)",background:"var(--bg2)",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center",color:"var(--text2)",flexShrink:0}}>✕</button>
-            </div>
-
-            <div style={{height:1,background:"var(--border)",margin:"0 0 18px"}}/>
-
-            {/* Platforms */}
-            <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>Practice Platforms</div>
-            <div style={{display:"flex",flexDirection:"column",gap:10}}>
-              {selected.platforms.map(p=>{
-                const total = p.easy+p.med+p.hard;
-                const ep = Math.round(p.easy/total*100), mp = Math.round(p.med/total*100), hp = 100-ep-mp;
-                return (
-                  <div key={p.name} style={{background:"var(--bg2)",borderRadius:12,padding:14,border:"1px solid var(--border)"}}>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-                      <div style={{display:"flex",alignItems:"center",gap:8}}>
-                        <img src={p.logo} alt={p.name} style={{width:18,height:18,borderRadius:4,objectFit:"contain"}} onError={e=>e.target.style.display="none"}/>
-                        <span style={{fontWeight:700,fontSize:13}}>{p.name}</span>
-                      </div>
-                      <span style={{fontSize:11,color:"var(--text3)"}}>{p.count}+ problems</span>
-                    </div>
-                    {/* Difficulty bar */}
-                    <div style={{display:"flex",height:5,borderRadius:3,overflow:"hidden",gap:1,marginBottom:8}}>
-                      <div style={{width:`${ep}%`,background:"#00ff88"}}/>
-                      <div style={{width:`${mp}%`,background:"#ffd60a"}}/>
-                      <div style={{width:`${hp}%`,background:"#ff3d8a"}}/>
-                    </div>
-                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
-                      <div style={{display:"flex",gap:8}}>
-                        <span style={{fontSize:10,color:"#00ff88"}}>E:{p.easy}</span>
-                        <span style={{fontSize:10,color:"#ffd60a"}}>M:{p.med}</span>
-                        <span style={{fontSize:10,color:"#ff3d8a"}}>H:{p.hard}</span>
-                      </div>
-                      <div style={{display:"flex",gap:4,flexWrap:"wrap",justifyContent:"flex-end"}}>
-                        {p.tags.slice(0,2).map(t=>(
-                          <span key={t} style={{fontSize:9,padding:"2px 5px",borderRadius:3,background:"rgba(0,212,255,.1)",color:"var(--cyan)"}}>{t}</span>
-                        ))}
-                      </div>
-                    </div>
-                    <div style={{fontSize:11,color:"var(--text2)",marginBottom:10,lineHeight:1.5}}>{p.note}</div>
-                    <a href={p.url} target="_blank" rel="noopener noreferrer"
-                      style={{display:"block",textAlign:"center",padding:"7px",borderRadius:8,background:"var(--purple)",color:"#fff",fontSize:12,fontWeight:600,textDecoration:"none",transition:"opacity .15s"}}
-                      onMouseEnter={e=>e.target.style.opacity=".85"} onMouseLeave={e=>e.target.style.opacity="1"}>
-                      Open Problems →
-                    </a>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* AI Tip */}
-            <div style={{marginTop:18}}>
-              <button onClick={()=>fetchTip(selected.slug)} disabled={tipLoading}
-                style={{width:"100%",padding:"11px",borderRadius:10,border:"1px solid var(--yellow)",background:"rgba(255,214,10,.08)",color:"var(--yellow)",fontSize:13,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,transition:"all .2s"}}>
-                {tipLoading ? "⏳ Generating tip…" : "💡 Get AI Study Tip"}
-              </button>
-              {tip && (
-                <div style={{marginTop:12,background:"rgba(255,214,10,.06)",border:"1px solid rgba(255,214,10,.2)",borderRadius:12,padding:14}}>
-                  <div style={{fontSize:11,fontWeight:700,color:"var(--yellow)",marginBottom:8}}>💡 AI Study Strategy</div>
-                  <div style={{fontSize:12,color:"var(--text)",lineHeight:1.7,whiteSpace:"pre-wrap"}}>{tip}</div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:14,fontWeight:700,color:"var(--text)",marginBottom:3}}>{l.name}</div>
+                <div style={{fontSize:11,color:"var(--text3)"}}>{l.note}</div>
+              </div>
+              <span style={{fontSize:18,color:"var(--text3)",flexShrink:0}}>→</span>
+            </a>
+          ))}
+        </div>
+        <button onClick={()=>setView("problems")}
+          style={{marginTop:28,padding:"10px 22px",borderRadius:10,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",fontSize:13,fontWeight:600,cursor:"pointer"}}>
+          ← Back to {selTopic.topic} problems
+        </button>
       </div>
     </div>
   );
