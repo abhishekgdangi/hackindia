@@ -2081,6 +2081,116 @@ const SLUG_TO_CHECKLIST = {
 };
 
 
+
+// ── PRE-DSA PREP DATA ─────────────────────────────────────────────────────
+const PRE_DSA_TRACKS = [
+  {
+    id:"absolute-beginner", icon:"🌱", title:"Absolute Beginner", level:"Start Here",
+    color:"#00ff88", platform:"HackerRank",
+    desc:"Zero to basics. No prior coding needed. Build logic from scratch.",
+    platformUrl:"https://www.hackerrank.com/domains/tutorials/30-days-of-code",
+    problems:[
+      {name:"Hello World",url:"https://www.hackerrank.com/challenges/py-hello-world",diff:"Easy",note:"Your first program"},
+      {name:"Data Types",url:"https://www.hackerrank.com/challenges/py-arithmetic-operators",diff:"Easy",note:"Numbers & operations"},
+      {name:"Conditional Statements",url:"https://www.hackerrank.com/challenges/py-if-else",diff:"Easy",note:"If/Else logic"},
+      {name:"Loops",url:"https://www.hackerrank.com/challenges/py-for-loop",diff:"Easy",note:"For & While loops"},
+      {name:"Functions",url:"https://www.hackerrank.com/challenges/write-a-function",diff:"Easy",note:"Create reusable logic"},
+      {name:"Arrays / Lists",url:"https://www.hackerrank.com/challenges/array-math",diff:"Easy",note:"Store multiple values"},
+      {name:"Strings",url:"https://www.hackerrank.com/challenges/python-string-formatting",diff:"Easy",note:"Text manipulation"},
+      {name:"FizzBuzz",url:"https://www.hackerrank.com/challenges/fizzbuzz",diff:"Easy",note:"Classic logic problem"},
+      {name:"Find Largest Number",url:"https://www.hackerrank.com/challenges/compare-the-triplets",diff:"Easy",note:"Comparison logic"},
+      {name:"Sum of Array",url:"https://www.hackerrank.com/challenges/a-very-big-sum",diff:"Easy",note:"Loop + accumulation"},
+    ]
+  },
+  {
+    id:"logic-building", icon:"🧮", title:"Logic Building", level:"Week 1-2",
+    color:"#ffd60a", platform:"HackerRank + LeetCode Easy",
+    desc:"Build problem-solving instincts with simple puzzles.",
+    platformUrl:"https://www.hackerrank.com/domains/algorithms/warmup",
+    problems:[
+      {name:"Reverse a String",url:"https://www.hackerrank.com/challenges/java-strings-introduction",diff:"Easy",note:"Learn traversal"},
+      {name:"Check Palindrome",url:"https://leetcode.com/problems/valid-palindrome/",diff:"Easy",note:"Two pointer intro"},
+      {name:"Count Vowels",url:"https://www.hackerrank.com/challenges/counting-valleys",diff:"Easy",note:"Condition + counter"},
+      {name:"Find Missing Number",url:"https://leetcode.com/problems/missing-number/",diff:"Easy",note:"Math trick"},
+      {name:"Sum of Digits",url:"https://www.hackerrank.com/challenges/extra-long-factorials",diff:"Easy",note:"Loop + math"},
+      {name:"Check Armstrong Number",url:"https://www.hackerrank.com/challenges/sherlock-and-squares",diff:"Easy",note:"Power & math"},
+      {name:"Fibonacci Sequence",url:"https://leetcode.com/problems/fibonacci-number/",diff:"Easy",note:"Recursion intro"},
+      {name:"Factorial",url:"https://www.hackerrank.com/challenges/extra-long-factorials",diff:"Easy",note:"Loops & math"},
+      {name:"Prime Check",url:"https://www.hackerrank.com/challenges/identify-smith-numbers",diff:"Easy",note:"Divisibility"},
+      {name:"Anagram Check",url:"https://leetcode.com/problems/valid-anagram/",diff:"Easy",note:"Frequency counting"},
+    ]
+  },
+  {
+    id:"array-basics", icon:"📦", title:"Array & String Basics", level:"Week 2-3",
+    color:"#00b8a3", platform:"LeetCode Easy",
+    desc:"Foundation of every DSA topic. Master these before anything else.",
+    platformUrl:"https://leetcode.com/problemset/?difficulty=EASY&topicSlugs=array",
+    problems:[
+      {name:"Two Sum",url:"https://leetcode.com/problems/two-sum/",diff:"Easy",note:"Hash map intro"},
+      {name:"Best Time to Buy Stock",url:"https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",diff:"Easy",note:"Single pass"},
+      {name:"Contains Duplicate",url:"https://leetcode.com/problems/contains-duplicate/",diff:"Easy",note:"Set usage"},
+      {name:"Move Zeroes",url:"https://leetcode.com/problems/move-zeroes/",diff:"Easy",note:"Two pointer"},
+      {name:"Maximum Subarray",url:"https://leetcode.com/problems/maximum-subarray/",diff:"Medium",note:"Kadane's algorithm"},
+      {name:"Remove Duplicates",url:"https://leetcode.com/problems/remove-duplicates-from-sorted-array/",diff:"Easy",note:"In-place ops"},
+      {name:"Merge Sorted Array",url:"https://leetcode.com/problems/merge-sorted-array/",diff:"Easy",note:"Two pointer"},
+      {name:"Majority Element",url:"https://leetcode.com/problems/majority-element/",diff:"Easy",note:"Boyer-Moore voting"},
+      {name:"Rotate Array",url:"https://leetcode.com/problems/rotate-array/",diff:"Medium",note:"Reversal trick"},
+      {name:"Plus One",url:"https://leetcode.com/problems/plus-one/",diff:"Easy",note:"Carry propagation"},
+    ]
+  },
+  {
+    id:"math-patterns", icon:"🔢", title:"Math & Number Theory", level:"Week 3-4",
+    color:"#f5a623", platform:"LeetCode Easy + HackerRank",
+    desc:"Essential math patterns that appear constantly in DSA problems.",
+    platformUrl:"https://leetcode.com/problemset/?difficulty=EASY&topicSlugs=math",
+    problems:[
+      {name:"Palindrome Number",url:"https://leetcode.com/problems/palindrome-number/",diff:"Easy",note:"Digit reversal"},
+      {name:"Reverse Integer",url:"https://leetcode.com/problems/reverse-integer/",diff:"Medium",note:"Overflow handling"},
+      {name:"Count Primes",url:"https://leetcode.com/problems/count-primes/",diff:"Medium",note:"Sieve of Eratosthenes"},
+      {name:"Power of Two",url:"https://leetcode.com/problems/power-of-two/",diff:"Easy",note:"Bit trick"},
+      {name:"Excel Sheet Column Number",url:"https://leetcode.com/problems/excel-sheet-column-number/",diff:"Easy",note:"Base conversion"},
+      {name:"Happy Number",url:"https://leetcode.com/problems/happy-number/",diff:"Easy",note:"Fast/slow pointers"},
+      {name:"Roman to Integer",url:"https://leetcode.com/problems/roman-to-integer/",diff:"Easy",note:"Lookup table"},
+      {name:"Add Binary",url:"https://leetcode.com/problems/add-binary/",diff:"Easy",note:"Bit addition"},
+      {name:"Sqrt(x)",url:"https://leetcode.com/problems/sqrtx/",diff:"Easy",note:"Binary search on answer"},
+    ]
+  },
+  {
+    id:"string-patterns", icon:"🔤", title:"String Fundamentals", level:"Week 4-5",
+    color:"#e84393", platform:"LeetCode Easy",
+    desc:"String problems are in every interview. Build strong string instincts.",
+    platformUrl:"https://leetcode.com/problemset/?difficulty=EASY&topicSlugs=string",
+    problems:[
+      {name:"Valid Parentheses",url:"https://leetcode.com/problems/valid-parentheses/",diff:"Easy",note:"Stack intro"},
+      {name:"Length of Last Word",url:"https://leetcode.com/problems/length-of-last-word/",diff:"Easy",note:"String traversal"},
+      {name:"Reverse String",url:"https://leetcode.com/problems/reverse-string/",diff:"Easy",note:"Two pointer"},
+      {name:"First Unique Character",url:"https://leetcode.com/problems/first-unique-character-in-a-string/",diff:"Easy",note:"Frequency map"},
+      {name:"Valid Anagram",url:"https://leetcode.com/problems/valid-anagram/",diff:"Easy",note:"Char counting"},
+      {name:"Implement strStr()",url:"https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/",diff:"Easy",note:"Pattern search"},
+      {name:"Count and Say",url:"https://leetcode.com/problems/count-and-say/",diff:"Medium",note:"Sequence generation"},
+      {name:"Longest Common Prefix",url:"https://leetcode.com/problems/longest-common-prefix/",diff:"Easy",note:"String comparison"},
+      {name:"Is Subsequence",url:"https://leetcode.com/problems/is-subsequence/",diff:"Easy",note:"Two pointer"},
+    ]
+  },
+  {
+    id:"ready-for-dsa", icon:"🚀", title:"Ready for DSA!", level:"After Week 5",
+    color:"#7c4dff", platform:"LeetCode Medium",
+    desc:"You are now ready to tackle real DSA topics. Start with Arrays → Linked Lists → Trees.",
+    platformUrl:"https://neetcode.io/practice",
+    problems:[
+      {name:"3Sum",url:"https://leetcode.com/problems/3sum/",diff:"Medium",note:"Two pointer"},
+      {name:"Product of Array Except Self",url:"https://leetcode.com/problems/product-of-array-except-self/",diff:"Medium",note:"Prefix sum"},
+      {name:"Group Anagrams",url:"https://leetcode.com/problems/group-anagrams/",diff:"Medium",note:"Hash map grouping"},
+      {name:"Longest Substring Without Repeating",url:"https://leetcode.com/problems/longest-substring-without-repeating-characters/",diff:"Medium",note:"Sliding window"},
+      {name:"Container With Most Water",url:"https://leetcode.com/problems/container-with-most-water/",diff:"Medium",note:"Two pointer"},
+      {name:"Climbing Stairs",url:"https://leetcode.com/problems/climbing-stairs/",diff:"Easy",note:"DP intro"},
+      {name:"Reverse Linked List",url:"https://leetcode.com/problems/reverse-linked-list/",diff:"Easy",note:"Linked list"},
+      {name:"Binary Search",url:"https://leetcode.com/problems/binary-search/",diff:"Easy",note:"Search"},
+      {name:"Number of Islands",url:"https://leetcode.com/problems/number-of-islands/",diff:"Medium",note:"BFS/DFS"},
+    ]
+  },
+];
+
 // ── PATTERNS DATA (14 Must-Master Patterns) ────────────────────────────────
 const PATTERNS_DATA = [
   {
@@ -2481,7 +2591,7 @@ const BLIND75 = [
 // ── COMPANY WISE DATA ─────────────────────────────────────────────────────
 const COMPANY_DATA = [
   {
-    name:"Google", logo:"https://www.google.com/favicon.ico", color:"#4285f4",
+    name:"Google", logo:"https://www.google.com/s2/favicons?domain=google.com&sz=64", color:"#4285f4",
     hires:"SWE, ML, Data", rounds:"3-5 DSA rounds",
     problems:[
       {name:"Trapping Rain Water",lc:"trapping-rain-water",diff:"Hard"},
@@ -2499,7 +2609,7 @@ const COMPANY_DATA = [
     ]
   },
   {
-    name:"Amazon", logo:"https://www.amazon.com/favicon.ico", color:"#ff9900",
+    name:"Amazon", logo:"https://www.google.com/s2/favicons?domain=amazon.com&sz=64", color:"#ff9900",
     hires:"SDE I/II, Data", rounds:"2-4 DSA rounds",
     problems:[
       {name:"Two Sum",lc:"two-sum",diff:"Easy"},
@@ -2517,7 +2627,7 @@ const COMPANY_DATA = [
     ]
   },
   {
-    name:"Microsoft", logo:"https://www.microsoft.com/favicon.ico", color:"#00a4ef",
+    name:"Microsoft", logo:"https://www.google.com/s2/favicons?domain=microsoft.com&sz=64", color:"#00a4ef",
     hires:"SWE, SDET", rounds:"2-3 DSA rounds",
     problems:[
       {name:"Reverse Linked List",lc:"reverse-linked-list",diff:"Easy"},
@@ -2533,7 +2643,7 @@ const COMPANY_DATA = [
     ]
   },
   {
-    name:"Meta (Facebook)", logo:"https://www.facebook.com/favicon.ico", color:"#1877f2",
+    name:"Meta (Facebook)", logo:"https://www.google.com/s2/favicons?domain=meta.com&sz=64", color:"#1877f2",
     hires:"SWE, Infra", rounds:"2 DSA + system design",
     problems:[
       {name:"Add and Search Word",lc:"design-add-and-search-words-data-structure",diff:"Medium"},
@@ -2550,7 +2660,7 @@ const COMPANY_DATA = [
     ]
   },
   {
-    name:"Apple", logo:"https://www.apple.com/favicon.ico", color:"#555",
+    name:"Apple", logo:"https://www.google.com/s2/favicons?domain=apple.com&sz=64", color:"#555",
     hires:"SWE, iOS/macOS", rounds:"3-5 rounds",
     problems:[
       {name:"Two Sum",lc:"two-sum",diff:"Easy"},
@@ -2565,7 +2675,7 @@ const COMPANY_DATA = [
     ]
   },
   {
-    name:"Flipkart", logo:"https://www.flipkart.com/favicon.ico", color:"#2874f0",
+    name:"Flipkart", logo:"https://www.google.com/s2/favicons?domain=flipkart.com&sz=64", color:"#2874f0",
     hires:"SDE I/II", rounds:"2-3 DSA rounds",
     problems:[
       {name:"Maximum Subarray",lc:"maximum-subarray",diff:"Medium"},
@@ -2580,7 +2690,7 @@ const COMPANY_DATA = [
     ]
   },
   {
-    name:"Adobe", logo:"https://www.adobe.com/favicon.ico", color:"#e1251b",
+    name:"Adobe", logo:"https://www.google.com/s2/favicons?domain=adobe.com&sz=64", color:"#e1251b",
     hires:"SWE, MTS", rounds:"2-3 DSA rounds",
     problems:[
       {name:"Two Sum",lc:"two-sum",diff:"Easy"},
@@ -2594,7 +2704,7 @@ const COMPANY_DATA = [
     ]
   },
   {
-    name:"Infosys", logo:"https://www.infosys.com/favicon.ico", color:"#007cc3",
+    name:"Infosys", logo:"https://www.google.com/s2/favicons?domain=infosys.com&sz=64", color:"#007cc3",
     hires:"SE, SSE", rounds:"1-2 DSA rounds",
     problems:[
       {name:"Two Sum",lc:"two-sum",diff:"Easy"},
@@ -2606,7 +2716,7 @@ const COMPANY_DATA = [
     ]
   },
   {
-    name:"TCS", logo:"https://www.tcs.com/favicon.ico", color:"#1a1a7e",
+    name:"TCS", logo:"https://www.google.com/s2/favicons?domain=tcs.com&sz=64", color:"#1a1a7e",
     hires:"ASE, Systems", rounds:"1-2 DSA rounds",
     problems:[
       {name:"Find Missing Number",lc:"missing-number",diff:"Easy"},
@@ -2618,7 +2728,7 @@ const COMPANY_DATA = [
     ]
   },
   {
-    name:"Walmart", logo:"https://www.walmart.com/favicon.ico", color:"#0071ce",
+    name:"Walmart", logo:"https://www.google.com/s2/favicons?domain=walmart.com&sz=64", color:"#0071ce",
     hires:"SWE, Data", rounds:"2-3 DSA rounds",
     problems:[
       {name:"Two Sum",lc:"two-sum",diff:"Easy"},
@@ -2695,7 +2805,7 @@ const DSAPage = ({ setPage }) => {
   const fetchTip = async (slug) => {
     setTipLoading(true); setTip("");
     try {
-      const r = await fetch(`/api/dsa/topics/${slug}/tip`, { method:"POST" });
+      const r = await fetch(`${API_BASE}/dsa/topics/${slug}/tip`, { method:"POST" });
       const j = await r.json();
       setTip(j.tip || "");
     } catch { setTip("Could not load tip — check Groq API key."); }
@@ -2712,10 +2822,10 @@ const DSAPage = ({ setPage }) => {
       <div style={{maxWidth:1200,margin:"0 auto"}}>
         <div className="sl">Student Tools</div>
         <h1 className="syne" style={{fontSize:30,fontWeight:800,marginBottom:4}}>🧠 DSA <span className="gtext">Problem Explorer</span></h1>
-        <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Topics · Patterns · Blind 75 · Company Wise · Visualizers</p>
+        <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Pre-DSA · Topics · Patterns · Blind 75 · Company Wise · Visualizers</p>
         {!isDeepView && (
           <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
-            {[["topics","📚 Topics"],["patterns","🧩 Patterns"],["blind75","🎯 Blind 75"],["company","🏢 Company Wise"],["visualizers","🎬 Visualizers"]].map(([t,l])=>(
+            {[["predsa","🌱 Pre-DSA"],["topics","📚 Topics"],["patterns","🧩 Patterns"],["blind75","🎯 Blind 75"],["company","🏢 Company Wise"],["visualizers","🎬 Visualizers"]].map(([t,l])=>(
               <button key={t} onClick={()=>{setTab(t);setView("topics");}} style={{padding:"10px 18px",background:"transparent",border:"none",borderBottom:`3px solid ${tab===t?"var(--purple)":"transparent"}`,color:tab===t?"var(--purple)":"var(--text2)",fontWeight:tab===t?700:500,fontSize:13,cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'DM Sans',sans-serif"}}>
                 {l}
               </button>
@@ -2852,10 +2962,77 @@ const DSAPage = ({ setPage }) => {
               </div>
             </>
           )}
+          <button onClick={()=>{setView("topics");setTab("topics");}} style={{marginTop:20,padding:"9px 20px",borderRadius:10,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",fontSize:13,fontWeight:600,cursor:"pointer"}}>← Back to Topics</button>
         </div>
       </div>
     );
   }
+
+  // ── PRE-DSA TAB ────────────────────────────────────────────────────────
+  if (tab === "predsa") return (
+    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+      <Header/>
+      <div style={{maxWidth:1100,margin:"0 auto",padding:"28px 24px"}}>
+        <div style={{background:"linear-gradient(135deg,rgba(0,255,136,.08),rgba(124,77,255,.08))",border:"1px solid rgba(0,255,136,.2)",borderRadius:16,padding:"24px 28px",marginBottom:28}}>
+          <div className="syne" style={{fontSize:22,fontWeight:800,marginBottom:8}}>🌱 Pre-DSA Preparation</div>
+          <p style={{color:"var(--text2)",fontSize:13,lineHeight:1.7,marginBottom:12}}>
+            Starting directly with LeetCode Medium is a common mistake. Build strong fundamentals first.
+            This roadmap takes you from zero to DSA-ready in 5 weeks.
+          </p>
+          <div style={{display:"flex",gap:20,flexWrap:"wrap"}}>
+            {[["Week 1","Basics & Logic"],["Week 2-3","Arrays & Strings"],["Week 4-5","Math & Patterns"],["Week 5+","Real DSA"]].map(([w,t])=>(
+              <div key={w} style={{display:"flex",alignItems:"center",gap:8}}>
+                <span style={{fontSize:11,fontWeight:700,color:"var(--cyan)",background:"rgba(0,212,255,.12)",padding:"2px 8px",borderRadius:4}}>{w}</span>
+                <span style={{fontSize:12,color:"var(--text2)"}}>{t}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:24}}>
+          {PRE_DSA_TRACKS.map(track=>(
+            <div key={track.id} style={{border:`1px solid ${track.color}30`,borderRadius:16,overflow:"hidden",background:"var(--card)"}}>
+              <div style={{background:`${track.color}10`,borderBottom:`1px solid ${track.color}20`,padding:"18px 24px",display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:12}}>
+                <div style={{display:"flex",alignItems:"center",gap:12}}>
+                  <span style={{fontSize:28}}>{track.icon}</span>
+                  <div>
+                    <div className="syne" style={{fontSize:16,fontWeight:800,marginBottom:3}}>{track.title}</div>
+                    <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
+                      <span style={{fontSize:11,padding:"2px 8px",borderRadius:4,background:`${track.color}20`,color:track.color,fontWeight:700}}>{track.level}</span>
+                      <span style={{fontSize:11,color:"var(--text3)"}}>via {track.platform}</span>
+                    </div>
+                  </div>
+                </div>
+                <div style={{textAlign:"right"}}>
+                  <p style={{fontSize:12,color:"var(--text2)",lineHeight:1.5,marginBottom:8,maxWidth:300}}>{track.desc}</p>
+                  <a href={track.platformUrl} target="_blank" rel="noopener noreferrer"
+                    style={{fontSize:11,padding:"6px 14px",borderRadius:8,background:`${track.color}20`,color:track.color,textDecoration:"none",fontWeight:700,border:`1px solid ${track.color}40`}}>
+                    Open Platform →
+                  </a>
+                </div>
+              </div>
+              <div style={{padding:"16px 24px"}}>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:8}}>
+                  {track.problems.map((p,i)=>(
+                    <a key={i} href={p.url} target="_blank" rel="noopener noreferrer"
+                      style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",borderRadius:10,border:"1px solid var(--border)",background:"var(--bg)",textDecoration:"none",transition:"all .2s"}}
+                      onMouseEnter={e=>{e.currentTarget.style.borderColor=track.color;e.currentTarget.style.background=`${track.color}08`;}}
+                      onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.background="var(--bg)";}}>
+                      <span style={{fontSize:11,color:"var(--text3)",minWidth:18,flexShrink:0,textAlign:"right"}}>{i+1}</span>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{fontSize:12,fontWeight:600,color:"var(--text)",marginBottom:2}}>{p.name}</div>
+                        <div style={{fontSize:10,color:"var(--text3)"}}>{p.note}</div>
+                      </div>
+                      <span style={{fontSize:9,fontWeight:700,padding:"2px 6px",borderRadius:3,background:`${p.diff==="Easy"?"rgba(0,255,136,.15)":"rgba(255,214,10,.15)"}`,color:p.diff==="Easy"?"#00ff88":"#ffd60a",flexShrink:0}}>{p.diff}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
   // ── PATTERNS TAB ───────────────────────────────────────────────────────
   if (tab === "patterns") return (
@@ -3503,10 +3680,10 @@ const STUDENT_TOOLS = [
     icon: "🧠",
     title: "DSA Problem Explorer",
     desc: "Navigate DSA topics with problems from LeetCode, GFG, NeetCode & more. Includes AI study tips.",
-    badge: "299 problems",
+    badge: "Patterns · Blind 75 · Company Wise",
     badgeColor: "var(--cyan)",
-    tags: ["LeetCode", "NeetCode", "GFG", "HackerRank"],
-    stats: [{ label: "Topics", value: "17" }, { label: "Platforms", value: "8" }, { label: "Problems", value: "299" }],
+    tags: ["20 Patterns", "Blind 75", "Company Wise", "Visualizers"],
+    stats: [{ label: "Topics", value: "17" }, { label: "Patterns", value: "20" }, { label: "Blind 75", value: "75" }],
     color: "var(--cyan)",
     gradient: "linear-gradient(135deg,rgba(0,212,255,.15),rgba(0,212,255,.03))",
   },
