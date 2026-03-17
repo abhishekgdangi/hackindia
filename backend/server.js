@@ -48,6 +48,7 @@ app.use("/api/dsa",         require("./routes/dsa"));
 app.use("/api/hackathons",  require("./routes/hackathons"));
 app.use("/api/internships", require("./routes/internships"));
 app.use("/api/events",      require("./routes/events"));
+app.use("/api/resume",      require("./routes/resume"));
 
 /* ── HackBot Chat (Groq proxy — key stays on server) ───────────── */
 app.post("/api/chat", async (req, res) => {
