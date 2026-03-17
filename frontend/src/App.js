@@ -3836,6 +3836,7 @@ const ResumeAnalyzerPage = ({ setPage }) => {
     return "var(--yellow)";
   };
 
+  // eslint-disable-next-line no-unused-vars
   const ScoreRing = ({ value, label, size=72 }) => {
     const c = SCORE_COLOR(value);
     const pct = Math.min(100, Math.max(0, value));
