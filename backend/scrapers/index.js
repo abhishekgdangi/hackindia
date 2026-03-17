@@ -1,12 +1,13 @@
 /**
  * scrapers/index.js — ALL active scrapers
  *
- * HACKATHON: Devpost, HackClub, TAIKAI, Hackathon.com, DevEvents, Devfolio, HackerEarth
+ * HACKATHON: Devpost, HackClub, TAIKAI, Hackathon.com, DevEvents, Devfolio, HackerEarth, Hack2Skill
  * INTERNSHIP: Internshala, Remotive
- * EVENTS: Eventbrite, GoogleDev, Luma, HasGeek
+ * EVENTS: Eventbrite, Luma, HasGeek, IndiaExpos
  *
  * REMOVED: MLH, Unstop, DoraHacks, LetsIntern, Fresherworld, Hirist,
- *          Twenty19, Apna, KonfHub, UnstopEvents, GDGCommunity, DevEventsIndia
+ *          Twenty19, Apna, KonfHub, UnstopEvents, GDGCommunity, DevEventsIndia,
+ *          GoogleDev, AllEvents
  */
 
 const devpost      = require("./devpost");
@@ -14,16 +15,16 @@ const hackclub     = require("./hackclub");
 const taikai       = require("./taikai");
 const hackathoncom = require("./hackathoncom");
 const devevents    = require("./devevents");
+const devfolio2    = require("./devfolio2");
 const hackerearth  = require("./hackerearth");
+const hack2skill   = require("./hack2skill");
 const internshala  = require("./internshala");
 const remotive     = require("./remotive");
 
-const { scrapeEventbrite }    = require("./eventbriteScraper");
-const { scrapeGoogleDev }     = require("./googleDev");
-const { scrapeLuma }          = require("./luma");
-const { scrapeHasGeek }       = require("./hasgeek");
-const { scrapeIndiaExpos }     = require("./indiaExpos");
-const { scrapeAllEvents }      = require("./allevents");
+const { scrapeEventbrite } = require("./eventbriteScraper");
+const { scrapeLuma }       = require("./luma");
+const { scrapeHasGeek }    = require("./hasgeek");
+const { scrapeIndiaExpos } = require("./indiaExpos");
 
 const logger = require("../utils/logger");
 
@@ -35,6 +36,8 @@ async function runHackathonScrapers() {
     { name: "TAIKAI",        fn: () => taikai.scrape(),       tier: 1 },
     { name: "Hackathon.com", fn: () => hackathoncom.scrape(), tier: 2 },
     { name: "DevEvents",     fn: () => devevents.scrape(),    tier: 2 },
+    { name: "Hack2Skill",    fn: () => hack2skill.scrape(),   tier: 2 },
+    { name: "Devfolio",      fn: () => devfolio2.scrape(),    tier: 3 },
     { name: "HackerEarth",   fn: () => hackerearth.scrape(),  tier: 3 },
   ];
 
@@ -84,11 +87,9 @@ async function runInternshipScrapers() {
 async function runEventScrapers() {
   const scrapers = [
     { name: "Eventbrite", fn: scrapeEventbrite },
-    { name: "GoogleDev",  fn: scrapeGoogleDev  },
     { name: "Luma",       fn: scrapeLuma       },
     { name: "HasGeek",    fn: scrapeHasGeek    },
     { name: "IndiaExpos", fn: scrapeIndiaExpos },
-    { name: "AllEvents",  fn: scrapeAllEvents  },
   ];
 
   logger.info(`[Scrapers] Running ${scrapers.length} event scrapers…`);
@@ -117,11 +118,12 @@ async function runSingleScraper(name) {
     taikai:       () => taikai.scrape(),
     hackathoncom: () => hackathoncom.scrape(),
     devevents:    () => devevents.scrape(),
+    hack2skill:   () => hack2skill.scrape(),
+    devfolio:     () => devfolio2.scrape(),
     hackerearth:  () => hackerearth.scrape(),
     internshala:  () => internshala.scrape(),
     remotive:     () => remotive.scrape(),
     eventbrite:   scrapeEventbrite,
-    googledev:    scrapeGoogleDev,
     luma:         scrapeLuma,
     hasgeek:      scrapeHasGeek,
     indiaexpos:   scrapeIndiaExpos,
