@@ -3692,7 +3692,7 @@ const STUDENT_TOOLS = [
     id: "resume",
     icon: "📄",
     title: "AI Resume Analyzer",
-    desc: "Get ATS score, skill gap analysis, section-wise scoring & 5 actionable improvements — powered by Groq AI.",
+    desc: "Get ATS score, skill gap analysis, section-wise scoring & 5 actionable improvements — instant analysis.",
     badge: "ATS · Skill Gap · AI Feedback",
     badgeColor: "var(--green)",
     tags: ["ATS Score", "Section Scores", "Skill Gap", "Role Match", "AI Tips"],
@@ -3775,406 +3775,683 @@ const SCORE_BG    = s => s >= 75 ? "rgba(0,255,136,.08)" : s >= 50 ? "rgba(255,2
 const SCORE_BD    = s => s >= 75 ? "rgba(0,255,136,.25)" : s >= 50 ? "rgba(255,214,10,.25)" : "rgba(255,61,138,.25)";
 
 const ResumeAnalyzerPage = ({ setPage }) => {
-  const [resumeText, setResumeText] = React.useState("");
-  const [loading,    setLoading]    = React.useState(false);
-  const [result,     setResult]     = React.useState(null);
-  const [error,      setError]      = React.useState("");
-  const [copied,     setCopied]     = React.useState(false);
-  const [tab,        setTab]        = React.useState("overview"); // overview | skills | feedback
+  const [file,    setFile]    = React.useState(null);
+  const [jd,      setJd]      = React.useState("");
+  const [domain,  setDomain]  = React.useState("");
+  const [drag,    setDrag]    = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [result,  setResult]  = React.useState(null);
+  const [error,   setError]   = React.useState("");
+  const [copied,  setCopied]  = React.useState(false);
+  const [tab,     setTab]     = React.useState("overview");
+  const [showJD,  setShowJD]  = React.useState(false);
+  const fileRef = React.useRef();
+
+  const DOMAINS = ["","Full Stack","Frontend","Backend","AI/ML","Data Science","DevOps/Cloud","Mobile","Cybersecurity","Blockchain"];
+
+  const pickFile = f => {
+    if (!f) return;
+    const ext = f.name.toLowerCase();
+    const ok = ["application/pdf","application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document","text/plain"].includes(f.type)
+      || ext.endsWith(".pdf") || ext.endsWith(".docx") || ext.endsWith(".doc") || ext.endsWith(".txt");
+    if (!ok) { setError("Only PDF, DOCX, DOC, or TXT files are supported."); return; }
+    setFile(f); setError("");
+  };
+
+  const onDrop = e => { e.preventDefault(); setDrag(false); pickFile(e.dataTransfer.files[0]); };
 
   const handleAnalyze = async () => {
-    setError(""); setResult(null);
-    if (resumeText.trim().length < 50) { setError("Please paste your resume text (minimum 50 characters)."); return; }
-    setLoading(true);
+    if (!file) { setError("Please select a resume file first."); return; }
+    setError(""); setResult(null); setLoading(true);
     try {
-      const res  = await fetch(`${API_BASE}/resume/analyze`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ resumeText: resumeText.trim() }) });
+      const fd = new FormData();
+      fd.append("resume", file);
+      if (jd.trim())     fd.append("jobDescription", jd.trim());
+      if (domain.trim()) fd.append("targetDomain", domain.trim());
+      const res  = await fetch(`${API_BASE}/resume/analyze`, { method:"POST", body:fd });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || "Analysis failed. Please try again."); }
-      else { setResult(data); setTab("overview"); window.scrollTo(0,0); }
+      if (res.status === 429) {
+        setError("⏳ " + (data.error || "AI is busy — please wait 30 seconds and try again."));
+      } else if (!res.ok) {
+        setError(data.error || "Analysis failed. Please try again.");
+      } else {
+        setResult(data); setTab("overview"); window.scrollTo(0,0);
+      }
     } catch { setError("Network error. Check your connection and try again."); }
     setLoading(false);
   };
 
   const handleCopy = () => {
     if (!result) return;
-    const txt = [
+    const r = result;
+    const lines = [
       "RESUME ANALYSIS — HackIndia",
-      "",
-      `Verdict: ${result.one_line_verdict}`,
-      `Type: ${result.resume_type}`,
-      "",
-      "SCORES",
-      `Overall: ${result.overall_score}/100  |  ATS: ${result.ats_score}/100`,
-      `Education: ${result.section_scores.education}  Skills: ${result.section_scores.skills}  Projects: ${result.section_scores.projects}  Experience: ${result.section_scores.experience}  Certifications: ${result.section_scores.certifications}`,
-      "",
-      "TARGET ROLES",
-      result.target_roles.join(", "),
-      "",
-      "SKILLS FOUND",
-      result.skills_found.join(", "),
-      "",
-      "SKILLS MISSING",
-      result.skills_missing.join(", "),
-      "",
-      "STRENGTHS",
-      ...result.strengths.map((s,i) => `${i+1}. ${s}`),
-      "",
-      "SUGGESTIONS",
-      ...result.suggestions.map((s,i) => `${i+1}. ${s}`),
-      "",
-      ...(result.ats_warnings?.length ? ["ATS WARNINGS", ...result.ats_warnings.map((w,i)=>`${i+1}. ${w}`), ""] : []),
-      "Generated by HackIndia Resume Analyzer · hackindia.in"
+      `Overall: ${r.summary?.overall_score}/100  ATS: ${r.summary?.ats_score}/100${r.summary?.match_score!=null?`  JD Match: ${r.summary.match_score}/100`:""}`,
+      `Type: ${r.summary?.resume_type}  Shortlist: ${r.recruiter_decision?.shortlist}`,
+      `Verdict: ${r.recruiter_decision?.reason}`,"",
+      "PRIORITY ACTION PLAN",...(r.priority_action_plan||[]).map((x,i)=>`${i+1}. ${x}`),"",
+      "SKILLS FOUND",(r.skills_analysis?.found||[]).join(", "),"",
+      "SKILLS MISSING",(r.skills_analysis?.missing||[]).join(", "),"",
+      "ATS ISSUES",...(r.ats_analysis?.format_issues||[]),...(r.ats_analysis?.keyword_issues||[]),"",
+      `Pipeline: Rule-based ✓  RAG ✓  LLM ✓  Self-validated: ${r.validation?.is_safe?"✓ Safe":"⚠ Issues found"}`,
+      "Generated by HackIndia Resume Analyzer",
     ].join("\n");
-    navigator.clipboard.writeText(txt).then(() => { setCopied(true); setTimeout(()=>setCopied(false), 2000); });
+    navigator.clipboard.writeText(lines).then(()=>{ setCopied(true); setTimeout(()=>setCopied(false),2000); });
   };
 
-  const typeColor = t => {
-    if (!t) return "var(--cyan)";
-    const l = t.toLowerCase();
-    if (l === "fresher") return "var(--green)";
-    if (l === "experienced") return "var(--cyan)";
-    return "var(--yellow)";
-  };
+  const shortlistColor = s => s==="Yes"?"var(--green)":s==="No"?"var(--pink)":"var(--yellow)";
+  const shortlistBg    = s => s==="Yes"?"rgba(0,255,136,.12)":s==="No"?"rgba(255,61,138,.1)":"rgba(255,214,10,.1)";
+  const readinessColor = r => r==="High"?"var(--green)":r==="Medium"?"var(--yellow)":"var(--pink)";
+  const prioColor      = p => p==="High"?"var(--pink)":p==="Medium"?"var(--yellow)":"var(--cyan)";
+  const demandColor    = d => d==="Very High"?"var(--green)":d==="High"?"var(--cyan)":"var(--yellow)";
+  const fileIcon       = n => { const e=(n||"").toLowerCase(); return e.endsWith(".pdf")?"📄":e.endsWith(".docx")||e.endsWith(".doc")?"📝":"📃"; };
+  const fmtSize        = b => b>1024*1024?`${(b/1024/1024).toFixed(1)} MB`:`${Math.round(b/1024)} KB`;
 
-  // eslint-disable-next-line no-unused-vars
-  const ScoreRing = ({ value, label, size=72 }) => {
-    const c = SCORE_COLOR(value);
-    const pct = Math.min(100, Math.max(0, value));
-    const r = (size/2) - 6;
-    const circ = 2 * Math.PI * r;
-    const dash = (pct / 100) * circ;
-    return (
-      <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6}}>
-        <svg width={size} height={size} style={{transform:"rotate(-90deg)"}}>
-          <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--bg3)" strokeWidth={5}/>
-          <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={c} strokeWidth={5}
-            strokeDasharray={`${dash} ${circ}`} strokeLinecap="round" style={{transition:"stroke-dasharray .8s ease"}}/>
-        </svg>
-        <div style={{marginTop:-size/2-8,position:"relative",zIndex:1,textAlign:"center",pointerEvents:"none"}}>
-          <div className="syne" style={{fontSize:size===72?20:15,fontWeight:800,color:c,lineHeight:1}}>{value}</div>
-        </div>
-        <div style={{fontSize:10,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".07em",marginTop:size/2-4}}>{label}</div>
-      </div>
-    );
-  };
+  const TabBtn = ({id,label}) => (
+    <button onClick={()=>setTab(id)} style={{padding:"10px 16px",background:"transparent",border:"none",
+      borderBottom:`3px solid ${tab===id?"var(--green)":"transparent"}`,
+      color:tab===id?"var(--green)":"var(--text2)",fontWeight:tab===id?700:500,
+      fontSize:12,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",whiteSpace:"nowrap"}}>{label}</button>
+  );
 
-  // ── INPUT SCREEN ───────────────────────────────────────────
+  const Card = ({children,style={}}) => (
+    <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24,...style}}>{children}</div>
+  );
+
+  const SLabel = ({text}) => (
+    <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>{text}</div>
+  );
+
+  const NumItem = ({text,i,bg,border,nc}) => (
+    <div style={{display:"flex",gap:12,marginBottom:10,padding:"12px 14px",background:bg,border:`1px solid ${border}`,borderRadius:10,alignItems:"flex-start"}}>
+      <div style={{minWidth:22,height:22,borderRadius:"50%",background:nc+"33",color:nc,fontSize:11,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>{i+1}</div>
+      <span style={{fontSize:13,color:"var(--text)",lineHeight:1.65}}>{text}</span>
+    </div>
+  );
+
+  // ── INPUT SCREEN ──────────────────────────────────────────────
   if (!result) return (
     <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
-      {/* Page header */}
       <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"36px 24px 32px"}}>
-        <div style={{maxWidth:860,margin:"0 auto"}}>
-          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:6}}>
-            <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Tools</button>
-          </div>
-          <div className="sl" style={{marginTop:14}}>AI-Powered · Free · No Login</div>
+        <div style={{maxWidth:800,margin:"0 auto"}}>
+          <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",marginBottom:16}}>← Tools</button>
+          <div className="sl">Rule-Based · RAG · Groq AI · Self-Validated</div>
           <h1 className="syne" style={{fontSize:32,fontWeight:800,marginBottom:8}}>📄 Resume <span className="gtext">Analyzer</span></h1>
-          <p style={{color:"var(--text2)",fontSize:14,lineHeight:1.7,maxWidth:520}}>
-            Paste your resume text below. Our AI analyzes ATS compatibility, skill gaps, section scores & gives 5 specific improvement tips — instantly.
+          <p style={{color:"var(--text2)",fontSize:14,lineHeight:1.7,maxWidth:560,marginBottom:16}}>
+            Upload your resume. Get ATS analysis, JD match scoring, skill gap roadmap, recruiter verdict, bullet rewrites & ATS-ready resume — powered by a 3-stage AI pipeline.
           </p>
-          {/* Feature pills */}
-          <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:16}}>
-            {["✅ ATS Score","📊 Section Scores","🔍 Skill Gap","🎯 Role Match","💡 5 AI Tips","⚠️ ATS Warnings"].map(f=>(
+          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+            {["✅ ATS Score","🎯 JD Match","🤖 Recruiter Verdict","💡 Bullet Rewrites","🗺️ Skill Roadmap","📋 Resume Builder","⚡ Interview Prep","🛡️ Self-Validated"].map(f=>(
               <span key={f} style={{fontSize:11,padding:"4px 10px",borderRadius:20,background:"rgba(0,255,136,.1)",color:"var(--green)",border:"1px solid rgba(0,255,136,.2)",fontWeight:600}}>{f}</span>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Input card */}
-      <div style={{maxWidth:860,margin:"32px auto",padding:"0 24px"}}>
-        <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:28}}>
-          <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Paste Resume Text</div>
-          <textarea
-            value={resumeText}
-            onChange={e=>setResumeText(e.target.value)}
-            placeholder="Paste your complete resume here — name, education, skills, projects, experience, certifications, achievements...&#10;&#10;Tip: Select All (Ctrl+A) in your resume PDF/Word, copy, and paste here."
-            style={{width:"100%",minHeight:240,background:"var(--bg)",border:"1px solid var(--border)",borderRadius:10,padding:16,fontSize:14,fontFamily:"'DM Sans',sans-serif",color:"var(--text)",resize:"vertical",outline:"none",lineHeight:1.7,boxSizing:"border-box",transition:"border .2s"}}
-            onFocus={e=>e.target.style.borderColor="var(--green)"}
-            onBlur={e=>e.target.style.borderColor="var(--border)"}
-          />
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:8,marginBottom:4}}>
-            <span style={{fontSize:11,color:"var(--text3)"}}>
-              {resumeText.length < 50
-                ? <span style={{color:"var(--pink)"}}>⚠ Min 50 chars · {50-resumeText.length} more needed</span>
-                : <span style={{color:"var(--green)"}}>✓ {resumeText.length} characters · ready to analyze</span>}
-            </span>
-            <button onClick={()=>setResumeText("")} style={{fontSize:11,color:"var(--text3)",background:"none",border:"none",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Clear ✕</button>
-          </div>
-          {/* Tip box */}
-          <div style={{background:"rgba(0,212,255,.06)",border:"1px solid rgba(0,212,255,.15)",borderRadius:10,padding:"11px 14px",marginBottom:18,fontSize:12,color:"var(--text2)",lineHeight:1.6}}>
-            💡 <strong style={{color:"var(--cyan)"}}>Best results:</strong> Include all sections — education, skills, projects, internships/work, certifications, achievements, links (GitHub, LinkedIn).
-          </div>
-          {error && (
-            <div style={{background:"rgba(255,61,138,.08)",border:"1px solid rgba(255,61,138,.25)",borderRadius:10,padding:"11px 14px",color:"var(--pink)",fontSize:13,marginBottom:16}}>⚠️ {error}</div>
+      <div style={{maxWidth:800,margin:"28px auto",padding:"0 24px"}}>
+        {/* Drop zone */}
+        <div onDragOver={e=>{e.preventDefault();setDrag(true);}} onDragLeave={()=>setDrag(false)} onDrop={onDrop}
+          onClick={()=>!file&&fileRef.current.click()}
+          style={{background:drag?"rgba(0,255,136,.06)":"var(--card)",border:`2px dashed ${drag?"var(--green)":file?"var(--green)":"var(--border2)"}`,
+            borderRadius:16,padding:"40px 24px",textAlign:"center",cursor:file?"default":"pointer",transition:"all .2s",marginBottom:16}}>
+          {!file?(<>
+            <div style={{fontSize:48,marginBottom:10}}>📂</div>
+            <div className="syne" style={{fontSize:17,fontWeight:800,marginBottom:6}}>{drag?"Drop it here!":"Drag & drop your resume"}</div>
+            <div style={{color:"var(--text2)",fontSize:13,marginBottom:16}}>or click to browse files</div>
+            <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap",marginBottom:10}}>
+              {["PDF","DOCX","DOC","TXT"].map(f=><span key={f} style={{padding:"4px 12px",borderRadius:8,background:"var(--bg3)",border:"1px solid var(--border)",fontSize:12,fontWeight:700,color:"var(--text2)"}}>{f}</span>)}
+            </div>
+            <div style={{fontSize:12,color:"var(--text3)"}}>No size limit · File never stored</div>
+          </>):(
+            <div style={{display:"flex",alignItems:"center",gap:14,justifyContent:"center",flexWrap:"wrap"}}>
+              <span style={{fontSize:40}}>{fileIcon(file.name)}</span>
+              <div style={{textAlign:"left"}}>
+                <div className="syne" style={{fontSize:15,fontWeight:800,color:"var(--green)",marginBottom:3}}>{file.name}</div>
+                <div style={{fontSize:12,color:"var(--text2)"}}>{fmtSize(file.size)} · {file.name.split(".").pop().toUpperCase()}</div>
+              </div>
+              <button onClick={e=>{e.stopPropagation();setFile(null);setError("");}}
+                style={{padding:"5px 12px",borderRadius:8,border:"1px solid var(--border)",background:"var(--bg3)",color:"var(--text2)",fontSize:12,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Remove ✕</button>
+            </div>
           )}
-          <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
-            <button className="btn-p" onClick={handleAnalyze} disabled={loading}
-              style={{padding:"12px 28px",fontSize:15,opacity:loading?.7:1,background:"linear-gradient(135deg,var(--green),#00b865)"}}>
-              {loading ? "⏳ Analyzing…" : "🔍 Analyze Resume"}
-            </button>
-            {loading && <div style={{display:"flex",alignItems:"center",gap:8,fontSize:13,color:"var(--text2)"}}>
-              <div className="bt-typing"><span/><span/><span/></div> AI reading your resume…
-            </div>}
+        </div>
+        <input ref={fileRef} type="file" accept=".pdf,.doc,.docx,.txt" style={{display:"none"}} onChange={e=>pickFile(e.target.files[0])}/>
+
+        {/* JD + Domain (collapsible) */}
+        <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:20,marginBottom:16}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",cursor:"pointer"}} onClick={()=>setShowJD(v=>!v)}>
+            <div>
+              <span className="syne" style={{fontSize:14,fontWeight:700}}>🎯 Add Job Description</span>
+              <span style={{fontSize:12,color:"var(--text3)",marginLeft:10}}>Optional — unlocks JD Match Score</span>
+            </div>
+            <span style={{color:"var(--cyan)",fontSize:13,transform:showJD?"rotate(180deg)":"none",display:"inline-block",transition:"transform .2s"}}>▼</span>
           </div>
+          {showJD && (
+            <div style={{marginTop:16,display:"grid",gap:12}}>
+              <div>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Job Description</div>
+                <textarea value={jd} onChange={e=>setJd(e.target.value)}
+                  placeholder="Paste the job description here — role, requirements, skills, responsibilities…"
+                  style={{width:"100%",minHeight:120,background:"var(--bg)",border:"1px solid var(--border)",borderRadius:10,padding:12,fontSize:13,fontFamily:"'DM Sans',sans-serif",color:"var(--text)",resize:"vertical",outline:"none",boxSizing:"border-box"}}
+                  onFocus={e=>e.target.style.borderColor="var(--cyan)"} onBlur={e=>e.target.style.borderColor="var(--border)"}/>
+              </div>
+              <div>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Target Domain</div>
+                <select value={domain} onChange={e=>setDomain(e.target.value)} className="input" style={{padding:"9px 36px 9px 12px",fontSize:13,width:"100%"}}>
+                  {DOMAINS.map(d=><option key={d} value={d}>{d||"Select domain (optional)"}</option>)}
+                </select>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* How it works */}
-        <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24,marginTop:20}}>
-          <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>How It Works</div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:14}}>
-            {[
-              ["📋","Paste Resume","Copy text from your PDF or Word resume"],
-              ["🤖","AI Reads It","Groq LLaMA 70B analyzes every section"],
-              ["📊","Get Scores","ATS + 5 section scores with color coding"],
-              ["💡","Improve","5 specific suggestions with exact wording"],
-            ].map(([ic,title,desc])=>(
-              <div key={title} style={{display:"flex",gap:12,alignItems:"flex-start"}}>
-                <span style={{fontSize:24,flexShrink:0}}>{ic}</span>
-                <div>
-                  <div className="syne" style={{fontSize:13,fontWeight:700,marginBottom:3}}>{title}</div>
-                  <div style={{fontSize:11,color:"var(--text2)",lineHeight:1.5}}>{desc}</div>
-                </div>
+        {error && <div style={{background:"rgba(255,61,138,.08)",border:"1px solid rgba(255,61,138,.25)",borderRadius:10,padding:"11px 16px",color:"var(--pink)",fontSize:13,marginBottom:14}}>⚠️ {error}</div>}
+
+        <div style={{display:"flex",gap:12,alignItems:"center",flexWrap:"wrap",marginBottom:24}}>
+          <button className="btn-p" onClick={handleAnalyze} disabled={loading||!file}
+            style={{padding:"13px 32px",fontSize:15,opacity:(loading||!file)?.6:1,background:"linear-gradient(135deg,var(--green),#00b865)"}}>
+            {loading?"⏳ Analyzing…":"🔍 Analyze Resume"}
+          </button>
+          {!file && <button className="btn-g" onClick={()=>fileRef.current.click()} style={{padding:"13px 22px",fontSize:14}}>📂 Browse Files</button>}
+          {loading && <div style={{display:"flex",alignItems:"center",gap:8,fontSize:13,color:"var(--text2)"}}><div className="bt-typing"><span/><span/><span/></div> 3-stage AI pipeline running…</div>}
+        </div>
+
+        {/* Pipeline info cards */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(170px,1fr))",gap:10}}>
+          {[
+            ["⚡","Rule-Based","12 ATS checks, 120+ skills, instant"],
+            ["🗂️","RAG Retrieval","10 role profiles, gap roadmap, domain paths"],
+            ["🤖","Groq AI","Rewrites, verdict, interview prep"],
+            ["🛡️","Self-Validation","LLM checks its own output for hallucinations"],
+          ].map(([ic,t,d])=>(
+            <div key={t} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:"14px",display:"flex",gap:10,alignItems:"flex-start"}}>
+              <span style={{fontSize:20,flexShrink:0}}>{ic}</span>
+              <div>
+                <div className="syne" style={{fontSize:12,fontWeight:700,marginBottom:2}}>{t}</div>
+                <div style={{fontSize:11,color:"var(--text2)",lineHeight:1.5}}>{d}</div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
 
-  // ── RESULTS SCREEN ─────────────────────────────────────────
-  const scores = [
-    { label:"Education",     value:result.section_scores.education },
-    { label:"Skills",        value:result.section_scores.skills },
-    { label:"Projects",      value:result.section_scores.projects },
-    { label:"Experience",    value:result.section_scores.experience },
-    { label:"Certs",         value:result.section_scores.certifications },
+  // ── RESULTS ────────────────────────────────────────────────────
+  const S  = result.summary || {};
+  const GA = result.gaps_analysis || {};
+  const SK = result.skills_analysis || {};
+  const JM = result.job_matching || {};
+  const AT = result.ats_analysis || {};
+  const BO = result.bullet_optimization || [];
+  const SR = result.section_rewrite || {};
+  const DI = result.domain_insights || {};
+  const IP = result.interview_prep || {};
+  const RD = result.recruiter_decision || {};
+  const AP = result.priority_action_plan || [];
+  const RB = result.resume_builder || {};
+  const VL = result.validation || {};
+  const PL = result._pipeline || {};
+
+  const TABS = [
+    ["overview","📊 Overview"],
+    ["gaps","🔍 Gaps & ATS"],
+    ["skills","🔧 Skills"],
+    ...(S.match_score!=null?[["jd","🎯 JD Match"]]:[]),
+    ["rewrite","✏️ Rewrites"],
+    ["builder","📋 Builder"],
+    ["interview","⚡ Interview"],
   ];
 
   return (
     <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
       {/* Results header */}
-      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"28px 24px 0"}}>
-        <div style={{maxWidth:960,margin:"0 auto"}}>
-          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14,flexWrap:"wrap"}}>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"24px 24px 0"}}>
+        <div style={{maxWidth:1060,margin:"0 auto"}}>
+
+          {/* Action buttons */}
+          <div style={{display:"flex",gap:10,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}>
             <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Tools</button>
-            <button onClick={()=>{setResult(null);setResumeText("");setError("");}} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>🔄 New Analysis</button>
-            <button onClick={handleCopy} style={{background:copied?"rgba(0,255,136,.15)":"none",border:`1px solid ${copied?"var(--green)":"var(--border)"}`,borderRadius:8,padding:"5px 14px",color:copied?"var(--green)":"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",transition:"all .2s"}}>
-              {copied ? "✅ Copied!" : "📋 Copy Report"}
-            </button>
+            <button onClick={()=>{setResult(null);setFile(null);setError("");setJd("");setDomain("");}} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>🔄 New Analysis</button>
+            <button onClick={handleCopy} style={{background:copied?"rgba(0,255,136,.15)":"none",border:`1px solid ${copied?"var(--green)":"var(--border)"}`,borderRadius:8,padding:"5px 14px",color:copied?"var(--green)":"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",transition:"all .2s"}}>{copied?"✅ Copied!":"📋 Copy Report"}</button>
+            {/* Pipeline status badges */}
+            <div style={{marginLeft:"auto",display:"flex",gap:6,flexWrap:"wrap"}}>
+              {[["⚡ Rule","var(--cyan)"],["🗂️ RAG","var(--purple)"],["🤖 LLM","var(--green)"],
+                [VL.is_safe===false?"⚠️ Issues":"🛡️ Safe",VL.is_safe===false?"var(--pink)":"var(--green)"]
+              ].map(([l,c])=>(
+                <span key={l} style={{fontSize:10,padding:"3px 8px",borderRadius:6,background:`${c}15`,color:c,border:`1px solid ${c}30`,fontWeight:700}}>{l}</span>
+              ))}
+            </div>
           </div>
-          <div className="sl">Analysis Complete</div>
-          <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",flexWrap:"wrap",gap:16,marginBottom:20}}>
+
+          <div className="sl">Analysis Complete · 3-Stage Pipeline</div>
+
+          {/* Score + verdict row */}
+          <div style={{display:"flex",gap:12,flexWrap:"wrap",alignItems:"flex-start",marginBottom:16,justifyContent:"space-between"}}>
             <div>
-              <h1 className="syne" style={{fontSize:26,fontWeight:800,marginBottom:8}}>📄 Resume <span className="gtext">Analysis</span></h1>
-              <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
-                <span style={{fontSize:12,fontWeight:700,padding:"4px 12px",borderRadius:20,background:`${typeColor(result.resume_type)}18`,color:typeColor(result.resume_type),border:`1px solid ${typeColor(result.resume_type)}35`,textTransform:"uppercase",letterSpacing:".06em"}}>{result.resume_type}</span>
-                {result.target_roles?.map(r=>(
-                  <span key={r} style={{fontSize:11,padding:"3px 10px",borderRadius:20,background:"rgba(124,77,255,.1)",color:"var(--purple)",border:"1px solid rgba(124,77,255,.2)",fontWeight:600}}>🎯 {r}</span>
+              <h1 className="syne" style={{fontSize:24,fontWeight:800,marginBottom:10}}>📄 Resume <span className="gtext">Analysis</span></h1>
+              <div style={{display:"inline-flex",alignItems:"center",gap:10,padding:"10px 18px",borderRadius:12,background:shortlistBg(RD.shortlist),border:`1px solid ${shortlistColor(RD.shortlist)}40`,marginBottom:10}}>
+                <span className="syne" style={{fontSize:15,fontWeight:800,color:shortlistColor(RD.shortlist)}}>
+                  {RD.shortlist==="Yes"?"✅ Shortlisted":RD.shortlist==="No"?"❌ Not Shortlisted":"🤔 Maybe Shortlisted"}
+                </span>
+              </div>
+              {RD.reason && <div style={{fontSize:13,color:"var(--text2)",fontStyle:"italic",maxWidth:500,lineHeight:1.5}}>"{RD.reason}"</div>}
+            </div>
+            <div style={{display:"flex",gap:10,flexWrap:"wrap",flexShrink:0}}>
+              {[["Overall",S.overall_score],["ATS",S.ats_score],...(S.match_score!=null?[["JD Match",S.match_score]]:[])].map(([l,v])=>(
+                <div key={l} style={{textAlign:"center",background:"var(--card)",border:`1px solid ${SCORE_BD(v)}`,borderRadius:12,padding:"12px 18px",minWidth:80}}>
+                  <div className="syne" style={{fontSize:36,fontWeight:900,color:SCORE_COLOR(v),lineHeight:1}}>{v??"—"}</div>
+                  <div style={{fontSize:10,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginTop:4}}>{l}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Validation warning banner — only shown if issues found */}
+          {VL.is_safe===false && VL.issues?.length>0 && (
+            <div style={{background:"rgba(255,61,138,.06)",border:"1px solid rgba(255,61,138,.3)",borderRadius:10,padding:"10px 16px",marginBottom:12,display:"flex",gap:10,alignItems:"flex-start"}}>
+              <span style={{fontSize:16,flexShrink:0}}>⚠️</span>
+              <div>
+                <div style={{fontSize:12,fontWeight:700,color:"var(--pink)",marginBottom:4}}>Self-validation flagged {VL.issues.length} issue{VL.issues.length>1?"s":""} — review carefully</div>
+                {VL.issues.map((iss,i)=><div key={i} style={{fontSize:12,color:"var(--text2)",lineHeight:1.5}}>• {iss}</div>)}
+              </div>
+            </div>
+          )}
+
+          {/* Priority action strip */}
+          {AP.length>0 && (
+            <div style={{background:"rgba(255,214,10,.06)",border:"1px solid rgba(255,214,10,.2)",borderRadius:10,padding:"12px 16px",marginBottom:14}}>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--yellow)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>⚡ Top Priority Actions</div>
+              <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                {AP.slice(0,3).map((a,i)=>(
+                  <div key={i} style={{fontSize:13,color:"var(--text)",display:"flex",gap:8,alignItems:"flex-start"}}>
+                    <span style={{color:"var(--yellow)",fontWeight:700,flexShrink:0}}>{i+1}.</span>{a}
+                  </div>
                 ))}
               </div>
             </div>
-            {/* Big score pair */}
-            <div style={{display:"flex",gap:24,flexShrink:0}}>
-              <div style={{textAlign:"center",background:"var(--card)",border:`1px solid ${SCORE_BD(result.overall_score)}`,borderRadius:14,padding:"14px 22px"}}>
-                <div className="syne" style={{fontSize:42,fontWeight:900,color:SCORE_COLOR(result.overall_score),lineHeight:1}}>{result.overall_score}</div>
-                <div style={{fontSize:10,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginTop:4}}>Overall</div>
-              </div>
-              <div style={{textAlign:"center",background:"var(--card)",border:`1px solid ${SCORE_BD(result.ats_score)}`,borderRadius:14,padding:"14px 22px"}}>
-                <div className="syne" style={{fontSize:42,fontWeight:900,color:SCORE_COLOR(result.ats_score),lineHeight:1}}>{result.ats_score}</div>
-                <div style={{fontSize:10,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginTop:4}}>ATS Score</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Verdict banner */}
-          <div style={{background:"linear-gradient(135deg,rgba(0,255,136,.08),rgba(0,212,255,.06))",border:"1px solid rgba(0,255,136,.2)",borderRadius:12,padding:"14px 18px",marginBottom:20,display:"flex",alignItems:"center",gap:12}}>
-            <span style={{fontSize:22,flexShrink:0}}>💬</span>
-            <span style={{fontSize:14,fontWeight:600,color:"var(--text)",fontStyle:"italic",lineHeight:1.5}}>"{result.one_line_verdict}"</span>
-          </div>
-
-          {/* Section score pills */}
-          <div style={{display:"flex",gap:10,flexWrap:"wrap",paddingBottom:4}}>
-            {scores.map(s=>(
-              <div key={s.label} style={{background:SCORE_BG(s.value),border:`1px solid ${SCORE_BD(s.value)}`,borderRadius:10,padding:"8px 14px",display:"flex",alignItems:"center",gap:8}}>
-                <span className="syne" style={{fontSize:18,fontWeight:800,color:SCORE_COLOR(s.value)}}>{s.value}</span>
-                <span style={{fontSize:11,color:"var(--text2)"}}>{s.label}</span>
-              </div>
-            ))}
-          </div>
+          )}
 
           {/* Tabs */}
-          <div style={{display:"flex",gap:0,marginTop:20}}>
-            {[["overview","📊 Overview"],["skills","🔧 Skills"],["feedback","💡 Feedback"]].map(([t,l])=>(
-              <button key={t} onClick={()=>setTab(t)}
-                style={{padding:"10px 20px",background:"transparent",border:"none",borderBottom:`3px solid ${tab===t?"var(--green)":"transparent"}`,color:tab===t?"var(--green)":"var(--text2)",fontWeight:tab===t?700:500,fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",whiteSpace:"nowrap"}}>
-                {l}
-              </button>
-            ))}
+          <div style={{display:"flex",gap:0,overflowX:"auto"}}>
+            {TABS.map(([id,lbl])=><TabBtn key={id} id={id} label={lbl}/>)}
           </div>
         </div>
       </div>
 
       {/* Tab content */}
-      <div style={{maxWidth:960,margin:"0 auto",padding:"28px 24px"}}>
+      <div style={{maxWidth:1060,margin:"0 auto",padding:"24px"}}>
+        <div style={{display:"grid",gap:16}}>
 
-        {/* ── OVERVIEW TAB ── */}
-        {tab === "overview" && (
-          <div style={{display:"grid",gap:18}}>
-            {/* Section scores grid */}
-            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24}}>
-              <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:18}}>Section Scores</div>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:12}}>
-                {scores.map(s=>(
-                  <div key={s.label} style={{background:SCORE_BG(s.value),border:`1px solid ${SCORE_BD(s.value)}`,borderRadius:12,padding:"16px 14px",textAlign:"center"}}>
-                    <div className="syne" style={{fontSize:32,fontWeight:900,color:SCORE_COLOR(s.value),lineHeight:1}}>{s.value}</div>
-                    <div style={{fontSize:10,color:"var(--text2)",marginTop:6,textTransform:"uppercase",letterSpacing:".06em"}}>{s.label}</div>
-                    <div style={{height:3,borderRadius:2,background:"var(--bg3)",marginTop:10,overflow:"hidden"}}>
-                      <div style={{height:"100%",width:`${s.value}%`,background:SCORE_COLOR(s.value),borderRadius:2,transition:"width .8s ease"}}/>
-                    </div>
+        {/* ── OVERVIEW ── */}
+        {tab==="overview" && (<>
+          {/* Resume profile + ATS detection */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+            <Card>
+              <SLabel text="Resume Profile"/>
+              <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:14}}>
+                <span style={{padding:"6px 16px",borderRadius:20,background:"rgba(0,212,255,.1)",color:"var(--cyan)",border:"1px solid rgba(0,212,255,.2)",fontSize:13,fontWeight:700}}>{S.resume_type||"—"}</span>
+                {DI.readiness && <span style={{padding:"6px 16px",borderRadius:20,background:`${readinessColor(DI.readiness)}18`,color:readinessColor(DI.readiness),border:`1px solid ${readinessColor(DI.readiness)}35`,fontSize:13,fontWeight:700}}>Readiness: {DI.readiness}</span>}
+              </div>
+              {/* Pipeline status row */}
+              <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Pipeline Used</div>
+              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                {[["⚡ Rule-Based","var(--cyan)","Instant ATS + skill detection"],
+                  ["🗂️ RAG","var(--purple)","Role matching + gap roadmap"],
+                  ["🤖 Groq LLM","var(--green)","Rewrites + recruiter verdict"],
+                  [VL.is_safe===false?"⚠️ Validation Issues":"🛡️ Self-Validated",VL.is_safe===false?"var(--pink)":"var(--green)",VL.is_safe===false?"Issues found":"Output verified"]
+                ].map(([l,c,d])=>(
+                  <div key={l} style={{padding:"6px 12px",borderRadius:8,background:`${c}10`,border:`1px solid ${c}25`,display:"flex",flexDirection:"column",gap:2}}>
+                    <span style={{fontSize:11,fontWeight:700,color:c}}>{l}</span>
+                    <span style={{fontSize:10,color:"var(--text3)"}}>{d}</span>
                   </div>
                 ))}
               </div>
-            </div>
-
-            {/* ATS warnings — shown first if present */}
-            {result.ats_warnings?.length > 0 && (
-              <div style={{background:"rgba(255,61,138,.05)",border:"1px solid rgba(255,61,138,.25)",borderRadius:16,padding:24}}>
-                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
-                  <span style={{fontSize:18}}>🚨</span>
-                  <span style={{fontSize:12,fontWeight:700,color:"var(--pink)",textTransform:"uppercase",letterSpacing:".1em"}}>ATS Warnings — Fix These First</span>
+            </Card>
+            <Card>
+              <SLabel text="ATS Section Detection"/>
+              <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:14}}>
+                <span className="syne" style={{fontSize:32,fontWeight:900,color:AT.section_detection==="Good"?"var(--green)":AT.section_detection==="Medium"?"var(--yellow)":"var(--pink)"}}>{AT.section_detection||"—"}</span>
+                <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.6}}>
+                  {AT.section_detection==="Good"?"ATS can parse all your sections successfully"
+                  :AT.section_detection==="Medium"?"Some sections may be missed by ATS"
+                  :"ATS will struggle to parse your resume"}
                 </div>
-                {result.ats_warnings.map((w,i)=>(
-                  <div key={i} style={{display:"flex",gap:10,marginBottom:10,alignItems:"flex-start"}}>
-                    <div style={{minWidth:22,height:22,borderRadius:"50%",background:"rgba(255,61,138,.2)",color:"var(--pink)",fontSize:11,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>{i+1}</div>
-                    <span style={{fontSize:13,color:"var(--text)",lineHeight:1.6}}>{w}</span>
+              </div>
+            </Card>
+          </div>
+
+          {/* Full priority action plan */}
+          <Card>
+            <SLabel text="⚡ Priority Action Plan — Top 5 Fixes"/>
+            {AP.map((a,i)=><NumItem key={i} text={a} i={i} bg="rgba(255,214,10,.05)" border="rgba(255,214,10,.18)" nc="var(--yellow)"/>)}
+          </Card>
+
+          {/* Role scores from RAG */}
+          {DI.role_scores?.length>0 && (
+            <Card>
+              <SLabel text="🎯 Role Match Scores (RAG Retrieved)"/>
+              <div style={{display:"grid",gap:10}}>
+                {DI.role_scores.map((r,i)=>(
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 14px",background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:12}}>
+                    <div style={{minWidth:44,height:44,borderRadius:10,background:SCORE_BG(r.score),border:`1px solid ${SCORE_BD(r.score)}`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                      <span className="syne" style={{fontSize:16,fontWeight:900,color:SCORE_COLOR(r.score)}}>{r.score}%</span>
+                    </div>
+                    <div style={{flex:1}}>
+                      <div className="syne" style={{fontSize:14,fontWeight:700,marginBottom:4}}>{r.title}</div>
+                      <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                        <span style={{fontSize:11,color:"var(--text2)"}}>💰 {r.salary}</span>
+                        <span style={{fontSize:11,fontWeight:600,color:demandColor(r.demand)}}>📈 {r.demand} demand</span>
+                      </div>
+                    </div>
+                    <div style={{height:6,width:80,background:"var(--bg3)",borderRadius:3,overflow:"hidden",flexShrink:0}}>
+                      <div style={{height:"100%",width:`${r.score}%`,background:SCORE_COLOR(r.score),borderRadius:3}}/>
+                    </div>
                   </div>
                 ))}
               </div>
-            )}
+            </Card>
+          )}
 
-            {/* Target roles */}
-            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24}}>
-              <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>🎯 Best Fit Roles For This Resume</div>
-              <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
-                {result.target_roles?.map(r=>(
-                  <span key={r} style={{padding:"8px 18px",borderRadius:20,background:"rgba(124,77,255,.12)",color:"var(--purple)",border:"1px solid rgba(124,77,255,.25)",fontSize:14,fontWeight:700}}>{r}</span>
+          {/* Recommended roles + top skills */}
+          {DI.recommended_roles?.length>0 && (
+            <Card>
+              <SLabel text="🎯 Recommended Roles"/>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:16}}>
+                {DI.recommended_roles.map(r=><span key={r} style={{padding:"7px 16px",borderRadius:20,background:"rgba(124,77,255,.12)",color:"var(--purple)",border:"1px solid rgba(124,77,255,.25)",fontSize:13,fontWeight:700}}>{r}</span>)}
+              </div>
+              {DI.top_skills?.length>0 && (<>
+                <SLabel text="Top Skills for This Domain"/>
+                <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                  {DI.top_skills.map(s=><span key={s} style={{padding:"4px 12px",borderRadius:20,background:"rgba(0,212,255,.08)",color:"var(--cyan)",border:"1px solid rgba(0,212,255,.2)",fontSize:12,fontWeight:600}}>{s}</span>)}
+                </div>
+              </>)}
+            </Card>
+          )}
+
+          {/* Domain roadmap */}
+          {DI.domain_roadmap?.length>0 && (
+            <Card>
+              <SLabel text="🗺️ Domain Learning Roadmap (RAG Retrieved)"/>
+              <div style={{display:"grid",gap:8}}>
+                {DI.domain_roadmap.map((step,i)=>(
+                  <div key={i} style={{display:"flex",gap:12,alignItems:"flex-start",padding:"10px 12px",background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:10}}>
+                    <div style={{minWidth:24,height:24,borderRadius:"50%",background:"rgba(124,77,255,.2)",color:"var(--purple)",fontSize:11,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{i+1}</div>
+                    <span style={{fontSize:13,color:"var(--text)",lineHeight:1.6}}>{step}</span>
+                  </div>
                 ))}
               </div>
-            </div>
-          </div>
-        )}
+            </Card>
+          )}
 
-        {/* ── SKILLS TAB ── */}
-        {tab === "skills" && (
-          <div style={{display:"grid",gap:18}}>
-            {/* Skills found */}
-            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24}}>
-              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
-                <span style={{fontSize:16}}>✅</span>
-                <span style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em"}}>Skills Detected in Resume</span>
-                <span style={{marginLeft:"auto",fontSize:11,color:"var(--green)",fontWeight:700,background:"rgba(0,255,136,.1)",padding:"2px 8px",borderRadius:6}}>{result.skills_found?.length || 0} found</span>
-              </div>
-              <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
-                {result.skills_found?.map(s=>(
-                  <span key={s} style={{padding:"5px 13px",borderRadius:20,background:"rgba(0,255,136,.1)",color:"var(--green)",border:"1px solid rgba(0,255,136,.25)",fontSize:13,fontWeight:600}}>✓ {s}</span>
-                ))}
-              </div>
-            </div>
-
-            {/* Skills missing */}
-            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24}}>
-              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
-                <span style={{fontSize:16}}>❌</span>
-                <span style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em"}}>Skills Missing for Software Jobs</span>
-                <span style={{marginLeft:"auto",fontSize:11,color:"var(--pink)",fontWeight:700,background:"rgba(255,61,138,.1)",padding:"2px 8px",borderRadius:6}}>{result.skills_missing?.length || 0} gaps</span>
-              </div>
-              <p style={{fontSize:12,color:"var(--text2)",marginBottom:14,lineHeight:1.5}}>These skills are commonly expected by Indian tech companies (FAANG, product startups, service firms) but are missing from your resume.</p>
-              <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
-                {result.skills_missing?.map(s=>(
-                  <span key={s} style={{padding:"5px 13px",borderRadius:20,background:"rgba(255,61,138,.08)",color:"var(--pink)",border:"1px solid rgba(255,61,138,.2)",fontSize:13,fontWeight:600}}>+ {s}</span>
-                ))}
+          {/* Validation status card */}
+          <Card style={{border:`1px solid ${VL.is_safe===false?"rgba(255,61,138,.3)":"rgba(0,255,136,.2)"}`}}>
+            <div style={{display:"flex",alignItems:"center",gap:12}}>
+              <span style={{fontSize:28}}>{VL.is_safe===false?"⚠️":"🛡️"}</span>
+              <div>
+                <div className="syne" style={{fontSize:14,fontWeight:800,color:VL.is_safe===false?"var(--pink)":"var(--green)",marginBottom:4}}>
+                  {VL.is_safe===false?"Self-Validation: Issues Found":"Self-Validation: Output is Safe"}
+                </div>
+                <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.5}}>
+                  {VL.is_safe===false
+                    ?"The LLM flagged potential issues in its own output — review the analysis carefully."
+                    :"The LLM verified its own output contains no hallucinated skills, tools, or fabricated claims."}
+                </div>
+                {VL.issues?.length>0 && (
+                  <div style={{marginTop:8}}>
+                    {VL.issues.map((iss,i)=><div key={i} style={{fontSize:12,color:"var(--pink)",marginTop:3}}>• {iss}</div>)}
+                  </div>
+                )}
               </div>
             </div>
+          </Card>
+        </>)}
 
-            {/* Skill match meter */}
-            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24}}>
-              <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:14}}>Skill Coverage Meter</div>
-              {(() => {
-                const total = (result.skills_found?.length||0) + (result.skills_missing?.length||0);
-                const pct   = total ? Math.round(((result.skills_found?.length||0)/total)*100) : 0;
-                return (
-                  <>
-                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
-                      <span style={{fontSize:13,color:"var(--text2)"}}>{result.skills_found?.length||0} skills present</span>
-                      <span className="syne" style={{fontSize:18,fontWeight:800,color:SCORE_COLOR(pct)}}>{pct}%</span>
-                    </div>
-                    <div style={{height:8,background:"var(--bg3)",borderRadius:4,overflow:"hidden"}}>
-                      <div style={{height:"100%",width:`${pct}%`,background:`linear-gradient(90deg,${SCORE_COLOR(pct)},${SCORE_COLOR(pct)}aa)`,borderRadius:4,transition:"width 1s ease"}}/>
-                    </div>
-                    <div style={{fontSize:11,color:"var(--text3)",marginTop:8}}>{result.skills_missing?.length||0} skills to add to reach 100% coverage</div>
-                  </>
-                );
-              })()}
-            </div>
-          </div>
-        )}
-
-        {/* ── FEEDBACK TAB ── */}
-        {tab === "feedback" && (
-          <div style={{display:"grid",gap:18}}>
-            {/* Strengths */}
-            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24}}>
-              <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>🏆 What You Did Well</div>
-              {result.strengths?.map((s,i)=>(
-                <div key={i} style={{display:"flex",gap:12,marginBottom:12,padding:"12px 14px",background:"rgba(0,255,136,.05)",border:"1px solid rgba(0,255,136,.12)",borderRadius:10,alignItems:"flex-start"}}>
-                  <div style={{minWidth:24,height:24,borderRadius:"50%",background:"rgba(0,255,136,.2)",color:"var(--green)",fontSize:12,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>{i+1}</div>
-                  <span style={{fontSize:13,color:"var(--text)",lineHeight:1.65}}>{s}</span>
+        {/* ── GAPS & ATS ── */}
+        {tab==="gaps" && (<>
+          {GA.critical_gaps?.length>0 && (
+            <Card>
+              <SLabel text="🚨 Critical Gaps"/>
+              {GA.critical_gaps.map((g,i)=><NumItem key={i} text={g} i={i} bg="rgba(255,61,138,.05)" border="rgba(255,61,138,.2)" nc="var(--pink)"/>)}
+            </Card>
+          )}
+          {GA.weak_sections?.length>0 && (
+            <Card>
+              <SLabel text="⚠️ Weak Sections"/>
+              {GA.weak_sections.map((ws,i)=>(
+                <div key={i} style={{background:"rgba(255,214,10,.04)",border:"1px solid rgba(255,214,10,.15)",borderRadius:12,padding:"14px 16px",marginBottom:10}}>
+                  <span style={{fontSize:11,fontWeight:700,padding:"2px 8px",borderRadius:4,background:"rgba(255,214,10,.15)",color:"var(--yellow)",marginBottom:8,display:"inline-block"}}>{ws.section}</span>
+                  <div style={{fontSize:13,color:"var(--text2)",marginBottom:6}}>❌ {ws.issue}</div>
+                  <div style={{fontSize:13,color:"var(--green)"}}>✅ Fix: {ws.fix}</div>
                 </div>
               ))}
-            </div>
+            </Card>
+          )}
+          <Card>
+            <SLabel text="🔧 ATS Format Issues"/>
+            {AT.format_issues?.length>0
+              ?AT.format_issues.map((f,i)=><NumItem key={i} text={f} i={i} bg="rgba(255,61,138,.05)" border="rgba(255,61,138,.18)" nc="var(--pink)"/>)
+              :<div style={{fontSize:13,color:"var(--green)"}}>✅ No format issues detected</div>}
+          </Card>
+          <Card>
+            <SLabel text="🔑 ATS Keyword Issues"/>
+            {AT.keyword_issues?.length>0
+              ?AT.keyword_issues.map((f,i)=><NumItem key={i} text={f} i={i} bg="rgba(255,107,53,.05)" border="rgba(255,107,53,.2)" nc="var(--orange)"/>)
+              :<div style={{fontSize:13,color:"var(--green)"}}>✅ Keywords look good</div>}
+          </Card>
+        </>)}
 
-            {/* Suggestions */}
-            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24}}>
-              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
-                <span style={{fontSize:16}}>💡</span>
-                <span style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em"}}>How To Improve — Specific Action Steps</span>
+        {/* ── SKILLS ── */}
+        {tab==="skills" && (<>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+            <Card>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+                <SLabel text="✅ Skills Found"/>
+                <span style={{fontSize:11,color:"var(--green)",fontWeight:700,background:"rgba(0,255,136,.1)",padding:"2px 8px",borderRadius:6}}>{SK.found?.length||0}</span>
               </div>
-              {result.suggestions?.map((s,i)=>(
-                <div key={i} style={{display:"flex",gap:12,marginBottom:12,padding:"14px 16px",background:"rgba(255,214,10,.05)",border:"1px solid rgba(255,214,10,.18)",borderRadius:10,alignItems:"flex-start"}}>
-                  <div style={{minWidth:24,height:24,borderRadius:"50%",background:"rgba(255,214,10,.2)",color:"var(--yellow)",fontSize:12,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>{i+1}</div>
-                  <span style={{fontSize:13,color:"var(--text)",lineHeight:1.65}}>{s}</span>
+              <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
+                {SK.found?.map(s=><span key={s} style={{padding:"4px 12px",borderRadius:20,background:"rgba(0,255,136,.1)",color:"var(--green)",border:"1px solid rgba(0,255,136,.25)",fontSize:12,fontWeight:600}}>✓ {s}</span>)}
+              </div>
+            </Card>
+            <Card>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+                <SLabel text="❌ Skills Missing"/>
+                <span style={{fontSize:11,color:"var(--pink)",fontWeight:700,background:"rgba(255,61,138,.1)",padding:"2px 8px",borderRadius:6}}>{SK.missing?.length||0}</span>
+              </div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
+                {SK.missing?.map(s=><span key={s} style={{padding:"4px 12px",borderRadius:20,background:"rgba(255,61,138,.08)",color:"var(--pink)",border:"1px solid rgba(255,61,138,.2)",fontSize:12,fontWeight:600}}>+ {s}</span>)}
+              </div>
+            </Card>
+          </div>
+          {SK.domain_required?.length>0 && (
+            <Card>
+              <SLabel text="Domain Required Skills"/>
+              <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
+                {SK.domain_required.map(s=><span key={s} style={{padding:"4px 12px",borderRadius:20,background:"rgba(124,77,255,.1)",color:"var(--purple)",border:"1px solid rgba(124,77,255,.2)",fontSize:12,fontWeight:600}}>{s}</span>)}
+              </div>
+            </Card>
+          )}
+          {SK.gap_roadmap?.length>0 && (
+            <Card>
+              <SLabel text="🗺️ Skill Gap Roadmap"/>
+              {SK.gap_roadmap.map((g,i)=>(
+                <div key={i} style={{background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:12,padding:"14px 16px",marginBottom:10}}>
+                  <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:8}}>
+                    <span className="syne" style={{fontSize:14,fontWeight:700}}>{g.skill}</span>
+                    <span style={{fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:4,background:`${prioColor(g.priority)}18`,color:prioColor(g.priority),border:`1px solid ${prioColor(g.priority)}30`}}>{g.priority}</span>
+                  </div>
+                  <div style={{fontSize:12,color:"var(--text2)",marginBottom:8}}>{g.reason}</div>
+                  <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                    {g.learning_steps?.map((s,j)=>(
+                      <span key={j} style={{fontSize:11,padding:"3px 10px",borderRadius:6,background:"var(--bg3)",border:"1px solid var(--border)",color:"var(--text2)"}}>{j+1}. {s}</span>
+                    ))}
+                  </div>
                 </div>
               ))}
-            </div>
+            </Card>
+          )}
+        </>)}
 
-            {/* ATS Warnings in feedback tab too */}
-            {result.ats_warnings?.length > 0 && (
-              <div style={{background:"rgba(255,61,138,.05)",border:"1px solid rgba(255,61,138,.25)",borderRadius:16,padding:24}}>
-                <div style={{fontSize:12,fontWeight:700,color:"var(--pink)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:16}}>🚨 ATS Warnings</div>
-                {result.ats_warnings.map((w,i)=>(
-                  <div key={i} style={{display:"flex",gap:12,marginBottom:10,alignItems:"flex-start"}}>
-                    <div style={{minWidth:22,height:22,borderRadius:"50%",background:"rgba(255,61,138,.2)",color:"var(--pink)",fontSize:11,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>{i+1}</div>
-                    <span style={{fontSize:13,color:"var(--text)",lineHeight:1.6}}>{w}</span>
+        {/* ── JD MATCH ── */}
+        {tab==="jd" && S.match_score!=null && (<>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+            <Card>
+              <SLabel text="✅ Matching Skills"/>
+              <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
+                {JM.matching_skills?.map(s=><span key={s} style={{padding:"4px 12px",borderRadius:20,background:"rgba(0,255,136,.1)",color:"var(--green)",border:"1px solid rgba(0,255,136,.25)",fontSize:12,fontWeight:600}}>✓ {s}</span>)}
+                {!JM.matching_skills?.length&&<div style={{fontSize:13,color:"var(--text2)"}}>No direct matches found</div>}
+              </div>
+            </Card>
+            <Card>
+              <SLabel text="❌ Missing JD Keywords"/>
+              <div style={{display:"flex",flexWrap:"wrap",gap:7}}>
+                {JM.missing_keywords?.map(s=><span key={s} style={{padding:"4px 12px",borderRadius:20,background:"rgba(255,61,138,.08)",color:"var(--pink)",border:"1px solid rgba(255,61,138,.2)",fontSize:12,fontWeight:600}}>+ {s}</span>)}
+                {!JM.missing_keywords?.length&&<div style={{fontSize:13,color:"var(--green)"}}>✅ All keywords covered</div>}
+              </div>
+            </Card>
+          </div>
+          {JM.alignment_issues?.length>0 && (
+            <Card>
+              <SLabel text="⚠️ Alignment Issues"/>
+              {JM.alignment_issues.map((a,i)=><NumItem key={i} text={a} i={i} bg="rgba(255,107,53,.05)" border="rgba(255,107,53,.18)" nc="var(--orange)"/>)}
+            </Card>
+          )}
+        </>)}
+
+        {/* ── REWRITES ── */}
+        {tab==="rewrite" && (<>
+          {BO.length>0 && (
+            <Card>
+              <SLabel text="✏️ Bullet Point Rewrites"/>
+              {BO.map((b,i)=>(
+                <div key={i} style={{background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:12,padding:"14px 16px",marginBottom:12}}>
+                  <div style={{fontSize:12,color:"var(--pink)",marginBottom:6,display:"flex",gap:6,alignItems:"flex-start"}}>
+                    <span style={{flexShrink:0,fontWeight:700}}>Before:</span>{b.original}
+                  </div>
+                  <div style={{fontSize:12,color:"var(--green)",marginBottom:8,display:"flex",gap:6,alignItems:"flex-start"}}>
+                    <span style={{flexShrink:0,fontWeight:700}}>After:</span>{b.improved}
+                  </div>
+                  {b.issues?.length>0 && (
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                      {b.issues.map((iss,j)=><span key={j} style={{fontSize:10,padding:"2px 7px",borderRadius:4,background:"rgba(255,214,10,.12)",color:"var(--yellow)",border:"1px solid rgba(255,214,10,.2)"}}>{iss}</span>)}
+                    </div>
+                  )}
+                  {b.evidence && <div style={{fontSize:11,color:"var(--text3)",marginTop:6}}>📎 Evidence: {b.evidence}</div>}
+                </div>
+              ))}
+            </Card>
+          )}
+          {SR.summary && (
+            <Card>
+              <SLabel text="✨ Rewritten Summary"/>
+              <div style={{fontSize:14,color:"var(--text)",lineHeight:1.7,padding:"12px 14px",background:"rgba(0,255,136,.04)",border:"1px solid rgba(0,255,136,.15)",borderRadius:10}}>{SR.summary}</div>
+            </Card>
+          )}
+          {SR.experience?.length>0 && (
+            <Card>
+              <SLabel text="✨ Rewritten Experience Bullets"/>
+              {SR.experience.map((e,i)=>(
+                <div key={i} style={{fontSize:13,color:"var(--text)",lineHeight:1.65,padding:"8px 12px",background:"var(--bg2)",borderRadius:8,marginBottom:6,display:"flex",gap:8}}>
+                  <span style={{color:"var(--cyan)",flexShrink:0}}>•</span>{e}
+                </div>
+              ))}
+            </Card>
+          )}
+          {SR.projects?.length>0 && (
+            <Card>
+              <SLabel text="✨ Rewritten Project Bullets"/>
+              {SR.projects.map((p,i)=>(
+                <div key={i} style={{fontSize:13,color:"var(--text)",lineHeight:1.65,padding:"8px 12px",background:"var(--bg2)",borderRadius:8,marginBottom:6,display:"flex",gap:8}}>
+                  <span style={{color:"var(--purple)",flexShrink:0}}>•</span>{p}
+                </div>
+              ))}
+            </Card>
+          )}
+          {!BO.length&&!SR.summary&&!SR.experience?.length&&!SR.projects?.length&&(
+            <Card><div style={{fontSize:13,color:"var(--text2)",textAlign:"center",padding:"20px 0"}}>No rewrite content available for this resume.</div></Card>
+          )}
+        </>)}
+
+        {/* ── BUILDER ── */}
+        {tab==="builder" && (<>
+          {RB.header?(
+            <div style={{background:"var(--card)",border:"1px solid rgba(0,255,136,.25)",borderRadius:16,padding:28}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20,flexWrap:"wrap",gap:10}}>
+                <div>
+                  <div className="syne" style={{fontSize:22,fontWeight:900}}>{RB.header.name||"—"}</div>
+                  <div style={{fontSize:13,color:"var(--text2)",marginTop:4,display:"flex",gap:16,flexWrap:"wrap"}}>
+                    {RB.header.email&&<span>📧 {RB.header.email}</span>}
+                    {RB.header.phone&&<span>📱 {RB.header.phone}</span>}
+                  </div>
+                </div>
+                <span style={{fontSize:10,padding:"4px 10px",borderRadius:6,background:"rgba(0,255,136,.12)",color:"var(--green)",border:"1px solid rgba(0,255,136,.25)",fontWeight:700}}>ATS-READY FORMAT</span>
+              </div>
+              {[
+                ["Professional Summary", RB.summary ? <div style={{fontSize:13,color:"var(--text)",lineHeight:1.7}}>{RB.summary}</div> : null],
+                ["Skills", RB.skills?.length ? <div style={{display:"flex",flexWrap:"wrap",gap:6}}>{RB.skills.map(s=><span key={s} style={{padding:"3px 10px",borderRadius:6,background:"var(--bg3)",border:"1px solid var(--border)",fontSize:12,color:"var(--text2)"}}>{s}</span>)}</div> : null],
+              ].map(([title, content])=>content?(
+                <div key={title}>
+                  <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8,borderTop:"1px solid var(--border)",paddingTop:16}}>{title}</div>
+                  {content}
+                </div>
+              ):null)}
+              {RB.experience?.length>0&&(<>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:10,borderTop:"1px solid var(--border)",paddingTop:16}}>Experience</div>
+                {RB.experience.map((exp,i)=>(
+                  <div key={i} style={{marginBottom:14}}>
+                    <div className="syne" style={{fontSize:14,fontWeight:700}}>{exp.role} <span style={{fontWeight:400,color:"var(--text2)"}}>@ {exp.organization}</span></div>
+                    {exp.description?.map((d,j)=><div key={j} style={{fontSize:12,color:"var(--text2)",lineHeight:1.6,display:"flex",gap:6,marginTop:4}}><span style={{color:"var(--cyan)",flexShrink:0}}>•</span>{d}</div>)}
                   </div>
                 ))}
-              </div>
-            )}
-          </div>
-        )}
+              </>)}
+              {RB.projects?.length>0&&(<>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:10,borderTop:"1px solid var(--border)",paddingTop:16}}>Projects</div>
+                {RB.projects.map((p,i)=>(
+                  <div key={i} style={{marginBottom:12}}>
+                    <div className="syne" style={{fontSize:13,fontWeight:700,marginBottom:4}}>{p.name}</div>
+                    {p.description?.map((d,j)=><div key={j} style={{fontSize:12,color:"var(--text2)",lineHeight:1.6,display:"flex",gap:6}}><span style={{color:"var(--purple)",flexShrink:0}}>•</span>{d}</div>)}
+                  </div>
+                ))}
+              </>)}
+              {RB.education?.length>0&&(<>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8,borderTop:"1px solid var(--border)",paddingTop:16}}>Education</div>
+                {RB.education.map((e,i)=><div key={i} style={{fontSize:13,color:"var(--text)",lineHeight:1.6,marginBottom:4}}>• {e}</div>)}
+              </>)}
+              {RB.certifications?.length>0&&(<>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8,borderTop:"1px solid var(--border)",paddingTop:16}}>Certifications</div>
+                {RB.certifications.map((c,i)=><div key={i} style={{fontSize:13,color:"var(--text)",lineHeight:1.6,marginBottom:4}}>• {c}</div>)}
+              </>)}
+            </div>
+          ):(
+            <Card><div style={{fontSize:13,color:"var(--text2)",textAlign:"center",padding:"20px 0"}}>Resume builder output not available.</div></Card>
+          )}
+        </>)}
 
-        {/* Bottom action row */}
+        {/* ── INTERVIEW ── */}
+        {tab==="interview" && (<>
+          <Card>
+            <SLabel text="⚡ Likely Interview Questions"/>
+            {IP.likely_questions?.map((q,i)=>(
+              <div key={i} style={{padding:"11px 14px",background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:10,marginBottom:8,fontSize:13,color:"var(--text)",display:"flex",gap:10,alignItems:"flex-start"}}>
+                <span style={{color:"var(--cyan)",fontWeight:700,flexShrink:0}}>Q{i+1}.</span>{q}
+              </div>
+            ))}
+            {!IP.likely_questions?.length&&<div style={{fontSize:13,color:"var(--text2)"}}>No questions generated.</div>}
+          </Card>
+          <Card>
+            <SLabel text="🎯 Focus Areas to Prepare"/>
+            {IP.focus_areas?.map((f,i)=><NumItem key={i} text={f} i={i} bg="rgba(0,212,255,.05)" border="rgba(0,212,255,.15)" nc="var(--cyan)"/>)}
+          </Card>
+        </>)}
+
+        </div>
+
+        {/* Bottom actions */}
         <div style={{display:"flex",gap:12,flexWrap:"wrap",marginTop:24,paddingTop:20,borderTop:"1px solid var(--border)"}}>
           <button className="btn-p" onClick={handleCopy} style={{padding:"10px 22px",fontSize:14,background:copied?"linear-gradient(135deg,var(--green),#00b865)":"linear-gradient(135deg,var(--cyan),#0099cc)"}}>
-            {copied ? "✅ Copied!" : "📋 Copy Full Report"}
+            {copied?"✅ Copied!":"📋 Copy Full Report"}
           </button>
-          <button className="btn-g" onClick={()=>{setResult(null);setResumeText("");setError("");}} style={{padding:"10px 20px",fontSize:14}}>
-            🔄 Analyze Another
-          </button>
-          <button className="btn-g" onClick={()=>setPage("tools")} style={{padding:"10px 20px",fontSize:14}}>
-            ← Back to Tools
-          </button>
+          <button className="btn-g" onClick={()=>{setResult(null);setFile(null);setError("");setJd("");setDomain("");}} style={{padding:"10px 20px",fontSize:14}}>🔄 Analyze Another</button>
+          <button className="btn-g" onClick={()=>setPage("tools")} style={{padding:"10px 20px",fontSize:14}}>← Back to Tools</button>
         </div>
       </div>
     </div>
