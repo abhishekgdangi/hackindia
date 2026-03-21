@@ -3990,6 +3990,7 @@ const ResumeAnalyzerPage = ({ setPage }) => {
   const AP = result.priority_action_plan || [];
   const RB = result.resume_builder || {};
   const VL = result.validation || {};
+  // eslint-disable-next-line no-unused-vars
   const PL = result._pipeline || {};
 
   const TABS = [
