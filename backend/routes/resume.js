@@ -475,7 +475,7 @@ router.post("/analyze", upload.single("resume"), async (req, res) => {
 
     // Stage 3 — LLM (with full RAG context + rule signals injected)
     const prompt = buildLLMPrompt(text, jobDescription, targetDomain, ruleResult, ragResult);
-    const completion = await client.chat.completions.create({
+    const completion = await groqCall({
       model:       "llama-3.3-70b-versatile",
       temperature: 0.25,
       max_tokens:  4000,

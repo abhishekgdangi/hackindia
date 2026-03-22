@@ -2774,6 +2774,259 @@ const DSA_RESOURCES = [
   { name:"DSA Problem Spreadsheet", url:"https://docs.google.com/spreadsheets/d/1hzP8j7matoUiJ15N-RhsL5Dmig8_E3aP/htmlview", icon:"📊", desc:"Google Sheets tracker with 300+ problems organized by topic, difficulty, and company tag.", tag:"Tracker" },
 ];
 
+
+// ── PATTERN 21 + 22 (added to PATTERNS_DATA above via concat) ────────────────
+const EXTRA_PATTERNS = [
+  { id:"ll-reversal", icon:"🔄", name:"In-Place Linked List Reversal", phase:"Linked Lists",
+    coreIdea:"Reverse pointers in-place without extra space by tracking prev, curr, next nodes.",
+    where:"Linked Lists",
+    problems:[
+      {name:"Reverse Linked List", lc:"reverse-linked-list", diff:"Easy"},
+      {name:"Reverse Linked List II", lc:"reverse-linked-list-ii", diff:"Medium"},
+      {name:"Reverse Nodes in k-Group", lc:"reverse-nodes-in-k-group", diff:"Hard"},
+      {name:"Reorder List", lc:"reorder-list", diff:"Medium"},
+      {name:"Rotate List", lc:"rotate-list", diff:"Medium"},
+      {name:"Palindrome Linked List", lc:"palindrome-linked-list", diff:"Easy"},
+    ]},
+  { id:"cyclic-sort", icon:"🔃", name:"Cyclic Sort", phase:"Arrays",
+    coreIdea:"Place each number at its correct index position by cycling — O(n) for missing/duplicate numbers.",
+    where:"Arrays with numbers in range 1 to N",
+    problems:[
+      {name:"Missing Number", lc:"missing-number", diff:"Easy"},
+      {name:"Find All Duplicates in Array", lc:"find-all-duplicates-in-an-array", diff:"Medium"},
+      {name:"First Missing Positive", lc:"first-missing-positive", diff:"Hard"},
+      {name:"Find the Duplicate Number", lc:"find-the-duplicate-number", diff:"Medium"},
+      {name:"Find All Numbers Disappeared in Array", lc:"find-all-numbers-disappeared-in-an-array", diff:"Easy"},
+      {name:"Set Mismatch", lc:"set-mismatch", diff:"Easy"},
+    ]},
+];
+const ALL_PATTERNS = [...PATTERNS_DATA, ...EXTRA_PATTERNS];
+
+// ── LC150 DATA ────────────────────────────────────────────────────────────────
+const LC150 = [
+  { cat:"Arrays & Hashing", color:"#4488ff", problems:[
+    {name:"Two Sum", lc:"two-sum", diff:"Easy"},
+    {name:"Best Time to Buy and Sell Stock", lc:"best-time-to-buy-and-sell-stock", diff:"Easy"},
+    {name:"Contains Duplicate", lc:"contains-duplicate", diff:"Easy"},
+    {name:"Product of Array Except Self", lc:"product-of-array-except-self", diff:"Medium"},
+    {name:"Maximum Subarray", lc:"maximum-subarray", diff:"Medium"},
+    {name:"Maximum Product Subarray", lc:"maximum-product-subarray", diff:"Medium"},
+    {name:"Subarray Sum Equals K", lc:"subarray-sum-equals-k", diff:"Medium"},
+    {name:"Longest Consecutive Sequence", lc:"longest-consecutive-sequence", diff:"Medium"},
+    {name:"Majority Element", lc:"majority-element", diff:"Easy"},
+    {name:"Missing Number", lc:"missing-number", diff:"Easy"},
+    {name:"Set Matrix Zeroes", lc:"set-matrix-zeroes", diff:"Medium"},
+    {name:"Spiral Matrix", lc:"spiral-matrix", diff:"Medium"},
+    {name:"Rotate Image", lc:"rotate-image", diff:"Medium"},
+    {name:"Merge Intervals", lc:"merge-intervals", diff:"Medium"},
+    {name:"Insert Interval", lc:"insert-interval", diff:"Medium"},
+    {name:"Non-overlapping Intervals", lc:"non-overlapping-intervals", diff:"Medium"},
+    {name:"Meeting Rooms II", lc:"meeting-rooms-ii", diff:"Medium"},
+    {name:"Gas Station", lc:"gas-station", diff:"Medium"},
+    {name:"Jump Game", lc:"jump-game", diff:"Medium"},
+    {name:"Jump Game II", lc:"jump-game-ii", diff:"Medium"},
+  ]},
+  { cat:"Strings", color:"#ffd60a", problems:[
+    {name:"Longest Substring Without Repeating Characters", lc:"longest-substring-without-repeating-characters", diff:"Medium"},
+    {name:"Longest Palindromic Substring", lc:"longest-palindromic-substring", diff:"Medium"},
+    {name:"Valid Anagram", lc:"valid-anagram", diff:"Easy"},
+    {name:"Group Anagrams", lc:"group-anagrams", diff:"Medium"},
+    {name:"Minimum Window Substring", lc:"minimum-window-substring", diff:"Hard"},
+    {name:"Valid Parentheses", lc:"valid-parentheses", diff:"Easy"},
+    {name:"Decode String", lc:"decode-string", diff:"Medium"},
+    {name:"Palindromic Substrings", lc:"palindromic-substrings", diff:"Medium"},
+    {name:"Permutation in String", lc:"permutation-in-string", diff:"Medium"},
+    {name:"Longest Common Prefix", lc:"longest-common-prefix", diff:"Easy"},
+  ]},
+  { cat:"Sliding Window / Two Pointers", color:"#00ff88", problems:[
+    {name:"Container With Most Water", lc:"container-with-most-water", diff:"Medium"},
+    {name:"Trapping Rain Water", lc:"trapping-rain-water", diff:"Hard"},
+    {name:"Longest Repeating Character Replacement", lc:"longest-repeating-character-replacement", diff:"Medium"},
+    {name:"Minimum Size Subarray Sum", lc:"minimum-size-subarray-sum", diff:"Medium"},
+    {name:"Valid Palindrome", lc:"valid-palindrome", diff:"Easy"},
+    {name:"3Sum", lc:"3sum", diff:"Medium"},
+    {name:"Remove Duplicates from Sorted Array", lc:"remove-duplicates-from-sorted-array", diff:"Easy"},
+    {name:"Move Zeroes", lc:"move-zeroes", diff:"Easy"},
+    {name:"Max Consecutive Ones III", lc:"max-consecutive-ones-iii", diff:"Medium"},
+    {name:"Fruits Into Baskets", lc:"fruit-into-baskets", diff:"Medium"},
+  ]},
+  { cat:"Binary Search", color:"#f5a623", problems:[
+    {name:"Binary Search", lc:"binary-search", diff:"Easy"},
+    {name:"Search in Rotated Sorted Array", lc:"search-in-rotated-sorted-array", diff:"Medium"},
+    {name:"Find Minimum in Rotated Sorted Array", lc:"find-minimum-in-rotated-sorted-array", diff:"Medium"},
+    {name:"Find Peak Element", lc:"find-peak-element", diff:"Medium"},
+    {name:"Search a 2D Matrix", lc:"search-a-2d-matrix", diff:"Medium"},
+    {name:"Koko Eating Bananas", lc:"koko-eating-bananas", diff:"Medium"},
+    {name:"Median of Two Sorted Arrays", lc:"median-of-two-sorted-arrays", diff:"Hard"},
+    {name:"Time Based Key-Value Store", lc:"time-based-key-value-store", diff:"Medium"},
+    {name:"Find First and Last Position of Element", lc:"find-first-and-last-position-of-element-in-sorted-array", diff:"Medium"},
+    {name:"Capacity to Ship Packages Within D Days", lc:"capacity-to-ship-packages-within-d-days", diff:"Medium"},
+  ]},
+  { cat:"Linked List", color:"#ff3d8a", problems:[
+    {name:"Reverse Linked List", lc:"reverse-linked-list", diff:"Easy"},
+    {name:"Linked List Cycle", lc:"linked-list-cycle", diff:"Easy"},
+    {name:"Merge Two Sorted Lists", lc:"merge-two-sorted-lists", diff:"Easy"},
+    {name:"Remove Nth Node From End", lc:"remove-nth-node-from-end-of-list", diff:"Medium"},
+    {name:"Add Two Numbers", lc:"add-two-numbers", diff:"Medium"},
+    {name:"Reorder List", lc:"reorder-list", diff:"Medium"},
+    {name:"Intersection of Two Linked Lists", lc:"intersection-of-two-linked-lists", diff:"Easy"},
+    {name:"Palindrome Linked List", lc:"palindrome-linked-list", diff:"Easy"},
+    {name:"Reverse Nodes in K-Group", lc:"reverse-nodes-in-k-group", diff:"Hard"},
+    {name:"Copy List with Random Pointer", lc:"copy-list-with-random-pointer", diff:"Medium"},
+  ]},
+  { cat:"Trees", color:"#00b8a3", problems:[
+    {name:"Binary Tree Level Order Traversal", lc:"binary-tree-level-order-traversal", diff:"Medium"},
+    {name:"Maximum Depth of Binary Tree", lc:"maximum-depth-of-binary-tree", diff:"Easy"},
+    {name:"Diameter of Binary Tree", lc:"diameter-of-binary-tree", diff:"Easy"},
+    {name:"Validate Binary Search Tree", lc:"validate-binary-search-tree", diff:"Medium"},
+    {name:"Lowest Common Ancestor of Binary Tree", lc:"lowest-common-ancestor-of-a-binary-tree", diff:"Medium"},
+    {name:"Same Tree", lc:"same-tree", diff:"Easy"},
+    {name:"Invert Binary Tree", lc:"invert-binary-tree", diff:"Easy"},
+    {name:"Balanced Binary Tree", lc:"balanced-binary-tree", diff:"Easy"},
+    {name:"Binary Tree Right Side View", lc:"binary-tree-right-side-view", diff:"Medium"},
+    {name:"Kth Smallest Element in BST", lc:"kth-smallest-element-in-a-bst", diff:"Medium"},
+    {name:"Construct Binary Tree from Preorder and Inorder", lc:"construct-binary-tree-from-preorder-and-inorder-traversal", diff:"Medium"},
+    {name:"Binary Tree Maximum Path Sum", lc:"binary-tree-maximum-path-sum", diff:"Hard"},
+    {name:"Serialize and Deserialize Binary Tree", lc:"serialize-and-deserialize-binary-tree", diff:"Hard"},
+    {name:"Count Good Nodes in Binary Tree", lc:"count-good-nodes-in-binary-tree", diff:"Medium"},
+    {name:"Path Sum II", lc:"path-sum-ii", diff:"Medium"},
+  ]},
+  { cat:"Graphs", color:"#1a9eee", problems:[
+    {name:"Number of Islands", lc:"number-of-islands", diff:"Medium"},
+    {name:"Clone Graph", lc:"clone-graph", diff:"Medium"},
+    {name:"Course Schedule", lc:"course-schedule", diff:"Medium"},
+    {name:"Course Schedule II", lc:"course-schedule-ii", diff:"Medium"},
+    {name:"Rotting Oranges", lc:"rotting-oranges", diff:"Medium"},
+    {name:"Pacific Atlantic Water Flow", lc:"pacific-atlantic-water-flow", diff:"Medium"},
+    {name:"Surrounded Regions", lc:"surrounded-regions", diff:"Medium"},
+    {name:"Word Ladder", lc:"word-ladder", diff:"Hard"},
+    {name:"Redundant Connection", lc:"redundant-connection", diff:"Medium"},
+    {name:"Number of Connected Components", lc:"number-of-connected-components-in-an-undirected-graph", diff:"Medium"},
+    {name:"Cheapest Flights Within K Stops", lc:"cheapest-flights-within-k-stops", diff:"Medium"},
+    {name:"Network Delay Time", lc:"network-delay-time", diff:"Medium"},
+    {name:"Alien Dictionary", lc:"alien-dictionary", diff:"Hard"},
+    {name:"Graph Valid Tree", lc:"graph-valid-tree", diff:"Medium"},
+    {name:"Minimum Height Trees", lc:"minimum-height-trees", diff:"Medium"},
+  ]},
+  { cat:"Dynamic Programming", color:"#7c4dff", problems:[
+    {name:"Climbing Stairs", lc:"climbing-stairs", diff:"Easy"},
+    {name:"House Robber", lc:"house-robber", diff:"Medium"},
+    {name:"House Robber II", lc:"house-robber-ii", diff:"Medium"},
+    {name:"Coin Change", lc:"coin-change", diff:"Medium"},
+    {name:"Longest Increasing Subsequence", lc:"longest-increasing-subsequence", diff:"Medium"},
+    {name:"Longest Common Subsequence", lc:"longest-common-subsequence", diff:"Medium"},
+    {name:"Edit Distance", lc:"edit-distance", diff:"Medium"},
+    {name:"Partition Equal Subset Sum", lc:"partition-equal-subset-sum", diff:"Medium"},
+    {name:"Word Break", lc:"word-break", diff:"Medium"},
+    {name:"Decode Ways", lc:"decode-ways", diff:"Medium"},
+    {name:"Unique Paths", lc:"unique-paths", diff:"Medium"},
+    {name:"Minimum Path Sum", lc:"minimum-path-sum", diff:"Medium"},
+    {name:"Burst Balloons", lc:"burst-balloons", diff:"Hard"},
+    {name:"Target Sum", lc:"target-sum", diff:"Medium"},
+    {name:"Best Time to Buy Stock III", lc:"best-time-to-buy-and-sell-stock-iii", diff:"Hard"},
+    {name:"Distinct Subsequences", lc:"distinct-subsequences", diff:"Hard"},
+    {name:"Regular Expression Matching", lc:"regular-expression-matching", diff:"Hard"},
+    {name:"Interleaving String", lc:"interleaving-string", diff:"Medium"},
+    {name:"Maximal Rectangle", lc:"maximal-rectangle", diff:"Hard"},
+    {name:"Palindrome Partitioning II", lc:"palindrome-partitioning-ii", diff:"Hard"},
+  ]},
+  { cat:"Backtracking", color:"#ff9900", problems:[
+    {name:"Subsets", lc:"subsets", diff:"Medium"},
+    {name:"Subsets II", lc:"subsets-ii", diff:"Medium"},
+    {name:"Permutations", lc:"permutations", diff:"Medium"},
+    {name:"Combination Sum", lc:"combination-sum", diff:"Medium"},
+    {name:"Combination Sum II", lc:"combination-sum-ii", diff:"Medium"},
+    {name:"Word Search", lc:"word-search", diff:"Medium"},
+    {name:"N-Queens", lc:"n-queens", diff:"Hard"},
+    {name:"Letter Combinations of a Phone Number", lc:"letter-combinations-of-a-phone-number", diff:"Medium"},
+    {name:"Generate Parentheses", lc:"generate-parentheses", diff:"Medium"},
+    {name:"Palindrome Partitioning", lc:"palindrome-partitioning", diff:"Medium"},
+  ]},
+  { cat:"Heap / Greedy / Design", color:"#e84393", problems:[
+    {name:"Top K Frequent Elements", lc:"top-k-frequent-elements", diff:"Medium"},
+    {name:"Kth Largest Element in Array", lc:"kth-largest-element-in-an-array", diff:"Medium"},
+    {name:"Find Median from Data Stream", lc:"find-median-from-data-stream", diff:"Hard"},
+    {name:"Merge K Sorted Lists", lc:"merge-k-sorted-lists", diff:"Hard"},
+    {name:"Task Scheduler", lc:"task-scheduler", diff:"Medium"},
+    {name:"Reorganize String", lc:"reorganize-string", diff:"Medium"},
+    {name:"LRU Cache", lc:"lru-cache", diff:"Medium"},
+    {name:"Design Twitter", lc:"design-twitter", diff:"Medium"},
+    {name:"K Closest Points to Origin", lc:"k-closest-points-to-origin", diff:"Medium"},
+    {name:"Minimum Number of Arrows to Burst Balloons", lc:"minimum-number-of-arrows-to-burst-balloons", diff:"Medium"},
+    {name:"Partition Labels", lc:"partition-labels", diff:"Medium"},
+    {name:"Valid Sudoku", lc:"valid-sudoku", diff:"Medium"},
+    {name:"Hand of Straights", lc:"hand-of-straights", diff:"Medium"},
+    {name:"Candy", lc:"candy", diff:"Hard"},
+    {name:"Jump Game II", lc:"jump-game-ii", diff:"Medium"},
+  ]},
+];
+
+// ── ROADMAP DATA ──────────────────────────────────────────────────────────────
+const ROADMAP_PHASES = [
+  { phase:1, icon:"🏗️", title:"Basic Linear Structures & Patterns", color:"#00ff88",
+    goal:"Master sequential data and index manipulation. Before complex nodes, master the line.",
+    topics:[
+      {name:"Time & Space Complexity (Big-O)", type:"concept", prereqs:[], unlocks:["Everything"]},
+      {name:"Arrays", type:"ds", prereqs:["Big-O"], unlocks:["Two Pointers","Sliding Window","Prefix Sum","Binary Search"]},
+      {name:"Strings", type:"ds", prereqs:["Arrays"], unlocks:["Sliding Window","Hashing"]},
+      {name:"Recursion (Basics)", type:"pattern", prereqs:["Arrays"], unlocks:["Binary Search","Trees"]},
+      {name:"Two Pointers", type:"pattern", prereqs:["Arrays"], unlocks:["3Sum","Trapping Rain Water"]},
+      {name:"Binary Search", type:"algo", prereqs:["Sorted Arrays","Recursion"], unlocks:["Modified BS","BST"]},
+      {name:"Sliding Window", type:"pattern", prereqs:["Arrays","Prefix Sum"], unlocks:["Substring Problems"]},
+      {name:"Cyclic Sort", type:"pattern", prereqs:["Arrays"], unlocks:["Missing Number Problems"]},
+      {name:"Prefix Sum", type:"pattern", prereqs:["Arrays"], unlocks:["Sliding Window","Range Queries"]},
+      {name:"Intervals", type:"pattern", prereqs:["Arrays","Sorting"], unlocks:["Merge Intervals"]},
+    ]},
+  { phase:2, icon:"🔍", title:"The Power of Lookup (Hashing)", color:"#ffd60a",
+    goal:"Trade space for speed using O(1) lookups.",
+    topics:[
+      {name:"Hash Table / Hash Map", type:"ds", prereqs:["Arrays"], unlocks:["Group Anagrams","Two Sum","LRU Cache"]},
+      {name:"Greedy", type:"pattern", prereqs:["Sorting","Arrays"], unlocks:["Jump Game","Gas Station"]},
+      {name:"Basic Sorting", type:"algo", prereqs:["Arrays"], unlocks:["Two Pointers","Merge Sort"]},
+    ]},
+  { phase:3, icon:"🔗", title:"Pointers & Recursion", color:"#00b8a3",
+    goal:"Move from indexes to references. Understand pointer manipulation.",
+    topics:[
+      {name:"Linked List", type:"ds", prereqs:["Arrays"], unlocks:["In-Place Reversal","Fast/Slow Pointers"]},
+      {name:"In-Place LL Reversal", type:"pattern", prereqs:["Linked List"], unlocks:["Reverse k-Group","Reorder List"]},
+      {name:"Fast & Slow Pointers", type:"pattern", prereqs:["Linked List"], unlocks:["Cycle Detection","Middle of LL"]},
+      {name:"Stack", type:"ds", prereqs:["Arrays"], unlocks:["Monotonic Stack","DFS","Backtracking"]},
+      {name:"Queue", type:"ds", prereqs:["Arrays"], unlocks:["BFS","Level Order Traversal"]},
+      {name:"Monotonic Stack", type:"pattern", prereqs:["Stack"], unlocks:["Next Greater Element","Histogram"]},
+      {name:"Divide and Conquer", type:"pattern", prereqs:["Recursion"], unlocks:["Merge Sort","Binary Search Advanced"]},
+    ]},
+  { phase:4, icon:"🌳", title:"Non-Linear Structures (Hierarchical)", color:"#7c4dff",
+    goal:"Understand parent-child relationships and recursive tree structures.",
+    topics:[
+      {name:"Binary Trees", type:"ds", prereqs:["Recursion","Queue"], unlocks:["Tree Traversals","LCA","Diameter"]},
+      {name:"Tree Traversals", type:"algo", prereqs:["Binary Trees","Stack","Queue"], unlocks:["BST","Serialize/Deserialize"]},
+      {name:"BST", type:"ds", prereqs:["Binary Trees","Binary Search"], unlocks:["Validate BST","Kth Smallest"]},
+      {name:"Heaps / Priority Queue", type:"ds", prereqs:["Arrays","Trees"], unlocks:["Top K Elements","Dijkstra"]},
+      {name:"Tries", type:"ds", prereqs:["Hash Map","Strings"], unlocks:["Autocomplete","Word Search II"]},
+      {name:"Top K Elements", type:"pattern", prereqs:["Heaps"], unlocks:["Kth Largest","Median from Stream"]},
+    ]},
+  { phase:5, icon:"🕵️", title:"Backtracking", color:"#ff9900",
+    goal:"Explore all possibilities systematically.",
+    topics:[
+      {name:"Backtracking", type:"pattern", prereqs:["Recursion Advanced","Stack"], unlocks:["Subsets","N-Queens","Sudoku"]},
+    ]},
+  { phase:6, icon:"🌐", title:"Connectivity (Graphs)", color:"#1a9eee",
+    goal:"Model many-to-many relationships.",
+    topics:[
+      {name:"Graphs", type:"ds", prereqs:["Trees","Hash Map","Queue"], unlocks:["BFS","DFS","Topological Sort"]},
+      {name:"BFS / DFS on Graphs", type:"algo", prereqs:["Graphs","Stack","Queue"], unlocks:["Shortest Path","Components"]},
+      {name:"Topological Sort", type:"algo", prereqs:["Graphs","DFS"], unlocks:["Course Schedule","Alien Dictionary"]},
+      {name:"Union Find (DSU)", type:"ds", prereqs:["Graphs","Arrays"], unlocks:["Redundant Connection","Accounts Merge"]},
+      {name:"Shortest Path (Dijkstra)", type:"algo", prereqs:["Graphs","Heaps"], unlocks:["Cheapest Flights","Network Delay"]},
+    ]},
+  { phase:7, icon:"🚀", title:"Optimization — Dynamic Programming", color:"#ff3d8a",
+    goal:"Solve overlapping subproblems. The final boss of DSA.",
+    topics:[
+      {name:"Bit Manipulation", type:"algo", prereqs:["Arrays","Math"], unlocks:["XOR Problems","Subsets via Bits"]},
+      {name:"Dynamic Programming", type:"pattern", prereqs:["Recursion Advanced","Backtracking"], unlocks:["All DP Problems"]},
+    ]},
+];
+
 const DSAPage = ({ setPage }) => {
   const [tab,        setTab]        = useState("topics");
   const [cat,        setCat]        = useState("All");
@@ -2788,6 +3041,7 @@ const DSAPage = ({ setPage }) => {
   const [selPattern, setSelPattern] = useState(null);
   const [selCompany, setSelCompany] = useState(null);
   const [b75Cat,     setB75Cat]     = useState("All");
+  const [lc150Cat,   setLc150Cat]   = useState("All");
 
   const DIFF_C = { Easy:"#00ff88", Medium:"#ffd60a", Hard:"#ff3d8a" };
 
@@ -2819,15 +3073,18 @@ const DSAPage = ({ setPage }) => {
   // Shared header with tabs
   const isDeepView = (tab === "topics" && view !== "topics");
   const Header = () => (
-    <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"32px 24px 0"}}>
+    <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"28px 24px 0"}}>
       <div style={{maxWidth:1200,margin:"0 auto"}}>
-        <div className="sl">Student Tools</div>
-        <h1 className="syne" style={{fontSize:30,fontWeight:800,marginBottom:4}}>🧠 DSA <span className="gtext">Problem Explorer</span></h1>
-        <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Pre-DSA · Topics · Patterns · Blind 75 · Company Wise · Visualizers</p>
+        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
+          <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",flexShrink:0}}>← Tools</button>
+          <div className="sl" style={{marginBottom:0}}>Student Tools</div>
+        </div>
+        <h1 className="syne" style={{fontSize:28,fontWeight:800,marginBottom:4}}>🧠 DSA <span className="gtext">Problem Explorer</span></h1>
+        <p style={{color:"var(--text2)",fontSize:13,marginBottom:16}}>Pre-DSA · Topics · Patterns · Blind 75 · Top 150 · Company Wise · Visualizers · Roadmap</p>
         {!isDeepView && (
-          <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
-            {[["predsa","🌱 Pre-DSA"],["topics","📚 Topics"],["patterns","🧩 Patterns"],["blind75","🎯 Blind 75"],["company","🏢 Company Wise"],["visualizers","🎬 Visualizers"]].map(([t,l])=>(
-              <button key={t} onClick={()=>{setTab(t);setView("topics");}} style={{padding:"10px 18px",background:"transparent",border:"none",borderBottom:`3px solid ${tab===t?"var(--purple)":"transparent"}`,color:tab===t?"var(--purple)":"var(--text2)",fontWeight:tab===t?700:500,fontSize:13,cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'DM Sans',sans-serif"}}>
+          <div style={{display:"flex",gap:0,overflowX:"auto"}}>
+            {[["predsa","🌱 Pre-DSA"],["topics","📚 Topics"],["patterns","🧩 Patterns"],["blind75","🎯 Blind 75"],["lc150","💯 Top 150"],["company","🏢 Company Wise"],["visualizers","🎬 Visualizers"],["roadmap","🗺️ Roadmap"]].map(([t,l])=>(
+              <button key={t} onClick={()=>{setTab(t);setView("topics");}} style={{padding:"10px 16px",background:"transparent",border:"none",borderBottom:`3px solid ${tab===t?"var(--purple)":"transparent"}`,color:tab===t?"var(--purple)":"var(--text2)",fontWeight:tab===t?700:500,fontSize:12,cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'DM Sans',sans-serif"}}>
                 {l}
               </button>
             ))}
@@ -3047,7 +3304,7 @@ const DSAPage = ({ setPage }) => {
               <p style={{color:"var(--text2)",fontSize:13}}>Every coding interview reduces to these patterns. Master the pattern, solve any problem.</p>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12}}>
-              {PATTERNS_DATA.map(p=>(
+              {ALL_PATTERNS.map(p=>(
                 <div key={p.id} onClick={()=>setSelPattern(p)} className="hcard" style={{padding:20,cursor:"pointer",border:"1px solid var(--border)",background:"var(--card)",transition:"all .2s"}}>
                   <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
                     <span style={{fontSize:24}}>{p.icon}</span>
@@ -3228,6 +3485,137 @@ const DSAPage = ({ setPage }) => {
       </div>
     </div>
   );
+
+
+  // ── LC150 TAB ────────────────────────────────────────────────────────────────
+  if (tab === "lc150") {
+    const totalLC = LC150.reduce((s,c) => s + c.problems.length, 0);
+    const cats = ["All", ...LC150.map(c => c.cat)];
+    const filtered150 = lc150Cat === "All" ? LC150 : LC150.filter(c => c.cat === lc150Cat);
+    return (
+      <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+        <Header/>
+        <div style={{maxWidth:1200,margin:"0 auto",padding:"24px"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20,flexWrap:"wrap",gap:12}}>
+            <div>
+              <div className="syne" style={{fontSize:22,fontWeight:800,marginBottom:6}}>💯 Top 150 DSA</div>
+              <p style={{color:"var(--text2)",fontSize:13}}>High-signal problems for Bangalore interviews — Google, Amazon, Flipkart, Swiggy, Zepto.</p>
+            </div>
+            <span style={{fontSize:12,padding:"5px 14px",borderRadius:20,background:"rgba(124,77,255,.15)",color:"var(--purple)",border:"1px solid rgba(124,77,255,.3)",fontWeight:700}}>{totalLC} Problems</span>
+          </div>
+          {/* Category filter */}
+          <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:24}}>
+            {cats.map(c=>{
+              const col = LC150.find(x=>x.cat===c)?.color || "var(--purple)";
+              return (
+                <button key={c} onClick={()=>setLc150Cat(c)}
+                  style={{padding:"6px 14px",borderRadius:20,fontSize:12,fontWeight:600,border:`1px solid ${lc150Cat===c?col:"var(--border)"}`,background:lc150Cat===c?col+"20":"var(--card)",color:lc150Cat===c?col:"var(--text2)",cursor:"pointer",transition:"all .15s"}}>
+                  {c}
+                </button>
+              );
+            })}
+          </div>
+          {/* Problem groups */}
+          <div style={{display:"grid",gap:20}}>
+            {filtered150.map(group=>(
+              <div key={group.cat} style={{background:"var(--card)",border:`1px solid ${group.color}30`,borderRadius:16,overflow:"hidden"}}>
+                <div style={{background:`${group.color}10`,borderBottom:`1px solid ${group.color}20`,padding:"14px 20px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10}}>
+                    <div style={{width:10,height:10,borderRadius:"50%",background:group.color,flexShrink:0}}/>
+                    <span className="syne" style={{fontSize:15,fontWeight:800,color:"var(--text)"}}>{group.cat}</span>
+                  </div>
+                  <span style={{fontSize:11,padding:"2px 8px",borderRadius:4,background:`${group.color}18`,color:group.color,fontWeight:700}}>{group.problems.length} problems</span>
+                </div>
+                <div style={{padding:"14px 16px",display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:8}}>
+                  {group.problems.map((p,i)=>(
+                    <a key={i} href={`https://leetcode.com/problems/${p.lc}/`} target="_blank" rel="noopener noreferrer"
+                      style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,padding:"10px 14px",borderRadius:10,border:"1px solid var(--border)",background:"var(--bg)",textDecoration:"none",transition:"all .2s"}}
+                      onMouseEnter={e=>{e.currentTarget.style.borderColor=group.color;e.currentTarget.style.background=`${group.color}08`;}}
+                      onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.background="var(--bg)";}}>
+                      <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}>
+                        <span style={{fontSize:11,color:"var(--text3)",minWidth:18,textAlign:"right",flexShrink:0}}>{i+1}</span>
+                        <span style={{fontSize:13,fontWeight:600,color:"var(--text)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.name}</span>
+                      </div>
+                      <span style={{fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:4,background:`${DIFF_C[p.diff]}18`,color:DIFF_C[p.diff],flexShrink:0}}>{p.diff}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── ROADMAP TAB ───────────────────────────────────────────────────────────────
+  if (tab === "roadmap") {
+    const typeColor = t => t==="ds"?"var(--cyan)":t==="algo"?"var(--green)":t==="pattern"?"var(--purple)":"var(--text3)";
+    const typeBg    = t => t==="ds"?"rgba(0,212,255,.1)":t==="algo"?"rgba(0,255,136,.1)":t==="pattern"?"rgba(124,77,255,.1)":"var(--bg3)";
+    return (
+      <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+        <Header/>
+        <div style={{maxWidth:960,margin:"0 auto",padding:"28px 24px"}}>
+          <div style={{marginBottom:28}}>
+            <div className="syne" style={{fontSize:22,fontWeight:800,marginBottom:6}}>🗺️ DSA Learning Roadmap</div>
+            <p style={{color:"var(--text2)",fontSize:13,lineHeight:1.6}}>7 phases from zero to placement-ready. Each topic unlocks the next. Follow the order.</p>
+            {/* Legend */}
+            <div style={{display:"flex",gap:10,flexWrap:"wrap",marginTop:12}}>
+              {[["ds","Data Structure"],["algo","Algorithm"],["pattern","Pattern"],["concept","Concept"]].map(([t,l])=>(
+                <span key={t} style={{fontSize:11,padding:"3px 10px",borderRadius:20,background:typeBg(t),color:typeColor(t),border:`1px solid ${typeColor(t)}30`,fontWeight:600}}>{l}</span>
+              ))}
+            </div>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:20}}>
+            {ROADMAP_PHASES.map((phase,pi)=>(
+              <div key={pi} style={{background:"var(--card)",border:`1px solid ${phase.color}30`,borderRadius:16,overflow:"hidden"}}>
+                {/* Phase header */}
+                <div style={{background:`${phase.color}10`,borderBottom:`1px solid ${phase.color}20`,padding:"16px 22px",display:"flex",alignItems:"flex-start",gap:14}}>
+                  <div style={{width:36,height:36,borderRadius:"50%",background:`${phase.color}20`,border:`2px solid ${phase.color}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0}}>{phase.icon}</div>
+                  <div>
+                    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+                      <span style={{fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:3,background:`${phase.color}20`,color:phase.color}}>Phase {phase.phase}</span>
+                    </div>
+                    <div className="syne" style={{fontSize:16,fontWeight:800,color:"var(--text)",marginBottom:3}}>{phase.title}</div>
+                    <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.5}}>{phase.goal}</div>
+                  </div>
+                </div>
+                {/* Topics */}
+                <div style={{padding:"14px 20px",display:"flex",flexWrap:"wrap",gap:8}}>
+                  {phase.topics.map((topic,ti)=>(
+                    <div key={ti} title={`Prereqs: ${topic.prereqs.join(", ")||"none"} → Unlocks: ${topic.unlocks.join(", ")}`}
+                      style={{display:"flex",alignItems:"center",gap:6,padding:"6px 12px",borderRadius:8,background:typeBg(topic.type),border:`1px solid ${typeColor(topic.type)}25`,cursor:"default",transition:"all .2s"}}
+                      onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-1px)";e.currentTarget.style.boxShadow=`0 4px 12px ${typeColor(topic.type)}30`;}}
+                      onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="none";}}>
+                      <div style={{width:6,height:6,borderRadius:"50%",background:typeColor(topic.type),flexShrink:0}}/>
+                      <span style={{fontSize:12,fontWeight:600,color:typeColor(topic.type)}}>{topic.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Pro tips */}
+          <div style={{marginTop:24,background:"rgba(255,214,10,.06)",border:"1px solid rgba(255,214,10,.2)",borderRadius:14,padding:"18px 22px"}}>
+            <div className="syne" style={{fontSize:14,fontWeight:800,color:"var(--yellow)",marginBottom:12}}>💡 Pro Tips for Bangalore Placements</div>
+            <div style={{display:"grid",gap:8}}>
+              {[
+                "Spend 2x more time on Arrays, Trees, Graphs, DP — they appear in 80% of interviews",
+                "For TCS/Infosys/Wipro: Phase 1-3 is enough. For Swiggy/Zepto/Flipkart: complete Phase 1-5",
+                "For FAANG/MAANG: complete all 7 phases + System Design",
+                "Hover over any topic chip to see what it requires and what it unlocks",
+                "Aim for 2-3 problems per topic daily. Consistency beats marathons.",
+              ].map((tip,i)=>(
+                <div key={i} style={{display:"flex",gap:10,alignItems:"flex-start",fontSize:13,color:"var(--text2)"}}>
+                  <span style={{color:"var(--yellow)",fontWeight:700,flexShrink:0}}>{i+1}.</span>{tip}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // ── VISUALIZERS TAB ────────────────────────────────────────────────────
   if (tab === "visualizers") return (

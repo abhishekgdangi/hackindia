@@ -12,6 +12,7 @@ const cors      = require("cors");
 const helmet    = require("helmet");
 const rateLimit = require("express-rate-limit");
 const logger    = require("./utils/logger");
+const { groqCall, poolStatus } = require("./utils/groqPool");
 const { registerJobs, triggerNow } = require("./jobs/scheduler");
 const Hackathon = require("./models/Hackathon");
 
@@ -53,27 +54,20 @@ app.use("/api/resume",      require("./routes/resume"));
 /* ── HackBot Chat (Groq proxy — key stays on server) ───────────── */
 app.post("/api/chat", async (req, res) => {
   try {
-    const axios    = require("axios");
     const { messages } = req.body;
-    const groqKey  = process.env.GROQ_API_KEY;
-
-    if (!groqKey) {
-      return res.status(503).json({ error: "Groq API key not configured on server." });
-    }
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ error: "messages array required" });
     }
-
-    const response = await axios.post(
-      "https://api.groq.com/openai/v1/chat/completions",
-      { model: "llama-3.3-70b-versatile", max_tokens: 600, messages },
-      { headers: { "Content-Type": "application/json", Authorization: `Bearer ${groqKey}` } }
-    );
-
-    const reply = response.data?.choices?.[0]?.message?.content || "Sorry, no response.";
+    const completion = await groqCall({
+      model:      "llama-3.3-70b-versatile",
+      max_tokens: 600,
+      messages,
+    });
+    const reply = completion.choices?.[0]?.message?.content || "Sorry, no response.";
     res.json({ reply });
   } catch (err) {
     logger.error(`[Chat] ${err.message}`);
+    if (err.status === 429) return res.status(429).json({ error: "AI is busy — please wait 30 seconds." });
     res.status(500).json({ error: "Chat failed. Try again." });
   }
 });
@@ -93,6 +87,7 @@ app.get("/api/health", async (_req, res) => {
     uptime:         Math.round(process.uptime()),
     env:            process.env.NODE_ENV || "development",
     groqConfigured: Boolean(process.env.GROQ_API_KEY),
+    groqPool:       poolStatus(),
   });
 });
 
