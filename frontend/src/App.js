@@ -566,8 +566,8 @@ const AgentStatus = () => {
    NAVBAR
 ──────────────────────────────────────────────── */
 const TOOLS_MENU = [
-  { id:"dsa",    icon:"🧠", label:"DSA Explorer",      desc:"Problem finder" },
-  { id:"resume", icon:"📄", label:"Resume Analyzer",   desc:"ATS · Skill gap · AI tips" },
+  { id:"dsa",    icon:"🧠", label:"DSA Explorer",      desc:"22 patterns · Top 150 · Mock test" },
+  { id:"resume", icon:"📄", label:"Resume Analyzer",   desc:"ATS · JD match · 3-stage AI" },
 ];
 
 const Navbar = ({page,setPage,dark,setDark}) => {
@@ -4297,11 +4297,11 @@ const STUDENT_TOOLS = [
     id: "dsa",
     icon: "🧠",
     title: "DSA Problem Explorer",
-    desc: "Navigate DSA topics with problems from LeetCode, GFG, NeetCode & more. Includes AI study tips.",
-    badge: "Patterns · Blind 75 · Company Wise",
+    desc: "17 topics · 22 patterns · Top 150 · Blind 75 · Company-wise sets · Progress tracker · AI explainer · Mock tests.",
+    badge: "22 Patterns · Top 150 · Mock Test",
     badgeColor: "var(--cyan)",
-    tags: ["20 Patterns", "Blind 75", "Company Wise", "Visualizers"],
-    stats: [{ label: "Topics", value: "17" }, { label: "Patterns", value: "20" }, { label: "Blind 75", value: "75" }],
+    tags: ["22 Patterns", "Top 150", "Blind 75", "Mock Test", "Progress Tracker", "AI Explainer", "Roadmap"],
+    stats: [{ label: "Topics", value: "17" }, { label: "Patterns", value: "22" }, { label: "Problems", value: "150+" }],
     color: "var(--cyan)",
     gradient: "linear-gradient(135deg,rgba(0,212,255,.15),rgba(0,212,255,.03))",
   },
@@ -4309,14 +4309,22 @@ const STUDENT_TOOLS = [
     id: "resume",
     icon: "📄",
     title: "AI Resume Analyzer",
-    desc: "Get ATS score, skill gap analysis, section-wise scoring & 5 actionable improvements — instant analysis.",
-    badge: "ATS · Skill Gap · AI Feedback",
+    desc: "Upload PDF/DOCX → ATS score · JD match · skill gap roadmap · recruiter verdict · bullet rewrites · ATS-ready resume builder.",
+    badge: "Rule-Based · RAG · Groq AI",
     badgeColor: "var(--green)",
-    tags: ["ATS Score", "Section Scores", "Skill Gap", "Role Match", "AI Tips"],
-    stats: [{ label: "Checks", value: "10+" }, { label: "Sections", value: "5" }, { label: "AI Tips", value: "5+" }],
+    tags: ["ATS Score", "JD Match", "Skill Roadmap", "Recruiter Verdict", "Bullet Rewrites", "Resume Builder", "Interview Prep"],
+    stats: [{ label: "ATS Rules", value: "12" }, { label: "Result Tabs", value: "7" }, { label: "Pipeline", value: "3-Stage" }],
     color: "var(--green)",
     gradient: "linear-gradient(135deg,rgba(0,255,136,.15),rgba(0,255,136,.03))",
   },
+];
+
+const COMING_SOON = [
+  { icon:"🏆", name:"Mock Interview AI",     desc:"AI-powered technical interview simulator with role-specific questions & feedback" },
+  { icon:"✉️", name:"Cover Letter Generator", desc:"Paste JD + resume → instant tailored cover letter with ATS keywords" },
+  { icon:"📊", name:"CP Contest Tracker",    desc:"Track Codeforces, CodeChef, LeetCode contests — all in one place" },
+  { icon:"🗺️", name:"Interview Prep Roadmap", desc:"Personalised 30/60/90 day placement roadmap based on your target companies" },
+  { icon:"🔗", name:"LinkedIn Optimizer",    desc:"AI rewrites your LinkedIn headline, about & experience for recruiter visibility" },
 ];
 
 const StudentToolsPage = ({ setPage }) => (
@@ -4324,61 +4332,79 @@ const StudentToolsPage = ({ setPage }) => (
     {/* Header */}
     <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"48px 24px 40px"}}>
       <div style={{maxWidth:1200,margin:"0 auto"}}>
-        <div className="sl">For Students</div>
+        <div className="sl">For Students · Free · No Login</div>
         <h1 className="syne" style={{fontSize:38,fontWeight:800,marginBottom:10}}>
           🛠️ Student <span className="gtext">Tools</span>
         </h1>
         <p style={{color:"var(--text2)",fontSize:15,maxWidth:560,lineHeight:1.7}}>
-          Free tools built for Indian CS students — placement prep, DSA practice, and more. All tools are completely free.
+          AI-powered tools built for Indian CS students — DSA practice, resume analysis, placement prep. 100% free, no account needed.
         </p>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:16}}>
+          {["No Login","No Data Stored","100% Free","AI-Powered","Built for India"].map(f=>(
+            <span key={f} style={{fontSize:11,padding:"4px 10px",borderRadius:20,background:"rgba(0,212,255,.08)",color:"var(--cyan)",border:"1px solid rgba(0,212,255,.2)",fontWeight:600}}>✓ {f}</span>
+          ))}
+        </div>
       </div>
     </div>
 
-    {/* Tools Grid */}
     <div style={{maxWidth:1200,margin:"0 auto",padding:"40px 24px"}}>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))",gap:20}}>
+      {/* Live Tools */}
+      <div style={{marginBottom:12}}>
+        <div className="sl" style={{marginBottom:16}}>Live Tools</div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(360px,1fr))",gap:20,marginBottom:40}}>
         {STUDENT_TOOLS.map(tool=>(
           <div key={tool.id} onClick={()=>setPage(tool.id)}
             className="hcard"
             style={{padding:28,cursor:"pointer",background:tool.gradient,border:`1px solid ${tool.color}25`,transition:"all .25s",position:"relative",overflow:"hidden"}}
-            onMouseEnter={e=>{e.currentTarget.style.border=`1px solid ${tool.color}60`;e.currentTarget.style.transform="translateY(-2px)";}}
-            onMouseLeave={e=>{e.currentTarget.style.border=`1px solid ${tool.color}25`;e.currentTarget.style.transform="translateY(0)";}}>
-            {/* Glow */}
-            <div style={{position:"absolute",top:-40,right:-40,width:120,height:120,borderRadius:"50%",background:tool.color,opacity:.06,filter:"blur(30px)",pointerEvents:"none"}}/>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16}}>
-              <span style={{fontSize:36}}>{tool.icon}</span>
-              <span style={{fontSize:11,fontWeight:700,padding:"4px 10px",borderRadius:6,background:`${tool.badgeColor}18`,color:tool.badgeColor,border:`1px solid ${tool.badgeColor}30`}}>{tool.badge}</span>
+            onMouseEnter={e=>{e.currentTarget.style.border=`1px solid ${tool.color}60`;e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow=`0 12px 40px ${tool.color}20`;}}
+            onMouseLeave={e=>{e.currentTarget.style.border=`1px solid ${tool.color}25`;e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none";}}>
+            {/* Glow blob */}
+            <div style={{position:"absolute",top:-40,right:-40,width:130,height:130,borderRadius:"50%",background:tool.color,opacity:.07,filter:"blur(30px)",pointerEvents:"none"}}/>
+            {/* Live badge */}
+            <div style={{position:"absolute",top:16,right:16,fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:4,background:"rgba(0,255,136,.15)",color:"var(--green)",border:"1px solid rgba(0,255,136,.3)"}}>LIVE</div>
+            <div style={{display:"flex",alignItems:"flex-start",gap:14,marginBottom:16}}>
+              <span style={{fontSize:38,lineHeight:1}}>{tool.icon}</span>
+              <div style={{flex:1,minWidth:0}}>
+                <span style={{fontSize:10,fontWeight:700,padding:"3px 8px",borderRadius:5,background:`${tool.badgeColor}18`,color:tool.badgeColor,border:`1px solid ${tool.badgeColor}30`,display:"inline-block",marginBottom:6}}>{tool.badge}</span>
+                <h2 className="syne" style={{fontSize:19,fontWeight:800,lineHeight:1.2}}>{tool.title}</h2>
+              </div>
             </div>
-            <h2 className="syne" style={{fontSize:18,fontWeight:800,marginBottom:8}}>{tool.title}</h2>
             <p style={{fontSize:13,color:"var(--text2)",lineHeight:1.65,marginBottom:16}}>{tool.desc}</p>
             {/* Stats */}
-            <div style={{display:"flex",gap:16,marginBottom:16}}>
+            <div style={{display:"flex",gap:20,marginBottom:14,padding:"12px 0",borderTop:`1px solid ${tool.color}15`,borderBottom:`1px solid ${tool.color}15`}}>
               {tool.stats.map(s=>(
-                <div key={s.label} style={{textAlign:"center"}}>
-                  <div className="syne" style={{fontSize:18,fontWeight:800,color:tool.color}}>{s.value}</div>
-                  <div style={{fontSize:10,color:"var(--text3)"}}>{s.label}</div>
+                <div key={s.label}>
+                  <div className="syne" style={{fontSize:20,fontWeight:900,color:tool.color}}>{s.value}</div>
+                  <div style={{fontSize:10,color:"var(--text3)",marginTop:1}}>{s.label}</div>
                 </div>
               ))}
             </div>
             {/* Tags */}
-            <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:18}}>
+            <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:16}}>
               {tool.tags.map(t=>(
                 <span key={t} style={{fontSize:10,padding:"3px 8px",borderRadius:5,background:"var(--bg3)",color:"var(--text2)",border:"1px solid var(--border)"}}>{t}</span>
               ))}
             </div>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-              <span style={{fontSize:12,color:"var(--text3)"}}>100% Free · No login required</span>
+              <span style={{fontSize:11,color:"var(--text3)"}}>No login · No data stored</span>
               <span style={{fontSize:13,fontWeight:700,color:tool.color}}>Open Tool →</span>
             </div>
           </div>
         ))}
+      </div>
 
-        {/* Coming Soon placeholder */}
-        {["CP Contest Tracker","Interview Prep Roadmap"].map(name=>(
-          <div key={name} style={{padding:28,border:"1px dashed var(--border)",borderRadius:16,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:200,opacity:.5,textAlign:"center"}}>
-            <div style={{fontSize:32,marginBottom:12}}>🔜</div>
-            <div className="syne" style={{fontSize:14,fontWeight:700,marginBottom:6}}>{name}</div>
-            <div style={{fontSize:12,color:"var(--text3)"}}>Coming soon</div>
+      {/* Coming Soon */}
+      <div style={{marginBottom:16}}>
+        <div className="sl" style={{marginBottom:16}}>Coming Soon</div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:12}}>
+        {COMING_SOON.map(tool=>(
+          <div key={tool.name} style={{padding:20,border:"1px dashed var(--border)",borderRadius:14,background:"var(--card)",opacity:.65}}>
+            <div style={{fontSize:28,marginBottom:10}}>{tool.icon}</div>
+            <div className="syne" style={{fontSize:14,fontWeight:700,marginBottom:6,color:"var(--text)"}}>{tool.name}</div>
+            <div style={{fontSize:12,color:"var(--text3)",lineHeight:1.5}}>{tool.desc}</div>
+            <div style={{marginTop:10,fontSize:10,fontWeight:700,color:"var(--text3)",background:"var(--bg3)",padding:"3px 8px",borderRadius:4,display:"inline-block"}}>Coming Soon</div>
           </div>
         ))}
       </div>
