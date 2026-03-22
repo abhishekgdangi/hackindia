@@ -520,4 +520,49 @@ router.post("/analyze", upload.single("resume"), async (req, res) => {
   }
 });
 
+
+// ── Cover Letter Generator ────────────────────────────────────────────────
+router.post("/cover-letter", upload.single("resume"), async (req, res) => {
+  try {
+    const { jobDescription, tone } = req.body;
+    if (!jobDescription) return res.status(400).json({ error: "Job description required." });
+
+    const toneMap = { Professional:"formal and professional", Startup:"casual, energetic, startup culture", Enthusiastic:"warm, passionate, enthusiastic" };
+    const toneDesc = toneMap[tone] || toneMap.Professional;
+
+    let resumeText = "";
+    if (req.file) {
+      try {
+        if (req.file.mimetype === "application/pdf") {
+          const pdfParse = require("pdf-parse");
+          const data = await pdfParse(req.file.buffer);
+          resumeText = data.text.slice(0, 2000);
+        } else {
+          resumeText = req.file.buffer.toString("utf-8").slice(0, 2000);
+        }
+      } catch(_) {}
+    }
+
+    const prompt = `Write a ${toneDesc} cover letter for this job description.
+${resumeText ? `Resume highlights: ${resumeText.slice(0,800)}` : ""}
+Job Description: ${jobDescription.slice(0,1000)}
+
+Write a complete, tailored cover letter (3-4 paragraphs). Address it "Dear Hiring Manager". Sign off as "[Your Name]". Be specific to the JD. No placeholders except [Your Name] and [Company Name] where needed.`;
+
+    const completion = await groqCall({
+      model: "llama-3.3-70b-versatile",
+      max_tokens: 800,
+      temperature: 0.5,
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    const letter = completion.choices?.[0]?.message?.content || "Could not generate cover letter.";
+    res.json({ letter });
+  } catch (err) {
+    logger.error(`[cover-letter] ${err.message}`);
+    if (err.status === 429) return res.status(429).json({ error: "AI is busy — please wait 30 seconds." });
+    res.status(500).json({ error: "Cover letter generation failed." });
+  }
+});
+
 module.exports = router;

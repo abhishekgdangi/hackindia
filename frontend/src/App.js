@@ -3230,6 +3230,73 @@ const DSAPage = ({ setPage }) => {
 
   const totalDone  = Object.values(done).filter(Boolean).length;
 
+  // ── Bookmarks ─────────────────────────────────────────────────
+  const LS_BOOKMARKS = "dsa_bookmarks_v1";
+  const [bookmarks, setBookmarks] = React.useState(() => { try { return JSON.parse(localStorage.getItem(LS_BOOKMARKS)||"{}"); } catch { return {}; } });
+  const saveBookmarks = (b) => { setBookmarks(b); try { localStorage.setItem(LS_BOOKMARKS, JSON.stringify(b)); } catch(_) {} };
+  const toggleBookmark = (key) => { const b={...bookmarks,[key]:!bookmarks[key]}; saveBookmarks(b); };
+  const totalBookmarks = Object.values(bookmarks).filter(Boolean).length;
+
+  // ── Spaced Repetition ─────────────────────────────────────────
+  const LS_SR = "dsa_sr_v1";
+  const [srData, setSrData] = React.useState(() => { try { return JSON.parse(localStorage.getItem(LS_SR)||"{}"); } catch { return {}; } });
+  const saveSR = (d) => { setSrData(d); try { localStorage.setItem(LS_SR, JSON.stringify(d)); } catch(_) {} };
+  const markSR = (key, level) => {
+    const days = level==="easy" ? 7 : level==="medium" ? 3 : 1;
+    const due  = Date.now() + days*86400000;
+    saveSR({...srData, [key]: { level, due, name: key.split("__")[1]||key, topic: key.split("__")[0]||"" }});
+  };
+  const srDueToday = Object.entries(srData).filter(([,v])=>v.due<=Date.now()).map(([k,v])=>({key:k,...v}));
+
+  // ── Interview Mode ─────────────────────────────────────────────
+  const [interviewMode, setInterviewMode] = React.useState(false);
+
+  // ── Pomodoro ───────────────────────────────────────────────────
+  const [pomodoroTime, setPomodoroTime] = React.useState(25*60);
+  const [pomodoroRunning, setPomodoroRunning] = React.useState(false);
+  const [pomodoroBreak, setPomodoroBreak] = React.useState(false);
+  const [pomodoroSessions, setPomodoroSessions] = React.useState(0);
+  const pomTimerRef = React.useRef(null);
+  React.useEffect(()=>{
+    if(pomodoroRunning){
+      pomTimerRef.current=setInterval(()=>{
+        setPomodoroTime(t=>{
+          if(t<=1){
+            clearInterval(pomTimerRef.current);
+            setPomodoroRunning(false);
+            if(!pomodoroBreak){ setPomodoroSessions(s=>s+1); setPomodoroBreak(true); setPomodoroTime(5*60); }
+            else { setPomodoroBreak(false); setPomodoroTime(25*60); }
+            return 0;
+          }
+          return t-1;
+        });
+      },1000);
+    }
+    return ()=>clearInterval(pomTimerRef.current);
+  },[pomodoroRunning,pomodoroBreak]);
+  const fmtPom = s=>`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
+
+  // ── Daily Challenge ────────────────────────────────────────────
+  const dailyProb = React.useMemo(()=>{
+    const allProbs=[];
+    if(typeof LC150!=="undefined") LC150.forEach(g=>g.problems.forEach(p=>allProbs.push({...p,cat:g.cat})));
+    if(!allProbs.length) return null;
+    const today=new Date(); const seed=(today.getFullYear()*10000+((today.getMonth()+1)*100)+today.getDate())%allProbs.length;
+    return allProbs[seed]||allProbs[0];
+  },[]);
+
+  // ── Export Progress ────────────────────────────────────────────
+  const exportProgress = () => {
+    const rows=[["Problem","Topic","Status","Difficulty"]];
+    Object.entries(done).forEach(([k,v])=>{ if(v){ const [topic,name]=k.split("__"); rows.push([name||k,topic,"Solved",""]); } });
+    const csv=rows.map(r=>r.map(c=>`"${c}"`).join(",")).join("
+");
+    const blob=new Blob([csv],{type:"text/csv"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a"); a.href=url; a.download="dsa_progress.csv"; a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const fetchExplain = async (problemName) => {
     if (explain[problemName]) return;
     setExplainLoading(p => ({...p, [problemName]:true}));
@@ -3319,14 +3386,33 @@ const DSAPage = ({ setPage }) => {
           <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",flexShrink:0}}>← Tools</button>
           <div className="sl" style={{marginBottom:0}}>Student Tools</div>
         </div>
-        <div style={{display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
-          <h1 className="syne" style={{fontSize:28,fontWeight:800,marginBottom:4}}>🧠 DSA <span className="gtext">Problem Explorer</span></h1>
-          {totalDone > 0 && <span style={{fontSize:12,padding:"3px 12px",borderRadius:20,background:"rgba(0,255,136,.15)",color:"var(--green)",border:"1px solid rgba(0,255,136,.3)",fontWeight:700}}>✓ {totalDone} solved</span>}
+        <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginBottom:4}}>
+          <h1 className="syne" style={{fontSize:28,fontWeight:800}}>🧠 DSA <span className="gtext">Problem Explorer</span></h1>
+          {totalDone > 0 && <span style={{fontSize:11,padding:"3px 10px",borderRadius:20,background:"rgba(0,255,136,.15)",color:"var(--green)",border:"1px solid rgba(0,255,136,.3)",fontWeight:700}}>✓ {totalDone} solved</span>}
+          {totalBookmarks > 0 && <span style={{fontSize:11,padding:"3px 10px",borderRadius:20,background:"rgba(255,214,10,.12)",color:"var(--yellow)",border:"1px solid rgba(255,214,10,.3)",fontWeight:700}}>⭐ {totalBookmarks} bookmarked</span>}
+          {srDueToday.length > 0 && <span style={{fontSize:11,padding:"3px 10px",borderRadius:20,background:"rgba(255,61,138,.12)",color:"var(--pink)",border:"1px solid rgba(255,61,138,.3)",fontWeight:700}}>🔁 {srDueToday.length} due for review</span>}
+        </div>
+        {/* Pomodoro mini-widget */}
+        <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:8,flexWrap:"wrap"}}>
+          <div style={{display:"flex",alignItems:"center",gap:6,padding:"4px 10px",borderRadius:8,background:pomodoroRunning?"rgba(255,61,138,.1)":"var(--card)",border:`1px solid ${pomodoroRunning?"var(--pink)":"var(--border)"}`,cursor:"pointer"}} onClick={()=>setPomodoroRunning(r=>!r)}>
+            <span style={{fontSize:12}}>{pomodoroBreak?"☕":"🍅"}</span>
+            <span className="mono" style={{fontSize:13,fontWeight:700,color:pomodoroRunning?"var(--pink)":"var(--text2)"}}>{fmtPom(pomodoroTime)}</span>
+            <span style={{fontSize:10,color:"var(--text3)"}}>{pomodoroRunning?"▐▐":"▶"}</span>
+          </div>
+          {pomodoroSessions>0 && <span style={{fontSize:11,color:"var(--text3)"}}>🍅×{pomodoroSessions}</span>}
+          {pomodoroRunning && <button onClick={()=>{setPomodoroRunning(false);setPomodoroTime(25*60);setPomodoroBreak(false);}} style={{fontSize:10,padding:"2px 8px",borderRadius:5,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>reset</button>}
+          <button onClick={()=>setInterviewMode(m=>!m)} style={{fontSize:11,padding:"4px 10px",borderRadius:8,border:`1px solid ${interviewMode?"var(--purple)":"var(--border)"}`,background:interviewMode?"rgba(124,77,255,.15)":"var(--card)",color:interviewMode?"var(--purple)":"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:interviewMode?700:400}}>
+            {interviewMode?"🎯 Interview Mode ON":"🎯 Interview Mode"}
+          </button>
+          <button onClick={()=>setTab("bookmarks")} style={{fontSize:11,padding:"4px 10px",borderRadius:8,border:`1px solid ${tab==="bookmarks"?"var(--yellow)":"var(--border)"}`,background:tab==="bookmarks"?"rgba(255,214,10,.12)":"var(--card)",color:tab==="bookmarks"?"var(--yellow)":"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>
+            ⭐ Bookmarks {totalBookmarks>0?`(${totalBookmarks})`:""}
+          </button>
+          {totalDone>0 && <button onClick={exportProgress} style={{fontSize:11,padding:"4px 10px",borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>📥 Export CSV</button>}
         </div>
         <p style={{color:"var(--text2)",fontSize:13,marginBottom:16}}>Pre-DSA · Topics · Patterns · Blind 75 · Top 150 · Company Wise · Visualizers · Roadmap</p>
         {!isDeepView && (
           <div style={{display:"flex",gap:0,overflowX:"auto"}}>
-            {[["predsa","🌱 Pre-DSA"],["topics","📚 Topics"],["patterns","🧩 Patterns"],["blind75","🎯 Blind 75"],["lc150","💯 Top 150"],["company","🏢 Company Wise"],["visualizers","🎬 Visualizers"],["roadmap","🗺️ Roadmap"]].map(([t,l])=>(
+            {[["predsa","🌱 Pre-DSA"],["topics","📚 Topics"],["patterns","🧩 Patterns"],["blind75","🎯 Blind 75"],["lc150","💯 Top 150"],["company","🏢 Company Wise"],["visualizers","🎬 Visualizers"],["roadmap","🗺️ Roadmap"],["bookmarks",`⭐ Saved${totalBookmarks>0?" ("+totalBookmarks+")":""}`],["review",`🔁 Review${srDueToday.length>0?" ("+srDueToday.length+")":""}`]].map(([t,l])=>(
               <button key={t} onClick={()=>{setTab(t);setView("topics");}} style={{padding:"10px 16px",background:"transparent",border:"none",borderBottom:`3px solid ${tab===t?"var(--purple)":"transparent"}`,color:tab===t?"var(--purple)":"var(--text2)",fontWeight:tab===t?700:500,fontSize:12,cursor:"pointer",whiteSpace:"nowrap",fontFamily:"'DM Sans',sans-serif"}}>
                 {l}
               </button>
@@ -3492,11 +3578,23 @@ const DSAPage = ({ setPage }) => {
                           <div style={{fontSize:13,fontWeight:600,color:isDone?"var(--green)":"var(--text)",lineHeight:1.3,textDecoration:isDone?"line-through":"none",opacity:isDone?.7:1}}>{p.name}</div>
                         </div>
                         <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0}}>
-                          <span style={{fontSize:10,fontWeight:700,padding:"2px 6px",borderRadius:4,background:`${DIFF_C[p.diff]}18`,color:DIFF_C[p.diff]}}>{p.diff}</span>
+                          {!interviewMode && <span style={{fontSize:10,fontWeight:700,padding:"2px 6px",borderRadius:4,background:`${DIFF_C[p.diff]}18`,color:DIFF_C[p.diff]}}>{p.diff}</span>}
+                          {interviewMode && <span style={{fontSize:10,fontWeight:700,padding:"2px 6px",borderRadius:4,background:"var(--bg3)",color:"var(--text3)"}}>?</span>}
+                          {/* Bookmark */}
+                          <button onClick={e=>{e.stopPropagation();toggleBookmark(doneKey);}}
+                            style={{fontSize:10,padding:"2px 7px",borderRadius:5,border:`1px solid ${bookmarks[doneKey]?"rgba(255,214,10,.4)":"var(--border)"}`,background:bookmarks[doneKey]?"rgba(255,214,10,.12)":"transparent",color:bookmarks[doneKey]?"var(--yellow)":"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>
+                            {bookmarks[doneKey]?"⭐":"☆"}
+                          </button>
                           {/* Note toggle */}
                           <button onClick={e=>{e.stopPropagation();setShowNoteFor(showNoteFor===doneKey?null:doneKey);}}
                             style={{fontSize:10,padding:"2px 7px",borderRadius:5,border:"1px solid var(--border)",background:hasNote?"rgba(0,212,255,.1)":"transparent",color:hasNote?"var(--cyan)":"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>
                             {hasNote?"📝":"✏️"}
+                          </button>
+                          {/* Spaced Repetition */}
+                          <button onClick={e=>{e.stopPropagation();markSR(doneKey,isDone?"easy":"hard");}}
+                            title="Mark for spaced repetition review"
+                            style={{fontSize:10,padding:"2px 7px",borderRadius:5,border:`1px solid ${srData[doneKey]?"rgba(0,212,255,.4)":"var(--border)"}`,background:srData[doneKey]?"rgba(0,212,255,.1)":"transparent",color:srData[doneKey]?"var(--cyan)":"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>
+                            🔁
                           </button>
                           {/* Explain toggle */}
                           <button onClick={e=>{e.stopPropagation();fetchExplain(p.name);}}
@@ -4020,6 +4118,128 @@ const DSAPage = ({ setPage }) => {
   }
 
   // ── VISUALIZERS TAB ────────────────────────────────────────────────────
+
+  // ── DAILY CHALLENGE ────────────────────────────────────────────────────────
+  // (shown in topics home as a banner — handled in topics tab below)
+
+  // ── BOOKMARKS TAB ─────────────────────────────────────────────────────────
+  if (tab === "bookmarks") {
+    const bookmarkedList = Object.entries(bookmarks).filter(([,v])=>v).map(([k])=>{
+      const [topic,name]=k.split("__");
+      return { key:k, topic:topic||"", name:name||k };
+    });
+    return (
+      <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+        <Header/>
+        <div style={{maxWidth:900,margin:"0 auto",padding:"24px"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+            <div>
+              <div className="syne" style={{fontSize:20,fontWeight:800,marginBottom:4}}>⭐ Bookmarked Problems</div>
+              <p style={{color:"var(--text2)",fontSize:13}}>Problems you saved for later. Click any to go straight to solve links.</p>
+            </div>
+            {bookmarkedList.length>0 && <button onClick={()=>saveBookmarks({})} style={{fontSize:12,padding:"6px 14px",borderRadius:8,border:"1px solid rgba(255,61,138,.3)",background:"rgba(255,61,138,.08)",color:"var(--pink)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Clear All</button>}
+          </div>
+          {bookmarkedList.length===0 ? (
+            <div style={{textAlign:"center",padding:"60px 20px"}}>
+              <div style={{fontSize:48,marginBottom:12}}>☆</div>
+              <div className="syne" style={{fontSize:16,fontWeight:700,marginBottom:6,color:"var(--text)"}}>No bookmarks yet</div>
+              <div style={{fontSize:13,color:"var(--text2)"}}>Click the ☆ star on any problem in Topics to bookmark it here.</div>
+            </div>
+          ) : (
+            <div style={{display:"grid",gap:8}}>
+              {bookmarkedList.map((b,i)=>{
+                const pLinks = getProblemLinks(b.name, b.topic);
+                const lcLink = pLinks.find(l=>l.name==="LeetCode")?.url || `https://leetcode.com/problems/${b.name.toLowerCase().replace(/[^a-z0-9]+/g,"-")}/`;
+                return (
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:12}}>
+                    <button onClick={()=>toggleBookmark(b.key)} style={{background:"none",border:"none",color:"var(--yellow)",fontSize:16,cursor:"pointer",flexShrink:0}}>⭐</button>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{b.name}</div>
+                      <div style={{fontSize:11,color:"var(--text3)",marginTop:2}}>{b.topic}</div>
+                    </div>
+                    <a href={lcLink} target="_blank" rel="noopener noreferrer"
+                      style={{fontSize:12,padding:"5px 12px",borderRadius:7,background:"rgba(255,161,22,.1)",color:"#f89f1b",border:"1px solid rgba(255,161,22,.25)",textDecoration:"none",fontWeight:600,flexShrink:0}}>
+                      Solve →
+                    </a>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ── SPACED REPETITION TAB ──────────────────────────────────────────────────
+  if (tab === "review") {
+    const allSR = Object.entries(srData).map(([k,v])=>({key:k,...v})).sort((a,b)=>a.due-b.due);
+    const dueNow = allSR.filter(x=>x.due<=Date.now());
+    const upcoming = allSR.filter(x=>x.due>Date.now());
+    const levelColor = l=>l==="easy"?"var(--green)":l==="medium"?"var(--yellow)":"var(--pink)";
+    const fmtDue = ts=>{
+      const diff=ts-Date.now(); const days=Math.ceil(diff/86400000);
+      return days<=0?"Due now":days===1?"Due tomorrow":`Due in ${days} days`;
+    };
+    return (
+      <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+        <Header/>
+        <div style={{maxWidth:900,margin:"0 auto",padding:"24px"}}>
+          <div className="syne" style={{fontSize:20,fontWeight:800,marginBottom:4}}>🔁 Spaced Repetition Review</div>
+          <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Mark problems Easy/Medium/Hard after solving. They resurface at the right time for review.</p>
+          {dueNow.length>0&&(<>
+            <div style={{fontSize:12,fontWeight:700,color:"var(--pink)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>🔴 Due Now ({dueNow.length})</div>
+            <div style={{display:"grid",gap:8,marginBottom:20}}>
+              {dueNow.map((x,i)=>{
+                const lc=getProblemLinks(x.name,x.topic);
+                const url=lc[0]?.url||`https://leetcode.com/problems/${x.name.toLowerCase().replace(/[^a-z0-9]+/g,"-")}/`;
+                return (
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",background:"rgba(255,61,138,.05)",border:"1px solid rgba(255,61,138,.2)",borderRadius:12}}>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{x.name}</div>
+                      <div style={{fontSize:11,color:"var(--text3)",marginTop:2}}>{x.topic}</div>
+                    </div>
+                    <div style={{display:"flex",gap:6,flexShrink:0}}>
+                      {["easy","medium","hard"].map(l=>(
+                        <button key={l} onClick={()=>markSR(x.key,l)}
+                          style={{fontSize:10,padding:"3px 8px",borderRadius:5,border:`1px solid ${levelColor(l)}40`,background:`${levelColor(l)}15`,color:levelColor(l),cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:600,textTransform:"capitalize"}}>
+                          {l}
+                        </button>
+                      ))}
+                      <a href={url} target="_blank" rel="noopener noreferrer" style={{fontSize:11,padding:"3px 10px",borderRadius:5,background:"rgba(255,161,22,.1)",color:"#f89f1b",textDecoration:"none",border:"1px solid rgba(255,161,22,.25)",fontWeight:600}}>Solve →</a>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>)}
+          {upcoming.length>0&&(<>
+            <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>📅 Upcoming Reviews</div>
+            <div style={{display:"grid",gap:6}}>
+              {upcoming.slice(0,10).map((x,i)=>(
+                <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 14px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:10}}>
+                  <div style={{flex:1}}>
+                    <span style={{fontSize:13,color:"var(--text)"}}>{x.name}</span>
+                    <span style={{fontSize:11,color:"var(--text3)",marginLeft:8}}>{x.topic}</span>
+                  </div>
+                  <span style={{fontSize:11,color:levelColor(x.level),fontWeight:600}}>{x.level}</span>
+                  <span style={{fontSize:11,color:"var(--text3)"}}>{fmtDue(x.due)}</span>
+                </div>
+              ))}
+            </div>
+          </>)}
+          {allSR.length===0&&(
+            <div style={{textAlign:"center",padding:"60px 20px"}}>
+              <div style={{fontSize:48,marginBottom:12}}>🔁</div>
+              <div className="syne" style={{fontSize:16,fontWeight:700,marginBottom:6,color:"var(--text)"}}>No problems scheduled yet</div>
+              <div style={{fontSize:13,color:"var(--text2)"}}>After solving a problem, mark it Easy/Medium/Hard using the SR button. It will resurface here for review.</div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   if (tab === "visualizers") return (
     <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
       <Header/>
@@ -4080,6 +4300,23 @@ const DSAPage = ({ setPage }) => {
   return (
     <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
       <Header/>
+      {/* Daily Challenge Banner */}
+      {dailyProb && (
+        <div style={{background:"linear-gradient(135deg,rgba(124,77,255,.12),rgba(0,212,255,.08))",borderBottom:"1px solid var(--border)",padding:"12px 24px"}}>
+          <div style={{maxWidth:1200,margin:"0 auto",display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+            <span style={{fontSize:16}}>⚡</span>
+            <div style={{flex:1,minWidth:0}}>
+              <span style={{fontSize:11,fontWeight:700,color:"var(--purple)",textTransform:"uppercase",letterSpacing:".08em",marginRight:8}}>Today's Challenge</span>
+              <span style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{dailyProb.name}</span>
+              <span style={{fontSize:11,color:"var(--text3)",marginLeft:8}}>{dailyProb.cat}</span>
+            </div>
+            <a href={`https://leetcode.com/problems/${dailyProb.lc}/`} target="_blank" rel="noopener noreferrer"
+              style={{fontSize:12,padding:"5px 14px",borderRadius:7,background:"rgba(124,77,255,.15)",color:"var(--purple)",border:"1px solid rgba(124,77,255,.3)",textDecoration:"none",fontWeight:700,flexShrink:0}}>
+              Solve Today →
+            </a>
+          </div>
+        </div>
+      )}
       <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"20px 24px"}}>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
           <div style={{display:"flex",gap:12,flexWrap:"wrap",alignItems:"center"}}>
@@ -4505,11 +4742,14 @@ const STUDENT_TOOLS = [
 ];
 
 const COMING_SOON = [
-  { icon:"🏆", name:"Mock Interview AI",     desc:"AI-powered technical interview simulator with role-specific questions & feedback" },
-  { icon:"✉️", name:"Cover Letter Generator", desc:"Paste JD + resume → instant tailored cover letter with ATS keywords" },
-  { icon:"📊", name:"CP Contest Tracker",    desc:"Track Codeforces, CodeChef, LeetCode contests — all in one place" },
-  { icon:"🗺️", name:"Interview Prep Roadmap", desc:"Personalised 30/60/90 day placement roadmap based on your target companies" },
-  { icon:"🔗", name:"LinkedIn Optimizer",    desc:"AI rewrites your LinkedIn headline, about & experience for recruiter visibility" },
+  { icon:"🏆", name:"Mock Interview AI",       desc:"AI interviewer by role — SDE/Data/DevOps. Multi-turn Q&A with scoring and feedback" },
+  { icon:"📊", name:"CP Contest Tracker",      desc:"Track Codeforces, CodeChef, LeetCode contests — ratings, upcoming rounds, all in one" },
+  { icon:"🗺️", name:"Interview Prep Roadmap",  desc:"Personalised 30/60/90 day roadmap based on your target company and role" },
+  { icon:"🧮", name:"Aptitude Solver",         desc:"Paste any aptitude question → step-by-step solution with concept explanation. For TCS/Infosys/Wipro drives" },
+  { icon:"📋", name:"JD Decoder",              desc:"Paste any JD → AI breaks down what they actually want, red flags, real vs nice-to-have skills" },
+  { icon:"🏗️", name:"Resume Template Builder", desc:"3 ATS-friendly templates. Fill the form → preview live → download PDF. Zero backend" },
+  { icon:"💬", name:"Salary Negotiation Coach",desc:"Input offer + role + experience → word-for-word negotiation script for Bangalore market" },
+  { icon:"🎯", name:"Placement Readiness Score",desc:"Combine DSA progress + resume score + mock interview results into one readiness %" },
 ];
 
 const StudentToolsPage = ({ setPage }) => (
@@ -4621,6 +4861,120 @@ const ResumeAnalyzerPage = ({ setPage }) => {
   const [compareResult,setCompareResult] = React.useState(null);
   const [printing,   setPrinting]  = React.useState(false);
   const fileRef = React.useRef();
+
+  // ── ATS Keyword Injector ────────────────────────────────────
+  const [jdKeywords, setJdKeywords] = React.useState("");
+  // eslint-disable-next-line no-unused-vars
+  const [showInjector, setShowInjector] = React.useState(false);
+  const [injectorResult, setInjectorResult] = React.useState(null);
+
+  const runInjector = () => {
+    if(!jdKeywords.trim()||!result) return;
+    const jdWords = jdKeywords.toLowerCase().match(/[a-z][a-z0-9+#.]{2,}/g)||[];
+    const resumeText = [
+      ...(result.skills_analysis?.found||[]),
+      ...(result.section_rewrite?.experience||[]),
+      ...(result.section_rewrite?.projects||[]),
+      result.section_rewrite?.summary||""
+    ].join(" ").toLowerCase();
+    const missing = [...new Set(jdWords.filter(w=>w.length>3&&!resumeText.includes(w)))].slice(0,20);
+    const present = [...new Set(jdWords.filter(w=>w.length>3&&resumeText.includes(w)))].slice(0,20);
+    setInjectorResult({missing,present});
+  };
+
+  // ── Resume Checklist ────────────────────────────────────────
+  const CHECKLIST_ITEMS = [
+    "Email address is present",
+    "Phone number (Indian format) is present",
+    "LinkedIn URL is included",
+    "GitHub URL is included",
+    "Resume is 1-2 pages (not more)",
+    "Single column layout (ATS-friendly)",
+    "Skills section is clearly labeled",
+    "Education section is present",
+    "At least 2 projects with descriptions",
+    "Bullet points start with action verbs",
+    "Quantified achievements (numbers/percentages)",
+    "No spelling mistakes in visible sections",
+    "Consistent date formatting throughout",
+    "Resume saved as PDF (not Word)",
+    "File named as FirstName_LastName_Resume.pdf",
+    "No photos or graphics (confuses ATS)",
+    "No tables or columns (breaks ATS parsing)",
+    "Contact info at the top",
+    "Summary/Objective section present",
+    "Certifications listed if any",
+  ];
+  const LS_CHECKLIST = "resume_checklist_v1";
+  const [checklist, setChecklist] = React.useState(()=>{ try{return JSON.parse(localStorage.getItem(LS_CHECKLIST)||"{}");} catch{return {};} });
+  const toggleCheck = (i) => {
+    const c={...checklist,[i]:!checklist[i]};
+    setChecklist(c);
+    try{localStorage.setItem(LS_CHECKLIST,JSON.stringify(c));}catch(_){}
+  };
+  const checkScore = Math.round((Object.values(checklist).filter(Boolean).length/CHECKLIST_ITEMS.length)*100);
+
+  // ── Cover Letter Generator ─────────────────────────────────
+  const [clJD, setClJD] = React.useState("");
+  const [clTone, setClTone] = React.useState("Professional");
+  const [clLetter, setClLetter] = React.useState("");
+  const [clLoading, setClLoading] = React.useState(false);
+  const [clCopied, setClCopied] = React.useState(false);
+
+  const generateCoverLetter = async () => {
+    if(!result||!clJD.trim()) return;
+    setClLoading(true); setClLetter("");
+    try {
+      const fd=new FormData();
+      fd.append("resume",file||new Blob([""],{type:"text/plain"}));
+      fd.append("jobDescription",clJD);
+      fd.append("targetDomain","cover_letter");
+      fd.append("tone",clTone);
+      const r=await fetch(`${API_BASE}/resume/cover-letter`,{method:"POST",body:fd});
+      const d=await r.json();
+      setClLetter(d.letter||d.tip||"Could not generate cover letter.");
+    } catch { setClLetter("Network error — try again."); }
+    setClLoading(false);
+  };
+
+  // ── LinkedIn Headline Generator ────────────────────────────
+  const [liHeadlines, setLiHeadlines] = React.useState([]);
+  const [liLoading, setLiLoading] = React.useState(false);
+
+  const generateHeadlines = async () => {
+    if(!result) return;
+    setLiLoading(true); setLiHeadlines([]);
+    const skills=(result.skills_analysis?.found||[]).slice(0,6).join(", ");
+    const roles=(result.domain_insights?.recommended_roles||[]).join(", ");
+    const type=result.summary?.resume_type||"";
+    try {
+      const r=await fetch(`${API_BASE}/dsa/topics/explain/tip`,{
+        method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({problem:`Generate 5 LinkedIn headline variations for a ${type} software engineer with skills: ${skills}. Target roles: ${roles}. Return only 5 numbered headlines, each under 220 characters. No extra explanation.`})
+      });
+      const d=await r.json();
+      const lines=(d.tip||"").split("
+").filter(l=>l.trim()&&/^\d/.test(l.trim())).slice(0,5);
+      setLiHeadlines(lines.length?lines:["Could not generate — try again."]);
+    } catch { setLiHeadlines(["Network error — try again."]); }
+    setLiLoading(false);
+  };
+
+  // ── Salary Estimator ────────────────────────────────────────
+  const SALARY_DATA = {
+    "Full Stack Developer":    {"0-1":"3-6L","1-3":"6-12L","3-5":"12-20L","5+":"20-35L"},
+    "Frontend Developer":      {"0-1":"3-5L","1-3":"5-10L","3-5":"10-18L","5+":"18-30L"},
+    "Backend Developer":       {"0-1":"3-6L","1-3":"6-12L","3-5":"12-22L","5+":"20-40L"},
+    "ML/AI Engineer":          {"0-1":"4-8L","1-3":"8-18L","3-5":"18-35L","5+":"30-60L"},
+    "Data Analyst / Data Scientist":{"0-1":"3-6L","1-3":"6-14L","3-5":"14-25L","5+":"22-45L"},
+    "DevOps / Cloud Engineer": {"0-1":"4-7L","1-3":"7-15L","3-5":"15-28L","5+":"25-50L"},
+    "Mobile App Developer":    {"0-1":"3-6L","1-3":"6-12L","3-5":"12-22L","5+":"20-38L"},
+    "SDE / Software Developer":{"0-1":"3-6L","1-3":"6-14L","3-5":"14-25L","5+":"22-45L"},
+    "Security Engineer":       {"0-1":"4-7L","1-3":"7-16L","3-5":"16-30L","5+":"28-55L"},
+  };
+  const [salaryRole, setSalaryRole] = React.useState("");
+  const [salaryExp, setSalaryExp] = React.useState("0-1");
+  const salaryRange = salaryRole && SALARY_DATA[salaryRole] ? SALARY_DATA[salaryRole][salaryExp] : null;
 
   const saveHistory = (res, fileName) => {
     const entry = {
@@ -4887,6 +5241,7 @@ const ResumeAnalyzerPage = ({ setPage }) => {
     ["rewrite","✏️ Rewrites"],
     ["builder","📋 Builder"],
     ["interview","⚡ Interview"],
+    ["tools","🛠️ More Tools"],
   ];
 
   return (
@@ -5331,6 +5686,156 @@ const ResumeAnalyzerPage = ({ setPage }) => {
         </>)}
 
         </div>
+
+        {/* ── MORE TOOLS TAB ── */}
+        {tab==="tools" && (
+          <div style={{display:"grid",gap:20}}>
+
+            {/* ATS Keyword Injector */}
+            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24}}>
+              <div style={{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:4}}>🔑 ATS Keyword Injector</div>
+              <p style={{fontSize:12,color:"var(--text2)",marginBottom:14}}>Paste a job description → instantly see which keywords are missing from your resume and which are present.</p>
+              <textarea value={jdKeywords} onChange={e=>setJdKeywords(e.target.value)}
+                placeholder="Paste the job description here…"
+                style={{width:"100%",minHeight:100,background:"var(--bg)",border:"1px solid var(--border)",borderRadius:8,padding:10,fontSize:12,fontFamily:"'DM Sans',sans-serif",color:"var(--text)",resize:"vertical",outline:"none",boxSizing:"border-box",marginBottom:10}}
+                onFocus={e=>e.target.style.borderColor="var(--cyan)"} onBlur={e=>e.target.style.borderColor="var(--border)"}/>
+              <button className="btn-p" onClick={runInjector} style={{padding:"8px 20px",fontSize:13,background:"linear-gradient(135deg,var(--cyan),#0099cc)"}}>Analyze Keywords</button>
+              {injectorResult && (
+                <div style={{marginTop:14,display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+                  <div style={{background:"rgba(255,61,138,.05)",border:"1px solid rgba(255,61,138,.2)",borderRadius:10,padding:12}}>
+                    <div style={{fontSize:11,fontWeight:700,color:"var(--pink)",marginBottom:8}}>❌ Missing Keywords ({injectorResult.missing.length})</div>
+                    <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
+                      {injectorResult.missing.map(w=><span key={w} style={{fontSize:11,padding:"2px 8px",borderRadius:4,background:"rgba(255,61,138,.1)",color:"var(--pink)",border:"1px solid rgba(255,61,138,.2)"}}>{w}</span>)}
+                    </div>
+                  </div>
+                  <div style={{background:"rgba(0,255,136,.05)",border:"1px solid rgba(0,255,136,.2)",borderRadius:10,padding:12}}>
+                    <div style={{fontSize:11,fontWeight:700,color:"var(--green)",marginBottom:8}}>✅ Present Keywords ({injectorResult.present.length})</div>
+                    <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
+                      {injectorResult.present.map(w=><span key={w} style={{fontSize:11,padding:"2px 8px",borderRadius:4,background:"rgba(0,255,136,.1)",color:"var(--green)",border:"1px solid rgba(0,255,136,.2)"}}>{w}</span>)}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Resume Checklist */}
+            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+                <div style={{fontSize:13,fontWeight:700,color:"var(--text)"}}>✅ ATS Resume Checklist</div>
+                <span className="syne" style={{fontSize:18,fontWeight:900,color:checkScore>=80?"var(--green)":checkScore>=50?"var(--yellow)":"var(--pink)"}}>{checkScore}%</span>
+              </div>
+              <div style={{height:4,background:"var(--bg3)",borderRadius:2,overflow:"hidden",marginBottom:14}}>
+                <div style={{height:"100%",width:`${checkScore}%`,background:checkScore>=80?"var(--green)":checkScore>=50?"var(--yellow)":"var(--pink)",borderRadius:2,transition:"width .5s"}}/>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:6}}>
+                {CHECKLIST_ITEMS.map((item,i)=>(
+                  <div key={i} onClick={()=>toggleCheck(i)}
+                    style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",borderRadius:8,background:checklist[i]?"rgba(0,255,136,.05)":"var(--bg)",border:`1px solid ${checklist[i]?"rgba(0,255,136,.2)":"var(--border)"}`,cursor:"pointer",transition:"all .15s"}}>
+                    <div style={{width:16,height:16,borderRadius:3,border:`2px solid ${checklist[i]?"var(--green)":"var(--border2)"}`,background:checklist[i]?"var(--green)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"all .15s"}}>
+                      {checklist[i]&&<span style={{fontSize:10,color:"#000",fontWeight:900}}>✓</span>}
+                    </div>
+                    <span style={{fontSize:12,color:checklist[i]?"var(--text)":"var(--text2)",textDecoration:checklist[i]?"none":"none"}}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Cover Letter Generator */}
+            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24}}>
+              <div style={{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:4}}>✉️ Cover Letter Generator</div>
+              <p style={{fontSize:12,color:"var(--text2)",marginBottom:14}}>Paste the job description and choose a tone → AI generates a tailored cover letter based on your resume.</p>
+              <div style={{display:"grid",gap:10,marginBottom:12}}>
+                <textarea value={clJD} onChange={e=>setClJD(e.target.value)}
+                  placeholder="Paste job description here…"
+                  style={{width:"100%",minHeight:80,background:"var(--bg)",border:"1px solid var(--border)",borderRadius:8,padding:10,fontSize:12,fontFamily:"'DM Sans',sans-serif",color:"var(--text)",resize:"vertical",outline:"none",boxSizing:"border-box"}}
+                  onFocus={e=>e.target.style.borderColor="var(--cyan)"} onBlur={e=>e.target.style.borderColor="var(--border)"}/>
+                <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
+                  <span style={{fontSize:12,color:"var(--text2)"}}>Tone:</span>
+                  {["Professional","Startup","Enthusiastic"].map(t=>(
+                    <button key={t} onClick={()=>setClTone(t)}
+                      style={{fontSize:11,padding:"4px 12px",borderRadius:6,border:`1px solid ${clTone===t?"var(--cyan)":"var(--border)"}`,background:clTone===t?"rgba(0,212,255,.12)":"var(--card)",color:clTone===t?"var(--cyan)":"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>
+                      {t}
+                    </button>
+                  ))}
+                  <button className="btn-p" onClick={generateCoverLetter} disabled={clLoading||!clJD.trim()}
+                    style={{padding:"7px 18px",fontSize:12,opacity:(clLoading||!clJD.trim())?.6:1}}>
+                    {clLoading?"⏳ Generating…":"Generate →"}
+                  </button>
+                </div>
+              </div>
+              {clLetter && (
+                <div style={{background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:10,padding:16}}>
+                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
+                    <span style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em"}}>Generated Cover Letter</span>
+                    <button onClick={()=>{navigator.clipboard.writeText(clLetter);setClCopied(true);setTimeout(()=>setClCopied(false),2000);}}
+                      style={{fontSize:11,padding:"3px 10px",borderRadius:5,border:`1px solid ${clCopied?"var(--green)":"var(--border)"}`,background:clCopied?"rgba(0,255,136,.12)":"transparent",color:clCopied?"var(--green)":"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>
+                      {clCopied?"✅ Copied!":"📋 Copy"}
+                    </button>
+                  </div>
+                  <div style={{fontSize:13,color:"var(--text)",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{clLetter}</div>
+                </div>
+              )}
+            </div>
+
+            {/* LinkedIn Headline Generator */}
+            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24}}>
+              <div style={{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:4}}>🔗 LinkedIn Headline Generator</div>
+              <p style={{fontSize:12,color:"var(--text2)",marginBottom:14}}>Based on your resume analysis, generate 5 LinkedIn headline variations optimized for recruiter search.</p>
+              <button className="btn-p" onClick={generateHeadlines} disabled={liLoading}
+                style={{padding:"8px 20px",fontSize:13,opacity:liLoading?.6:1,background:"linear-gradient(135deg,#0077b5,#005e93)",marginBottom:liHeadlines.length?14:0}}>
+                {liLoading?"⏳ Generating…":"Generate Headlines →"}
+              </button>
+              {liHeadlines.length>0 && (
+                <div style={{display:"grid",gap:8}}>
+                  {liHeadlines.map((h,i)=>(
+                    <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:10}}>
+                      <span style={{fontSize:11,color:"var(--text3)",flexShrink:0,minWidth:20}}>{i+1}.</span>
+                      <span style={{fontSize:13,color:"var(--text)",flex:1,lineHeight:1.5}}>{h.replace(/^\d+\.\s*/,"")}</span>
+                      <button onClick={()=>navigator.clipboard.writeText(h.replace(/^\d+\.\s*/,""))}
+                        style={{fontSize:10,padding:"2px 8px",borderRadius:4,border:"1px solid var(--border)",background:"transparent",color:"var(--text3)",cursor:"pointer",flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>Copy</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Salary Estimator */}
+            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24}}>
+              <div style={{fontSize:13,fontWeight:700,color:"var(--text)",marginBottom:4}}>💰 Bangalore Salary Estimator</div>
+              <p style={{fontSize:12,color:"var(--text2)",marginBottom:14}}>Estimate your market value based on role and experience. Data sourced from AmbitionBox + Glassdoor (Bangalore market).</p>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:14}}>
+                <div>
+                  <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Role</div>
+                  <select value={salaryRole} onChange={e=>setSalaryRole(e.target.value)} className="input" style={{padding:"8px 30px 8px 10px",fontSize:12,width:"100%"}}>
+                    <option value="">Select role…</option>
+                    {Object.keys(SALARY_DATA).map(r=><option key={r} value={r}>{r}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:6}}>Experience</div>
+                  <select value={salaryExp} onChange={e=>setSalaryExp(e.target.value)} className="input" style={{padding:"8px 30px 8px 10px",fontSize:12,width:"100%"}}>
+                    <option value="0-1">0-1 years (Fresher)</option>
+                    <option value="1-3">1-3 years</option>
+                    <option value="3-5">3-5 years</option>
+                    <option value="5+">5+ years</option>
+                  </select>
+                </div>
+              </div>
+              {salaryRange && (
+                <div style={{padding:"16px 20px",background:"rgba(0,255,136,.06)",border:"1px solid rgba(0,255,136,.2)",borderRadius:12,display:"flex",alignItems:"center",gap:16}}>
+                  <div>
+                    <div style={{fontSize:11,color:"var(--text3)",marginBottom:4}}>Bangalore Market Range</div>
+                    <div className="syne" style={{fontSize:28,fontWeight:900,color:"var(--green)"}}>{salaryRange} per annum</div>
+                    <div style={{fontSize:11,color:"var(--text3)",marginTop:4}}>Based on AmbitionBox + Glassdoor data · Always negotiate 20-30% above base offer</div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+          </div>
+        )}
+
+        {/* Checklist standalone (outside result — on input screen) */}
 
         {/* Bottom actions */}
         <div style={{display:"flex",gap:12,flexWrap:"wrap",marginTop:24,paddingTop:20,borderTop:"1px solid var(--border)"}}>
