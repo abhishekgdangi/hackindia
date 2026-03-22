@@ -3043,6 +3043,87 @@ const DSAPage = ({ setPage }) => {
   const [b75Cat,     setB75Cat]     = useState("All");
   const [lc150Cat,   setLc150Cat]   = useState("All");
 
+  // ── localStorage helpers ─────────────────────────────────────────────
+  const LS_DONE    = "dsa_done_v1";
+  const LS_NOTES   = "dsa_notes_v1";
+  const LS_EXPLAIN = "dsa_explain_v1";
+
+  const [done,     setDone]     = React.useState(() => { try { return JSON.parse(localStorage.getItem(LS_DONE)||"{}"); } catch { return {}; } });
+  const [notes,    setNotes]    = React.useState(() => { try { return JSON.parse(localStorage.getItem(LS_NOTES)||"{}"); } catch { return {}; } });
+  const [explain,  setExplain]  = React.useState(() => { try { return JSON.parse(localStorage.getItem(LS_EXPLAIN)||"{}"); } catch { return {}; } });
+  const [explainLoading, setExplainLoading] = React.useState({});
+  const [mockMode, setMockMode] = React.useState(false);
+  const [mockCompany, setMockCompany] = React.useState(null);
+  const [mockProblems, setMockProblems] = React.useState([]);
+  const [mockDone, setMockDone] = React.useState({});
+  const [mockTime, setMockTime] = React.useState(3600);
+  const [mockRunning, setMockRunning] = React.useState(false);
+  const [showNoteFor, setShowNoteFor] = React.useState(null);
+  const mockTimerRef = React.useRef(null);
+
+  const saveDone  = (d) => { setDone(d);  try { localStorage.setItem(LS_DONE,  JSON.stringify(d)); } catch(_) {} };
+  const saveNotes = (n) => { setNotes(n); try { localStorage.setItem(LS_NOTES, JSON.stringify(n)); } catch(_) {} };
+  const saveExplain = (e) => { setExplain(e); try { localStorage.setItem(LS_EXPLAIN, JSON.stringify(e)); } catch(_) {} };
+
+  const toggleDone = (key) => {
+    const d = { ...done, [key]: !done[key] };
+    saveDone(d);
+  };
+
+  const totalDone  = Object.values(done).filter(Boolean).length;
+
+  const fetchExplain = async (problemName) => {
+    if (explain[problemName]) return;
+    setExplainLoading(p => ({...p, [problemName]:true}));
+    try {
+      const r = await fetch(`${API_BASE}/dsa/topics/explain/tip`, {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ problem: problemName }),
+      });
+      const j = await r.json();
+      const newE = { ...explain, [problemName]: j.tip || "Could not load explanation." };
+      saveExplain(newE);
+    } catch {
+      const newE = { ...explain, [problemName]: "Network error — try again." };
+      saveExplain(newE);
+    }
+    setExplainLoading(p => ({...p, [problemName]:false}));
+  };
+
+  const startMock = (company) => {
+    const allP = company.problems;
+    const shuffled = [...allP].sort(()=>Math.random()-.5).slice(0,3);
+    setMockCompany(company);
+    setMockProblems(shuffled);
+    setMockDone({});
+    setMockTime(3600);
+    setMockRunning(true);
+    setMockMode(true);
+    window.scrollTo(0,0);
+  };
+
+  const stopMock = () => {
+    setMockMode(false);
+    setMockRunning(false);
+    setMockCompany(null);
+    clearInterval(mockTimerRef.current);
+  };
+
+  React.useEffect(() => {
+    if (mockRunning) {
+      mockTimerRef.current = setInterval(() => {
+        setMockTime(t => {
+          if (t <= 1) { clearInterval(mockTimerRef.current); setMockRunning(false); return 0; }
+          return t - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(mockTimerRef.current);
+  }, [mockRunning]);
+
+  const fmtTime = (s) => `${String(Math.floor(s/3600)).padStart(2,"0")}:${String(Math.floor((s%3600)/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
+
   const DIFF_C = { Easy:"#00ff88", Medium:"#ffd60a", Hard:"#ff3d8a" };
 
   const filtered = DSA_DATA.filter(t =>
@@ -3079,7 +3160,10 @@ const DSAPage = ({ setPage }) => {
           <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",flexShrink:0}}>← Tools</button>
           <div className="sl" style={{marginBottom:0}}>Student Tools</div>
         </div>
-        <h1 className="syne" style={{fontSize:28,fontWeight:800,marginBottom:4}}>🧠 DSA <span className="gtext">Problem Explorer</span></h1>
+        <div style={{display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+          <h1 className="syne" style={{fontSize:28,fontWeight:800,marginBottom:4}}>🧠 DSA <span className="gtext">Problem Explorer</span></h1>
+          {totalDone > 0 && <span style={{fontSize:12,padding:"3px 12px",borderRadius:20,background:"rgba(0,255,136,.15)",color:"var(--green)",border:"1px solid rgba(0,255,136,.3)",fontWeight:700}}>✓ {totalDone} solved</span>}
+        </div>
         <p style={{color:"var(--text2)",fontSize:13,marginBottom:16}}>Pre-DSA · Topics · Patterns · Blind 75 · Top 150 · Company Wise · Visualizers · Roadmap</p>
         {!isDeepView && (
           <div style={{display:"flex",gap:0,overflowX:"auto"}}>
@@ -3177,6 +3261,18 @@ const DSAPage = ({ setPage }) => {
               </button>
             </div>
             {tip && <div style={{marginTop:14,background:"rgba(255,214,10,.06)",border:"1px solid rgba(255,214,10,.2)",borderRadius:10,padding:14,maxWidth:700}}><div style={{fontSize:10,fontWeight:700,color:"var(--yellow)",marginBottom:6}}>💡 AI Strategy</div><div style={{fontSize:12,color:"var(--text)",lineHeight:1.7,whiteSpace:"pre-wrap"}}>{tip}</div></div>}
+            {/* Topic Notes */}
+            <div style={{marginTop:12,maxWidth:700}}>
+              <div style={{fontSize:10,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:5}}>📝 Your Notes for {selTopic.topic}</div>
+              <textarea
+                value={notes[`topic__${selTopic.slug}`]||""}
+                onChange={e=>saveNotes({...notes,[`topic__${selTopic.slug}`]:e.target.value})}
+                placeholder="Jot down your approach, patterns you noticed, or anything to remember…"
+                style={{width:"100%",minHeight:72,background:"var(--bg)",border:"1px solid var(--border)",borderRadius:8,padding:10,fontSize:12,fontFamily:"'DM Sans',sans-serif",color:"var(--text)",resize:"vertical",outline:"none",boxSizing:"border-box"}}
+                onFocus={e=>e.target.style.borderColor="var(--cyan)"}
+                onBlur={e=>e.target.style.borderColor="var(--border)"}
+              />
+            </div>
             <div style={{display:"flex",gap:8,marginTop:16,flexWrap:"wrap",alignItems:"center"}}>
               <div style={{position:"relative",flex:1,maxWidth:320}}>
                 <span style={{position:"absolute",left:10,top:"50%",transform:"translateY(-50%)",color:"var(--text3)",fontSize:12}}>🔍</span>
@@ -3203,20 +3299,79 @@ const DSAPage = ({ setPage }) => {
             </div>
           ) : (
             <>
-              <div style={{fontSize:12,color:"var(--text3)",marginBottom:14}}>{filteredProbs.length} of {problems.length} problems</div>
+              {(() => {
+            const topicSolved = problems.filter(p => done[`${selTopic.slug}__${p.name}`]).length;
+            const pct = problems.length ? Math.round((topicSolved/problems.length)*100) : 0;
+            return (
+              <div style={{marginBottom:14}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+                  <span style={{fontSize:12,color:"var(--text3)"}}>{filteredProbs.length} of {problems.length} shown</span>
+                  <span style={{fontSize:12,fontWeight:700,color:pct===100?"var(--green)":pct>50?"var(--yellow)":"var(--text3)"}}>{topicSolved}/{problems.length} solved ({pct}%)</span>
+                </div>
+                <div style={{height:4,background:"var(--bg3)",borderRadius:2,overflow:"hidden"}}>
+                  <div style={{height:"100%",width:`${pct}%`,background:pct===100?"var(--green)":pct>50?"var(--yellow)":"var(--purple)",borderRadius:2,transition:"width .5s ease"}}/>
+                </div>
+              </div>
+            );
+          })()}
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:10}}>
-                {filteredProbs.map((p,i)=>(
-                  <div key={i} onClick={()=>openProblem(p)} className="hcard" style={{padding:"12px 16px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,border:"1px solid var(--border)",background:"var(--card)",transition:"all .2s"}}>
-                    <div style={{display:"flex",alignItems:"center",gap:10,minWidth:0}}>
-                      <span style={{fontSize:11,color:"var(--text3)",flexShrink:0,minWidth:18,textAlign:"right"}}>{i+1}</span>
-                      <div style={{fontSize:13,fontWeight:600,color:"var(--text)",lineHeight:1.3}}>{p.name}</div>
+                {filteredProbs.map((p,i)=>{
+                  const doneKey = `${selTopic.slug}__${p.name}`;
+                  const isDone  = !!done[doneKey];
+                  const hasNote = !!(notes[doneKey] || "").trim();
+                  const hasExp  = !!explain[p.name];
+                  return (
+                    <div key={i} style={{borderRadius:10,border:`1px solid ${isDone?"rgba(0,255,136,.3)":"var(--border)"}`,background:isDone?"rgba(0,255,136,.04)":"var(--card)",transition:"all .2s",overflow:"hidden"}}>
+                      <div style={{padding:"10px 14px",display:"flex",alignItems:"center",gap:10}}>
+                        {/* Checkbox */}
+                        <div onClick={e=>{e.stopPropagation();toggleDone(doneKey);}}
+                          style={{width:20,height:20,borderRadius:5,border:`2px solid ${isDone?"var(--green)":"var(--border2)"}`,background:isDone?"var(--green)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0,transition:"all .15s"}}>
+                          {isDone && <span style={{fontSize:12,color:"#000",fontWeight:900}}>✓</span>}
+                        </div>
+                        {/* Problem name */}
+                        <div onClick={()=>openProblem(p)} style={{flex:1,minWidth:0,cursor:"pointer"}}>
+                          <div style={{fontSize:13,fontWeight:600,color:isDone?"var(--green)":"var(--text)",lineHeight:1.3,textDecoration:isDone?"line-through":"none",opacity:isDone?.7:1}}>{p.name}</div>
+                        </div>
+                        <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0}}>
+                          <span style={{fontSize:10,fontWeight:700,padding:"2px 6px",borderRadius:4,background:`${DIFF_C[p.diff]}18`,color:DIFF_C[p.diff]}}>{p.diff}</span>
+                          {/* Note toggle */}
+                          <button onClick={e=>{e.stopPropagation();setShowNoteFor(showNoteFor===doneKey?null:doneKey);}}
+                            style={{fontSize:10,padding:"2px 7px",borderRadius:5,border:"1px solid var(--border)",background:hasNote?"rgba(0,212,255,.1)":"transparent",color:hasNote?"var(--cyan)":"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>
+                            {hasNote?"📝":"✏️"}
+                          </button>
+                          {/* Explain toggle */}
+                          <button onClick={e=>{e.stopPropagation();fetchExplain(p.name);}}
+                            style={{fontSize:10,padding:"2px 7px",borderRadius:5,border:"1px solid var(--border)",background:hasExp?"rgba(255,214,10,.1)":"transparent",color:hasExp?"var(--yellow)":"var(--text3)",cursor:explainLoading[p.name]?"wait":"pointer",fontFamily:"'DM Sans',sans-serif"}}>
+                            {explainLoading[p.name]?"⏳":"💡"}
+                          </button>
+                          <span onClick={()=>openProblem(p)} style={{color:"var(--purple)",fontSize:14,cursor:"pointer"}}>›</span>
+                        </div>
+                      </div>
+                      {/* Note textarea */}
+                      {showNoteFor===doneKey && (
+                        <div style={{padding:"0 14px 10px",borderTop:"1px solid var(--border)"}}>
+                          <textarea
+                            value={notes[doneKey]||""}
+                            onChange={e=>saveNotes({...notes,[doneKey]:e.target.value})}
+                            placeholder="Your notes for this problem…"
+                            style={{width:"100%",minHeight:64,background:"var(--bg)",border:"1px solid var(--border)",borderRadius:7,padding:8,fontSize:12,fontFamily:"'DM Sans',sans-serif",color:"var(--text)",resize:"vertical",outline:"none",marginTop:8,boxSizing:"border-box"}}
+                            onFocus={e=>e.target.style.borderColor="var(--cyan)"}
+                            onBlur={e=>e.target.style.borderColor="var(--border)"}
+                          />
+                        </div>
+                      )}
+                      {/* AI Explanation */}
+                      {hasExp && (
+                        <div style={{padding:"0 14px 10px",borderTop:"1px solid rgba(255,214,10,.15)"}}>
+                          <div style={{fontSize:10,fontWeight:700,color:"var(--yellow)",marginBottom:5,marginTop:8}}>💡 AI Explainer</div>
+                          <div style={{fontSize:12,color:"var(--text)",lineHeight:1.7,whiteSpace:"pre-wrap"}}>{explain[p.name]}</div>
+                          <button onClick={()=>{const e2={...explain};delete e2[p.name];saveExplain(e2);}}
+                            style={{marginTop:6,fontSize:10,color:"var(--text3)",background:"none",border:"none",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>clear ✕</button>
+                        </div>
+                      )}
                     </div>
-                    <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0}}>
-                      <span style={{fontSize:10,fontWeight:700,padding:"2px 6px",borderRadius:4,background:`${DIFF_C[p.diff]}18`,color:DIFF_C[p.diff]}}>{p.diff}</span>
-                      <span style={{color:"var(--purple)",fontSize:14}}>›</span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </>
           )}
@@ -3486,6 +3641,80 @@ const DSAPage = ({ setPage }) => {
     </div>
   );
 
+
+
+  // ── MOCK TEST MODE ──────────────────────────────────────────────────────────
+  if (mockMode && mockCompany) {
+    const solvedCount = Object.values(mockDone).filter(Boolean).length;
+    const timerColor  = mockTime < 600 ? "var(--pink)" : mockTime < 1800 ? "var(--yellow)" : "var(--green)";
+    return (
+      <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+        <Header/>
+        <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"20px 24px"}}>
+          <div style={{maxWidth:860,margin:"0 auto",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}}>
+            <div>
+              <div style={{fontSize:12,color:"var(--text3)",marginBottom:4}}>Mock Test · {mockCompany.name}</div>
+              <div className="syne" style={{fontSize:20,fontWeight:800}}>Solve {mockProblems.length} Problems</div>
+            </div>
+            <div style={{display:"flex",gap:14,alignItems:"center"}}>
+              <div style={{textAlign:"center"}}>
+                <div className="syne mono" style={{fontSize:28,fontWeight:900,color:timerColor}}>{fmtTime(mockTime)}</div>
+                <div style={{fontSize:10,color:"var(--text3)"}}>remaining</div>
+              </div>
+              <div style={{textAlign:"center"}}>
+                <div className="syne" style={{fontSize:28,fontWeight:900,color:"var(--cyan)"}}>{solvedCount}/{mockProblems.length}</div>
+                <div style={{fontSize:10,color:"var(--text3)"}}>solved</div>
+              </div>
+              <button onClick={stopMock} style={{padding:"8px 16px",borderRadius:9,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>End Test</button>
+            </div>
+          </div>
+          {mockTime === 0 && (
+            <div style={{maxWidth:860,margin:"12px auto 0",padding:"12px 16px",background:"rgba(255,61,138,.08)",border:"1px solid rgba(255,61,138,.3)",borderRadius:10,color:"var(--pink)",fontWeight:700,fontSize:14}}>
+              ⏰ Time is up! You solved {solvedCount} out of {mockProblems.length} problems.
+            </div>
+          )}
+        </div>
+        <div style={{maxWidth:860,margin:"24px auto",padding:"0 24px",display:"grid",gap:16}}>
+          {mockProblems.map((p,i)=>{
+            const lc = (p.lc || p.name.toLowerCase().replace(/[^a-z0-9]+/g,"-"));
+            const isSolved = !!mockDone[i];
+            return (
+              <div key={i} style={{background:"var(--card)",border:`1px solid ${isSolved?"rgba(0,255,136,.3)":"var(--border)"}`,borderRadius:14,padding:20,transition:"all .2s"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:10,marginBottom:12}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10}}>
+                    <div style={{width:28,height:28,borderRadius:"50%",background:"rgba(124,77,255,.15)",color:"var(--purple)",fontWeight:800,fontSize:13,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{i+1}</div>
+                    <span className="syne" style={{fontSize:16,fontWeight:700,color:isSolved?"var(--green)":"var(--text)"}}>{p.name}</span>
+                  </div>
+                  <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                    <span style={{fontSize:11,fontWeight:700,padding:"3px 8px",borderRadius:5,background:`${DIFF_C[p.diff]}18`,color:DIFF_C[p.diff]}}>{p.diff}</span>
+                    <a href={`https://leetcode.com/problems/${lc}/`} target="_blank" rel="noopener noreferrer"
+                      style={{fontSize:12,padding:"5px 12px",borderRadius:7,background:"rgba(255,161,22,.1)",color:"#f89f1b",border:"1px solid rgba(255,161,22,.25)",textDecoration:"none",fontWeight:600}}>
+                      Open LeetCode →
+                    </a>
+                  </div>
+                </div>
+                <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                  <button onClick={()=>setMockDone(d=>({...d,[i]:!d[i]}))}
+                    style={{padding:"7px 18px",borderRadius:8,border:`1px solid ${isSolved?"var(--green)":"var(--border)"}`,background:isSolved?"rgba(0,255,136,.15)":"var(--card2)",color:isSolved?"var(--green)":"var(--text2)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",transition:"all .15s"}}>
+                    {isSolved?"✅ Marked Solved":"Mark as Solved"}
+                  </button>
+                  {isSolved && <span style={{fontSize:12,color:"var(--green)"}}>Good job!</span>}
+                </div>
+              </div>
+            );
+          })}
+          {solvedCount === mockProblems.length && mockProblems.length > 0 && (
+            <div style={{background:"rgba(0,255,136,.08)",border:"1px solid rgba(0,255,136,.3)",borderRadius:14,padding:20,textAlign:"center"}}>
+              <div style={{fontSize:32,marginBottom:8}}>🎉</div>
+              <div className="syne" style={{fontSize:20,fontWeight:800,color:"var(--green)",marginBottom:6}}>All problems solved!</div>
+              <div style={{fontSize:13,color:"var(--text2)",marginBottom:16}}>You finished the {mockCompany.name} mock test with {fmtTime(3600-mockTime)} remaining.</div>
+              <button onClick={stopMock} className="btn-p" style={{padding:"10px 28px",fontSize:14}}>Back to DSA Explorer</button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   // ── LC150 TAB ────────────────────────────────────────────────────────────────
   if (tab === "lc150") {
