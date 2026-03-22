@@ -267,6 +267,7 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
 .bt-typing span{display:inline-block;width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:blink 1.2s infinite}
 .bt-typing span:nth-child(2){animation-delay:.2s}.bt-typing span:nth-child(3){animation-delay:.4s}
 @media(max-width:768px){.hm{display:none!important}}
+@media print{nav,footer,.btn-p,.btn-g,button{display:none!important}.no-print{display:none!important}body{background:#fff!important;color:#000!important}*{box-shadow:none!important}}
 `}</style>);
 
 /* ────────────────────────────────────────────────
@@ -2119,6 +2120,10 @@ const PRE_DSA_TRACKS = [
       {name:"Factorial",url:"https://www.hackerrank.com/challenges/extra-long-factorials",diff:"Easy",note:"Loops & math"},
       {name:"Prime Check",url:"https://www.hackerrank.com/challenges/identify-smith-numbers",diff:"Easy",note:"Divisibility"},
       {name:"Anagram Check",url:"https://leetcode.com/problems/valid-anagram/",diff:"Easy",note:"Frequency counting"},
+      {name:"Count Frequency of Elements",url:"https://www.hackerrank.com/challenges/frequency-queries",diff:"Easy",note:"HashMap basics"},
+      {name:"Find Duplicates in Array",url:"https://leetcode.com/problems/find-all-duplicates-in-an-array/",diff:"Medium",note:"HashSet usage"},
+      {name:"Second Largest Number",url:"https://www.hackerrank.com/challenges/find-second-maximum-number-in-a-list",diff:"Easy",note:"Single pass tracking"},
+      {name:"Number Pattern Printing",url:"https://www.hackerrank.com/challenges/staircase",diff:"Easy",note:"Nested loops"},
     ]
   },
   {
@@ -2154,6 +2159,13 @@ const PRE_DSA_TRACKS = [
       {name:"Roman to Integer",url:"https://leetcode.com/problems/roman-to-integer/",diff:"Easy",note:"Lookup table"},
       {name:"Add Binary",url:"https://leetcode.com/problems/add-binary/",diff:"Easy",note:"Bit addition"},
       {name:"Sqrt(x)",url:"https://leetcode.com/problems/sqrtx/",diff:"Easy",note:"Binary search on answer"},
+      {name:"GCD of Two Numbers",url:"https://www.hackerrank.com/challenges/functional-programming-warmups-in-recursion---gcd/problem",diff:"Easy",note:"Euclidean algorithm"},
+      {name:"Power(x,n) — Fast Exponentiation",url:"https://leetcode.com/problems/powx-n/",diff:"Medium",note:"Binary exponentiation"},
+      {name:"Trailing Zeros in Factorial",url:"https://leetcode.com/problems/factorial-trailing-zeroes/",diff:"Medium",note:"Count factors of 5"},
+      {name:"Excel Sheet Column Number",url:"https://leetcode.com/problems/excel-sheet-column-number/",diff:"Easy",note:"Base-26 number system"},
+      {name:"Integer to Roman",url:"https://leetcode.com/problems/integer-to-roman/",diff:"Medium",note:"Greedy + lookup"},
+      {name:"Number of 1 Bits",url:"https://leetcode.com/problems/number-of-1-bits/",diff:"Easy",note:"Bit counting basics"},
+      {name:"Ugly Number",url:"https://leetcode.com/problems/ugly-number/",diff:"Easy",note:"Prime factorization check"},
     ]
   },
   {
@@ -2171,6 +2183,11 @@ const PRE_DSA_TRACKS = [
       {name:"Count and Say",url:"https://leetcode.com/problems/count-and-say/",diff:"Medium",note:"Sequence generation"},
       {name:"Longest Common Prefix",url:"https://leetcode.com/problems/longest-common-prefix/",diff:"Easy",note:"String comparison"},
       {name:"Is Subsequence",url:"https://leetcode.com/problems/is-subsequence/",diff:"Easy",note:"Two pointer"},
+      {name:"Reverse Words in a String",url:"https://leetcode.com/problems/reverse-words-in-a-string/",diff:"Medium",note:"Split + join"},
+      {name:"Roman to Integer",url:"https://leetcode.com/problems/roman-to-integer/",diff:"Easy",note:"Lookup map"},
+      {name:"Detect Capital",url:"https://leetcode.com/problems/detect-capital/",diff:"Easy",note:"String rules"},
+      {name:"String Compression",url:"https://leetcode.com/problems/string-compression/",diff:"Medium",note:"Two pointer + count"},
+      {name:"Check if Pangram",url:"https://leetcode.com/problems/check-if-the-sentence-is-pangram/",diff:"Easy",note:"Set of chars"},
     ]
   },
   {
@@ -2741,6 +2758,147 @@ const COMPANY_DATA = [
       {name:"Minimum Window Substring",lc:"minimum-window-substring",diff:"Hard"},
     ]
   },
+  {
+    name:"Swiggy", logo:"https://www.google.com/s2/favicons?domain=swiggy.com&sz=64", color:"#fc8019",
+    hires:"SDE I/II, Backend", rounds:"2-3 DSA rounds",
+    problems:[
+      {name:"LRU Cache",lc:"lru-cache",diff:"Medium"},
+      {name:"Merge Intervals",lc:"merge-intervals",diff:"Medium"},
+      {name:"Number of Islands",lc:"number-of-islands",diff:"Medium"},
+      {name:"Top K Frequent Elements",lc:"top-k-frequent-elements",diff:"Medium"},
+      {name:"Design Twitter",lc:"design-twitter",diff:"Medium"},
+      {name:"Kth Largest Element",lc:"kth-largest-element-in-an-array",diff:"Medium"},
+      {name:"Longest Substring Without Repeating",lc:"longest-substring-without-repeating-characters",diff:"Medium"},
+      {name:"Course Schedule",lc:"course-schedule",diff:"Medium"},
+      {name:"Maximum Subarray",lc:"maximum-subarray",diff:"Medium"},
+      {name:"Clone Graph",lc:"clone-graph",diff:"Medium"},
+    ]
+  },
+  {
+    name:"Zepto", logo:"https://www.google.com/s2/favicons?domain=zepto.com&sz=64", color:"#8a2be2",
+    hires:"SDE I/II", rounds:"2-3 DSA rounds",
+    problems:[
+      {name:"Two Sum",lc:"two-sum",diff:"Easy"},
+      {name:"Merge Intervals",lc:"merge-intervals",diff:"Medium"},
+      {name:"Maximum Subarray",lc:"maximum-subarray",diff:"Medium"},
+      {name:"Number of Islands",lc:"number-of-islands",diff:"Medium"},
+      {name:"Lowest Common Ancestor",lc:"lowest-common-ancestor-of-a-binary-tree",diff:"Medium"},
+      {name:"LRU Cache",lc:"lru-cache",diff:"Medium"},
+      {name:"Word Break",lc:"word-break",diff:"Medium"},
+      {name:"Trapping Rain Water",lc:"trapping-rain-water",diff:"Hard"},
+      {name:"Rotting Oranges",lc:"rotting-oranges",diff:"Medium"},
+    ]
+  },
+  {
+    name:"Razorpay", logo:"https://www.google.com/s2/favicons?domain=razorpay.com&sz=64", color:"#2d9cdb",
+    hires:"SDE I/II, Platform", rounds:"2-3 DSA rounds",
+    problems:[
+      {name:"LRU Cache",lc:"lru-cache",diff:"Medium"},
+      {name:"Design Twitter",lc:"design-twitter",diff:"Medium"},
+      {name:"Merge K Sorted Lists",lc:"merge-k-sorted-lists",diff:"Hard"},
+      {name:"Find Median from Data Stream",lc:"find-median-from-data-stream",diff:"Hard"},
+      {name:"Valid Parentheses",lc:"valid-parentheses",diff:"Easy"},
+      {name:"Coin Change",lc:"coin-change",diff:"Medium"},
+      {name:"Top K Frequent Elements",lc:"top-k-frequent-elements",diff:"Medium"},
+      {name:"Number of Islands",lc:"number-of-islands",diff:"Medium"},
+    ]
+  },
+  {
+    name:"Paytm", logo:"https://www.google.com/s2/favicons?domain=paytm.com&sz=64", color:"#002970",
+    hires:"SDE I/II", rounds:"2-3 DSA rounds",
+    problems:[
+      {name:"Two Sum",lc:"two-sum",diff:"Easy"},
+      {name:"Maximum Subarray",lc:"maximum-subarray",diff:"Medium"},
+      {name:"LRU Cache",lc:"lru-cache",diff:"Medium"},
+      {name:"Validate BST",lc:"validate-binary-search-tree",diff:"Medium"},
+      {name:"Merge Intervals",lc:"merge-intervals",diff:"Medium"},
+      {name:"Word Break",lc:"word-break",diff:"Medium"},
+      {name:"Lowest Common Ancestor",lc:"lowest-common-ancestor-of-a-binary-tree",diff:"Medium"},
+      {name:"Clone Graph",lc:"clone-graph",diff:"Medium"},
+    ]
+  },
+  {
+    name:"Uber", logo:"https://www.google.com/s2/favicons?domain=uber.com&sz=64", color:"#000000",
+    hires:"SWE, Backend", rounds:"2-4 DSA rounds",
+    problems:[
+      {name:"Merge Intervals",lc:"merge-intervals",diff:"Medium"},
+      {name:"Number of Islands",lc:"number-of-islands",diff:"Medium"},
+      {name:"Word Ladder",lc:"word-ladder",diff:"Hard"},
+      {name:"LRU Cache",lc:"lru-cache",diff:"Medium"},
+      {name:"Network Delay Time",lc:"network-delay-time",diff:"Medium"},
+      {name:"Course Schedule",lc:"course-schedule",diff:"Medium"},
+      {name:"Find Median from Data Stream",lc:"find-median-from-data-stream",diff:"Hard"},
+      {name:"Trapping Rain Water",lc:"trapping-rain-water",diff:"Hard"},
+      {name:"Alien Dictionary",lc:"alien-dictionary",diff:"Hard"},
+    ]
+  },
+  {
+    name:"Wipro", logo:"https://www.google.com/s2/favicons?domain=wipro.com&sz=64", color:"#341c75",
+    hires:"SE, Tech Lead", rounds:"1-2 DSA rounds",
+    problems:[
+      {name:"Two Sum",lc:"two-sum",diff:"Easy"},
+      {name:"Reverse Linked List",lc:"reverse-linked-list",diff:"Easy"},
+      {name:"Valid Parentheses",lc:"valid-parentheses",diff:"Easy"},
+      {name:"Maximum Subarray",lc:"maximum-subarray",diff:"Medium"},
+      {name:"Binary Search",lc:"binary-search",diff:"Easy"},
+      {name:"Fibonacci Number",lc:"fibonacci-number",diff:"Easy"},
+    ]
+  },
+  {
+    name:"Accenture", logo:"https://www.google.com/s2/favicons?domain=accenture.com&sz=64", color:"#a100ff",
+    hires:"ASE, SE", rounds:"1-2 DSA rounds",
+    problems:[
+      {name:"Two Sum",lc:"two-sum",diff:"Easy"},
+      {name:"Palindrome Number",lc:"palindrome-number",diff:"Easy"},
+      {name:"Reverse String",lc:"reverse-string",diff:"Easy"},
+      {name:"Valid Parentheses",lc:"valid-parentheses",diff:"Easy"},
+      {name:"Merge Two Sorted Lists",lc:"merge-two-sorted-lists",diff:"Easy"},
+      {name:"Maximum Subarray",lc:"maximum-subarray",diff:"Medium"},
+    ]
+  },
+  {
+    name:"Oracle", logo:"https://www.google.com/s2/favicons?domain=oracle.com&sz=64", color:"#f80000",
+    hires:"SWE, DB Engineer", rounds:"2-3 DSA rounds",
+    problems:[
+      {name:"LRU Cache",lc:"lru-cache",diff:"Medium"},
+      {name:"Top K Frequent Elements",lc:"top-k-frequent-elements",diff:"Medium"},
+      {name:"Merge Intervals",lc:"merge-intervals",diff:"Medium"},
+      {name:"Number of Islands",lc:"number-of-islands",diff:"Medium"},
+      {name:"Serialize and Deserialize Binary Tree",lc:"serialize-and-deserialize-binary-tree",diff:"Hard"},
+      {name:"Find Median from Data Stream",lc:"find-median-from-data-stream",diff:"Hard"},
+      {name:"Course Schedule",lc:"course-schedule",diff:"Medium"},
+      {name:"Maximum Subarray",lc:"maximum-subarray",diff:"Medium"},
+    ]
+  },
+  {
+    name:"PhonePe", logo:"https://www.google.com/s2/favicons?domain=phonepe.com&sz=64", color:"#5f259f",
+    hires:"SDE I/II, Backend", rounds:"2-3 DSA rounds",
+    problems:[
+      {name:"LRU Cache",lc:"lru-cache",diff:"Medium"},
+      {name:"Merge Intervals",lc:"merge-intervals",diff:"Medium"},
+      {name:"Number of Islands",lc:"number-of-islands",diff:"Medium"},
+      {name:"Top K Frequent Elements",lc:"top-k-frequent-elements",diff:"Medium"},
+      {name:"Word Break",lc:"word-break",diff:"Medium"},
+      {name:"Maximum Subarray",lc:"maximum-subarray",diff:"Medium"},
+      {name:"Lowest Common Ancestor",lc:"lowest-common-ancestor-of-a-binary-tree",diff:"Medium"},
+      {name:"Coin Change",lc:"coin-change",diff:"Medium"},
+      {name:"Course Schedule",lc:"course-schedule",diff:"Medium"},
+    ]
+  },
+  {
+    name:"Myntra", logo:"https://www.google.com/s2/favicons?domain=myntra.com&sz=64", color:"#ff3f6c",
+    hires:"SDE I/II, Frontend", rounds:"2-3 DSA rounds",
+    problems:[
+      {name:"Two Sum",lc:"two-sum",diff:"Easy"},
+      {name:"Merge Intervals",lc:"merge-intervals",diff:"Medium"},
+      {name:"LRU Cache",lc:"lru-cache",diff:"Medium"},
+      {name:"Maximum Subarray",lc:"maximum-subarray",diff:"Medium"},
+      {name:"Longest Substring Without Repeating",lc:"longest-substring-without-repeating-characters",diff:"Medium"},
+      {name:"Number of Islands",lc:"number-of-islands",diff:"Medium"},
+      {name:"Top K Frequent Elements",lc:"top-k-frequent-elements",diff:"Medium"},
+      {name:"Course Schedule",lc:"course-schedule",diff:"Medium"},
+    ]
+  },
 ];
 
 // ── VISUALIZERS DATA ──────────────────────────────────────────────────────
@@ -3145,7 +3303,7 @@ const DSAPage = ({ setPage }) => {
       const r = await fetch(`${API_BASE}/dsa/topics/${slug}/tip`, { method:"POST" });
       const j = await r.json();
       setTip(j.tip || "");
-    } catch { setTip("Could not load tip — check Groq API key."); }
+    } catch { setTip("Could not generate tip — try again."); }
     setTipLoading(false);
   };
 
@@ -3635,7 +3793,21 @@ const DSAPage = ({ setPage }) => {
                 </a>
               ))}
             </div>
-            <button onClick={()=>setSelCompany(null)} style={{marginTop:24,padding:"9px 20px",borderRadius:10,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",fontSize:13,fontWeight:600,cursor:"pointer"}}>← All Companies</button>
+            {/* Interview Experience Links */}
+            <div style={{marginTop:24,padding:"16px 20px",background:"rgba(0,212,255,.05)",border:"1px solid rgba(0,212,255,.15)",borderRadius:12}}>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>📖 Read Interview Experiences</div>
+              <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+                <a href={`https://leetcode.com/discuss/interview-experience/?currentPage=1&orderBy=hot&query=${encodeURIComponent(selCompany.name)}`} target="_blank" rel="noopener noreferrer"
+                  style={{fontSize:12,padding:"6px 14px",borderRadius:8,background:"rgba(255,161,22,.1)",color:"#f89f1b",border:"1px solid rgba(255,161,22,.25)",textDecoration:"none",fontWeight:600}}>LeetCode Discuss →</a>
+                <a href={`https://www.geeksforgeeks.org/company/${selCompany.name.toLowerCase().replace(/[^a-z0-9]+/g,"-")}-interview-experiences/`} target="_blank" rel="noopener noreferrer"
+                  style={{fontSize:12,padding:"6px 14px",borderRadius:8,background:"rgba(0,200,100,.1)",color:"#00c864",border:"1px solid rgba(0,200,100,.25)",textDecoration:"none",fontWeight:600}}>GFG Experiences →</a>
+                <a href={`https://www.ambitionbox.com/reviews/${selCompany.name.toLowerCase().replace(/[^a-z0-9]+/g,"-")}-reviews`} target="_blank" rel="noopener noreferrer"
+                  style={{fontSize:12,padding:"6px 14px",borderRadius:8,background:"rgba(124,77,255,.1)",color:"var(--purple)",border:"1px solid rgba(124,77,255,.25)",textDecoration:"none",fontWeight:600}}>AmbitionBox →</a>
+                <a href={`https://www.glassdoor.co.in/Interview/${selCompany.name}-Interview-Questions-E`} target="_blank" rel="noopener noreferrer"
+                  style={{fontSize:12,padding:"6px 14px",borderRadius:8,background:"rgba(0,255,136,.08)",color:"var(--green)",border:"1px solid rgba(0,255,136,.2)",textDecoration:"none",fontWeight:600}}>Glassdoor →</a>
+              </div>
+            </div>
+            <button onClick={()=>setSelCompany(null)} style={{marginTop:16,padding:"9px 20px",borderRadius:10,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",fontSize:13,fontWeight:600,cursor:"pointer"}}>← All Companies</button>
           </>
         )}
       </div>
@@ -4288,6 +4460,18 @@ const TUF_CHECKLIST = {
     {name:"Print All Primes till N (Sieve)",diff:"Easy"},
     {name:"Prime Factorisation of a Number",diff:"Easy"},
     {name:"Count Primes in Range L to R",diff:"Medium"},
+    {name:"GCD and LCM",diff:"Easy"},
+    {name:"Check Armstrong Number",diff:"Easy"},
+    {name:"Reverse a Number",diff:"Easy"},
+    {name:"Count Digits in a Number",diff:"Easy"},
+    {name:"Sum of Digits",diff:"Easy"},
+    {name:"Check Perfect Number",diff:"Easy"},
+    {name:"Power (Fast Exponentiation)",diff:"Medium"},
+    {name:"Modular Arithmetic",diff:"Medium"},
+    {name:"Catalan Numbers",diff:"Medium"},
+    {name:"Pascal's Triangle Row",diff:"Easy"},
+    {name:"Number of Trailing Zeros in Factorial",diff:"Medium"},
+    {name:"Find All Divisors of a Number",diff:"Easy"},
   ],
 };
 
@@ -4311,7 +4495,7 @@ const STUDENT_TOOLS = [
     icon: "📄",
     title: "AI Resume Analyzer",
     desc: "Upload PDF/DOCX → ATS score · JD match · skill gap roadmap · recruiter verdict · bullet rewrites · ATS-ready resume builder.",
-    badge: "Rule-Based · RAG · Groq AI",
+    badge: "Rule-Based · RAG · AI-Powered",
     badgeColor: "var(--green)",
     tags: ["ATS Score", "JD Match", "Skill Roadmap", "Recruiter Verdict", "Bullet Rewrites", "Resume Builder", "Interview Prep"],
     stats: [{ label: "ATS Rules", value: "12" }, { label: "Result Tabs", value: "7" }, { label: "Pipeline", value: "3-Stage" }],
@@ -4418,18 +4602,43 @@ const SCORE_COLOR = s => s >= 75 ? "var(--green)" : s >= 50 ? "var(--yellow)" : 
 const SCORE_BG    = s => s >= 75 ? "rgba(0,255,136,.08)" : s >= 50 ? "rgba(255,214,10,.08)" : "rgba(255,61,138,.08)";
 const SCORE_BD    = s => s >= 75 ? "rgba(0,255,136,.25)" : s >= 50 ? "rgba(255,214,10,.25)" : "rgba(255,61,138,.25)";
 
+const LS_RESUME_HIST = "resume_history_v1";
+
 const ResumeAnalyzerPage = ({ setPage }) => {
-  const [file,    setFile]    = React.useState(null);
-  const [jd,      setJd]      = React.useState("");
-  const [domain,  setDomain]  = React.useState("");
-  const [drag,    setDrag]    = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const [result,  setResult]  = React.useState(null);
-  const [error,   setError]   = React.useState("");
-  const [copied,  setCopied]  = React.useState(false);
-  const [tab,     setTab]     = React.useState("overview");
-  const [showJD,  setShowJD]  = React.useState(false);
+  const [file,       setFile]      = React.useState(null);
+  const [jd,         setJd]        = React.useState("");
+  const [domain,     setDomain]    = React.useState("");
+  const [drag,       setDrag]      = React.useState(false);
+  const [loading,    setLoading]   = React.useState(false);
+  const [result,     setResult]    = React.useState(null);
+  const [error,      setError]     = React.useState("");
+  const [copied,     setCopied]    = React.useState(false);
+  const [tab,        setTab]       = React.useState("overview");
+  const [showJD,     setShowJD]    = React.useState(false);
+  const [history,    setHistory]   = React.useState(() => { try { return JSON.parse(localStorage.getItem(LS_RESUME_HIST)||"[]"); } catch { return []; } });
+  const [compareMode,setCompareMode] = React.useState(false);
+  const [compareResult,setCompareResult] = React.useState(null);
+  const [printing,   setPrinting]  = React.useState(false);
   const fileRef = React.useRef();
+
+  const saveHistory = (res, fileName) => {
+    const entry = {
+      date:         new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}),
+      fileName:     fileName || "resume",
+      overall:      res.summary?.overall_score || 0,
+      ats:          res.summary?.ats_score || 0,
+      shortlist:    res.recruiter_decision?.shortlist || "Maybe",
+      resume_type:  res.summary?.resume_type || "",
+    };
+    const h = [entry, ...history].slice(0, 5); // keep last 5
+    setHistory(h);
+    try { localStorage.setItem(LS_RESUME_HIST, JSON.stringify(h)); } catch(_) {}
+  };
+
+  const handlePrint = () => {
+    setPrinting(true);
+    setTimeout(() => { window.print(); setPrinting(false); }, 200);
+  };
 
   const DOMAINS = ["","Full Stack","Frontend","Backend","AI/ML","Data Science","DevOps/Cloud","Mobile","Cybersecurity","Blockchain"];
 
@@ -4460,6 +4669,7 @@ const ResumeAnalyzerPage = ({ setPage }) => {
         setError(data.error || "Analysis failed. Please try again.");
       } else {
         setResult(data); setTab("overview"); window.scrollTo(0,0);
+        saveHistory(data, file?.name);
       }
     } catch { setError("Network error. Check your connection and try again."); }
     setLoading(false);
@@ -4519,7 +4729,7 @@ const ResumeAnalyzerPage = ({ setPage }) => {
       <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"36px 24px 32px"}}>
         <div style={{maxWidth:800,margin:"0 auto"}}>
           <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",marginBottom:16}}>← Tools</button>
-          <div className="sl">Rule-Based · RAG · Groq AI · Self-Validated</div>
+          <div className="sl">Rule-Based · RAG · AI-Powered · Self-Validated</div>
           <h1 className="syne" style={{fontSize:32,fontWeight:800,marginBottom:8}}>📄 Resume <span className="gtext">Analyzer</span></h1>
           <p style={{color:"var(--text2)",fontSize:14,lineHeight:1.7,maxWidth:560,marginBottom:16}}>
             Upload your resume. Get ATS analysis, JD match scoring, skill gap roadmap, recruiter verdict, bullet rewrites & ATS-ready resume — powered by a 3-stage AI pipeline.
@@ -4529,6 +4739,37 @@ const ResumeAnalyzerPage = ({ setPage }) => {
               <span key={f} style={{fontSize:11,padding:"4px 10px",borderRadius:20,background:"rgba(0,255,136,.1)",color:"var(--green)",border:"1px solid rgba(0,255,136,.2)",fontWeight:600}}>{f}</span>
             ))}
           </div>
+          {/* Score History */}
+          {history.length > 0 && (
+            <div style={{marginTop:20,background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:"16px 20px"}}>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:12}}>📈 Your Score History (last {history.length})</div>
+              <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                {history.map((h,i)=>(
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"8px 12px",background:"var(--bg2)",borderRadius:8}}>
+                    <div style={{fontSize:11,color:"var(--text3)",minWidth:80}}>{h.date}</div>
+                    <div style={{fontSize:12,color:"var(--text2)",flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{h.fileName}</div>
+                    <div style={{display:"flex",gap:8,flexShrink:0}}>
+                      <span style={{fontSize:12,fontWeight:700,color:h.overall>=75?"var(--green)":h.overall>=50?"var(--yellow)":"var(--pink)"}}>Overall: {h.overall}</span>
+                      <span style={{fontSize:12,fontWeight:700,color:h.ats>=75?"var(--green)":h.ats>=50?"var(--yellow)":"var(--pink)"}}>ATS: {h.ats}</span>
+                      <span style={{fontSize:11,padding:"1px 7px",borderRadius:4,background:h.shortlist==="Yes"?"rgba(0,255,136,.15)":h.shortlist==="No"?"rgba(255,61,138,.1)":"rgba(255,214,10,.1)",color:h.shortlist==="Yes"?"var(--green)":h.shortlist==="No"?"var(--pink)":"var(--yellow)",fontWeight:700}}>{h.shortlist}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {history.length >= 2 && (
+                <div style={{marginTop:10,display:"flex",alignItems:"center",gap:8}}>
+                  <div style={{flex:1,height:4,background:"var(--bg3)",borderRadius:2,overflow:"hidden",position:"relative"}}>
+                    {history.slice(0,5).reverse().map((h,i,arr)=>(
+                      <div key={i} style={{position:"absolute",bottom:0,left:`${(i/(arr.length-1))*100}%`,transform:"translateX(-50%)",width:8,height:8,borderRadius:"50%",background:h.overall>=75?"var(--green)":h.overall>=50?"var(--yellow)":"var(--pink)",marginTop:-2}}/>
+                    ))}
+                  </div>
+                  <span style={{fontSize:11,color:history[0].overall>history[history.length-1].overall?"var(--green)":history[0].overall<history[history.length-1].overall?"var(--pink)":"var(--text3)",fontWeight:700,flexShrink:0}}>
+                    {history[0].overall>history[history.length-1].overall?"↑ Improving":"↓ Work needed"}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -4604,7 +4845,7 @@ const ResumeAnalyzerPage = ({ setPage }) => {
           {[
             ["⚡","Rule-Based","12 ATS checks, 120+ skills, instant"],
             ["🗂️","RAG Retrieval","10 role profiles, gap roadmap, domain paths"],
-            ["🤖","Groq AI","Rewrites, verdict, interview prep"],
+            ["🤖","AI Analysis","Rewrites, verdict, interview prep"],
             ["🛡️","Self-Validation","LLM checks its own output for hallucinations"],
           ].map(([ic,t,d])=>(
             <div key={t} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:"14px",display:"flex",gap:10,alignItems:"flex-start"}}>
@@ -4742,7 +4983,7 @@ const ResumeAnalyzerPage = ({ setPage }) => {
               <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                 {[["⚡ Rule-Based","var(--cyan)","Instant ATS + skill detection"],
                   ["🗂️ RAG","var(--purple)","Role matching + gap roadmap"],
-                  ["🤖 Groq LLM","var(--green)","Rewrites + recruiter verdict"],
+                  ["🤖 AI Model","var(--green)","Rewrites + recruiter verdict"],
                   [VL.is_safe===false?"⚠️ Validation Issues":"🛡️ Self-Validated",VL.is_safe===false?"var(--pink)":"var(--green)",VL.is_safe===false?"Issues found":"Output verified"]
                 ].map(([l,c,d])=>(
                   <div key={l} style={{padding:"6px 12px",borderRadius:8,background:`${c}10`,border:`1px solid ${c}25`,display:"flex",flexDirection:"column",gap:2}}>
@@ -5095,9 +5336,68 @@ const ResumeAnalyzerPage = ({ setPage }) => {
           <button className="btn-p" onClick={handleCopy} style={{padding:"10px 22px",fontSize:14,background:copied?"linear-gradient(135deg,var(--green),#00b865)":"linear-gradient(135deg,var(--cyan),#0099cc)"}}>
             {copied?"✅ Copied!":"📋 Copy Full Report"}
           </button>
+          <button className="btn-g" onClick={handlePrint} style={{padding:"10px 20px",fontSize:14}}>
+            {printing?"⏳ Preparing…":"🖨️ Download / Print PDF"}
+          </button>
+          <button className="btn-g" onClick={()=>setCompareMode(true)} style={{padding:"10px 20px",fontSize:14,display:history.length>=1?"flex":"none",alignItems:"center",gap:6}}>
+            📊 Compare with Previous
+          </button>
           <button className="btn-g" onClick={()=>{setResult(null);setFile(null);setError("");setJd("");setDomain("");}} style={{padding:"10px 20px",fontSize:14}}>🔄 Analyze Another</button>
           <button className="btn-g" onClick={()=>setPage("tools")} style={{padding:"10px 20px",fontSize:14}}>← Back to Tools</button>
         </div>
+
+        {/* Compare Modal */}
+        {compareMode && history.length >= 1 && (
+          <div style={{marginTop:20,background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div className="syne" style={{fontSize:16,fontWeight:800}}>📊 Score Comparison</div>
+              <button onClick={()=>setCompareMode(false)} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:16}}>✕</button>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+              {/* Current */}
+              <div style={{background:"rgba(0,255,136,.05)",border:"1px solid rgba(0,255,136,.2)",borderRadius:12,padding:16}}>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--green)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>Current Upload</div>
+                {[["Overall",result?.summary?.overall_score],["ATS",result?.summary?.ats_score]].map(([l,v])=>(
+                  <div key={l} style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
+                    <span style={{fontSize:13,color:"var(--text2)"}}>{l}</span>
+                    <span className="syne" style={{fontSize:16,fontWeight:800,color:v>=75?"var(--green)":v>=50?"var(--yellow)":"var(--pink)"}}>{v??"-"}</span>
+                  </div>
+                ))}
+              </div>
+              {/* Previous */}
+              <div style={{background:"rgba(0,212,255,.05)",border:"1px solid rgba(0,212,255,.2)",borderRadius:12,padding:16}}>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:10}}>Previous — {history[0]?.date}</div>
+                {[["Overall",history[0]?.overall],["ATS",history[0]?.ats]].map(([l,v])=>(
+                  <div key={l} style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
+                    <span style={{fontSize:13,color:"var(--text2)"}}>{l}</span>
+                    <span className="syne" style={{fontSize:16,fontWeight:800,color:v>=75?"var(--green)":v>=50?"var(--yellow)":"var(--pink)"}}>{v??"-"}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Delta */}
+            {history[0] && (()=>{
+              const ovDelta = (result?.summary?.overall_score||0) - (history[0].overall||0);
+              const atsDelta = (result?.summary?.ats_score||0) - (history[0].ats||0);
+              return (
+                <div style={{marginTop:12,padding:"10px 16px",background:"var(--bg2)",borderRadius:10,display:"flex",gap:20,flexWrap:"wrap"}}>
+                  <div>
+                    <span style={{fontSize:12,color:"var(--text3)"}}>Overall change: </span>
+                    <span style={{fontSize:14,fontWeight:800,color:ovDelta>0?"var(--green)":ovDelta<0?"var(--pink)":"var(--text3)"}}>{ovDelta>0?"+":""}{ovDelta} pts</span>
+                  </div>
+                  <div>
+                    <span style={{fontSize:12,color:"var(--text3)"}}>ATS change: </span>
+                    <span style={{fontSize:14,fontWeight:800,color:atsDelta>0?"var(--green)":atsDelta<0?"var(--pink)":"var(--text3)"}}>{atsDelta>0?"+":""}{atsDelta} pts</span>
+                  </div>
+                  <div>
+                    <span style={{fontSize:12,color:"var(--text3)"}}>Verdict: </span>
+                    <span style={{fontSize:14,fontWeight:700,color:"var(--cyan)"}}>{ovDelta>5?"Great improvement!":ovDelta>0?"Slight improvement":ovDelta===0?"No change":"Score dropped — review suggestions"}</span>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        )}
       </div>
     </div>
   );
