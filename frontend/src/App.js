@@ -4617,6 +4617,7 @@ const ResumeAnalyzerPage = ({ setPage }) => {
   const [showJD,     setShowJD]    = React.useState(false);
   const [history,    setHistory]   = React.useState(() => { try { return JSON.parse(localStorage.getItem(LS_RESUME_HIST)||"[]"); } catch { return []; } });
   const [compareMode,setCompareMode] = React.useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [compareResult,setCompareResult] = React.useState(null);
   const [printing,   setPrinting]  = React.useState(false);
   const fileRef = React.useRef();
