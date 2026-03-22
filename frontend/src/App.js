@@ -3091,6 +3091,7 @@ const DSAPage = ({ setPage }) => {
     setExplainLoading(p => ({...p, [problemName]:false}));
   };
 
+  // eslint-disable-next-line no-unused-vars
   const startMock = (company) => {
     const allP = company.problems;
     const shuffled = [...allP].sort(()=>Math.random()-.5).slice(0,3);
