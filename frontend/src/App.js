@@ -9022,7 +9022,6 @@ const APT_QUESTIONS = {
     { q:"Arrange: P-India is a developing nation Q-Many citizens live below poverty line R-Despite economic growth S-The gap between rich and poor widens", opts:["PRQS","PRQS","RSPQ","QRSP"], ans:0, sol:"Logical flow: India is developing(P) → Despite growth(R) → Gap widens(S) → Many poor(Q) → PRSQ. Given options: PRQS is closest." },
     { q:"The first sentence of a paragraph should:", opts:["Introduce the main idea","Conclude the topic","Give an example","Ask a question always"], ans:0, sol:"The topic sentence (first sentence) introduces the main idea of the paragraph." },
   ],
-};
   reading_comp_1: [
     { q:"India's tech sector employs 5 million people. Bengaluru alone accounts for 35% of these jobs. If Hyderabad has 20%, how many tech workers are in both cities?", opts:["2,750,000","2,500,000","2,000,000","3,000,000"], ans:0, sol:"Bengaluru: 35% of 5M = 1,750,000. Hyderabad: 20% of 5M = 1,000,000. Total = 2,750,000" },
     { q:"'The data suggests a paradigm shift.' What does 'paradigm shift' mean?", opts:["Minor adjustment","Fundamental change in approach","Data error","Temporary change"], ans:1, sol:"Paradigm shift = a fundamental change in the underlying model or approach." },
