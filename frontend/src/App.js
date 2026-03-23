@@ -6338,6 +6338,421 @@ const CPContestPage = ({ setPage }) => {
   );
 };
 
+
+/* ════════════════════════════════════════════════════════════════
+   RESUME TEMPLATE BUILDER
+   3 ATS-friendly templates | Fill form → Live preview → Print PDF
+════════════════════════════════════════════════════════════════ */
+const RT_TEMPLATES = [
+  { id:"classic", name:"Classic",    color:"#1a1a2e", accent:"#2563eb", desc:"Clean single-column. Best for product/dev roles." },
+  { id:"modern",  name:"Modern",     color:"#0f172a", accent:"#7c3aed", desc:"Two-column with sidebar. Great for FAANG applications." },
+  { id:"minimal", name:"Minimal",    color:"#111827", accent:"#059669", desc:"Ultra-clean. Perfect for startups & design roles." },
+];
+
+const RT_SKILLS_PRESETS = {
+  "Frontend":  ["React","JavaScript","TypeScript","HTML/CSS","Next.js","Redux","Tailwind CSS","REST APIs"],
+  "Backend":   ["Node.js","Python","Java","Express","Django","MongoDB","PostgreSQL","Redis","Docker"],
+  "Full Stack":["React","Node.js","Python","MongoDB","PostgreSQL","Docker","AWS","REST APIs","GraphQL"],
+  "Data Science":["Python","Pandas","NumPy","Scikit-learn","TensorFlow","SQL","Tableau","Jupyter"],
+  "DevOps":    ["Docker","Kubernetes","AWS","CI/CD","Terraform","Linux","Jenkins","Prometheus"],
+  "Android":   ["Kotlin","Java","Android SDK","Jetpack Compose","Firebase","REST APIs","MVVM"],
+};
+
+const BLANK_FORM = {
+  name:"", role:"", email:"", phone:"", location:"", linkedin:"", github:"", portfolio:"",
+  summary:"",
+  exp:[{ company:"", title:"", duration:"", bullets:["","",""] }],
+  edu:[{ school:"", degree:"", year:"", gpa:"" }],
+  skills:[],
+  projects:[{ name:"", tech:"", bullets:["",""] }],
+  certs:[{ name:"", issuer:"", year:"" }],
+};
+
+const ResumeTemplateBuilderPage = ({ setPage }) => {
+  const [tmpl, setTmpl] = React.useState("classic");
+  const [form, setForm] = React.useState(() => {
+    try { return JSON.parse(localStorage.getItem("rt_form_v1")||"null") || {...BLANK_FORM}; }
+    catch { return {...BLANK_FORM}; }
+  });
+  const [tab,      setTab]      = React.useState("personal"); // personal | experience | education | skills | projects | preview
+  const [skillInput, setSkillInput] = React.useState("");
+  const [preset,   setPreset]   = React.useState("");
+
+  const save = (f) => { setForm(f); try{localStorage.setItem("rt_form_v1",JSON.stringify(f));}catch(_){} };
+  const upd  = (field, val) => save({...form, [field]:val});
+
+  // Experience helpers
+  const addExp  = () => save({...form, exp:[...form.exp,{company:"",title:"",duration:"",bullets:["","",""]}]});
+  const delExp  = (i) => save({...form, exp:form.exp.filter((_,j)=>j!==i)});
+  const updExp  = (i,f,v) => { const e=[...form.exp]; e[i]={...e[i],[f]:v}; save({...form,exp:e}); };
+  const updBullet=(i,bi,v)=>{ const e=[...form.exp]; e[i].bullets[bi]=v; save({...form,exp:e}); };
+  const addBullet=(i)=>{ const e=[...form.exp]; e[i].bullets=[...e[i].bullets,""]; save({...form,exp:e}); };
+
+  // Education helpers
+  const addEdu  = () => save({...form, edu:[...form.edu,{school:"",degree:"",year:"",gpa:""}]});
+  const delEdu  = (i) => save({...form, edu:form.edu.filter((_,j)=>j!==i)});
+  const updEdu  = (i,f,v) => { const e=[...form.edu]; e[i]={...e[i],[f]:v}; save({...form,edu:e}); };
+
+  // Projects helpers
+  const addProj  = () => save({...form, projects:[...form.projects,{name:"",tech:"",bullets:["",""]}]});
+  const delProj  = (i) => save({...form, projects:form.projects.filter((_,j)=>j!==i)});
+  const updProj  = (i,f,v) => { const p=[...form.projects]; p[i]={...p[i],[f]:v}; save({...form,projects:p}); };
+  const updPBullet=(i,bi,v)=>{ const p=[...form.projects]; p[i].bullets[bi]=v; save({...form,projects:p}); };
+
+  // Skills helpers
+  const addSkill = (s) => { if(!s.trim()||form.skills.includes(s.trim())) return; save({...form,skills:[...form.skills,s.trim()]}); setSkillInput(""); };
+  const delSkill = (s) => save({...form,skills:form.skills.filter(x=>x!==s)});
+  const applyPreset = (p) => { save({...form,skills:[...new Set([...form.skills,...(RT_SKILLS_PRESETS[p]||[])])]}); };
+
+  // Certs
+  const addCert = () => save({...form, certs:[...(form.certs||[]),{name:"",issuer:"",year:""}]});
+  const delCert = (i) => save({...form, certs:form.certs.filter((_,j)=>j!==i)});
+  const updCert = (i,f,v) => { const c=[...form.certs]; c[i]={...c[i],[f]:v}; save({...form,certs:c}); };
+
+  const iStyle = {
+    padding:"9px 12px",borderRadius:8,border:"1px solid var(--border)",
+    background:"var(--bg)",color:"var(--text)",fontSize:13,
+    fontFamily:"'DM Sans',sans-serif",width:"100%",boxSizing:"border-box",outline:"none",
+  };
+  const labelStyle = {fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:4,display:"block"};
+  const secTitle = (t) => <div className="syne" style={{fontSize:14,fontWeight:800,marginBottom:14,paddingBottom:8,borderBottom:"1px solid var(--border)"}}>{t}</div>;
+
+  const TABS = [
+    {id:"personal",   label:"👤 Personal"},
+    {id:"experience", label:"💼 Experience"},
+    {id:"education",  label:"🎓 Education"},
+    {id:"skills",     label:"⚡ Skills"},
+    {id:"projects",   label:"🛠 Projects"},
+    {id:"preview",    label:"👁️ Preview & Download"},
+  ];
+
+  // ── PREVIEW HTML GENERATORS ─────────────────────────────────────
+  const getPreviewHTML = (template) => {
+    const f = form;
+    const t = RT_TEMPLATES.find(x=>x.id===template) || RT_TEMPLATES[0];
+
+    const bullet = (b) => b && b.trim() ? `<li style="margin:3px 0;color:#374151;line-height:1.5">${b}</li>` : "";
+    const bullets = (arr) => arr.filter(b=>b&&b.trim()).length ? `<ul style="margin:4px 0 0 16px;padding:0">${arr.map(bullet).join("")}</ul>` : "";
+
+    if (template === "classic") return `
+      <div style="font-family:Arial,sans-serif;max-width:760px;margin:0 auto;padding:32px;color:#111;font-size:13px;line-height:1.5">
+        <div style="text-align:center;margin-bottom:20px;border-bottom:2px solid ${t.accent};padding-bottom:16px">
+          <h1 style="margin:0 0 4px;font-size:26px;color:${t.color};letter-spacing:.5px">${f.name||"Your Name"}</h1>
+          <div style="color:${t.accent};font-size:14px;font-weight:600;margin-bottom:6px">${f.role||"Software Engineer"}</div>
+          <div style="font-size:12px;color:#555;display:flex;justify-content:center;flex-wrap:wrap;gap:12px">
+            ${f.email?`<span>📧 ${f.email}</span>`:""}
+            ${f.phone?`<span>📱 ${f.phone}</span>`:""}
+            ${f.location?`<span>📍 ${f.location}</span>`:""}
+            ${f.linkedin?`<span>🔗 ${f.linkedin}</span>`:""}
+            ${f.github?`<span>⚡ ${f.github}</span>`:""}
+          </div>
+        </div>
+        ${f.summary?`<div style="margin-bottom:18px"><h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:${t.accent};border-bottom:1px solid #e5e7eb;padding-bottom:4px;margin-bottom:8px">Professional Summary</h2><p style="margin:0;color:#374151">${f.summary}</p></div>`:""}
+        ${f.exp.some(e=>e.company||e.title)?`<div style="margin-bottom:18px"><h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:${t.accent};border-bottom:1px solid #e5e7eb;padding-bottom:4px;margin-bottom:8px">Experience</h2>${f.exp.filter(e=>e.company||e.title).map(e=>`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;align-items:baseline"><strong>${e.title||""}</strong><span style="font-size:11px;color:#6b7280">${e.duration||""}</span></div><div style="color:${t.accent};font-size:12px;margin-bottom:2px">${e.company||""}</div>${bullets(e.bullets||[])}</div>`).join("")}</div>`:""}
+        ${f.edu.some(e=>e.school)?`<div style="margin-bottom:18px"><h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:${t.accent};border-bottom:1px solid #e5e7eb;padding-bottom:4px;margin-bottom:8px">Education</h2>${f.edu.filter(e=>e.school).map(e=>`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:baseline"><strong>${e.school}</strong><span style="font-size:11px;color:#6b7280">${e.year||""}</span></div><div style="color:#555;font-size:12px">${e.degree||""}${e.gpa?` · GPA: ${e.gpa}`:""}</div></div>`).join("")}</div>`:""}
+        ${f.skills.length?`<div style="margin-bottom:18px"><h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:${t.accent};border-bottom:1px solid #e5e7eb;padding-bottom:4px;margin-bottom:8px">Skills</h2><div style="display:flex;flex-wrap:wrap;gap:6px">${f.skills.map(s=>`<span style="background:#f3f4f6;padding:3px 10px;border-radius:12px;font-size:12px;border:1px solid #e5e7eb">${s}</span>`).join("")}</div></div>`:""}
+        ${f.projects.some(p=>p.name)?`<div style="margin-bottom:18px"><h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:${t.accent};border-bottom:1px solid #e5e7eb;padding-bottom:4px;margin-bottom:8px">Projects</h2>${f.projects.filter(p=>p.name).map(p=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:baseline"><strong>${p.name}</strong>${p.tech?`<span style="font-size:11px;color:#6b7280">${p.tech}</span>`:""}</div>${bullets(p.bullets||[])}</div>`).join("")}</div>`:""}
+        ${(f.certs||[]).some(c=>c.name)?`<div><h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:${t.accent};border-bottom:1px solid #e5e7eb;padding-bottom:4px;margin-bottom:8px">Certifications</h2>${f.certs.filter(c=>c.name).map(c=>`<div style="margin-bottom:6px"><strong>${c.name}</strong>${c.issuer?` — ${c.issuer}`:""}${c.year?` (${c.year})`:""}</div>`).join("")}</div>`:""}
+      </div>`;
+
+    if (template === "modern") return `
+      <div style="font-family:Arial,sans-serif;max-width:760px;margin:0 auto;display:grid;grid-template-columns:220px 1fr;min-height:900px;font-size:13px;line-height:1.5">
+        <div style="background:${t.color};color:#fff;padding:28px 20px">
+          <div style="margin-bottom:24px">
+            <div style="width:70px;height:70px;border-radius:50%;background:${t.accent};margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900">${(f.name||"?")[0].toUpperCase()}</div>
+            <h1 style="margin:0 0 4px;font-size:18px;text-align:center">${f.name||"Your Name"}</h1>
+            <div style="color:${t.accent};font-size:12px;text-align:center;font-weight:600">${f.role||"Software Engineer"}</div>
+          </div>
+          <div style="margin-bottom:20px;border-top:1px solid rgba(255,255,255,.2);padding-top:16px">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.5);margin-bottom:8px">Contact</div>
+            ${f.email?`<div style="font-size:11px;margin-bottom:4px;word-break:break-all">📧 ${f.email}</div>`:""}
+            ${f.phone?`<div style="font-size:11px;margin-bottom:4px">📱 ${f.phone}</div>`:""}
+            ${f.location?`<div style="font-size:11px;margin-bottom:4px">📍 ${f.location}</div>`:""}
+            ${f.linkedin?`<div style="font-size:11px;margin-bottom:4px;word-break:break-all">🔗 ${f.linkedin}</div>`:""}
+            ${f.github?`<div style="font-size:11px;word-break:break-all">⚡ ${f.github}</div>`:""}
+          </div>
+          ${f.skills.length?`<div style="border-top:1px solid rgba(255,255,255,.2);padding-top:16px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.5);margin-bottom:8px">Skills</div>${f.skills.map(s=>`<div style="font-size:11px;margin-bottom:4px;padding:2px 8px;background:rgba(255,255,255,.1);border-radius:4px">${s}</div>`).join("")}</div>`:""}
+        </div>
+        <div style="padding:28px 24px;background:#fff;color:#111">
+          ${f.summary?`<div style="margin-bottom:18px"><h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:${t.accent};border-bottom:2px solid ${t.accent};padding-bottom:4px;margin-bottom:8px">About Me</h2><p style="margin:0;color:#374151">${f.summary}</p></div>`:""}
+          ${f.exp.some(e=>e.company||e.title)?`<div style="margin-bottom:18px"><h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:${t.accent};border-bottom:2px solid ${t.accent};padding-bottom:4px;margin-bottom:8px">Experience</h2>${f.exp.filter(e=>e.company||e.title).map(e=>`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between"><strong>${e.title||""}</strong><span style="font-size:11px;color:#6b7280">${e.duration||""}</span></div><div style="color:${t.accent};font-size:12px;margin-bottom:2px;font-weight:600">${e.company||""}</div>${bullets(e.bullets||[])}</div>`).join("")}</div>`:""}
+          ${f.edu.some(e=>e.school)?`<div style="margin-bottom:18px"><h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:${t.accent};border-bottom:2px solid ${t.accent};padding-bottom:4px;margin-bottom:8px">Education</h2>${f.edu.filter(e=>e.school).map(e=>`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between"><strong>${e.school}</strong><span style="font-size:11px;color:#6b7280">${e.year||""}</span></div><div style="font-size:12px;color:#555">${e.degree||""}${e.gpa?` · GPA: ${e.gpa}`:""}</div></div>`).join("")}</div>`:""}
+          ${f.projects.some(p=>p.name)?`<div><h2 style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:${t.accent};border-bottom:2px solid ${t.accent};padding-bottom:4px;margin-bottom:8px">Projects</h2>${f.projects.filter(p=>p.name).map(p=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between"><strong>${p.name}</strong>${p.tech?`<span style="font-size:11px;color:#6b7280">${p.tech}</span>`:""}</div>${bullets(p.bullets||[])}</div>`).join("")}</div>`:""}
+        </div>
+      </div>`;
+
+    // minimal
+    return `
+      <div style="font-family:'Georgia',serif;max-width:720px;margin:0 auto;padding:40px 32px;color:#1a1a1a;font-size:13px;line-height:1.6">
+        <div style="margin-bottom:24px">
+          <h1 style="margin:0 0 2px;font-size:28px;font-weight:900;letter-spacing:-1px">${f.name||"Your Name"}</h1>
+          <div style="color:${t.accent};font-size:14px;margin-bottom:8px">${f.role||"Software Engineer"}</div>
+          <div style="font-size:12px;color:#666;display:flex;flex-wrap:wrap;gap:14px">
+            ${f.email?`<span>${f.email}</span>`:""}${f.phone?`<span>${f.phone}</span>`:""}${f.location?`<span>${f.location}</span>`:""}${f.linkedin?`<span>${f.linkedin}</span>`:""}${f.github?`<span>${f.github}</span>`:""}
+          </div>
+        </div>
+        <hr style="border:none;border-top:3px solid ${t.accent};margin-bottom:20px"/>
+        ${f.summary?`<div style="margin-bottom:20px"><p style="margin:0;font-style:italic;color:#444">${f.summary}</p></div>`:""}
+        ${f.exp.some(e=>e.company||e.title)?`<div style="margin-bottom:20px"><h2 style="font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:${t.accent};margin-bottom:10px">Experience</h2>${f.exp.filter(e=>e.company||e.title).map(e=>`<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-weight:700">${e.title||""} — ${e.company||""}</span><span style="font-size:11px;color:#888">${e.duration||""}</span></div>${bullets(e.bullets||[])}</div>`).join("")}</div>`:""}
+        ${f.edu.some(e=>e.school)?`<div style="margin-bottom:20px"><h2 style="font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:${t.accent};margin-bottom:10px">Education</h2>${f.edu.filter(e=>e.school).map(e=>`<div style="margin-bottom:8px"><span style="font-weight:700">${e.school}</span> — ${e.degree||""}${e.gpa?` (GPA: ${e.gpa})`:""} <span style="color:#888;font-size:11px">${e.year||""}</span></div>`).join("")}</div>`:""}
+        ${f.skills.length?`<div style="margin-bottom:20px"><h2 style="font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:${t.accent};margin-bottom:10px">Skills</h2><p style="margin:0">${f.skills.join(" · ")}</p></div>`:""}
+        ${f.projects.some(p=>p.name)?`<div style="margin-bottom:20px"><h2 style="font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:${t.accent};margin-bottom:10px">Projects</h2>${f.projects.filter(p=>p.name).map(p=>`<div style="margin-bottom:10px"><span style="font-weight:700">${p.name}</span>${p.tech?` <span style="font-size:11px;color:#666">(${p.tech})</span>`:""} ${bullets(p.bullets||[])}</div>`).join("")}</div>`:""}
+        ${(f.certs||[]).some(c=>c.name)?`<div><h2 style="font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:${t.accent};margin-bottom:10px">Certifications</h2>${f.certs.filter(c=>c.name).map(c=>`<div>${c.name}${c.issuer?` — ${c.issuer}`:""}${c.year?` (${c.year})`:""}</div>`).join("")}</div>`:""}
+      </div>`;
+  };
+
+  const handlePrint = () => {
+    const html = getPreviewHTML(tmpl);
+    const w = window.open("","_blank");
+    w.document.write(`<!DOCTYPE html><html><head><title>${form.name||"Resume"} - Resume</title>
+    <style>@media print{@page{margin:10mm;size:A4}body{margin:0}}</style></head><body>${html}</body></html>`);
+    w.document.close();
+    setTimeout(()=>w.print(), 500);
+  };
+
+  const inputField = (label, field, placeholder, type="text") => (
+    <div style={{marginBottom:14}}>
+      <label style={labelStyle}>{label}</label>
+      <input type={type} value={form[field]||""} onChange={e=>upd(field,e.target.value)}
+        placeholder={placeholder} style={iStyle}/>
+    </div>
+  );
+
+  return (
+    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+      {/* Header */}
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"24px 24px 20px"}}>
+        <div style={{maxWidth:1200,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+            <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Tools</button>
+            <div className="sl" style={{marginBottom:0}}>Student Tools</div>
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:12}}>
+            <div>
+              <h1 className="syne" style={{fontSize:26,fontWeight:800,marginBottom:4}}>🏗️ Resume <span className="gtext">Template Builder</span></h1>
+              <p style={{color:"var(--text2)",fontSize:13,margin:0}}>Fill the form → live preview → print or save as PDF. 3 ATS-friendly templates. No login, no upload.</p>
+            </div>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
+              {/* Template selector */}
+              {RT_TEMPLATES.map(t=>(
+                <button key={t.id} onClick={()=>setTmpl(t.id)}
+                  style={{fontSize:12,padding:"7px 16px",borderRadius:9,border:`2px solid ${tmpl===t.id?t.accent:"var(--border)"}`,background:tmpl===t.id?`${t.accent}15`:"var(--card)",color:tmpl===t.id?t.accent:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:tmpl===t.id?700:400,transition:"all .15s"}}>
+                  {t.name}
+                </button>
+              ))}
+              <button className="btn-p" onClick={handlePrint} style={{padding:"7px 20px",fontSize:13,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>
+                🖨️ Download PDF
+              </button>
+            </div>
+          </div>
+          {/* Tabs */}
+          <div style={{display:"flex",gap:4,marginTop:16,flexWrap:"wrap"}}>
+            {TABS.map(t=>(
+              <button key={t.id} onClick={()=>setTab(t.id)}
+                style={{fontSize:12,padding:"6px 14px",borderRadius:8,border:`1px solid ${tab===t.id?"var(--cyan)":"var(--border)"}`,background:tab===t.id?"rgba(0,212,255,.12)":"var(--card)",color:tab===t.id?"var(--cyan)":"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:tab===t.id?700:400}}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"24px"}}>
+
+        {/* ── PERSONAL ── */}
+        {tab==="personal" && (
+          <div style={{maxWidth:680}}>
+            {secTitle("Personal Information")}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 16px"}}>
+              {inputField("Full Name","name","e.g. Priya Sharma")}
+              {inputField("Target Role","role","e.g. Software Engineer")}
+              {inputField("Email","email","priya@email.com","email")}
+              {inputField("Phone","phone","+91 98765 43210")}
+              {inputField("Location","location","Bengaluru, Karnataka")}
+              {inputField("Portfolio","portfolio","https://yoursite.com","url")}
+              {inputField("LinkedIn","linkedin","linkedin.com/in/priya")}
+              {inputField("GitHub","github","github.com/priya")}
+            </div>
+            <div style={{marginBottom:14}}>
+              <label style={labelStyle}>Professional Summary</label>
+              <textarea value={form.summary||""} onChange={e=>upd("summary",e.target.value)}
+                placeholder="Results-driven software engineer with 2+ years of experience building scalable web applications…"
+                style={{...iStyle,minHeight:90,resize:"vertical"}}/>
+              <div style={{fontSize:11,color:"var(--text3)",marginTop:4}}>Keep under 3-4 sentences. Focus on impact + tech stack + years of exp.</div>
+            </div>
+            <button className="btn-p" onClick={()=>setTab("experience")} style={{padding:"10px 24px",fontSize:13}}>Next: Experience →</button>
+          </div>
+        )}
+
+        {/* ── EXPERIENCE ── */}
+        {tab==="experience" && (
+          <div style={{maxWidth:720}}>
+            {secTitle("Work Experience")}
+            {form.exp.map((e,i)=>(
+              <div key={i} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:18,marginBottom:14}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+                  <div className="syne" style={{fontSize:13,fontWeight:700}}>Experience #{i+1}</div>
+                  {form.exp.length>1&&<button onClick={()=>delExp(i)} style={{fontSize:11,padding:"3px 9px",borderRadius:6,border:"1px solid rgba(255,61,138,.3)",background:"rgba(255,61,138,.08)",color:"var(--pink)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Remove</button>}
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 14px"}}>
+                  <div style={{marginBottom:10}}><label style={labelStyle}>Job Title</label><input value={e.title||""} onChange={ev=>updExp(i,"title",ev.target.value)} placeholder="Software Engineer" style={iStyle}/></div>
+                  <div style={{marginBottom:10}}><label style={labelStyle}>Company</label><input value={e.company||""} onChange={ev=>updExp(i,"company",ev.target.value)} placeholder="Google, Startup, etc." style={iStyle}/></div>
+                  <div style={{marginBottom:10,gridColumn:"1/-1"}}><label style={labelStyle}>Duration</label><input value={e.duration||""} onChange={ev=>updExp(i,"duration",ev.target.value)} placeholder="Jun 2023 – Present" style={iStyle}/></div>
+                </div>
+                <div><label style={labelStyle}>Key Achievements / Responsibilities</label>
+                  {e.bullets.map((b,bi)=>(
+                    <div key={bi} style={{display:"flex",gap:6,marginBottom:7,alignItems:"flex-start"}}>
+                      <span style={{color:"var(--text3)",fontSize:16,marginTop:7,flexShrink:0}}>•</span>
+                      <textarea value={b} onChange={ev=>updBullet(i,bi,ev.target.value)}
+                        placeholder={`Achievement ${bi+1}: e.g. Reduced API latency by 40% using Redis caching`}
+                        style={{...iStyle,minHeight:48,resize:"vertical",flex:1}}/>
+                    </div>
+                  ))}
+                  <button onClick={()=>addBullet(i)} style={{fontSize:11,padding:"4px 12px",borderRadius:6,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>+ Add bullet</button>
+                </div>
+              </div>
+            ))}
+            <div style={{display:"flex",gap:10,marginTop:4}}>
+              <button onClick={addExp} style={{fontSize:13,padding:"9px 18px",borderRadius:9,border:"1px dashed var(--border)",background:"none",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>+ Add Experience</button>
+              <button className="btn-p" onClick={()=>setTab("education")} style={{padding:"9px 20px",fontSize:13}}>Next: Education →</button>
+            </div>
+          </div>
+        )}
+
+        {/* ── EDUCATION ── */}
+        {tab==="education" && (
+          <div style={{maxWidth:680}}>
+            {secTitle("Education")}
+            {form.edu.map((e,i)=>(
+              <div key={i} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:18,marginBottom:14}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+                  <div className="syne" style={{fontSize:13,fontWeight:700}}>Education #{i+1}</div>
+                  {form.edu.length>1&&<button onClick={()=>delEdu(i)} style={{fontSize:11,padding:"3px 9px",borderRadius:6,border:"1px solid rgba(255,61,138,.3)",background:"rgba(255,61,138,.08)",color:"var(--pink)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Remove</button>}
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 14px"}}>
+                  <div style={{marginBottom:10,gridColumn:"1/-1"}}><label style={labelStyle}>College / University</label><input value={e.school||""} onChange={ev=>updEdu(i,"school",ev.target.value)} placeholder="IIT Bombay, VIT Vellore…" style={iStyle}/></div>
+                  <div style={{marginBottom:10}}><label style={labelStyle}>Degree & Branch</label><input value={e.degree||""} onChange={ev=>updEdu(i,"degree",ev.target.value)} placeholder="B.Tech Computer Science" style={iStyle}/></div>
+                  <div style={{marginBottom:10}}><label style={labelStyle}>Year</label><input value={e.year||""} onChange={ev=>updEdu(i,"year",ev.target.value)} placeholder="2021 – 2025" style={iStyle}/></div>
+                  <div style={{marginBottom:10}}><label style={labelStyle}>CGPA / Percentage</label><input value={e.gpa||""} onChange={ev=>updEdu(i,"gpa",ev.target.value)} placeholder="8.9 / 10" style={iStyle}/></div>
+                </div>
+              </div>
+            ))}
+            <div style={{display:"flex",gap:10,marginTop:4}}>
+              <button onClick={addEdu} style={{fontSize:13,padding:"9px 18px",borderRadius:9,border:"1px dashed var(--border)",background:"none",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>+ Add Education</button>
+              <button className="btn-p" onClick={()=>setTab("skills")} style={{padding:"9px 20px",fontSize:13}}>Next: Skills →</button>
+            </div>
+          </div>
+        )}
+
+        {/* ── SKILLS ── */}
+        {tab==="skills" && (
+          <div style={{maxWidth:680}}>
+            {secTitle("Skills")}
+            <div style={{marginBottom:16}}>
+              <label style={labelStyle}>Quick Add by Role</label>
+              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                {Object.keys(RT_SKILLS_PRESETS).map(p=>(
+                  <button key={p} onClick={()=>applyPreset(p)}
+                    style={{fontSize:12,padding:"5px 13px",borderRadius:20,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div style={{marginBottom:14}}>
+              <label style={labelStyle}>Add Skill</label>
+              <div style={{display:"flex",gap:8}}>
+                <input value={skillInput} onChange={e=>setSkillInput(e.target.value)}
+                  onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();addSkill(skillInput);}}}
+                  placeholder="Type a skill and press Enter or click Add…"
+                  style={{...iStyle,flex:1}}/>
+                <button onClick={()=>addSkill(skillInput)} style={{padding:"9px 18px",borderRadius:8,border:"none",background:"var(--cyan)",color:"#000",cursor:"pointer",fontWeight:700,fontSize:13,fontFamily:"'DM Sans',sans-serif"}}>Add</button>
+              </div>
+            </div>
+            {form.skills.length>0 && (
+              <div style={{display:"flex",flexWrap:"wrap",gap:7,marginBottom:16}}>
+                {form.skills.map(s=>(
+                  <span key={s} style={{fontSize:12,padding:"4px 12px",borderRadius:20,background:"rgba(0,212,255,.1)",color:"var(--cyan)",border:"1px solid rgba(0,212,255,.25)",display:"flex",alignItems:"center",gap:6}}>
+                    {s}
+                    <button onClick={()=>delSkill(s)} style={{background:"none",border:"none",color:"var(--text3)",cursor:"pointer",fontSize:14,padding:0,lineHeight:1}}>×</button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <button className="btn-p" onClick={()=>setTab("projects")} style={{padding:"9px 20px",fontSize:13}}>Next: Projects →</button>
+          </div>
+        )}
+
+        {/* ── PROJECTS ── */}
+        {tab==="projects" && (
+          <div style={{maxWidth:720}}>
+            {secTitle("Projects & Certifications")}
+            {form.projects.map((p,i)=>(
+              <div key={i} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:18,marginBottom:14}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+                  <div className="syne" style={{fontSize:13,fontWeight:700}}>Project #{i+1}</div>
+                  {form.projects.length>1&&<button onClick={()=>delProj(i)} style={{fontSize:11,padding:"3px 9px",borderRadius:6,border:"1px solid rgba(255,61,138,.3)",background:"rgba(255,61,138,.08)",color:"var(--pink)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Remove</button>}
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 14px"}}>
+                  <div style={{marginBottom:10}}><label style={labelStyle}>Project Name</label><input value={p.name||""} onChange={ev=>updProj(i,"name",ev.target.value)} placeholder="HackIndia Platform" style={iStyle}/></div>
+                  <div style={{marginBottom:10}}><label style={labelStyle}>Tech Stack</label><input value={p.tech||""} onChange={ev=>updProj(i,"tech",ev.target.value)} placeholder="React, Node.js, MongoDB" style={iStyle}/></div>
+                </div>
+                <div><label style={labelStyle}>Description</label>
+                  {p.bullets.map((b,bi)=>(
+                    <div key={bi} style={{display:"flex",gap:6,marginBottom:7,alignItems:"flex-start"}}>
+                      <span style={{color:"var(--text3)",fontSize:16,marginTop:7,flexShrink:0}}>•</span>
+                      <textarea value={b} onChange={ev=>updPBullet(i,bi,ev.target.value)}
+                        placeholder={`e.g. Built REST API serving 500+ daily users`}
+                        style={{...iStyle,minHeight:44,resize:"vertical",flex:1}}/>
+                    </div>
+                  ))}
+                  <button onClick={()=>{ const pr=[...form.projects]; pr[i].bullets=[...pr[i].bullets,""]; save({...form,projects:pr}); }} style={{fontSize:11,padding:"4px 12px",borderRadius:6,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>+ Add bullet</button>
+                </div>
+              </div>
+            ))}
+            <button onClick={addProj} style={{fontSize:13,padding:"9px 18px",borderRadius:9,border:"1px dashed var(--border)",background:"none",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",marginBottom:14,display:"block"}}>+ Add Project</button>
+
+            <div style={{marginBottom:14}}>
+              <div className="syne" style={{fontSize:13,fontWeight:700,marginBottom:10}}>Certifications (Optional)</div>
+              {(form.certs||[]).map((c,i)=>(
+                <div key={i} style={{display:"grid",gridTemplateColumns:"2fr 1fr 80px auto",gap:8,marginBottom:8,alignItems:"center"}}>
+                  <input value={c.name||""} onChange={ev=>updCert(i,"name",ev.target.value)} placeholder="AWS Solutions Architect" style={iStyle}/>
+                  <input value={c.issuer||""} onChange={ev=>updCert(i,"issuer",ev.target.value)} placeholder="Amazon" style={iStyle}/>
+                  <input value={c.year||""} onChange={ev=>updCert(i,"year",ev.target.value)} placeholder="2024" style={iStyle}/>
+                  <button onClick={()=>delCert(i)} style={{padding:"9px 10px",borderRadius:7,border:"1px solid rgba(255,61,138,.3)",background:"rgba(255,61,138,.08)",color:"var(--pink)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontSize:16}}>×</button>
+                </div>
+              ))}
+              <button onClick={addCert} style={{fontSize:12,padding:"5px 14px",borderRadius:7,border:"1px dashed var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>+ Add Certification</button>
+            </div>
+
+            <button className="btn-p" onClick={()=>setTab("preview")} style={{padding:"9px 20px",fontSize:13}}>Preview & Download →</button>
+          </div>
+        )}
+
+        {/* ── PREVIEW ── */}
+        {tab==="preview" && (
+          <div>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16,flexWrap:"wrap",gap:10}}>
+              <div className="syne" style={{fontSize:16,fontWeight:800}}>Live Preview — {RT_TEMPLATES.find(t=>t.id===tmpl)?.name}</div>
+              <div style={{display:"flex",gap:8}}>
+                <button onClick={()=>setTab("personal")} style={{fontSize:13,padding:"8px 16px",borderRadius:9,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Edit</button>
+                <button className="btn-p" onClick={handlePrint} style={{padding:"8px 20px",fontSize:13,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Download PDF</button>
+              </div>
+            </div>
+            <div style={{border:"1px solid var(--border)",borderRadius:12,overflow:"hidden",background:"#fff",boxShadow:"0 4px 24px rgba(0,0,0,.12)"}}>
+              <div dangerouslySetInnerHTML={{__html:getPreviewHTML(tmpl)}}/>
+            </div>
+            <div style={{marginTop:12,fontSize:12,color:"var(--text3)",textAlign:"center"}}>
+              Click "Download PDF" → your browser's print dialog opens → select "Save as PDF" → choose destination
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const STUDENT_TOOLS = [
   {
     id: "dsa",
@@ -6364,6 +6779,18 @@ const STUDENT_TOOLS = [
     gradient: "linear-gradient(135deg,rgba(255,214,10,.15),rgba(255,214,10,.03))",
   },
   {
+    id: "resumebuilder",
+    icon: "🏗️",
+    title: "Resume Template Builder",
+    desc: "3 ATS-friendly templates. Fill form → live preview → download PDF. No upload needed.",
+    badge: "3 Templates · Live Preview · PDF Export",
+    badgeColor: "var(--orange)",
+    tags: ["Classic","Modern","Minimal","ATS-Friendly","PDF Download","No Login"],
+    stats: [{ label: "Templates", value: "3" }, { label: "Sections", value: "6" }, { label: "Export", value: "PDF" }],
+    color: "var(--orange)",
+    gradient: "linear-gradient(135deg,rgba(255,107,53,.15),rgba(255,107,53,.03))",
+  },
+  {
     id: "resume",
     icon: "📄",
     title: "AI Resume Analyzer",
@@ -6382,7 +6809,6 @@ const COMING_SOON = [
   { icon:"🗺️", name:"Interview Prep Roadmap",  desc:"Personalised 30/60/90 day roadmap based on your target company and role" },
   { icon:"🧮", name:"Aptitude Solver",         desc:"Paste any aptitude question → step-by-step solution with concept explanation. For TCS/Infosys/Wipro drives" },
   { icon:"📋", name:"JD Decoder",              desc:"Paste any JD → AI breaks down what they actually want, red flags, real vs nice-to-have skills" },
-  { icon:"🏗️", name:"Resume Template Builder", desc:"3 ATS-friendly templates. Fill the form → preview live → download PDF. Zero backend" },
   { icon:"💬", name:"Salary Negotiation Coach",desc:"Input offer + role + experience → word-for-word negotiation script for Bangalore market" },
   { icon:"🎯", name:"Placement Readiness Score",desc:"Combine DSA progress + resume score + mock interview results into one readiness %" },
 ];
@@ -7572,6 +7998,7 @@ export default function App() {
           {page==="tools"   && <StudentToolsPage setPage={setPage}/>}
           {page==="cp"     && <CPContestPage setPage={setPage}/>}
           {page==="dsa"    && <DSAPage setPage={setPage}/>}
+          {page==="resumebuilder" && <ResumeTemplateBuilderPage setPage={setPage}/>}
           {page==="resume" && <ResumeAnalyzerPage setPage={setPage}/>}
         </main>
         <Footer setPage={setPage}/>
