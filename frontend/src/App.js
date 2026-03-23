@@ -5348,7 +5348,7 @@ const CPContestPage = ({ setPage }) => {
               );
             })}
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );
