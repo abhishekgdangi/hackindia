@@ -20,15 +20,15 @@ function shuffle(arr) {
 /* ── GET /api/internships ──────────────────────────────────────── */
 router.get("/", async (req, res) => {
   try {
-    const { search, skills, location, isRemote, page = 1, limit = 10000 } = req.query;
+    const { search, skills, location, isRemote, page = 1, limit = 5000 } = req.query;
 
     const filter = {
-      // Accept any internship that isn't explicitly closed/inactive
       $and: [
         { $or: [{ status: { $ne: "CLOSED" } }, { status: null }, { status: { $exists: false } }] },
         { $or: [{ isActive: { $ne: false } }, { isActive: null }, { isActive: { $exists: false } }] },
-        { $or: [{ deadline: { $gte: new Date() } }, { deadline: null }, { deadline: { $exists: false } }] },
       ],
+      // Only show internships with future deadline — no expired, no null deadline
+      deadline: { $gte: new Date() },
     };
 
     if (search) filter.$text = { $search: search };
@@ -44,7 +44,7 @@ router.get("/", async (req, res) => {
       .find(filter)
       .sort({ deadline: 1, stipendNumeric: -1 })
       .skip(skip)
-      .limit(Math.min(parseInt(limit), 10000))
+      .limit(Math.min(parseInt(limit), 5000))
       .lean();
 
     shuffle(data);

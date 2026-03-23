@@ -40,18 +40,16 @@ router.get("/", async (req, res) => {
       type, location, price,
       search,
       page  = 1,
-      limit = 1000,
+      limit = 5000,
     } = req.query;
 
-    // Only show future/undated events — filter out expired
+    // Only show future events — strictly filter out past events
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const filter = {
       $or: [
-        { dateISO: { $gte: today } },           // future dated events
-        { dateISO: null },                        // no ISO date stored yet
-        { dateISO: { $exists: false } },          // legacy docs without field
-        { date: { $in: ["", "TBD", "On Demand", "Check site"] } }, // undated
+        { dateISO: { $gte: today } },           // future dated events only
+        { date: { $in: ["TBD", "On Demand"] } },// explicitly undated/ongoing
       ],
     };
 
@@ -79,7 +77,7 @@ router.get("/", async (req, res) => {
       .find(filter)
       .sort({ scrapedAt: -1 })
       .skip(skip)
-      .limit(Math.min(parseInt(limit), 1000))
+      .limit(Math.min(parseInt(limit), 5000))
       .select("-__v")
       .lean();
 

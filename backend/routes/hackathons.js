@@ -33,10 +33,8 @@ router.get("/", async (req, res) => {
       $and: [
         { $or: [{ status: { $ne: "CLOSED" } }, { status: { $exists: false } }] },
         { $or: [{ isActive: { $ne: false } }, { isActive: { $exists: false } }] },
-        { $or: [{ deadline: { $gte: new Date() } }, { deadline: null }, { deadline: { $exists: false } }] },
       ],
-    
-     
+      // Only show hackathons with future registration deadline — strictly no expired
       registrationDeadline: { $gte: new Date() },
     };
 
@@ -76,7 +74,7 @@ router.get("/", async (req, res) => {
       .find(filter)
       .sort(sortClause)
       .skip(skip)
-      .limit(Math.min(parseInt(limit), 1000))
+      .limit(Math.min(parseInt(limit), 5000))
       .select("-__v -agentNotes")
       .lean();
 

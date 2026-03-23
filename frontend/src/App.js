@@ -140,7 +140,7 @@ function useInternships({ds="", location="All", isRemote="All"}={}) {
     const id = ++fetchId.current;
     setLoading(true);
 
-    const params = { limit:10000 };  // no cap — show all
+    const params = { limit:5000 };
     if(ds) params.search = ds;
     if(isRemote==="Remote") params.isRemote = "true";
     if(location!=="All" && location!=="Remote/WFH") params.location = location;
@@ -854,14 +854,9 @@ const HackathonsPage = () => {
   const [hackCalMonth,setHackCalMonth]=useState(new Date()); const [hackSelDate,setHackSelDate]=useState(null);
   useEffect(()=>{const t=setTimeout(()=>setDs(search),350);return()=>clearTimeout(t);},[search]);
   const {data:rawHacks,total,loading,offline} = useHackathons({domain,mode,city,teamSize:team,sort,search:ds},page);
-  // Filter: only live/upcoming hackathons + India offline only
+  // Backend filters expired — just India/online filter here
   const INDIA_RE = /india|bangalore|bengaluru|mumbai|delhi|hyderabad|pune|chennai|kolkata|noida|gurugram|kochi|ahmedabad|jaipur/i;
   const data = rawHacks.filter(h => {
-    // Remove expired — deadline passed more than 1 day ago
-    if (h.registrationDeadline) {
-      const days = Math.ceil((new Date(h.registrationDeadline) - new Date()) / 86400000);
-      if (days < -1) return false;
-    }
     const isOnline = (h.mode||"").toLowerCase()==="online" || (h.city||"").toLowerCase()==="online";
     if (isOnline) return true;
     const loc = (h.city||h.location||h.name||"").toLowerCase();
