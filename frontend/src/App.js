@@ -211,8 +211,17 @@ function useEvents({type="", city="All", price="All", domain="All", search=""}={
   return { data, total, loading };
 }
 
-const getDays  = (d) => Math.ceil((new Date(d) - new Date()) / 86400000);
-const fmtDate  = (d) => new Date(d).toLocaleDateString("en-IN", {day:"numeric", month:"short", year:"numeric"});
+const getDays  = (d) => {
+  if (!d) return 999;
+  const diff = Math.ceil((new Date(d) - new Date()) / 86400000);
+  return isNaN(diff) ? 999 : diff;
+};
+const fmtDate  = (d) => {
+  if (!d) return "TBD";
+  const dt = new Date(d);
+  if (isNaN(dt.getTime())) return String(d).slice(0,10) || "TBD";
+  return dt.toLocaleDateString("en-IN", {day:"numeric", month:"short", year:"numeric"});
+};
 const dcClass  = (d) => { const n=getDays(d); return n<=3?"urgent":n<=7?"soon":"ok"; };
 const dcColor  = (d) => dcClass(d)==="urgent"?"var(--pink)":dcClass(d)==="soon"?"var(--yellow)":"var(--green)";
 const DC = {"AI/ML":"#00d4ff","Web Dev":"#00ff88","Blockchain":"#7c4dff","Cybersecurity":"#ff3d8a","Data Science":"#ffd60a","Cloud":"#ff6b35","Mobile Apps":"#00d4ff","IoT":"#00ff88","Robotics":"#7c4dff","Web3":"#7c4dff","Open Source":"#00ff88","DeFi":"#ffd60a"};
@@ -391,7 +400,12 @@ const HackCard = ({ h, onClick }) => (
       </div>
     </div>
     <div style={{borderTop:"1px solid var(--border)",padding:"11px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",background:"var(--bg3)",marginTop:"auto"}}>
-      <div className="mono" style={{fontSize:11,color:dcColor(h.registrationDeadline)}}>⏳ {getDays(h.registrationDeadline)}d left · {fmtDate(h.registrationDeadline)}</div>
+      <div className="mono" style={{fontSize:11,color:getDays(h.registrationDeadline)<0?"var(--text3)":dcColor(h.registrationDeadline)}}>
+        {!h.registrationDeadline ? "📅 Deadline TBD" :
+         getDays(h.registrationDeadline) < 0 ? "⛔ Registration Closed" :
+         getDays(h.registrationDeadline) === 0 ? "🔥 Closes Today" :
+         `⏳ ${getDays(h.registrationDeadline)}d left · ${fmtDate(h.registrationDeadline)}`}
+      </div>
       <button className="btn-p" style={{padding:"6px 14px",fontSize:12}} onClick={e=>{e.stopPropagation();window.open(h.applyLink,"_blank")}}>Apply →</button>
     </div>
   </div>
@@ -416,7 +430,9 @@ const Modal = ({ h, onClose }) => {
                 <div className="syne" style={{fontSize:20,fontWeight:800,marginBottom:5}}>{h.name}</div>
                 <div style={{color:"var(--text2)",fontSize:13,marginBottom:8}}>{h.organizer}</div>
                 <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
-                  <span className="badge b-open">🟢 OPEN</span>
+                  {getDays(h.registrationDeadline) >= 0
+                    ? <span className="badge b-open">🟢 OPEN</span>
+                    : <span className="badge" style={{background:"rgba(255,61,138,.15)",color:"var(--pink)",border:"1px solid rgba(255,61,138,.3)"}}>⛔ CLOSED</span>}
                   <span className={`badge ${h.mode==="Online"?"b-online":"b-offline"}`}>{h.mode}</span>
                   <span className="badge" style={{background:"var(--card2)",color:"var(--text2)",border:"1px solid var(--border)"}}>📡 {h.sourcePlatform}</span>
                   {h.level && <span className="badge" style={{background:"var(--card2)",color:"var(--text2)",border:"1px solid var(--border)"}}>{h.level}</span>}
@@ -568,6 +584,7 @@ const AgentStatus = () => {
 ──────────────────────────────────────────────── */
 const TOOLS_MENU = [
   { id:"dsa",    icon:"🧠", label:"DSA Explorer",      desc:"22 patterns · Top 150 · Mock test" },
+  { id:"cp",     icon:"🏆", label:"CP Contest Tracker", desc:"Live contests · Calendar view" },
   { id:"resume", icon:"📄", label:"Resume Analyzer",   desc:"ATS · JD match · 3-stage AI" },
 ];
 
@@ -833,7 +850,8 @@ const HackathonsPage = () => {
   const [mode,setMode]=useState("All");   const [city,setCity]=useState("All");
   const [team,setTeam]=useState("All");   const [sort,setSort]=useState("deadline");
   const [page,setPage]=useState(1);       const [modal,setModal]=useState(null);
-  const [ds,setDs]=useState("");
+  const [ds,setDs]=useState(""); const [hackView,setHackView]=useState("list");
+  const [hackCalMonth,setHackCalMonth]=useState(new Date()); const [hackSelDate,setHackSelDate]=useState(null);
   useEffect(()=>{const t=setTimeout(()=>setDs(search),350);return()=>clearTimeout(t);},[search]);
   const {data:rawHacks,total,loading,offline} = useHackathons({domain,mode,city,teamSize:team,sort,search:ds},page);
   // Filter: keep online hackathons from anywhere, but offline only if India location
@@ -877,14 +895,88 @@ const HackathonsPage = () => {
               </select>
             </div>
           </div>
-          <div style={{position:"relative"}}>
-            <span style={{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",color:"var(--text3)"}}>🔍</span>
-            <input className="input" placeholder="Search hackathons, organizers, technologies…" value={search} onChange={e=>{setSearch(e.target.value);setPage(1);}} style={{padding:"12px 16px 12px 42px",fontSize:14}}/>
+          <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
+            <div style={{position:"relative",flex:1,minWidth:240}}>
+              <span style={{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",color:"var(--text3)"}}>🔍</span>
+              <input className="input" placeholder="Search hackathons, organizers, technologies…" value={search} onChange={e=>{setSearch(e.target.value);setPage(1);}} style={{padding:"12px 16px 12px 42px",fontSize:14}}/>
+            </div>
+            <button onClick={()=>setHackView(v=>v==="list"?"calendar":"list")}
+              style={{padding:"10px 18px",borderRadius:10,border:`1px solid ${hackView==="calendar"?"var(--purple)":"var(--border)"}`,background:hackView==="calendar"?"rgba(124,77,255,.15)":"var(--card)",color:hackView==="calendar"?"var(--purple)":"var(--text2)",cursor:"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif",fontWeight:hackView==="calendar"?700:400,whiteSpace:"nowrap"}}>
+              {hackView==="calendar"?"☰ List View":"📅 Calendar View"}
+            </button>
           </div>
         </div>
       </div>
 
       <div style={{maxWidth:1200,margin:"0 auto",padding:"26px 24px",display:"grid",gridTemplateColumns:"245px 1fr",gap:24}}>
+        {/* Calendar View */}
+        {hackView==="calendar" && (() => {
+          const calYear=hackCalMonth.getFullYear(); const calMon=hackCalMonth.getMonth();
+          const firstDay=new Date(calYear,calMon,1).getDay();
+          const daysInMonth=new Date(calYear,calMon+1,0).getDate();
+          const calDays=Array.from({length:firstDay+daysInMonth},(_,i)=>i<firstDay?null:i-firstDay+1);
+          const todayStr=new Date().toLocaleDateString("en-CA");
+          const grouped={};
+          data.forEach(h=>{
+            if(!h.registrationDeadline) return;
+            const key=new Date(h.registrationDeadline).toLocaleDateString("en-CA");
+            if(!grouped[key]) grouped[key]=[];
+            grouped[key].push(h);
+          });
+          const dayContests=day=>{
+            if(!day) return [];
+            const key=`${calYear}-${String(calMon+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+            return grouped[key]||[];
+          };
+          return (
+            <div style={{gridColumn:"1/-1"}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 380px",gap:20}}>
+                <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:20}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+                    <button onClick={()=>setHackCalMonth(new Date(calYear,calMon-1,1))} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"6px 14px",cursor:"pointer",color:"var(--text2)"}}>‹</button>
+                    <div className="syne" style={{fontSize:18,fontWeight:800}}>{hackCalMonth.toLocaleDateString("en-IN",{month:"long",year:"numeric"})}</div>
+                    <button onClick={()=>setHackCalMonth(new Date(calYear,calMon+1,1))} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"6px 14px",cursor:"pointer",color:"var(--text2)"}}>›</button>
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:3,marginBottom:8}}>
+                    {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=><div key={d} style={{textAlign:"center",fontSize:11,fontWeight:700,color:"var(--text3)",padding:"4px 0"}}>{d}</div>)}
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:4}}>
+                    {calDays.map((day,i)=>{
+                      if(!day) return <div key={`e${i}`} style={{minHeight:72}}/>;
+                      const key=`${calYear}-${String(calMon+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+                      const items=dayContests(day); const isToday=key===todayStr; const isSel=hackSelDate===key;
+                      return (
+                        <div key={day} onClick={()=>items.length&&setHackSelDate(isSel?null:key)}
+                          style={{minHeight:72,border:`1px solid ${isSel?"var(--cyan)":isToday?"var(--purple)":"var(--border)"}`,borderRadius:9,padding:"5px 5px",cursor:items.length?"pointer":"default",background:isSel?"rgba(0,212,255,.08)":isToday?"rgba(124,77,255,.05)":"var(--bg)",transition:"all .15s"}}
+                          onMouseEnter={e=>{if(items.length)e.currentTarget.style.borderColor="var(--cyan)";}}
+                          onMouseLeave={e=>{e.currentTarget.style.borderColor=isSel?"var(--cyan)":isToday?"var(--purple)":"var(--border)";}}>
+                          <div style={{fontSize:12,fontWeight:isToday?800:400,color:isToday?"var(--purple)":"var(--text)",textAlign:"right",marginBottom:3}}>{day}</div>
+                          {items.slice(0,2).map((h,hi)=>(
+                            <div key={hi} style={{fontSize:9,padding:"1px 4px",borderRadius:3,background:"rgba(0,212,255,.12)",color:"var(--cyan)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:1}}>⚡ {h.name.slice(0,12)}</div>
+                          ))}
+                          {items.length>2&&<div style={{fontSize:9,color:"var(--text3)"}}>+{items.length-2}</div>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:20,overflowY:"auto",maxHeight:600}}>
+                  <div className="syne" style={{fontSize:15,fontWeight:800,marginBottom:14,color:"var(--text2)"}}>
+                    {hackSelDate ? new Date(hackSelDate+"T00:00:00").toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"}) : "Click a date to see hackathons"}
+                  </div>
+                  {hackSelDate && (grouped[hackSelDate]||[]).map(h=>(
+                    <div key={h._id} onClick={()=>setModal(h)} className="hcard" style={{padding:"12px 14px",marginBottom:8,cursor:"pointer"}}>
+                      <div className="syne" style={{fontSize:13,fontWeight:700,marginBottom:4}}>{h.name}</div>
+                      <div style={{fontSize:11,color:"var(--text2)",marginBottom:4}}>{h.organizer} · {h.mode}</div>
+                      <div style={{fontSize:11,color:dcColor(h.registrationDeadline)}}>⏳ Deadline: {fmtDate(h.registrationDeadline)}</div>
+                    </div>
+                  ))}
+                  {hackSelDate && !grouped[hackSelDate]?.length && <div style={{color:"var(--text3)",fontSize:13}}>No hackathons on this date.</div>}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
         {/* Sidebar */}
         <div className="hm" style={{position:"sticky",top:80,height:"fit-content"}}>
           <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:18}}>
@@ -978,6 +1070,10 @@ const InternshipsPage = () => {
   const [isRemote,setIsRemote]=useState("All");
   const [skill,setSkill]=useState("All");
   const [iPage,setIPage]=useState(1);
+  // eslint-disable-next-line no-unused-vars
+  const [intView,setIntView]=useState("list"); // eslint-disable-next-line no-unused-vars
+  const [intCalMonth,setIntCalMonth]=useState(new Date()); // eslint-disable-next-line no-unused-vars
+  const [intSelDate,setIntSelDate]=useState(null);
   useEffect(()=>{const t=setTimeout(()=>setDs(search),350);return()=>clearTimeout(t);},[search]);
   // Reset to page 1 whenever any filter changes
   useEffect(()=>{ setIPage(1); },[ds,location,isRemote,skill]);
@@ -1079,7 +1175,9 @@ const InternshipsPage = () => {
                         <div style={{color:"var(--text2)",fontSize:12,marginTop:2}}>{i.role}</div>
                       </div>
                     </div>
-                    <span className="badge b-open" style={{flexShrink:0}}>OPEN</span>
+                    <span className="badge" style={{flexShrink:0,background:!i.deadline||getDays(i.deadline)>=0?"rgba(0,255,136,.15)":"rgba(255,61,138,.15)",color:!i.deadline||getDays(i.deadline)>=0?"var(--green)":"var(--pink)",border:`1px solid ${!i.deadline||getDays(i.deadline)>=0?"rgba(0,255,136,.3)":"rgba(255,61,138,.3)"}`}}>
+                      {!i.deadline||getDays(i.deadline)>=0?"✅ OPEN":"⛔ CLOSED"}
+                    </span>
                   </div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:7,marginBottom:12}}>
                     {[["💰","Stipend",i.stipend],["📅","Duration",i.duration],["📍","Location",i.location],["⏰","Deadline",i.deadline?fmtDate(i.deadline):"—"]].map(([ic,lb,vl])=>(
@@ -1280,6 +1378,7 @@ const EventsPage = () => {
   const [price,setPrice]=useState("All");
   const [domain,setDomain]=useState("All");
   const [ePage,setEPage]=useState(1);
+  const [evView,setEvView]=useState("list"); const [evCalMonth,setEvCalMonth]=useState(new Date()); const [evSelDate,setEvSelDate]=useState(null);
   useEffect(()=>{const t=setTimeout(()=>setDs(search),350);return()=>clearTimeout(t);},[search]);
   useEffect(()=>{setEPage(1);},[evType,city,price,domain,ds]);
   const {data,total,loading} = useEvents({type:evType,city,price,domain,search:ds});
@@ -1306,9 +1405,15 @@ const EventsPage = () => {
               <div><div className="syne" style={{fontSize:26,fontWeight:800,color:"var(--green)"}}>{offlineCount}</div><div style={{fontSize:11,color:"var(--text2)"}}>offline</div></div>
             </div>
           </div>
-          <div style={{position:"relative",maxWidth:540}}>
-            <span style={{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",color:"var(--text3)"}}>🔍</span>
-            <input className="input" placeholder="Search events, conferences, workshops…" value={search} onChange={e=>setSearch(e.target.value)} style={{padding:"12px 16px 12px 42px",fontSize:14}}/>
+          <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
+            <div style={{position:"relative",flex:1,minWidth:240}}>
+              <span style={{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",color:"var(--text3)"}}>🔍</span>
+              <input className="input" placeholder="Search events, conferences, workshops…" value={search} onChange={e=>setSearch(e.target.value)} style={{padding:"12px 16px 12px 42px",fontSize:14}}/>
+            </div>
+            <button onClick={()=>setEvView(v=>v==="list"?"calendar":"list")}
+              style={{padding:"10px 18px",borderRadius:10,border:`1px solid ${evView==="calendar"?"var(--purple)":"var(--border)"}`,background:evView==="calendar"?"rgba(124,77,255,.15)":"var(--card)",color:evView==="calendar"?"var(--purple)":"var(--text2)",cursor:"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif",fontWeight:evView==="calendar"?700:400,whiteSpace:"nowrap"}}>
+              {evView==="calendar"?"☰ List View":"📅 Calendar View"}
+            </button>
           </div>
         </div>
       </div>
@@ -1316,8 +1421,76 @@ const EventsPage = () => {
       {/* Body */}
       <div style={{maxWidth:1200,margin:"0 auto",padding:"24px",display:"flex",gap:20,alignItems:"flex-start"}}>
 
+        {/* Calendar View */}
+        {evView==="calendar" && (() => {
+          const calYear=evCalMonth.getFullYear(); const calMon=evCalMonth.getMonth();
+          const firstDay=new Date(calYear,calMon,1).getDay();
+          const daysInMonth=new Date(calYear,calMon+1,0).getDate();
+          const calDays=Array.from({length:firstDay+daysInMonth},(_,i)=>i<firstDay?null:i-firstDay+1);
+          const todayStr=new Date().toLocaleDateString("en-CA");
+          const grouped={};
+          data.forEach(ev=>{
+            const raw=ev.dateISO||ev.date;
+            if(!raw||raw==="TBD"||raw==="On Demand") return;
+            try{const key=new Date(raw).toLocaleDateString("en-CA"); if(key==="Invalid Date") return; if(!grouped[key]) grouped[key]=[]; grouped[key].push(ev);}catch(e){}
+          });
+          return (
+            <div style={{width:"100%"}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 360px",gap:20}}>
+                <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:20}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+                    <button onClick={()=>setEvCalMonth(new Date(calYear,calMon-1,1))} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"6px 14px",cursor:"pointer",color:"var(--text2)"}}>‹</button>
+                    <div className="syne" style={{fontSize:18,fontWeight:800}}>{evCalMonth.toLocaleDateString("en-IN",{month:"long",year:"numeric"})}</div>
+                    <button onClick={()=>setEvCalMonth(new Date(calYear,calMon+1,1))} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"6px 14px",cursor:"pointer",color:"var(--text2)"}}>›</button>
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:3,marginBottom:8}}>
+                    {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=><div key={d} style={{textAlign:"center",fontSize:11,fontWeight:700,color:"var(--text3)",padding:"4px 0"}}>{d}</div>)}
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:4}}>
+                    {calDays.map((day,i)=>{
+                      if(!day) return <div key={`e${i}`} style={{minHeight:72}}/>;
+                      const key=`${calYear}-${String(calMon+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+                      const items=grouped[key]||[]; const isToday=key===todayStr; const isSel=evSelDate===key;
+                      const evColors={"Conference":"var(--cyan)","Workshop":"var(--purple)","Meetup":"#00d4d2","Webinar":"var(--orange)","AI/ML Event":"#b490ff"};
+                      return (
+                        <div key={day} onClick={()=>items.length&&setEvSelDate(isSel?null:key)}
+                          style={{minHeight:72,border:`1px solid ${isSel?"var(--purple)":isToday?"var(--cyan)":"var(--border)"}`,borderRadius:9,padding:"5px 5px",cursor:items.length?"pointer":"default",background:isSel?"rgba(124,77,255,.08)":isToday?"rgba(0,212,255,.05)":"var(--bg)",transition:"all .15s"}}
+                          onMouseEnter={e=>{if(items.length)e.currentTarget.style.borderColor="var(--purple)";}}
+                          onMouseLeave={e=>{e.currentTarget.style.borderColor=isSel?"var(--purple)":isToday?"var(--cyan)":"var(--border)";}}>
+                          <div style={{fontSize:12,fontWeight:isToday?800:400,color:isToday?"var(--cyan)":"var(--text)",textAlign:"right",marginBottom:3}}>{day}</div>
+                          {items.slice(0,2).map((ev,ei)=>{
+                            const c=evColors[ev.eventType]||"var(--purple)";
+                            return <div key={ei} style={{fontSize:9,padding:"1px 4px",borderRadius:3,background:`${c}15`,color:c,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:1}}>📅 {ev.title.slice(0,12)}</div>;
+                          })}
+                          {items.length>2&&<div style={{fontSize:9,color:"var(--text3)"}}>+{items.length-2}</div>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:20,overflowY:"auto",maxHeight:600}}>
+                  <div className="syne" style={{fontSize:15,fontWeight:800,marginBottom:14,color:"var(--text2)"}}>
+                    {evSelDate?new Date(evSelDate+"T00:00:00").toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"}):"Click a date to see events"}
+                  </div>
+                  {evSelDate && (grouped[evSelDate]||[]).map((ev,i)=>(
+                    <div key={i} style={{padding:"12px 14px",marginBottom:8,background:"var(--bg)",border:"1px solid var(--border)",borderRadius:12}}>
+                      <div className="syne" style={{fontSize:13,fontWeight:700,marginBottom:4}}>{ev.title}</div>
+                      <div style={{fontSize:11,color:"var(--text2)",marginBottom:4}}>{ev.platform} · {ev.eventType}</div>
+                      <div style={{display:"flex",gap:8}}>
+                        <span style={{fontSize:10,padding:"2px 7px",borderRadius:4,background:ev.price==="Free"?"rgba(0,255,136,.12)":"rgba(255,107,53,.12)",color:ev.price==="Free"?"var(--green)":"var(--orange)"}}>{ev.price||"Free"}</span>
+                        {ev.applyLink&&<a href={ev.applyLink} target="_blank" rel="noopener noreferrer" style={{fontSize:11,color:"var(--cyan)",textDecoration:"none"}}>Register →</a>}
+                      </div>
+                    </div>
+                  ))}
+                  {evSelDate&&!grouped[evSelDate]?.length&&<div style={{color:"var(--text3)",fontSize:13}}>No events on this date.</div>}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Sidebar */}
-        <div style={{width:220,flexShrink:0,background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:18,position:"sticky",top:80}} className="hm">
+        <div style={{width:220,flexShrink:0,background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:18,position:"sticky",top:80,display:evView==="calendar"?"none":"block"}} className="hm">
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
             <span style={{fontWeight:700,fontSize:14}}>⚙️ Filters</span>
             {hasFilter && <button onClick={()=>{setEvType("All");setCity("All");setPrice("All");setDomain("All");setSearch("");}} style={{fontSize:11,color:"var(--pink)",background:"transparent",border:"none",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:600}}>✕ Reset</button>}
@@ -1369,7 +1542,7 @@ const EventsPage = () => {
         </div>
 
         {/* Cards grid */}
-        <div style={{flex:1,minWidth:0}}>
+        {evView!=="calendar" && <div style={{flex:1,minWidth:0}}>
           {loading ? (
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(310px,1fr))",gap:15}}>{[1,2,3,4,5,6].map(i=><div key={i} className="skel" style={{height:260,borderRadius:16}}/>)}</div>
           ) : data.length===0 ? (
@@ -1406,7 +1579,7 @@ const EventsPage = () => {
               )}
             </>
           )}
-        </div>
+        </div>}
       </div>
     </div>
   );
@@ -4728,6 +4901,412 @@ const TUF_CHECKLIST = {
 
 
 // ── Student Tools Landing Page ──────────────────────────────
+
+/* ════════════════════════════════════════════════════════════════
+   CP CONTEST TRACKER
+════════════════════════════════════════════════════════════════ */
+function useContests() {
+  const [data,    setData]    = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error,   setError]   = useState("");
+  const [lastFetch, setLastFetch] = useState(null);
+
+  const fetch_ = useCallback(async () => {
+    setLoading(true); setError("");
+    try {
+      const r = await fetch(`${API_BASE}/contests`);
+      const j = await r.json();
+      setData(j.data || []);
+      setLastFetch(new Date());
+    } catch(e) {
+      setError("Could not load contests. Check connection.");
+      setData([]);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { fetch_(); }, [fetch_]);
+  return { data, loading, error, lastFetch, refresh: fetch_ };
+}
+
+const PLATFORM_COLORS = {
+  codeforces:  "#1a9eee",
+  codechef:    "#9c4a17",
+  leetcode:    "#f89f1b",
+  atcoder:     "#888888",
+  hackerearth: "#3d7ef9",
+  hackerrank:  "#2ec866",
+  topcoder:    "#ef3b45",
+};
+const PLATFORM_LABELS = {
+  codeforces:"Codeforces", codechef:"CodeChef", leetcode:"LeetCode",
+  atcoder:"AtCoder", hackerearth:"HackerEarth", hackerrank:"HackerRank", topcoder:"TopCoder",
+};
+const PLATFORM_ICONS = {
+  codeforces:"⚡", codechef:"👨‍🍳", leetcode:"🟨", atcoder:"🔵",
+  hackerearth:"🌍", hackerrank:"💚", topcoder:"🔴",
+};
+
+const fmtContestTime = (iso) => {
+  if (!iso) return "TBD";
+  const d = new Date(iso);
+  if (isNaN(d)) return "TBD";
+  return d.toLocaleString("en-IN", {
+    day:"numeric", month:"short", year:"numeric",
+    hour:"2-digit", minute:"2-digit", hour12:true,
+    timeZone:"Asia/Kolkata"
+  }) + " IST";
+};
+
+const fmtDuration = (secs) => {
+  if (!secs) return "—";
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  return h > 0 ? (m > 0 ? `${h}h ${m}m` : `${h}h`) : `${m}m`;
+};
+
+const getCountdown = (iso) => {
+  if (!iso) return null;
+  const diff = new Date(iso) - new Date();
+  if (diff <= 0) return null;
+  const days = Math.floor(diff / 86400000);
+  const hrs  = Math.floor((diff % 86400000) / 3600000);
+  const mins = Math.floor((diff % 3600000) / 60000);
+  if (days > 0) return `${days}d ${hrs}h`;
+  if (hrs  > 0) return `${hrs}h ${mins}m`;
+  return `${mins}m`;
+};
+
+const googleCalLink = (c) => {
+  if (!c.startTime) return "#";
+  const start = new Date(c.startTime).toISOString().replace(/[-:]/g,"").replace(".000","");
+  const end   = c.endTime ? new Date(c.endTime).toISOString().replace(/[-:]/g,"").replace(".000","") : start;
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(c.name)}&dates=${start}/${end}&details=${encodeURIComponent(c.url)}&location=${encodeURIComponent(c.url)}`;
+};
+
+const CPContestPage = ({ setPage }) => {
+  const { data, loading, error, lastFetch, refresh } = useContests();
+  const [platforms, setPlatforms] = useState(["all"]);
+  const [calMonth,  setCalMonth]  = useState(new Date());
+  const [selDate,   setSelDate]   = useState(null);
+  const [view,      setView]      = useState("split"); // split | list | calendar
+
+  const allPlatforms = [...new Set(data.map(c => c.platform))].sort();
+
+  const filtered = data.filter(c => {
+    if (platforms.includes("all")) return true;
+    return platforms.includes(c.platform);
+  });
+
+  const running  = filtered.filter(c => c.status === "RUNNING");
+  const upcoming = filtered.filter(c => c.status !== "RUNNING");
+
+  // Group by date for left panel
+  const grouped = {};
+  filtered.forEach(c => {
+    if (!c.startTime) return;
+    const d = new Date(c.startTime);
+    const key = d.toLocaleDateString("en-CA"); // YYYY-MM-DD
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(c);
+  });
+  const sortedDates = Object.keys(grouped).sort();
+
+  // Calendar helpers
+  const calYear  = calMonth.getFullYear();
+  const calMon   = calMonth.getMonth();
+  const firstDay = new Date(calYear, calMon, 1).getDay();
+  const daysInMonth = new Date(calYear, calMon+1, 0).getDate();
+  const calDays = Array.from({length: firstDay + daysInMonth}, (_, i) =>
+    i < firstDay ? null : i - firstDay + 1
+  );
+  const contestsOnDay = (day) => {
+    if (!day) return [];
+    const key = `${calYear}-${String(calMon+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+    return grouped[key] || [];
+  };
+  const today = new Date();
+  const todayStr = today.toLocaleDateString("en-CA");
+
+  const selDateContests = selDate ? (grouped[selDate] || []) : [];
+
+  const pColor = (p) => PLATFORM_COLORS[p] || "var(--cyan)";
+
+  const ContestItem = ({ c, showDate=true }) => {
+    const cd = getCountdown(c.startTime);
+    const col = pColor(c.platform);
+    return (
+      <div style={{
+        padding:"12px 16px", borderRadius:12, border:`1px solid ${col}20`,
+        background:c.status==="RUNNING"?`${col}08`:"var(--card)",
+        marginBottom:8, transition:"all .2s"
+      }}
+        onMouseEnter={e=>e.currentTarget.style.borderColor=col}
+        onMouseLeave={e=>e.currentTarget.style.borderColor=`${col}20`}>
+        <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+          {/* Platform dot */}
+          <div style={{width:8,height:8,borderRadius:"50%",background:col,flexShrink:0,marginTop:6}}/>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3,flexWrap:"wrap"}}>
+              {c.status==="RUNNING" && (
+                <span style={{fontSize:9,fontWeight:700,padding:"1px 6px",borderRadius:3,background:"rgba(0,255,136,.2)",color:"var(--green)",border:"1px solid rgba(0,255,136,.4)"}}>🔴 LIVE</span>
+              )}
+              <span style={{fontSize:10,fontWeight:700,padding:"1px 7px",borderRadius:4,background:`${col}15`,color:col,border:`1px solid ${col}25`}}>
+                {PLATFORM_ICONS[c.platform]} {PLATFORM_LABELS[c.platform]||c.platform}
+              </span>
+              {cd && <span style={{fontSize:10,color:"var(--text3)",marginLeft:"auto"}}>in {cd}</span>}
+            </div>
+            <div style={{fontSize:13,fontWeight:600,color:"var(--text)",lineHeight:1.4,marginBottom:4}}>{c.name}</div>
+            <div style={{display:"flex",gap:12,alignItems:"center",flexWrap:"wrap"}}>
+              {showDate && <span style={{fontSize:11,color:"var(--text2)"}}>{fmtContestTime(c.startTime)}</span>}
+              {c.duration && <span style={{fontSize:11,color:"var(--text3)"}}>⏱ {fmtDuration(c.duration)}</span>}
+            </div>
+          </div>
+          <div style={{display:"flex",gap:5,flexShrink:0}}>
+            <a href={googleCalLink(c)} target="_blank" rel="noopener noreferrer"
+              style={{fontSize:10,padding:"4px 8px",borderRadius:6,background:"rgba(0,212,255,.1)",color:"var(--cyan)",border:"1px solid rgba(0,212,255,.2)",textDecoration:"none",whiteSpace:"nowrap"}}>
+              + Cal
+            </a>
+            <a href={c.url} target="_blank" rel="noopener noreferrer"
+              style={{fontSize:10,padding:"4px 8px",borderRadius:6,background:`${col}15`,color:col,border:`1px solid ${col}30`,textDecoration:"none",whiteSpace:"nowrap"}}>
+              Join →
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+      {/* Header */}
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"28px 24px 20px"}}>
+        <div style={{maxWidth:1400,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:4}}>
+            <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Tools</button>
+            <div className="sl" style={{marginBottom:0}}>Student Tools</div>
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:12}}>
+            <div>
+              <h1 className="syne" style={{fontSize:28,fontWeight:800,marginBottom:4}}>
+                🏆 CP <span className="gtext">Contest Tracker</span>
+              </h1>
+              <p style={{color:"var(--text2)",fontSize:13}}>
+                Live & upcoming contests from Codeforces, CodeChef, LeetCode, AtCoder & more — updated every 30 minutes.
+              </p>
+            </div>
+            <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
+              {lastFetch && <span style={{fontSize:11,color:"var(--text3)"}}>Updated {lastFetch.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})}</span>}
+              <button onClick={refresh} style={{fontSize:12,padding:"6px 14px",borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>
+                🔄 Refresh
+              </button>
+              {/* View toggle */}
+              {[["split","⬜ Split"],["list","☰ List"],["calendar","📅 Calendar"]].map(([v,l])=>(
+                <button key={v} onClick={()=>setView(v)}
+                  style={{fontSize:12,padding:"6px 14px",borderRadius:8,border:`1px solid ${view===v?"var(--purple)":"var(--border)"}`,background:view===v?"rgba(124,77,255,.15)":"var(--card)",color:view===v?"var(--purple)":"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:view===v?700:400}}>
+                  {l}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Platform filter pills */}
+          <div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:14}}>
+            <button onClick={()=>setPlatforms(["all"])}
+              style={{fontSize:11,padding:"4px 12px",borderRadius:20,border:`1px solid ${platforms.includes("all")?"var(--cyan)":"var(--border)"}`,background:platforms.includes("all")?"rgba(0,212,255,.15)":"var(--card)",color:platforms.includes("all")?"var(--cyan)":"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:platforms.includes("all")?700:400}}>
+              All Platforms
+            </button>
+            {allPlatforms.map(p=>(
+              <button key={p} onClick={()=>{
+                if(platforms.includes("all")) { setPlatforms([p]); return; }
+                const next = platforms.includes(p) ? platforms.filter(x=>x!==p) : [...platforms,p];
+                setPlatforms(next.length ? next : ["all"]);
+              }}
+                style={{fontSize:11,padding:"4px 12px",borderRadius:20,border:`1px solid ${!platforms.includes("all")&&platforms.includes(p)?pColor(p):"var(--border)"}`,background:!platforms.includes("all")&&platforms.includes(p)?`${pColor(p)}15`:"var(--card)",color:!platforms.includes("all")&&platforms.includes(p)?pColor(p):"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:!platforms.includes("all")&&platforms.includes(p)?700:400}}>
+                {PLATFORM_ICONS[p]} {PLATFORM_LABELS[p]||p}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div style={{maxWidth:1400,margin:"0 auto",padding:"20px 24px"}}>
+        {loading ? (
+          <div style={{display:"grid",gap:10}}>
+            {[1,2,3,4].map(i=><div key={i} className="skel" style={{height:80,borderRadius:12}}/>)}
+          </div>
+        ) : error ? (
+          <div style={{textAlign:"center",padding:"60px 20px",border:"1px dashed var(--border)",borderRadius:16}}>
+            <div style={{fontSize:48,marginBottom:12}}>⚠️</div>
+            <div className="syne" style={{fontSize:18,fontWeight:700,marginBottom:8}}>{error}</div>
+            <button className="btn-p" onClick={refresh} style={{padding:"10px 24px",fontSize:14}}>Try Again</button>
+          </div>
+        ) : view === "split" ? (
+          <div style={{display:"grid",gridTemplateColumns:"380px 1fr",gap:20}}>
+
+            {/* LEFT — upcoming list */}
+            <div style={{height:"calc(100vh - 220px)",overflowY:"auto",paddingRight:4}}>
+              {running.length > 0 && (
+                <div style={{marginBottom:16}}>
+                  <div style={{fontSize:11,fontWeight:700,color:"var(--green)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>🔴 Live Now ({running.length})</div>
+                  {running.map(c=><ContestItem key={c.id} c={c}/>)}
+                </div>
+              )}
+              {sortedDates.filter(d=>d>=todayStr).map(dateKey=>{
+                const contests = grouped[dateKey].filter(c=>c.status!=="RUNNING");
+                if(!contests.length) return null;
+                const d = new Date(dateKey+"T00:00:00");
+                const isToday = dateKey===todayStr;
+                const label = isToday ? "Today" : d.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"});
+                return (
+                  <div key={dateKey} style={{marginBottom:16}}>
+                    <div style={{fontSize:11,fontWeight:700,color:isToday?"var(--yellow)":"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:8,display:"flex",alignItems:"center",gap:6}}>
+                      {isToday && "⚡"} {label}
+                    </div>
+                    {contests.map(c=><ContestItem key={c.id} c={c}/>)}
+                  </div>
+                );
+              })}
+              {filtered.length===0 && (
+                <div style={{textAlign:"center",padding:"40px 20px",color:"var(--text2)"}}>
+                  <div style={{fontSize:40,marginBottom:10}}>🏆</div>
+                  No upcoming contests found.<br/>Try selecting different platforms.
+                </div>
+              )}
+            </div>
+
+            {/* RIGHT — calendar */}
+            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:20,height:"fit-content"}}>
+              {/* Month nav */}
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+                <button onClick={()=>setCalMonth(new Date(calYear,calMon-1,1))} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"6px 12px",cursor:"pointer",color:"var(--text2)",fontSize:14}}>‹</button>
+                <div className="syne" style={{fontSize:18,fontWeight:800}}>
+                  {calMonth.toLocaleDateString("en-IN",{month:"long",year:"numeric"})}
+                </div>
+                <button onClick={()=>setCalMonth(new Date(calYear,calMon+1,1))} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"6px 12px",cursor:"pointer",color:"var(--text2)",fontSize:14}}>›</button>
+              </div>
+              {/* Day headers */}
+              <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:4,marginBottom:8}}>
+                {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>(
+                  <div key={d} style={{textAlign:"center",fontSize:11,fontWeight:700,color:"var(--text3)",padding:"4px 0"}}>{d}</div>
+                ))}
+              </div>
+              {/* Days grid */}
+              <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:4}}>
+                {calDays.map((day,i)=>{
+                  if(!day) return <div key={`e${i}`}/>;
+                  const key=`${calYear}-${String(calMon+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+                  const contests=contestsOnDay(day);
+                  const isToday=key===todayStr;
+                  const isSel=selDate===key;
+                  const isPast=new Date(key)<new Date(todayStr);
+                  return (
+                    <div key={day} onClick={()=>contests.length?setSelDate(isSel?null:key):null}
+                      style={{minHeight:68,border:`1px solid ${isSel?"var(--purple)":isToday?"var(--cyan)":"var(--border)"}`,borderRadius:10,padding:"6px 5px",cursor:contests.length?"pointer":"default",background:isSel?"rgba(124,77,255,.1)":isToday?"rgba(0,212,255,.06)":isPast?"var(--bg3)":"var(--bg)",opacity:isPast?0.6:1,transition:"all .15s"}}
+                      onMouseEnter={e=>{if(contests.length)e.currentTarget.style.borderColor="var(--purple)";}}
+                      onMouseLeave={e=>{e.currentTarget.style.borderColor=isSel?"var(--purple)":isToday?"var(--cyan)":"var(--border)";}}>
+                      <div style={{fontSize:12,fontWeight:isToday?800:500,color:isToday?"var(--cyan)":isPast?"var(--text3)":"var(--text)",marginBottom:4,textAlign:"right"}}>{day}</div>
+                      <div style={{display:"flex",flexDirection:"column",gap:2}}>
+                        {contests.slice(0,3).map((c,ci)=>(
+                          <div key={ci} style={{fontSize:9,fontWeight:600,padding:"1px 4px",borderRadius:3,background:`${pColor(c.platform)}20`,color:pColor(c.platform),overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                            {PLATFORM_ICONS[c.platform]} {c.name.slice(0,14)}
+                          </div>
+                        ))}
+                        {contests.length>3 && <div style={{fontSize:9,color:"var(--text3)",paddingLeft:4}}>+{contests.length-3} more</div>}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Selected day panel */}
+              {selDate && selDateContests.length > 0 && (
+                <div style={{marginTop:16,borderTop:"1px solid var(--border)",paddingTop:14}}>
+                  <div style={{fontSize:12,fontWeight:700,color:"var(--text2)",marginBottom:10}}>
+                    {new Date(selDate+"T00:00:00").toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"})} — {selDateContests.length} contest{selDateContests.length>1?"s":""}
+                  </div>
+                  <div style={{maxHeight:260,overflowY:"auto"}}>
+                    {selDateContests.map(c=><ContestItem key={c.id} c={c} showDate={false}/>)}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : view === "list" ? (
+          <div style={{maxWidth:800,margin:"0 auto"}}>
+            {running.length > 0 && (
+              <div style={{marginBottom:20,padding:16,background:"rgba(0,255,136,.06)",border:"1px solid rgba(0,255,136,.2)",borderRadius:14}}>
+                <div style={{fontSize:12,fontWeight:700,color:"var(--green)",marginBottom:10}}>🔴 LIVE NOW</div>
+                {running.map(c=><ContestItem key={c.id} c={c}/>)}
+              </div>
+            )}
+            {sortedDates.map(dateKey=>{
+              const contests=grouped[dateKey];
+              const d=new Date(dateKey+"T00:00:00");
+              const isToday=dateKey===todayStr;
+              const label=isToday?"Today":d.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+              return (
+                <div key={dateKey} style={{marginBottom:20}}>
+                  <div style={{fontSize:12,fontWeight:700,color:isToday?"var(--yellow)":"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:10,paddingBottom:6,borderBottom:"1px solid var(--border)"}}>
+                    {isToday?"⚡ ":""}{label}
+                  </div>
+                  {contests.map(c=><ContestItem key={c.id} c={c}/>)}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          /* Calendar only view */
+          <div style={{maxWidth:900,margin:"0 auto"}}>
+            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+                <button onClick={()=>setCalMonth(new Date(calYear,calMon-1,1))} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"8px 16px",cursor:"pointer",color:"var(--text2)"}}>‹ Prev</button>
+                <div className="syne" style={{fontSize:22,fontWeight:800}}>{calMonth.toLocaleDateString("en-IN",{month:"long",year:"numeric"})}</div>
+                <button onClick={()=>setCalMonth(new Date(calYear,calMon+1,1))} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"8px 16px",cursor:"pointer",color:"var(--text2)"}}>Next ›</button>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2,marginBottom:8}}>
+                {["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].map(d=>(
+                  <div key={d} style={{textAlign:"center",fontSize:12,fontWeight:700,color:"var(--text3)",padding:"8px 0"}}>{d.slice(0,3)}</div>
+                ))}
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:4}}>
+                {calDays.map((day,i)=>{
+                  if(!day) return <div key={`e${i}`} style={{minHeight:90}}/>;
+                  const key=`${calYear}-${String(calMon+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+                  const contests=contestsOnDay(day);
+                  const isToday=key===todayStr;
+                  const isSel=selDate===key;
+                  const isPast=new Date(key)<new Date(todayStr);
+                  return (
+                    <div key={day} onClick={()=>setSelDate(isSel?null:key)}
+                      style={{minHeight:90,border:`1px solid ${isSel?"var(--purple)":isToday?"var(--cyan)":"var(--border)"}`,borderRadius:10,padding:"8px 6px",cursor:contests.length?"pointer":"default",background:isSel?"rgba(124,77,255,.08)":isToday?"rgba(0,212,255,.05)":isPast?"var(--bg3)":"var(--bg)",opacity:isPast?0.6:1,transition:"all .15s"}}>
+                      <div style={{fontSize:13,fontWeight:isToday?800:500,color:isToday?"var(--cyan)":isPast?"var(--text3)":"var(--text)",marginBottom:5,textAlign:"right"}}>{day}</div>
+                      {contests.slice(0,3).map((c,ci)=>(
+                        <div key={ci} style={{fontSize:10,fontWeight:600,padding:"2px 5px",borderRadius:4,background:`${pColor(c.platform)}18`,color:pColor(c.platform),marginBottom:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                          {PLATFORM_ICONS[c.platform]} {c.name.slice(0,16)}
+                        </div>
+                      ))}
+                      {contests.length>3 && <div style={{fontSize:9,color:"var(--text3)"}}>+{contests.length-3} more</div>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            {selDate && selDateContests.length > 0 && (
+              <div style={{marginTop:16,background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:20}}>
+                <div className="syne" style={{fontSize:16,fontWeight:800,marginBottom:14}}>
+                  {new Date(selDate+"T00:00:00").toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
+                </div>
+                {selDateContests.map(c=><ContestItem key={c.id} c={c}/>)}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const STUDENT_TOOLS = [
   {
     id: "dsa",
@@ -4740,6 +5319,18 @@ const STUDENT_TOOLS = [
     stats: [{ label: "Topics", value: "17" }, { label: "Patterns", value: "22" }, { label: "Problems", value: "150+" }],
     color: "var(--cyan)",
     gradient: "linear-gradient(135deg,rgba(0,212,255,.15),rgba(0,212,255,.03))",
+  },
+  {
+    id: "cp",
+    icon: "🏆",
+    title: "CP Contest Tracker",
+    desc: "Live & upcoming contests from Codeforces, CodeChef, LeetCode, AtCoder — calendar view + countdown timers.",
+    badge: "Live · Calendar · Multi-Platform",
+    badgeColor: "var(--yellow)",
+    tags: ["Codeforces","CodeChef","LeetCode","AtCoder","Calendar View","Countdown"],
+    stats: [{ label: "Platforms", value: "7" }, { label: "View", value: "Split" }, { label: "Updates", value: "30min" }],
+    color: "var(--yellow)",
+    gradient: "linear-gradient(135deg,rgba(255,214,10,.15),rgba(255,214,10,.03))",
   },
   {
     id: "resume",
@@ -4757,7 +5348,6 @@ const STUDENT_TOOLS = [
 
 const COMING_SOON = [
   { icon:"🏆", name:"Mock Interview AI",       desc:"AI interviewer by role — SDE/Data/DevOps. Multi-turn Q&A with scoring and feedback" },
-  { icon:"📊", name:"CP Contest Tracker",      desc:"Track Codeforces, CodeChef, LeetCode contests — ratings, upcoming rounds, all in one" },
   { icon:"🗺️", name:"Interview Prep Roadmap",  desc:"Personalised 30/60/90 day roadmap based on your target company and role" },
   { icon:"🧮", name:"Aptitude Solver",         desc:"Paste any aptitude question → step-by-step solution with concept explanation. For TCS/Infosys/Wipro drives" },
   { icon:"📋", name:"JD Decoder",              desc:"Paste any JD → AI breaks down what they actually want, red flags, real vs nice-to-have skills" },
@@ -5949,6 +6539,7 @@ export default function App() {
           {page==="events"      && <EventsPage/>}
           {page==="resources"   && <ResourcesPage/>}
           {page==="tools"   && <StudentToolsPage setPage={setPage}/>}
+          {page==="cp"     && <CPContestPage setPage={setPage}/>}
           {page==="dsa"    && <DSAPage setPage={setPage}/>}
           {page==="resume" && <ResumeAnalyzerPage setPage={setPage}/>}
         </main>
