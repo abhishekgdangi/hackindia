@@ -3304,8 +3304,7 @@ const DSAPage = ({ setPage }) => {
   const exportProgress = () => {
     const rows=[["Problem","Topic","Status","Difficulty"]];
     Object.entries(done).forEach(([k,v])=>{ if(v){ const [topic,name]=k.split("__"); rows.push([name||k,topic,"Solved",""]); } });
-    const csv=rows.map(r=>r.map(c=>`"${c}"`).join(",")).join("
-");
+    const csv=rows.map(r=>r.map(c=>`"${c}"`).join(",")).join("\n");
     const blob=new Blob([csv],{type:"text/csv"});
     const url=URL.createObjectURL(blob);
     const a=document.createElement("a"); a.href=url; a.download="dsa_progress.csv"; a.click();
