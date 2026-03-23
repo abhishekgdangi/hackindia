@@ -3573,6 +3573,84 @@ const DSAPage = ({ setPage }) => {
     URL.revokeObjectURL(url);
   };
 
+  // ── Streak + Weekly Goal ──────────────────────────────────────
+  const LS_STREAK = "dsa_streak_v1";
+  const LS_GOAL   = "dsa_goal_v1";
+  const LS_DOTW   = "dsa_dotw_v1"; // dates-of-the-week solved
+
+  const [weeklyGoal, setWeeklyGoal] = React.useState(() => { try { return parseInt(localStorage.getItem(LS_GOAL)||"5"); } catch { return 5; } });
+  const saveGoal = (g) => { setWeeklyGoal(g); try { localStorage.setItem(LS_GOAL, String(g)); } catch(_) {} };
+
+  // Compute streak from done timestamps
+  const todayKey = new Date().toLocaleDateString("en-CA");
+  const allDoneDates = React.useMemo(() => {
+    const dates = new Set();
+    Object.entries(done).forEach(([k,v]) => {
+      if (v && k.includes("__solved_")) {
+        const d = k.split("__solved_")[1];
+        if (d) dates.add(d);
+      }
+    });
+    // Fallback: if no date info, use totalDone as approximation
+    return dates;
+  }, [done]);
+
+  // Track solving dates properly — when toggling done, also record date
+  const toggleDoneWithDate = (key) => {
+    const wasChecked = !!done[key];
+    if (!wasChecked) {
+      // Marking as done — record date
+      const dateKey = key + "__solved_" + todayKey;
+      const d = { ...done, [key]: true, [dateKey]: true };
+      saveDone(d);
+    } else {
+      const d = { ...done, [key]: false };
+      saveDone(d);
+    }
+  };
+
+  // Weekly solved count (Mon-Sun)
+  const weekStart = React.useMemo(() => {
+    const d = new Date();
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    const mon = new Date(d.setDate(diff));
+    return mon.toLocaleDateString("en-CA");
+  }, []);
+
+  const weekSolved = React.useMemo(() => {
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    const endStr = weekEnd.toLocaleDateString("en-CA");
+    return Object.keys(done).filter(k => {
+      if (!k.includes("__solved_")) return false;
+      const d = k.split("__solved_")[1];
+      return d >= weekStart && d <= endStr;
+    }).length;
+  }, [done, weekStart]);
+
+  // Streak calculation — consecutive days with ≥1 solve
+  const streak = React.useMemo(() => {
+    if (!Object.keys(done).some(k => k.includes("__solved_"))) {
+      // No date tracking yet — estimate from total
+      return 0;
+    }
+    const solvedDates = new Set(
+      Object.keys(done).filter(k => k.includes("__solved_") && done[k])
+        .map(k => k.split("__solved_")[1]).filter(Boolean)
+    );
+    let count = 0;
+    const d = new Date();
+    while (true) {
+      const key = d.toLocaleDateString("en-CA");
+      if (solvedDates.has(key)) { count++; d.setDate(d.getDate()-1); }
+      else if (count === 0 && key < todayKey) break;
+      else if (count === 0) { d.setDate(d.getDate()-1); if (d.toLocaleDateString("en-CA") < new Date(Date.now()-86400000*2).toLocaleDateString("en-CA")) break; }
+      else break;
+    }
+    return count;
+  }, [done, todayKey]);
+
   const fetchExplain = async (problemName) => {
     if (explain[problemName]) return;
     setExplainLoading(p => ({...p, [problemName]:true}));
@@ -3667,6 +3745,19 @@ const DSAPage = ({ setPage }) => {
           {totalDone > 0 && <span style={{fontSize:11,padding:"3px 10px",borderRadius:20,background:"rgba(0,255,136,.15)",color:"var(--green)",border:"1px solid rgba(0,255,136,.3)",fontWeight:700}}>✓ {totalDone} solved</span>}
           {totalBookmarks > 0 && <span style={{fontSize:11,padding:"3px 10px",borderRadius:20,background:"rgba(255,214,10,.12)",color:"var(--yellow)",border:"1px solid rgba(255,214,10,.3)",fontWeight:700}}>⭐ {totalBookmarks} bookmarked</span>}
           {srDueToday.length > 0 && <span style={{fontSize:11,padding:"3px 10px",borderRadius:20,background:"rgba(255,61,138,.12)",color:"var(--pink)",border:"1px solid rgba(255,61,138,.3)",fontWeight:700}}>🔁 {srDueToday.length} due for review</span>}
+          {streak > 0 && <span style={{fontSize:11,padding:"3px 10px",borderRadius:20,background:"rgba(255,107,53,.12)",color:"var(--orange)",border:"1px solid rgba(255,107,53,.3)",fontWeight:700}}>🔥 {streak} day streak</span>}
+          {/* Weekly goal mini widget */}
+          <div style={{display:"flex",alignItems:"center",gap:6,padding:"3px 10px",borderRadius:20,background:"var(--card)",border:"1px solid var(--border)"}}>
+            <span style={{fontSize:11,color:"var(--text3)"}}>📅 Week:</span>
+            <span style={{fontSize:11,fontWeight:700,color:weekSolved>=weeklyGoal?"var(--green)":"var(--cyan)"}}>{weekSolved}/{weeklyGoal}</span>
+            <div style={{width:40,height:4,background:"var(--bg3)",borderRadius:2,overflow:"hidden"}}>
+              <div style={{height:"100%",width:`${Math.min(100,Math.round(weekSolved/weeklyGoal*100))}%`,background:weekSolved>=weeklyGoal?"var(--green)":"var(--cyan)",borderRadius:2}}/>
+            </div>
+            <select value={weeklyGoal} onChange={e=>saveGoal(parseInt(e.target.value))}
+              style={{background:"none",border:"none",color:"var(--text3)",fontSize:10,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",padding:0}}>
+              {[3,5,7,10,14,21].map(n=><option key={n} value={n}>{n}/wk</option>)}
+            </select>
+          </div>
         </div>
         {/* Pomodoro mini-widget */}
         <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:8,flexWrap:"wrap"}}>
@@ -3684,6 +3775,11 @@ const DSAPage = ({ setPage }) => {
             ⭐ Bookmarks {totalBookmarks>0?`(${totalBookmarks})`:""}
           </button>
           {totalDone>0 && <button onClick={exportProgress} style={{fontSize:11,padding:"4px 10px",borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>📥 Export CSV</button>}
+          {totalBookmarks>0 && <button onClick={()=>{
+            const items=Object.entries(bookmarks).filter(([,v])=>v).map(([k])=>k);
+            const html=`<!DOCTYPE html><html><head><title>My Bookmarked DSA Problems</title><style>body{font-family:Arial,sans-serif;max-width:800px;margin:40px auto;color:#111}h1{border-bottom:2px solid #333;padding-bottom:10px}li{margin:8px 0;font-size:15px}@media print{button{display:none}}</style></head><body><h1>📌 My Bookmarked DSA Problems</h1><p>Total: ${items.length} problems | Generated: ${new Date().toLocaleDateString("en-IN")}</p><ol>${items.map(k=>{const[t,n]=k.split("__");return`<li><strong>${n||k}</strong> <span style="color:#666">— ${t||""}</span></li>`;}).join("")}</ol><p style="margin-top:30px;color:#666;font-size:12px">Generated by HackIndia DSA Explorer</p></body></html>`;
+            const w=window.open("","_blank");w.document.write(html);w.document.close();w.print();
+          }} style={{fontSize:11,padding:"4px 10px",borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>🖨️ Print Bookmarks</button>}
         </div>
         <p style={{color:"var(--text2)",fontSize:13,marginBottom:16}}>Pre-DSA · Topics · Patterns · Blind 75 · Top 150 · Company Wise · Visualizers · Roadmap</p>
         {!isDeepView && (
@@ -3845,7 +3941,7 @@ const DSAPage = ({ setPage }) => {
                     <div key={i} style={{borderRadius:10,border:`1px solid ${isDone?"rgba(0,255,136,.3)":"var(--border)"}`,background:isDone?"rgba(0,255,136,.04)":"var(--card)",transition:"all .2s",overflow:"hidden"}}>
                       <div style={{padding:"10px 14px",display:"flex",alignItems:"center",gap:10}}>
                         {/* Checkbox */}
-                        <div onClick={e=>{e.stopPropagation();toggleDone(doneKey);}}
+                        <div onClick={e=>{e.stopPropagation();toggleDoneWithDate(doneKey);}}
                           style={{width:20,height:20,borderRadius:5,border:`2px solid ${isDone?"var(--green)":"var(--border2)"}`,background:isDone?"var(--green)":"transparent",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0,transition:"all .15s"}}>
                           {isDone && <span style={{fontSize:12,color:"#000",fontWeight:900}}>✓</span>}
                         </div>
@@ -5073,12 +5169,232 @@ const googleCalLink = (c) => {
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(c.name)}&dates=${start}/${end}&details=${encodeURIComponent(c.url)}&location=${encodeURIComponent(c.url)}`;
 };
 
+const LS_CF_HANDLE = "cf_handle_v1";
+const LS_CF_PROBS  = "cf_problems_v1";
+
 const CPContestPage = ({ setPage }) => {
   const { data, loading, error, lastFetch, refresh } = useContests();
   const [platforms, setPlatforms] = useState(["all"]);
   const [calMonth,  setCalMonth]  = useState(new Date());
   const [selDate,   setSelDate]   = useState(null);
-  const [view,      setView]      = useState("split"); // split | list | calendar
+  const [view,      setView]      = useState("split"); // split | list | profile
+
+  // ── Profile / Rating tracker state ───────────────────────────
+  const [cfHandle,     setCfHandle]     = useState(() => localStorage.getItem(LS_CF_HANDLE) || "");
+  const [cfInput,      setCfInput]      = useState(() => localStorage.getItem(LS_CF_HANDLE) || "");
+  const [cfData,       setCfData]       = useState(null);
+  const [cfProblems,   setCfProblems]   = useState(() => { try { return JSON.parse(localStorage.getItem(LS_CF_PROBS)||"null"); } catch { return null; } });
+  const [cfLoading,    setCfLoading]    = useState(false);
+  const [cfError,      setCfError]      = useState("");
+
+  const fetchCFProfile = async (handle) => {
+    if (!handle.trim()) return;
+    setCfLoading(true); setCfError(""); setCfData(null);
+    try {
+      // Fetch user info + recent submissions in parallel
+      const [uRes, sRes] = await Promise.all([
+        fetch(`https://codeforces.com/api/user.info?handles=${handle.trim()}`),
+        fetch(`https://codeforces.com/api/user.status?handle=${handle.trim()}&from=1&count=200`),
+      ]);
+      const uJson = await uRes.json();
+      const sJson = await sRes.json();
+      if (uJson.status !== "OK") { setCfError("User not found. Check the handle."); setCfLoading(false); return; }
+      const user = uJson.result[0];
+      const subs = sJson.status === "OK" ? sJson.result : [];
+
+      // Process submissions
+      const accepted = subs.filter(s => s.verdict === "OK");
+      const uniqueProbs = new Set(accepted.map(s => `${s.problem.contestId}_${s.problem.index}`));
+      const last30 = subs.filter(s => s.creationTimeSeconds > Date.now()/1000 - 30*86400);
+      const last30AC = last30.filter(s => s.verdict === "OK");
+
+      // Rating history
+      let ratingHistory = [];
+      try {
+        const rRes = await fetch(`https://codeforces.com/api/user.rating?handle=${handle.trim()}`);
+        const rJson = await rRes.json();
+        if (rJson.status === "OK") ratingHistory = rJson.result.slice(-20);
+      } catch {}
+
+      // Tag frequency from accepted problems
+      const tagCount = {};
+      accepted.forEach(s => {
+        (s.problem.tags || []).forEach(t => { tagCount[t] = (tagCount[t]||0)+1; });
+      });
+      const topTags = Object.entries(tagCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
+
+      // Problems solved by difficulty
+      const byRating = {};
+      accepted.forEach(s => {
+        const r = s.problem.rating;
+        if (!r) return;
+        const bucket = Math.floor(r/200)*200;
+        byRating[bucket] = (byRating[bucket]||0)+1;
+      });
+
+      const profile = {
+        handle:       user.handle,
+        rating:       user.rating || 0,
+        maxRating:    user.maxRating || 0,
+        rank:         user.rank || "unrated",
+        maxRank:      user.maxRank || "unrated",
+        avatar:       user.titlePhoto || user.avatar,
+        country:      user.country,
+        city:         user.city,
+        contribution: user.contribution,
+        friendCount:  user.friendOfCount,
+        totalSolved:  uniqueProbs.size,
+        last30Total:  last30.length,
+        last30AC:     last30AC.length,
+        topTags,      byRating,
+        ratingHistory,
+        lastActive:   subs.length ? new Date(subs[0].creationTimeSeconds*1000).toLocaleDateString("en-IN") : "—",
+      };
+
+      setCfData(profile);
+      setCfHandle(handle.trim());
+      localStorage.setItem(LS_CF_HANDLE, handle.trim());
+      // Build heatmap from submissions
+      setHeatmapData(buildHeatmap(subs));
+
+      // Generate problem recommendations based on rating
+      const userRating = user.rating || 1200;
+      const targetRating = userRating + 200;
+      const weakTags = topTags.length >= 3
+        ? ["implementation","math","greedy"].filter(t => !topTags.slice(0,5).map(x=>x[0]).includes(t))
+        : ["implementation","math","greedy","dp","binary search"];
+
+      const recRes = await fetch(`https://codeforces.com/api/problemset.problems?tags=${weakTags[0]||"implementation"}`);
+      const recJson = await recRes.json();
+      if (recJson.status === "OK") {
+        const solved = new Set(Array.from(uniqueProbs));
+        const recs = recJson.result.problems
+          .filter(p => p.rating >= userRating-100 && p.rating <= targetRating+200)
+          .filter(p => !solved.has(`${p.contestId}_${p.index}`))
+          .slice(0, 12)
+          .map(p => ({
+            name: p.name, contestId: p.contestId, index: p.index,
+            rating: p.rating, tags: p.tags?.slice(0,3)||[],
+            url: `https://codeforces.com/problemset/problem/${p.contestId}/${p.index}`,
+          }));
+        setCfProblems(recs);
+        localStorage.setItem(LS_CF_PROBS, JSON.stringify(recs));
+      }
+    } catch(e) {
+      setCfError("Failed to load profile. Try again.");
+    }
+    setCfLoading(false);
+  };
+
+  const ratingColor = (r) => r >= 2400?"#ff0000":r>=2100?"#ff8c00":r>=1900?"#a0a":r>=1600?"#00f":r>=1400?"#03a89e":r>=1200?"#008000":"#808080";
+  const ratingTitle = (r) => r>=2400?"Grandmaster":r>=2100?"International Master":r>=1900?"Master":r>=1600?"Candidate Master":r>=1400?"Expert":r>=1200?"Specialist":r>=0?"Pupil":"Newbie";
+
+  // ── Heatmap ────────────────────────────────────────────────
+  const [heatmapData, setHeatmapData] = React.useState(null);
+
+  // Build heatmap from submissions data
+  const buildHeatmap = (subs) => {
+    const counts = {};
+    subs.forEach(s => {
+      const d = new Date(s.creationTimeSeconds*1000).toLocaleDateString("en-CA");
+      counts[d] = (counts[d]||0)+1;
+    });
+    return counts;
+  };
+
+  // ── LeetCode stats ─────────────────────────────────────────
+  const [lcHandle,  setLcHandle]  = React.useState(() => localStorage.getItem("lc_handle_v1")||"");
+  const [lcInput,   setLcInput]   = React.useState(() => localStorage.getItem("lc_handle_v1")||"");
+  const [lcData,    setLcData]    = React.useState(null);
+  const [lcLoading, setLcLoading] = React.useState(false);
+  const [lcError,   setLcError]   = React.useState("");
+
+  const fetchLCProfile = async (handle) => {
+    if (!handle.trim()) return;
+    setLcLoading(true); setLcError(""); setLcData(null);
+    try {
+      const r = await fetch("https://leetcode.com/graphql", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ query:`{
+          matchedUser(username:"${handle.trim()}"){
+            username
+            submitStats{ acSubmissionNum{ difficulty count } }
+            userCalendar{ streak totalActiveDays submissionCalendar }
+            profile{ ranking reputation starRating }
+            badges{ name }
+          }
+        }`}),
+      });
+      const j = await r.json();
+      const u = j.data?.matchedUser;
+      if (!u) { setLcError("User not found on LeetCode."); setLcLoading(false); return; }
+      const stats = u.submitStats?.acSubmissionNum || [];
+      const easy  = stats.find(s=>s.difficulty==="Easy")?.count || 0;
+      const med   = stats.find(s=>s.difficulty==="Medium")?.count || 0;
+      const hard  = stats.find(s=>s.difficulty==="Hard")?.count || 0;
+      const cal   = u.userCalendar;
+      let calData = {};
+      try { calData = JSON.parse(cal?.submissionCalendar||"{}"); } catch {}
+      // Convert unix timestamps to YYYY-MM-DD
+      const heatmap = {};
+      Object.entries(calData).forEach(([ts,count]) => {
+        const d = new Date(parseInt(ts)*1000).toLocaleDateString("en-CA");
+        heatmap[d] = (heatmap[d]||0)+count;
+      });
+      setLcData({
+        handle:    handle.trim(),
+        easy, med, hard,
+        total:     easy+med+hard,
+        streak:    cal?.streak||0,
+        activeDays:cal?.totalActiveDays||0,
+        ranking:   u.profile?.ranking,
+        heatmap,
+        badges:    (u.badges||[]).slice(0,5).map(b=>b.name),
+      });
+      localStorage.setItem("lc_handle_v1", handle.trim());
+      setLcHandle(handle.trim());
+    } catch(e) {
+      setLcError("Failed to load LeetCode profile. Try again.");
+    }
+    setLcLoading(false);
+  };
+
+  // ── AtCoder stats ──────────────────────────────────────────
+  const [acHandle,  setAcHandle]  = React.useState(() => localStorage.getItem("ac_handle_v1")||"");
+  const [acInput,   setAcInput]   = React.useState(() => localStorage.getItem("ac_handle_v1")||"");
+  const [acData,    setAcData]    = React.useState(null);
+  const [acLoading, setAcLoading] = React.useState(false);
+  const [acError,   setAcError]   = React.useState("");
+
+  const fetchACProfile = async (handle) => {
+    if (!handle.trim()) return;
+    setAcLoading(true); setAcError(""); setAcData(null);
+    try {
+      const [uRes, sRes] = await Promise.all([
+        fetch(`https://atcoder.jp/users/${handle.trim()}/history/json`),
+        fetch(`https://kenkoooo.com/atcoder/atcoder-api/v3/user/accepted_count?user=${handle.trim()}`),
+      ]);
+      const history = await uRes.json();
+      const solved  = await sRes.json();
+      if (!Array.isArray(history)) { setAcError("User not found on AtCoder."); setAcLoading(false); return; }
+      const latest  = history[history.length-1] || {};
+      setAcData({
+        handle:     handle.trim(),
+        rating:     latest.NewRating || 0,
+        maxRating:  Math.max(...history.map(h=>h.NewRating||0), 0),
+        contests:   history.length,
+        solved:     solved?.accepted_count || 0,
+        rank:       latest.Place,
+        url:        `https://atcoder.jp/users/${handle.trim()}`,
+      });
+      localStorage.setItem("ac_handle_v1", handle.trim());
+      setAcHandle(handle.trim());
+    } catch(e) {
+      setAcError("Failed to load AtCoder profile.");
+    }
+    setAcLoading(false);
+  };
 
   const allPlatforms = [...new Set(data.map(c => c.platform))].sort();
 
@@ -5191,7 +5507,7 @@ const CPContestPage = ({ setPage }) => {
                 🔄 Refresh
               </button>
               {/* View toggle */}
-              {[["split","⬜ Split"],["list","☰ List"]].map(([v,l])=>(
+              {[["split","⬜ Split"],["list","☰ List"],["profile","👤 My Profile"]].map(([v,l])=>(
                 <button key={v} onClick={()=>setView(v)}
                   style={{fontSize:12,padding:"6px 14px",borderRadius:8,border:`1px solid ${view===v?"var(--purple)":"var(--border)"}`,background:view===v?"rgba(124,77,255,.15)":"var(--card)",color:view===v?"var(--purple)":"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:view===v?700:400}}>
                   {l}
@@ -5344,6 +5660,357 @@ const CPContestPage = ({ setPage }) => {
                 </div>
               );
             })}
+          </div>
+        ) : view === "profile" ? (
+          <div style={{maxWidth:960,margin:"0 auto"}}>
+            {/* Handle input */}
+            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24,marginBottom:20}}>
+              <div className="syne" style={{fontSize:17,fontWeight:800,marginBottom:6}}>👤 Codeforces Profile Tracker</div>
+              <p style={{fontSize:13,color:"var(--text2)",marginBottom:16}}>Enter your Codeforces handle to see your rating, stats, solved problems and personalised recommendations.</p>
+              <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+                <input
+                  value={cfInput} onChange={e=>setCfInput(e.target.value)}
+                  onKeyDown={e=>e.key==="Enter"&&fetchCFProfile(cfInput)}
+                  placeholder="e.g. tourist, Petr, your_handle…"
+                  className="input" style={{flex:1,minWidth:200,padding:"10px 14px",fontSize:14}}/>
+                <button className="btn-p" onClick={()=>fetchCFProfile(cfInput)} disabled={cfLoading}
+                  style={{padding:"10px 24px",fontSize:14,opacity:cfLoading?.6:1}}>
+                  {cfLoading?"⏳ Loading…":"Load Profile →"}
+                </button>
+                {cfHandle && <button onClick={()=>{setCfData(null);setCfProblems(null);setCfHandle("");setCfInput("");localStorage.removeItem(LS_CF_HANDLE);localStorage.removeItem(LS_CF_PROBS);}}
+                  style={{padding:"10px 16px",borderRadius:9,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text3)",cursor:"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif"}}>
+                  Clear
+                </button>}
+              </div>
+              {cfError && <div style={{marginTop:10,fontSize:13,color:"var(--pink)"}}>{cfError}</div>}
+            </div>
+
+            {cfData && (<>
+              {/* Profile card */}
+              <div style={{background:"var(--card)",border:`2px solid ${ratingColor(cfData.rating)}30`,borderRadius:16,padding:24,marginBottom:16}}>
+                <div style={{display:"flex",gap:20,alignItems:"flex-start",flexWrap:"wrap"}}>
+                  <div style={{width:72,height:72,borderRadius:14,overflow:"hidden",border:`2px solid ${ratingColor(cfData.rating)}`,flexShrink:0}}>
+                    <img src={cfData.avatar} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
+                  </div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginBottom:4}}>
+                      <a href={`https://codeforces.com/profile/${cfData.handle}`} target="_blank" rel="noopener noreferrer"
+                        className="syne" style={{fontSize:22,fontWeight:900,color:ratingColor(cfData.rating),textDecoration:"none"}}>
+                        {cfData.handle}
+                      </a>
+                      <span style={{fontSize:12,padding:"3px 10px",borderRadius:20,background:`${ratingColor(cfData.rating)}18`,color:ratingColor(cfData.rating),border:`1px solid ${ratingColor(cfData.rating)}30`,fontWeight:700,textTransform:"capitalize"}}>
+                        {cfData.rank}
+                      </span>
+                    </div>
+                    <div style={{fontSize:13,color:"var(--text2)",marginBottom:8}}>
+                      {cfData.country && `${cfData.country}`}{cfData.city && ` · ${cfData.city}`}
+                      {cfData.friendCount > 0 && ` · ${cfData.friendCount} friends`}
+                    </div>
+                    <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
+                      <div style={{textAlign:"center"}}>
+                        <div className="syne" style={{fontSize:24,fontWeight:900,color:ratingColor(cfData.rating)}}>{cfData.rating||"—"}</div>
+                        <div style={{fontSize:10,color:"var(--text3)"}}>Current Rating</div>
+                      </div>
+                      <div style={{textAlign:"center"}}>
+                        <div className="syne" style={{fontSize:24,fontWeight:900,color:ratingColor(cfData.maxRating)}}>{cfData.maxRating||"—"}</div>
+                        <div style={{fontSize:10,color:"var(--text3)"}}>Max Rating</div>
+                      </div>
+                      <div style={{textAlign:"center"}}>
+                        <div className="syne" style={{fontSize:24,fontWeight:900,color:"var(--cyan)"}}>{cfData.totalSolved}</div>
+                        <div style={{fontSize:10,color:"var(--text3)"}}>Problems Solved</div>
+                      </div>
+                      <div style={{textAlign:"center"}}>
+                        <div className="syne" style={{fontSize:24,fontWeight:900,color:"var(--green)"}}>{cfData.last30AC}</div>
+                        <div style={{fontSize:10,color:"var(--text3)"}}>Solved (30d)</div>
+                      </div>
+                      <div style={{textAlign:"center"}}>
+                        <div className="syne" style={{fontSize:24,fontWeight:900,color:"var(--yellow)"}}>{cfData.contribution>=0?"+":""}{cfData.contribution}</div>
+                        <div style={{fontSize:10,color:"var(--text3)"}}>Contribution</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stats grid */}
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
+                {/* Top tags */}
+                <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:20}}>
+                  <div className="syne" style={{fontSize:14,fontWeight:800,marginBottom:14}}>🏷️ Strong Topics</div>
+                  <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                    {cfData.topTags.slice(0,6).map(([tag,count],i)=>(
+                      <div key={tag} style={{display:"flex",alignItems:"center",gap:8}}>
+                        <div style={{width:20,height:20,borderRadius:"50%",background:"rgba(124,77,255,.2)",color:"var(--purple)",fontSize:10,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{i+1}</div>
+                        <div style={{flex:1,fontSize:13,color:"var(--text)",textTransform:"capitalize"}}>{tag}</div>
+                        <div style={{height:6,width:80,background:"var(--bg3)",borderRadius:3,overflow:"hidden"}}>
+                          <div style={{height:"100%",width:`${Math.round(count/cfData.topTags[0][1]*100)}%`,background:"var(--purple)",borderRadius:3}}/>
+                        </div>
+                        <div style={{fontSize:11,color:"var(--text3)",minWidth:24,textAlign:"right"}}>{count}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Rating history mini chart */}
+                <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:20}}>
+                  <div className="syne" style={{fontSize:14,fontWeight:800,marginBottom:14}}>📈 Rating History (last 20)</div>
+                  {cfData.ratingHistory.length > 1 ? (()=>{
+                    const ratings = cfData.ratingHistory.map(r=>r.newRating);
+                    const min = Math.min(...ratings) - 50;
+                    const max = Math.max(...ratings) + 50;
+                    const range = max - min || 1;
+                    const W = 300; const H = 100;
+                    const pts = ratings.map((r,i) =>
+                      `${Math.round(i/(ratings.length-1)*W)},${Math.round(H - ((r-min)/range)*H)}`
+                    ).join(" ");
+                    const latest = ratings[ratings.length-1];
+                    const prev   = ratings[ratings.length-2];
+                    const delta  = latest - prev;
+                    return (
+                      <div>
+                        <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
+                          <span style={{fontSize:11,color:"var(--text3)"}}>Peak: {Math.max(...ratings)}</span>
+                          <span style={{fontSize:12,fontWeight:700,color:delta>=0?"var(--green)":"var(--pink)"}}>
+                            {delta>=0?"+":""}{delta} last contest
+                          </span>
+                        </div>
+                        <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:80}}>
+                          <polyline points={pts} fill="none" stroke="var(--purple)" strokeWidth="2"/>
+                          <circle cx={pts.split(" ").pop().split(",")[0]} cy={pts.split(" ").pop().split(",")[1]}
+                            r="4" fill={ratingColor(latest)}/>
+                        </svg>
+                        <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}>
+                          <span style={{fontSize:10,color:"var(--text3)"}}>{cfData.ratingHistory[0]?.contestName?.slice(0,20)||"First"}</span>
+                          <span style={{fontSize:10,color:"var(--text3)"}}>{cfData.ratingHistory.at(-1)?.contestName?.slice(0,20)||"Latest"}</span>
+                        </div>
+                      </div>
+                    );
+                  })() : <div style={{color:"var(--text3)",fontSize:13}}>No contest history yet.</div>}
+                </div>
+              </div>
+
+              {/* Problem recommendations */}
+              {cfProblems && cfProblems.length > 0 && (
+                <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:20,marginBottom:16}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+                    <div>
+                      <div className="syne" style={{fontSize:14,fontWeight:800,marginBottom:2}}>🎯 Recommended Problems</div>
+                      <div style={{fontSize:12,color:"var(--text2)"}}>
+                        Based on your rating ({cfData.rating}) — problems just above your comfort zone
+                      </div>
+                    </div>
+                    <button onClick={()=>fetchCFProfile(cfData.handle)}
+                      style={{fontSize:11,padding:"4px 12px",borderRadius:7,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>
+                      🔄 Refresh
+                    </button>
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:10}}>
+                    {cfProblems.map((p,i)=>(
+                      <a key={i} href={p.url} target="_blank" rel="noopener noreferrer"
+                        style={{display:"flex",flexDirection:"column",gap:6,padding:"12px 14px",borderRadius:10,border:"1px solid var(--border)",background:"var(--bg)",textDecoration:"none",transition:"all .2s"}}
+                        onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.background="rgba(0,212,255,.04)";}}
+                        onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.background="var(--bg)";}}>
+                        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:6}}>
+                          <div style={{fontSize:13,fontWeight:600,color:"var(--text)",lineHeight:1.3}}>{p.name}</div>
+                          <span style={{fontSize:11,fontWeight:700,padding:"2px 7px",borderRadius:5,background:`${ratingColor(p.rating)}15`,color:ratingColor(p.rating),flexShrink:0}}>{p.rating}</span>
+                        </div>
+                        <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+                          {p.tags.map(t=>(
+                            <span key={t} style={{fontSize:10,padding:"1px 6px",borderRadius:4,background:"var(--bg3)",color:"var(--text3)",textTransform:"capitalize"}}>{t}</span>
+                          ))}
+                        </div>
+                        <div style={{fontSize:11,color:"var(--cyan)",fontWeight:600}}>Solve on CF →</div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Solved by difficulty */}
+              {Object.keys(cfData.byRating).length > 0 && (
+                <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:20}}>
+                  <div className="syne" style={{fontSize:14,fontWeight:800,marginBottom:14}}>📊 Problems Solved by Difficulty</div>
+                  <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"flex-end"}}>
+                    {Object.entries(cfData.byRating).sort((a,b)=>+a[0]-+b[0]).map(([rating,count])=>{
+                      const maxCount = Math.max(...Object.values(cfData.byRating));
+                      const pct = Math.round(count/maxCount*100);
+                      const rc = ratingColor(+rating);
+                      return (
+                        <div key={rating} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
+                          <div style={{fontSize:10,color:"var(--text3)",fontWeight:600}}>{count}</div>
+                          <div style={{width:32,background:rc,borderRadius:"4px 4px 0 0",opacity:.85,height:Math.max(8,pct*0.8)+"px"}}/>
+                          <div style={{fontSize:9,color:"var(--text3)"}}>{rating}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div style={{marginTop:10,fontSize:11,color:"var(--text3)"}}>
+                    Total accepted: {Object.values(cfData.byRating).reduce((a,b)=>a+b,0)} problems across {Object.keys(cfData.byRating).length} difficulty levels
+                  </div>
+                </div>
+              )}
+            </>)}
+
+            {/* CF Submission Heatmap */}
+            {cfData && heatmapData && (()=>{
+              const today = new Date();
+              const weeks = 26; // 6 months
+              const days = [];
+              for(let i=weeks*7-1;i>=0;i--){
+                const d=new Date(today); d.setDate(d.getDate()-i);
+                days.push(d.toLocaleDateString("en-CA"));
+              }
+              const maxCount = Math.max(1,...Object.values(heatmapData));
+              const getColor = (count) => {
+                if(!count) return "var(--bg3)";
+                const intensity = Math.min(1, count/Math.max(5,maxCount*0.5));
+                if(intensity>0.75) return "var(--green)";
+                if(intensity>0.4)  return "#00cc66";
+                if(intensity>0.1)  return "#009944";
+                return "#004422";
+              };
+              const totalActive = days.filter(d=>heatmapData[d]).length;
+              return (
+                <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:20,marginTop:16}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+                    <div className="syne" style={{fontSize:14,fontWeight:800}}>📆 Submission Heatmap (6 months)</div>
+                    <span style={{fontSize:11,color:"var(--text3)"}}>{totalActive} active days</span>
+                  </div>
+                  <div style={{overflowX:"auto"}}>
+                    <div style={{display:"grid",gridTemplateColumns:`repeat(${weeks},1fr)`,gridTemplateRows:"repeat(7,1fr)",gap:2,minWidth:400}}>
+                      {days.map((d,i)=>{
+                        const count = heatmapData[d]||0;
+                        const isToday = d===today.toLocaleDateString("en-CA");
+                        return (
+                          <div key={d} title={`${d}: ${count} submissions`}
+                            style={{width:10,height:10,borderRadius:2,background:getColor(count),border:isToday?"1px solid var(--cyan)":"none",cursor:"default",gridColumn:Math.floor(i/7)+1,gridRow:(i%7)+1}}/>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div style={{display:"flex",gap:8,alignItems:"center",marginTop:8}}>
+                    <span style={{fontSize:10,color:"var(--text3)"}}>Less</span>
+                    {["var(--bg3)","#004422","#009944","#00cc66","var(--green)"].map((c,i)=>(
+                      <div key={i} style={{width:10,height:10,borderRadius:2,background:c}}/>
+                    ))}
+                    <span style={{fontSize:10,color:"var(--text3)"}}>More</span>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* LeetCode Profile */}
+            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:20,marginTop:16}}>
+              <div className="syne" style={{fontSize:14,fontWeight:800,marginBottom:4}}>🟨 LeetCode Profile</div>
+              <p style={{fontSize:12,color:"var(--text2)",marginBottom:12}}>Connect your LeetCode account to see stats alongside Codeforces.</p>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:12}}>
+                <input value={lcInput} onChange={e=>setLcInput(e.target.value)}
+                  onKeyDown={e=>e.key==="Enter"&&fetchLCProfile(lcInput)}
+                  placeholder="Your LeetCode username…"
+                  className="input" style={{flex:1,minWidth:160,padding:"8px 12px",fontSize:13}}/>
+                <button className="btn-p" onClick={()=>fetchLCProfile(lcInput)} disabled={lcLoading}
+                  style={{padding:"8px 16px",fontSize:13,opacity:lcLoading?.6:1,background:"linear-gradient(135deg,#f89f1b,#e68a00)"}}>
+                  {lcLoading?"⏳":"Load →"}
+                </button>
+              </div>
+              {lcError&&<div style={{fontSize:12,color:"var(--pink)",marginBottom:8}}>{lcError}</div>}
+              {lcData&&(
+                <div>
+                  <div style={{display:"flex",gap:16,flexWrap:"wrap",marginBottom:12}}>
+                    <div style={{textAlign:"center"}}>
+                      <div className="syne" style={{fontSize:22,fontWeight:900,color:"#f89f1b"}}>{lcData.total}</div>
+                      <div style={{fontSize:10,color:"var(--text3)"}}>Total Solved</div>
+                    </div>
+                    <div style={{textAlign:"center"}}>
+                      <div className="syne" style={{fontSize:22,fontWeight:900,color:"var(--green)"}}>{lcData.easy}</div>
+                      <div style={{fontSize:10,color:"var(--text3)"}}>Easy</div>
+                    </div>
+                    <div style={{textAlign:"center"}}>
+                      <div className="syne" style={{fontSize:22,fontWeight:900,color:"var(--yellow)"}}>{lcData.med}</div>
+                      <div style={{fontSize:10,color:"var(--text3)"}}>Medium</div>
+                    </div>
+                    <div style={{textAlign:"center"}}>
+                      <div className="syne" style={{fontSize:22,fontWeight:900,color:"var(--pink)"}}>{lcData.hard}</div>
+                      <div style={{fontSize:10,color:"var(--text3)"}}>Hard</div>
+                    </div>
+                    <div style={{textAlign:"center"}}>
+                      <div className="syne" style={{fontSize:22,fontWeight:900,color:"var(--purple)"}}>{lcData.streak}</div>
+                      <div style={{fontSize:10,color:"var(--text3)"}}>Day Streak</div>
+                    </div>
+                    {lcData.ranking>0&&<div style={{textAlign:"center"}}>
+                      <div className="syne" style={{fontSize:22,fontWeight:900,color:"var(--cyan)"}}>#{lcData.ranking?.toLocaleString()}</div>
+                      <div style={{fontSize:10,color:"var(--text3)"}}>Global Rank</div>
+                    </div>}
+                  </div>
+                  {/* LC Heatmap */}
+                  {Object.keys(lcData.heatmap).length>0&&(()=>{
+                    const today=new Date(); const weeks=26;
+                    const days=[];
+                    for(let i=weeks*7-1;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);days.push(d.toLocaleDateString("en-CA"));}
+                    const maxC=Math.max(1,...Object.values(lcData.heatmap));
+                    const gc=(c)=>!c?"var(--bg3)":c/maxC>0.5?"#f89f1b":c/maxC>0.2?"#cc7700":"#885500";
+                    return(
+                      <div style={{overflowX:"auto",marginTop:8}}>
+                        <div style={{display:"grid",gridTemplateColumns:`repeat(${weeks},1fr)`,gridTemplateRows:"repeat(7,1fr)",gap:2,minWidth:400}}>
+                          {days.map((d,i)=><div key={d} title={`${d}: ${lcData.heatmap[d]||0}`} style={{width:10,height:10,borderRadius:2,background:gc(lcData.heatmap[d]||0),gridColumn:Math.floor(i/7)+1,gridRow:(i%7)+1}}/>)}
+                        </div>
+                      </div>
+                    );
+                  })()}
+                  {lcData.badges.length>0&&<div style={{marginTop:10,display:"flex",gap:6,flexWrap:"wrap"}}>
+                    {lcData.badges.map(b=><span key={b} style={{fontSize:10,padding:"2px 8px",borderRadius:12,background:"rgba(248,159,27,.12)",color:"#f89f1b",border:"1px solid rgba(248,159,27,.3)"}}>{b}</span>)}
+                  </div>}
+                </div>
+              )}
+            </div>
+
+            {/* AtCoder Profile */}
+            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:20,marginTop:16}}>
+              <div className="syne" style={{fontSize:14,fontWeight:800,marginBottom:4}}>🔵 AtCoder Profile</div>
+              <p style={{fontSize:12,color:"var(--text2)",marginBottom:12}}>Connect your AtCoder account for rating and contest history.</p>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:12}}>
+                <input value={acInput} onChange={e=>setAcInput(e.target.value)}
+                  onKeyDown={e=>e.key==="Enter"&&fetchACProfile(acInput)}
+                  placeholder="Your AtCoder username…"
+                  className="input" style={{flex:1,minWidth:160,padding:"8px 12px",fontSize:13}}/>
+                <button className="btn-p" onClick={()=>fetchACProfile(acInput)} disabled={acLoading}
+                  style={{padding:"8px 16px",fontSize:13,opacity:acLoading?.6:1,background:"linear-gradient(135deg,#333,#555)"}}>
+                  {acLoading?"⏳":"Load →"}
+                </button>
+              </div>
+              {acError&&<div style={{fontSize:12,color:"var(--pink)",marginBottom:8}}>{acError}</div>}
+              {acData&&(
+                <div style={{display:"flex",gap:20,flexWrap:"wrap"}}>
+                  <div style={{textAlign:"center"}}>
+                    <div className="syne" style={{fontSize:22,fontWeight:900,color:"var(--cyan)"}}>{acData.rating||"—"}</div>
+                    <div style={{fontSize:10,color:"var(--text3)"}}>Rating</div>
+                  </div>
+                  <div style={{textAlign:"center"}}>
+                    <div className="syne" style={{fontSize:22,fontWeight:900,color:"var(--purple)"}}>{acData.maxRating||"—"}</div>
+                    <div style={{fontSize:10,color:"var(--text3)"}}>Max Rating</div>
+                  </div>
+                  <div style={{textAlign:"center"}}>
+                    <div className="syne" style={{fontSize:22,fontWeight:900,color:"var(--green)"}}>{acData.solved||"—"}</div>
+                    <div style={{fontSize:10,color:"var(--text3)"}}>Problems Solved</div>
+                  </div>
+                  <div style={{textAlign:"center"}}>
+                    <div className="syne" style={{fontSize:22,fontWeight:900,color:"var(--yellow)"}}>{acData.contests}</div>
+                    <div style={{fontSize:10,color:"var(--text3)"}}>Contests</div>
+                  </div>
+                  {acData.url&&<a href={acData.url} target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:"var(--cyan)",textDecoration:"none",alignSelf:"center"}}>View Profile →</a>}
+                </div>
+              )}
+            </div>
+
+            {!cfData && !cfLoading && (
+              <div style={{textAlign:"center",padding:"40px 20px",border:"1px dashed var(--border)",borderRadius:16}}>
+                <div style={{fontSize:48,marginBottom:12}}>👤</div>
+                <div className="syne" style={{fontSize:16,fontWeight:700,marginBottom:6}}>Connect your CP profiles</div>
+                <div style={{fontSize:13,color:"var(--text2)"}}>
+                  Enter Codeforces handle above for full profile. Scroll down to add LeetCode and AtCoder too — all from public APIs, no login needed.
+                </div>
+              </div>
+            )}
           </div>
         ) : null}
       </div>
