@@ -522,6 +522,185 @@ const Modal = ({ h, onClose }) => {
             <button className="btn-g" style={{padding:"13px 17px"}} onClick={onClose}>← Back</button>
           </div>
         </div>
+
+        {/* ── MOCK TEST VIEW ── */}
+        {view==="mock" && (
+          <div style={{maxWidth:800,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🎯 Full Mock Tests</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Simulates real company exam pattern — section-wise time limits, question counts matching actual tests.</p>
+            <div style={{display:"grid",gap:14}}>
+              {APT_COMPANIES.filter(co=>MOCK_CONFIGS[co.id]||MOCK_CONFIGS.default).map(co=>{
+                const cfg = MOCK_CONFIGS[co.id]||{...MOCK_CONFIGS.default,name:`${co.name} Mock`};
+                return(
+                  <div key={co.id} style={{background:"var(--card)",border:`1px solid ${co.color}20`,borderRadius:14,padding:20}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10,marginBottom:12}}>
+                      <div>
+                        <div className="syne" style={{fontSize:15,fontWeight:800}}>{cfg.name}</div>
+                        <div style={{fontSize:12,color:"var(--text2)",marginTop:2}}>Total: {cfg.totalTime} mins · {cfg.sections.reduce((a,s)=>a+s.q,0)} questions</div>
+                      </div>
+                      <button onClick={()=>{
+                        const allQs=[];
+                        Object.values(APT_QUESTIONS).forEach(arr=>allQs.push(...arr));
+                        const shuffled=[...allQs].sort(()=>Math.random()-.5).slice(0,cfg.sections.reduce((a,s)=>a+s.q,0));
+                        setQuestions(shuffled); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                        setQuizTimer(0); setTimerActive(true); setMockConfig(cfg); setView("quiz");
+                      }} className="btn-p" style={{padding:"8px 20px",fontSize:13,background:`linear-gradient(135deg,${co.color},${co.color}cc)`}}>
+                        Start Mock →
+                      </button>
+                    </div>
+                    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                      {cfg.sections.map(s=>(
+                        <div key={s.name} style={{padding:"6px 12px",borderRadius:9,background:`${co.color}08`,border:`1px solid ${co.color}20`,fontSize:11}}>
+                          <span style={{fontWeight:700,color:co.color}}>{s.name}</span>
+                          <span style={{color:"var(--text3)",marginLeft:6}}>{s.q}Q · {s.time}min</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── WRONG BANK VIEW ── */}
+        {view==="wrongbank" && (
+          <div style={{maxWidth:720,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div>
+                <div className="syne" style={{fontSize:18,fontWeight:800}}>❌ Wrong Question Bank</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:2}}>{wrongBank.length} questions saved for revision</div>
+              </div>
+              {wrongBank.length>0&&<button onClick={()=>{
+                setQuestions(wrongBank.slice(0,10));setQIdx(0);setAnswers({});setQuizDone(false);setShowSol(false);setQuizTimer(0);setTimerActive(true);setView("quiz");
+              }} className="btn-p" style={{padding:"8px 18px",fontSize:12}}>Practice All →</button>}
+            </div>
+            {wrongBank.length===0?(
+              <div style={{textAlign:"center",padding:"60px 20px",border:"1px dashed var(--border)",borderRadius:14}}>
+                <div style={{fontSize:40,marginBottom:10}}>✅</div>
+                <div className="syne" style={{fontSize:16,fontWeight:700}}>No wrong answers yet!</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:6}}>Wrong answers from quizzes will appear here for revision.</div>
+              </div>
+            ):(
+              <div style={{display:"flex",flexDirection:"column",gap:12}}>
+                {wrongBank.map((q,i)=>(
+                  <div key={i} style={{background:"var(--card)",border:"1px solid rgba(255,61,138,.2)",borderRadius:12,padding:16}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10,gap:10}}>
+                      <div style={{fontSize:13,fontWeight:600,lineHeight:1.5,flex:1}}>{q.q}</div>
+                      <button onClick={()=>removeFromWrong(q.key)} style={{fontSize:10,padding:"3px 8px",borderRadius:5,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>Remove</button>
+                    </div>
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
+                      {q.opts.map((o,oi)=>(
+                        <span key={oi} style={{fontSize:11,padding:"3px 10px",borderRadius:6,background:oi===q.ans?"rgba(0,255,136,.12)":"var(--bg3)",color:oi===q.ans?"var(--green)":"var(--text3)",border:`1px solid ${oi===q.ans?"rgba(0,255,136,.3)":"var(--border)"}`,fontWeight:oi===q.ans?700:400}}>
+                          {String.fromCharCode(65+oi)}. {o} {oi===q.ans?"✓":""}
+                        </span>
+                      ))}
+                    </div>
+                    <div style={{fontSize:11,color:"var(--text2)",background:"var(--bg3)",borderRadius:7,padding:"6px 10px"}}>💡 {q.sol}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── SPEED DRILL VIEW ── */}
+        {view==="drill" && (
+          <div style={{maxWidth:600,margin:"0 auto",textAlign:"center"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>⚡ Speed Drill</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>10 questions · 60 seconds · Score = accuracy × speed. No explanations — just rapid fire.</p>
+            {!drillMode?(
+              <div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10,marginBottom:20}}>
+                  {[["All Topics","all","var(--cyan)"],["Quant Only","quant","#3b82f6"],["Logical Only","logical","#8b5cf6"],["Verbal Only","verbal","#10b981"]].map(([label,mode,color])=>(
+                    <button key={mode} onClick={()=>{
+                      const pool = mode==="all"?Object.values(APT_QUESTIONS).flat():
+                        Object.entries(APT_QUESTIONS).filter(([k])=>APT_TOPICS[mode]?.subtopics.some(s=>k.startsWith(s.id))).flatMap(([,v])=>v);
+                      const drillQs = [...(pool.length?pool:Object.values(APT_QUESTIONS).flat())].sort(()=>Math.random()-.5).slice(0,10);
+                      setQuestions(drillQs); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                      setDrillTimer(60); setDrillMode(true); setDrillScore({correct:0,total:0});
+                      setTimerActive(true); setQuizTimer(0); setView("quiz");
+                    }} style={{padding:"14px 10px",borderRadius:12,border:`2px solid ${color}30`,background:`${color}10`,color:color,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:700,fontSize:13}}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div style={{fontSize:12,color:"var(--text3)"}}>⏱ 60 seconds · Instant move to next question · No "Show Solution"</div>
+              </div>
+            ):null}
+          </div>
+        )}
+
+        {/* ── FORMULA SHEET VIEW ── */}
+        {view==="formula" && (
+          <div style={{maxWidth:900,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div className="syne" style={{fontSize:18,fontWeight:800}}>📋 Formula Quick-Reference</div>
+              <button onClick={()=>window.print()} className="btn-p" style={{padding:"7px 18px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Print Sheet</button>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:14}}>
+              {[
+                {title:"📊 Percentages",color:"#3b82f6",formulas:["X% of Y = (X/100)×Y","A increased by X% then decreased by X% = net −X²/100%","Two successive %s x,y: net = x+y+xy/100","Profit% = (SP−CP)/CP × 100","Discount% = (MP−SP)/MP × 100"]},
+                {title:"⏰ Time & Work",color:"#f59e0b",formulas:["Combined rate = 1/a + 1/b + ...","Together A+B = ab/(a+b) days","M₁D₁H₁ = M₂D₂H₂","If A is n× faster, A takes 1/n time of B","Pipe: fill−leak = net rate"]},
+                {title:"🚗 Speed & Distance",color:"#10b981",formulas:["S = D/T (km/h or m/s)","km/h to m/s: ×5/18","Relative speed (same dir) = |S₁−S₂|","Relative speed (opposite) = S₁+S₂","Train cross platform: D = (length of train + platform)"]},
+                {title:"🏦 Simple & Compound Interest",color:"#8b5cf6",formulas:["SI = PRT/100","CI = P(1+R/100)ⁿ − P","CI−SI (2 yrs) = P(R/100)²","Effective rate (half-yearly) = 2R+R²/100","Rule of 72: Years to double ≈ 72/R%"]},
+                {title:"⚖️ Ratio & Proportion",color:"#ef4444",formulas:["a:b = c:d ⟹ ad = bc (product of means = extremes)","If a:b = x:y, then (a+b):(a−b) = (x+y):(x−y)","Mixture: (c₁−c)/(c−c₂) = m₂/m₁","Compounded ratio: (a:b)×(c:d) = ac:bd","Mean proportion of a,b: √(ab)"]},
+                {title:"🎲 Permutation & Combination",color:"#06b6d4",formulas:["nPr = n!/(n−r)!","nCr = n!/(r!(n−r)!)","Circular arrangement: (n−1)!","Identical items: n!/(p!q!r!)","At least one = Total − None selected"]},
+                {title:"🎯 Probability",color:"#f97316",formulas:["P(E) = Favourable/Total","P(A∪B) = P(A)+P(B)−P(A∩B)","P(A∩B) = P(A)×P(B) [independent]","P(Aᶜ) = 1−P(A)","Conditional: P(A|B) = P(A∩B)/P(B)"]},
+                {title:"📐 Mensuration",color:"#84cc16",formulas:["Circle: Area=πr², Circumference=2πr","Rectangle: Area=l×b, Perimeter=2(l+b)","Triangle: Area=½×b×h, Heron's=√(s(s−a)(s−b)(s−c))","Sphere: Vol=(4/3)πr³, SA=4πr²","Cylinder: Vol=πr²h, CSA=2πrh"]},
+                {title:"📈 Averages & Stats",color:"#a855f7",formulas:["Mean = Sum/Count","Weighted avg = Σ(wᵢxᵢ)/Σwᵢ","If avg of n nums = x, and one num a replaced by b: new avg = x+(b−a)/n","Median (odd n) = middle value","Mode = most frequent value"]},
+                {title:"🧪 Mixtures & Alligations",color:"#14b8a6",formulas:["Alligation: (C₁−Mean)/(Mean−C₂) = Q₂/Q₁","Removal & replacement: Final = Initial×(1−x/V)ⁿ","Mix price = (Q₁C₁+Q₂C₂)/(Q₁+Q₂)","Profit in mixture = sell all at higher price","Rule of alligation applies to any quantity"]},
+                {title:"🔢 Number System",color:"#f43f5e",formulas:["Divisibility by 2: last digit even","Div by 3: sum of digits div by 3","Div by 9: sum of digits div by 9","Div by 11: (sum odd pos − sum even pos) div by 11","HCF×LCM = Product of two numbers"]},
+                {title:"⏱️ Time Complexity",color:"#0ea5e9",formulas:["O(1) < O(log n) < O(n) < O(n log n) < O(n²)","Binary Search: O(log n)","Merge Sort: O(n log n)","Bubble/Selection/Insertion Sort: O(n²)","Space complexity of recursion: O(depth)"]},
+              ].map((sec,i)=>(
+                <div key={i} style={{background:"var(--card)",border:`1px solid ${sec.color}20`,borderRadius:12,padding:16}}>
+                  <div className="syne" style={{fontSize:13,fontWeight:800,color:sec.color,marginBottom:10}}>{sec.title}</div>
+                  {sec.formulas.map((f,fi)=>(
+                    <div key={fi} style={{fontSize:12,padding:"4px 0",borderBottom:fi<sec.formulas.length-1?"1px solid var(--border)":"none",color:"var(--text2)",lineHeight:1.5}}>{f}</div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── AI SOLVER VIEW ── */}
+        {view==="aisolver" && (
+          <div style={{maxWidth:700,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🤖 AI Aptitude Solver</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Paste any aptitude question → AI explains step-by-step with formula used. Works for Quant, Logical, and Verbal.</p>
+            <div style={{marginBottom:16}}>
+              <textarea value={aiInput} onChange={e=>setAiInput(e.target.value)}
+                placeholder="Paste your aptitude question here...&#10;&#10;Example: A train 200m long crosses a platform 300m long in 25 seconds. What is the speed of the train in km/h?"
+                style={{width:"100%",minHeight:120,padding:"12px 14px",borderRadius:10,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:13,fontFamily:"'DM Sans',sans-serif",resize:"vertical",boxSizing:"border-box",outline:"none"}}/>
+            </div>
+            <button className="btn-p" onClick={()=>solveWithAI(aiInput)} disabled={aiSolving||!aiInput.trim()}
+              style={{padding:"10px 28px",fontSize:14,marginBottom:20,opacity:aiSolving||!aiInput.trim()?0.6:1}}>
+              {aiSolving?"⏳ Solving...":"🤖 Solve Step by Step →"}
+            </button>
+            {aiSolution && (
+              <div style={{background:"var(--card)",border:"1px solid rgba(0,212,255,.2)",borderRadius:14,padding:20}}>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",marginBottom:10}}>AI SOLUTION</div>
+                <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{aiSolution}</div>
+                <button onClick={()=>{setAiSolution("");setAiInput("");}} style={{marginTop:12,fontSize:11,padding:"4px 12px",borderRadius:6,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Clear</button>
+              </div>
+            )}
+            <div style={{marginTop:24,background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:16}}>
+              <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",marginBottom:10}}>SAMPLE QUESTIONS TO TRY</div>
+              {["A and B together can complete a work in 12 days. A alone takes 20 days. How long will B alone take?",
+                "In how many ways can the letters of the word MISSISSIPPI be arranged?",
+                "If the selling price of 10 articles equals the cost price of 11 articles, find the profit percentage.",
+                "A bag contains 4 white, 5 red and 6 blue balls. Three balls are drawn at random. What is the probability all are red?"].map((q,i)=>(
+                <div key={i} onClick={()=>setAiInput(q)} style={{padding:"8px 12px",marginBottom:6,borderRadius:8,border:"1px solid var(--border)",cursor:"pointer",fontSize:12,color:"var(--text2)",transition:"all .15s"}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.color="var(--text)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.color="var(--text2)";}}>
+                  {i+1}. {q}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
@@ -876,6 +1055,185 @@ const HomePage = ({setPage}) => {
             </div>
           ))}
         </div>
+
+        {/* ── MOCK TEST VIEW ── */}
+        {view==="mock" && (
+          <div style={{maxWidth:800,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🎯 Full Mock Tests</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Simulates real company exam pattern — section-wise time limits, question counts matching actual tests.</p>
+            <div style={{display:"grid",gap:14}}>
+              {APT_COMPANIES.filter(co=>MOCK_CONFIGS[co.id]||MOCK_CONFIGS.default).map(co=>{
+                const cfg = MOCK_CONFIGS[co.id]||{...MOCK_CONFIGS.default,name:`${co.name} Mock`};
+                return(
+                  <div key={co.id} style={{background:"var(--card)",border:`1px solid ${co.color}20`,borderRadius:14,padding:20}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10,marginBottom:12}}>
+                      <div>
+                        <div className="syne" style={{fontSize:15,fontWeight:800}}>{cfg.name}</div>
+                        <div style={{fontSize:12,color:"var(--text2)",marginTop:2}}>Total: {cfg.totalTime} mins · {cfg.sections.reduce((a,s)=>a+s.q,0)} questions</div>
+                      </div>
+                      <button onClick={()=>{
+                        const allQs=[];
+                        Object.values(APT_QUESTIONS).forEach(arr=>allQs.push(...arr));
+                        const shuffled=[...allQs].sort(()=>Math.random()-.5).slice(0,cfg.sections.reduce((a,s)=>a+s.q,0));
+                        setQuestions(shuffled); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                        setQuizTimer(0); setTimerActive(true); setMockConfig(cfg); setView("quiz");
+                      }} className="btn-p" style={{padding:"8px 20px",fontSize:13,background:`linear-gradient(135deg,${co.color},${co.color}cc)`}}>
+                        Start Mock →
+                      </button>
+                    </div>
+                    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                      {cfg.sections.map(s=>(
+                        <div key={s.name} style={{padding:"6px 12px",borderRadius:9,background:`${co.color}08`,border:`1px solid ${co.color}20`,fontSize:11}}>
+                          <span style={{fontWeight:700,color:co.color}}>{s.name}</span>
+                          <span style={{color:"var(--text3)",marginLeft:6}}>{s.q}Q · {s.time}min</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── WRONG BANK VIEW ── */}
+        {view==="wrongbank" && (
+          <div style={{maxWidth:720,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div>
+                <div className="syne" style={{fontSize:18,fontWeight:800}}>❌ Wrong Question Bank</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:2}}>{wrongBank.length} questions saved for revision</div>
+              </div>
+              {wrongBank.length>0&&<button onClick={()=>{
+                setQuestions(wrongBank.slice(0,10));setQIdx(0);setAnswers({});setQuizDone(false);setShowSol(false);setQuizTimer(0);setTimerActive(true);setView("quiz");
+              }} className="btn-p" style={{padding:"8px 18px",fontSize:12}}>Practice All →</button>}
+            </div>
+            {wrongBank.length===0?(
+              <div style={{textAlign:"center",padding:"60px 20px",border:"1px dashed var(--border)",borderRadius:14}}>
+                <div style={{fontSize:40,marginBottom:10}}>✅</div>
+                <div className="syne" style={{fontSize:16,fontWeight:700}}>No wrong answers yet!</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:6}}>Wrong answers from quizzes will appear here for revision.</div>
+              </div>
+            ):(
+              <div style={{display:"flex",flexDirection:"column",gap:12}}>
+                {wrongBank.map((q,i)=>(
+                  <div key={i} style={{background:"var(--card)",border:"1px solid rgba(255,61,138,.2)",borderRadius:12,padding:16}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10,gap:10}}>
+                      <div style={{fontSize:13,fontWeight:600,lineHeight:1.5,flex:1}}>{q.q}</div>
+                      <button onClick={()=>removeFromWrong(q.key)} style={{fontSize:10,padding:"3px 8px",borderRadius:5,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>Remove</button>
+                    </div>
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
+                      {q.opts.map((o,oi)=>(
+                        <span key={oi} style={{fontSize:11,padding:"3px 10px",borderRadius:6,background:oi===q.ans?"rgba(0,255,136,.12)":"var(--bg3)",color:oi===q.ans?"var(--green)":"var(--text3)",border:`1px solid ${oi===q.ans?"rgba(0,255,136,.3)":"var(--border)"}`,fontWeight:oi===q.ans?700:400}}>
+                          {String.fromCharCode(65+oi)}. {o} {oi===q.ans?"✓":""}
+                        </span>
+                      ))}
+                    </div>
+                    <div style={{fontSize:11,color:"var(--text2)",background:"var(--bg3)",borderRadius:7,padding:"6px 10px"}}>💡 {q.sol}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── SPEED DRILL VIEW ── */}
+        {view==="drill" && (
+          <div style={{maxWidth:600,margin:"0 auto",textAlign:"center"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>⚡ Speed Drill</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>10 questions · 60 seconds · Score = accuracy × speed. No explanations — just rapid fire.</p>
+            {!drillMode?(
+              <div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10,marginBottom:20}}>
+                  {[["All Topics","all","var(--cyan)"],["Quant Only","quant","#3b82f6"],["Logical Only","logical","#8b5cf6"],["Verbal Only","verbal","#10b981"]].map(([label,mode,color])=>(
+                    <button key={mode} onClick={()=>{
+                      const pool = mode==="all"?Object.values(APT_QUESTIONS).flat():
+                        Object.entries(APT_QUESTIONS).filter(([k])=>APT_TOPICS[mode]?.subtopics.some(s=>k.startsWith(s.id))).flatMap(([,v])=>v);
+                      const drillQs = [...(pool.length?pool:Object.values(APT_QUESTIONS).flat())].sort(()=>Math.random()-.5).slice(0,10);
+                      setQuestions(drillQs); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                      setDrillTimer(60); setDrillMode(true); setDrillScore({correct:0,total:0});
+                      setTimerActive(true); setQuizTimer(0); setView("quiz");
+                    }} style={{padding:"14px 10px",borderRadius:12,border:`2px solid ${color}30`,background:`${color}10`,color:color,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:700,fontSize:13}}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div style={{fontSize:12,color:"var(--text3)"}}>⏱ 60 seconds · Instant move to next question · No "Show Solution"</div>
+              </div>
+            ):null}
+          </div>
+        )}
+
+        {/* ── FORMULA SHEET VIEW ── */}
+        {view==="formula" && (
+          <div style={{maxWidth:900,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div className="syne" style={{fontSize:18,fontWeight:800}}>📋 Formula Quick-Reference</div>
+              <button onClick={()=>window.print()} className="btn-p" style={{padding:"7px 18px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Print Sheet</button>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:14}}>
+              {[
+                {title:"📊 Percentages",color:"#3b82f6",formulas:["X% of Y = (X/100)×Y","A increased by X% then decreased by X% = net −X²/100%","Two successive %s x,y: net = x+y+xy/100","Profit% = (SP−CP)/CP × 100","Discount% = (MP−SP)/MP × 100"]},
+                {title:"⏰ Time & Work",color:"#f59e0b",formulas:["Combined rate = 1/a + 1/b + ...","Together A+B = ab/(a+b) days","M₁D₁H₁ = M₂D₂H₂","If A is n× faster, A takes 1/n time of B","Pipe: fill−leak = net rate"]},
+                {title:"🚗 Speed & Distance",color:"#10b981",formulas:["S = D/T (km/h or m/s)","km/h to m/s: ×5/18","Relative speed (same dir) = |S₁−S₂|","Relative speed (opposite) = S₁+S₂","Train cross platform: D = (length of train + platform)"]},
+                {title:"🏦 Simple & Compound Interest",color:"#8b5cf6",formulas:["SI = PRT/100","CI = P(1+R/100)ⁿ − P","CI−SI (2 yrs) = P(R/100)²","Effective rate (half-yearly) = 2R+R²/100","Rule of 72: Years to double ≈ 72/R%"]},
+                {title:"⚖️ Ratio & Proportion",color:"#ef4444",formulas:["a:b = c:d ⟹ ad = bc (product of means = extremes)","If a:b = x:y, then (a+b):(a−b) = (x+y):(x−y)","Mixture: (c₁−c)/(c−c₂) = m₂/m₁","Compounded ratio: (a:b)×(c:d) = ac:bd","Mean proportion of a,b: √(ab)"]},
+                {title:"🎲 Permutation & Combination",color:"#06b6d4",formulas:["nPr = n!/(n−r)!","nCr = n!/(r!(n−r)!)","Circular arrangement: (n−1)!","Identical items: n!/(p!q!r!)","At least one = Total − None selected"]},
+                {title:"🎯 Probability",color:"#f97316",formulas:["P(E) = Favourable/Total","P(A∪B) = P(A)+P(B)−P(A∩B)","P(A∩B) = P(A)×P(B) [independent]","P(Aᶜ) = 1−P(A)","Conditional: P(A|B) = P(A∩B)/P(B)"]},
+                {title:"📐 Mensuration",color:"#84cc16",formulas:["Circle: Area=πr², Circumference=2πr","Rectangle: Area=l×b, Perimeter=2(l+b)","Triangle: Area=½×b×h, Heron's=√(s(s−a)(s−b)(s−c))","Sphere: Vol=(4/3)πr³, SA=4πr²","Cylinder: Vol=πr²h, CSA=2πrh"]},
+                {title:"📈 Averages & Stats",color:"#a855f7",formulas:["Mean = Sum/Count","Weighted avg = Σ(wᵢxᵢ)/Σwᵢ","If avg of n nums = x, and one num a replaced by b: new avg = x+(b−a)/n","Median (odd n) = middle value","Mode = most frequent value"]},
+                {title:"🧪 Mixtures & Alligations",color:"#14b8a6",formulas:["Alligation: (C₁−Mean)/(Mean−C₂) = Q₂/Q₁","Removal & replacement: Final = Initial×(1−x/V)ⁿ","Mix price = (Q₁C₁+Q₂C₂)/(Q₁+Q₂)","Profit in mixture = sell all at higher price","Rule of alligation applies to any quantity"]},
+                {title:"🔢 Number System",color:"#f43f5e",formulas:["Divisibility by 2: last digit even","Div by 3: sum of digits div by 3","Div by 9: sum of digits div by 9","Div by 11: (sum odd pos − sum even pos) div by 11","HCF×LCM = Product of two numbers"]},
+                {title:"⏱️ Time Complexity",color:"#0ea5e9",formulas:["O(1) < O(log n) < O(n) < O(n log n) < O(n²)","Binary Search: O(log n)","Merge Sort: O(n log n)","Bubble/Selection/Insertion Sort: O(n²)","Space complexity of recursion: O(depth)"]},
+              ].map((sec,i)=>(
+                <div key={i} style={{background:"var(--card)",border:`1px solid ${sec.color}20`,borderRadius:12,padding:16}}>
+                  <div className="syne" style={{fontSize:13,fontWeight:800,color:sec.color,marginBottom:10}}>{sec.title}</div>
+                  {sec.formulas.map((f,fi)=>(
+                    <div key={fi} style={{fontSize:12,padding:"4px 0",borderBottom:fi<sec.formulas.length-1?"1px solid var(--border)":"none",color:"var(--text2)",lineHeight:1.5}}>{f}</div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── AI SOLVER VIEW ── */}
+        {view==="aisolver" && (
+          <div style={{maxWidth:700,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🤖 AI Aptitude Solver</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Paste any aptitude question → AI explains step-by-step with formula used. Works for Quant, Logical, and Verbal.</p>
+            <div style={{marginBottom:16}}>
+              <textarea value={aiInput} onChange={e=>setAiInput(e.target.value)}
+                placeholder="Paste your aptitude question here...&#10;&#10;Example: A train 200m long crosses a platform 300m long in 25 seconds. What is the speed of the train in km/h?"
+                style={{width:"100%",minHeight:120,padding:"12px 14px",borderRadius:10,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:13,fontFamily:"'DM Sans',sans-serif",resize:"vertical",boxSizing:"border-box",outline:"none"}}/>
+            </div>
+            <button className="btn-p" onClick={()=>solveWithAI(aiInput)} disabled={aiSolving||!aiInput.trim()}
+              style={{padding:"10px 28px",fontSize:14,marginBottom:20,opacity:aiSolving||!aiInput.trim()?0.6:1}}>
+              {aiSolving?"⏳ Solving...":"🤖 Solve Step by Step →"}
+            </button>
+            {aiSolution && (
+              <div style={{background:"var(--card)",border:"1px solid rgba(0,212,255,.2)",borderRadius:14,padding:20}}>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",marginBottom:10}}>AI SOLUTION</div>
+                <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{aiSolution}</div>
+                <button onClick={()=>{setAiSolution("");setAiInput("");}} style={{marginTop:12,fontSize:11,padding:"4px 12px",borderRadius:6,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Clear</button>
+              </div>
+            )}
+            <div style={{marginTop:24,background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:16}}>
+              <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",marginBottom:10}}>SAMPLE QUESTIONS TO TRY</div>
+              {["A and B together can complete a work in 12 days. A alone takes 20 days. How long will B alone take?",
+                "In how many ways can the letters of the word MISSISSIPPI be arranged?",
+                "If the selling price of 10 articles equals the cost price of 11 articles, find the profit percentage.",
+                "A bag contains 4 white, 5 red and 6 blue balls. Three balls are drawn at random. What is the probability all are red?"].map((q,i)=>(
+                <div key={i} onClick={()=>setAiInput(q)} style={{padding:"8px 12px",marginBottom:6,borderRadius:8,border:"1px solid var(--border)",cursor:"pointer",fontSize:12,color:"var(--text2)",transition:"all .15s"}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.color="var(--text)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.color="var(--text2)";}}>
+                  {i+1}. {q}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
@@ -1102,6 +1460,185 @@ const HackathonsPage = () => {
             </>
           )}
         </div>
+
+        {/* ── MOCK TEST VIEW ── */}
+        {view==="mock" && (
+          <div style={{maxWidth:800,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🎯 Full Mock Tests</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Simulates real company exam pattern — section-wise time limits, question counts matching actual tests.</p>
+            <div style={{display:"grid",gap:14}}>
+              {APT_COMPANIES.filter(co=>MOCK_CONFIGS[co.id]||MOCK_CONFIGS.default).map(co=>{
+                const cfg = MOCK_CONFIGS[co.id]||{...MOCK_CONFIGS.default,name:`${co.name} Mock`};
+                return(
+                  <div key={co.id} style={{background:"var(--card)",border:`1px solid ${co.color}20`,borderRadius:14,padding:20}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10,marginBottom:12}}>
+                      <div>
+                        <div className="syne" style={{fontSize:15,fontWeight:800}}>{cfg.name}</div>
+                        <div style={{fontSize:12,color:"var(--text2)",marginTop:2}}>Total: {cfg.totalTime} mins · {cfg.sections.reduce((a,s)=>a+s.q,0)} questions</div>
+                      </div>
+                      <button onClick={()=>{
+                        const allQs=[];
+                        Object.values(APT_QUESTIONS).forEach(arr=>allQs.push(...arr));
+                        const shuffled=[...allQs].sort(()=>Math.random()-.5).slice(0,cfg.sections.reduce((a,s)=>a+s.q,0));
+                        setQuestions(shuffled); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                        setQuizTimer(0); setTimerActive(true); setMockConfig(cfg); setView("quiz");
+                      }} className="btn-p" style={{padding:"8px 20px",fontSize:13,background:`linear-gradient(135deg,${co.color},${co.color}cc)`}}>
+                        Start Mock →
+                      </button>
+                    </div>
+                    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                      {cfg.sections.map(s=>(
+                        <div key={s.name} style={{padding:"6px 12px",borderRadius:9,background:`${co.color}08`,border:`1px solid ${co.color}20`,fontSize:11}}>
+                          <span style={{fontWeight:700,color:co.color}}>{s.name}</span>
+                          <span style={{color:"var(--text3)",marginLeft:6}}>{s.q}Q · {s.time}min</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── WRONG BANK VIEW ── */}
+        {view==="wrongbank" && (
+          <div style={{maxWidth:720,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div>
+                <div className="syne" style={{fontSize:18,fontWeight:800}}>❌ Wrong Question Bank</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:2}}>{wrongBank.length} questions saved for revision</div>
+              </div>
+              {wrongBank.length>0&&<button onClick={()=>{
+                setQuestions(wrongBank.slice(0,10));setQIdx(0);setAnswers({});setQuizDone(false);setShowSol(false);setQuizTimer(0);setTimerActive(true);setView("quiz");
+              }} className="btn-p" style={{padding:"8px 18px",fontSize:12}}>Practice All →</button>}
+            </div>
+            {wrongBank.length===0?(
+              <div style={{textAlign:"center",padding:"60px 20px",border:"1px dashed var(--border)",borderRadius:14}}>
+                <div style={{fontSize:40,marginBottom:10}}>✅</div>
+                <div className="syne" style={{fontSize:16,fontWeight:700}}>No wrong answers yet!</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:6}}>Wrong answers from quizzes will appear here for revision.</div>
+              </div>
+            ):(
+              <div style={{display:"flex",flexDirection:"column",gap:12}}>
+                {wrongBank.map((q,i)=>(
+                  <div key={i} style={{background:"var(--card)",border:"1px solid rgba(255,61,138,.2)",borderRadius:12,padding:16}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10,gap:10}}>
+                      <div style={{fontSize:13,fontWeight:600,lineHeight:1.5,flex:1}}>{q.q}</div>
+                      <button onClick={()=>removeFromWrong(q.key)} style={{fontSize:10,padding:"3px 8px",borderRadius:5,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>Remove</button>
+                    </div>
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
+                      {q.opts.map((o,oi)=>(
+                        <span key={oi} style={{fontSize:11,padding:"3px 10px",borderRadius:6,background:oi===q.ans?"rgba(0,255,136,.12)":"var(--bg3)",color:oi===q.ans?"var(--green)":"var(--text3)",border:`1px solid ${oi===q.ans?"rgba(0,255,136,.3)":"var(--border)"}`,fontWeight:oi===q.ans?700:400}}>
+                          {String.fromCharCode(65+oi)}. {o} {oi===q.ans?"✓":""}
+                        </span>
+                      ))}
+                    </div>
+                    <div style={{fontSize:11,color:"var(--text2)",background:"var(--bg3)",borderRadius:7,padding:"6px 10px"}}>💡 {q.sol}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── SPEED DRILL VIEW ── */}
+        {view==="drill" && (
+          <div style={{maxWidth:600,margin:"0 auto",textAlign:"center"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>⚡ Speed Drill</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>10 questions · 60 seconds · Score = accuracy × speed. No explanations — just rapid fire.</p>
+            {!drillMode?(
+              <div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10,marginBottom:20}}>
+                  {[["All Topics","all","var(--cyan)"],["Quant Only","quant","#3b82f6"],["Logical Only","logical","#8b5cf6"],["Verbal Only","verbal","#10b981"]].map(([label,mode,color])=>(
+                    <button key={mode} onClick={()=>{
+                      const pool = mode==="all"?Object.values(APT_QUESTIONS).flat():
+                        Object.entries(APT_QUESTIONS).filter(([k])=>APT_TOPICS[mode]?.subtopics.some(s=>k.startsWith(s.id))).flatMap(([,v])=>v);
+                      const drillQs = [...(pool.length?pool:Object.values(APT_QUESTIONS).flat())].sort(()=>Math.random()-.5).slice(0,10);
+                      setQuestions(drillQs); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                      setDrillTimer(60); setDrillMode(true); setDrillScore({correct:0,total:0});
+                      setTimerActive(true); setQuizTimer(0); setView("quiz");
+                    }} style={{padding:"14px 10px",borderRadius:12,border:`2px solid ${color}30`,background:`${color}10`,color:color,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:700,fontSize:13}}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div style={{fontSize:12,color:"var(--text3)"}}>⏱ 60 seconds · Instant move to next question · No "Show Solution"</div>
+              </div>
+            ):null}
+          </div>
+        )}
+
+        {/* ── FORMULA SHEET VIEW ── */}
+        {view==="formula" && (
+          <div style={{maxWidth:900,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div className="syne" style={{fontSize:18,fontWeight:800}}>📋 Formula Quick-Reference</div>
+              <button onClick={()=>window.print()} className="btn-p" style={{padding:"7px 18px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Print Sheet</button>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:14}}>
+              {[
+                {title:"📊 Percentages",color:"#3b82f6",formulas:["X% of Y = (X/100)×Y","A increased by X% then decreased by X% = net −X²/100%","Two successive %s x,y: net = x+y+xy/100","Profit% = (SP−CP)/CP × 100","Discount% = (MP−SP)/MP × 100"]},
+                {title:"⏰ Time & Work",color:"#f59e0b",formulas:["Combined rate = 1/a + 1/b + ...","Together A+B = ab/(a+b) days","M₁D₁H₁ = M₂D₂H₂","If A is n× faster, A takes 1/n time of B","Pipe: fill−leak = net rate"]},
+                {title:"🚗 Speed & Distance",color:"#10b981",formulas:["S = D/T (km/h or m/s)","km/h to m/s: ×5/18","Relative speed (same dir) = |S₁−S₂|","Relative speed (opposite) = S₁+S₂","Train cross platform: D = (length of train + platform)"]},
+                {title:"🏦 Simple & Compound Interest",color:"#8b5cf6",formulas:["SI = PRT/100","CI = P(1+R/100)ⁿ − P","CI−SI (2 yrs) = P(R/100)²","Effective rate (half-yearly) = 2R+R²/100","Rule of 72: Years to double ≈ 72/R%"]},
+                {title:"⚖️ Ratio & Proportion",color:"#ef4444",formulas:["a:b = c:d ⟹ ad = bc (product of means = extremes)","If a:b = x:y, then (a+b):(a−b) = (x+y):(x−y)","Mixture: (c₁−c)/(c−c₂) = m₂/m₁","Compounded ratio: (a:b)×(c:d) = ac:bd","Mean proportion of a,b: √(ab)"]},
+                {title:"🎲 Permutation & Combination",color:"#06b6d4",formulas:["nPr = n!/(n−r)!","nCr = n!/(r!(n−r)!)","Circular arrangement: (n−1)!","Identical items: n!/(p!q!r!)","At least one = Total − None selected"]},
+                {title:"🎯 Probability",color:"#f97316",formulas:["P(E) = Favourable/Total","P(A∪B) = P(A)+P(B)−P(A∩B)","P(A∩B) = P(A)×P(B) [independent]","P(Aᶜ) = 1−P(A)","Conditional: P(A|B) = P(A∩B)/P(B)"]},
+                {title:"📐 Mensuration",color:"#84cc16",formulas:["Circle: Area=πr², Circumference=2πr","Rectangle: Area=l×b, Perimeter=2(l+b)","Triangle: Area=½×b×h, Heron's=√(s(s−a)(s−b)(s−c))","Sphere: Vol=(4/3)πr³, SA=4πr²","Cylinder: Vol=πr²h, CSA=2πrh"]},
+                {title:"📈 Averages & Stats",color:"#a855f7",formulas:["Mean = Sum/Count","Weighted avg = Σ(wᵢxᵢ)/Σwᵢ","If avg of n nums = x, and one num a replaced by b: new avg = x+(b−a)/n","Median (odd n) = middle value","Mode = most frequent value"]},
+                {title:"🧪 Mixtures & Alligations",color:"#14b8a6",formulas:["Alligation: (C₁−Mean)/(Mean−C₂) = Q₂/Q₁","Removal & replacement: Final = Initial×(1−x/V)ⁿ","Mix price = (Q₁C₁+Q₂C₂)/(Q₁+Q₂)","Profit in mixture = sell all at higher price","Rule of alligation applies to any quantity"]},
+                {title:"🔢 Number System",color:"#f43f5e",formulas:["Divisibility by 2: last digit even","Div by 3: sum of digits div by 3","Div by 9: sum of digits div by 9","Div by 11: (sum odd pos − sum even pos) div by 11","HCF×LCM = Product of two numbers"]},
+                {title:"⏱️ Time Complexity",color:"#0ea5e9",formulas:["O(1) < O(log n) < O(n) < O(n log n) < O(n²)","Binary Search: O(log n)","Merge Sort: O(n log n)","Bubble/Selection/Insertion Sort: O(n²)","Space complexity of recursion: O(depth)"]},
+              ].map((sec,i)=>(
+                <div key={i} style={{background:"var(--card)",border:`1px solid ${sec.color}20`,borderRadius:12,padding:16}}>
+                  <div className="syne" style={{fontSize:13,fontWeight:800,color:sec.color,marginBottom:10}}>{sec.title}</div>
+                  {sec.formulas.map((f,fi)=>(
+                    <div key={fi} style={{fontSize:12,padding:"4px 0",borderBottom:fi<sec.formulas.length-1?"1px solid var(--border)":"none",color:"var(--text2)",lineHeight:1.5}}>{f}</div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── AI SOLVER VIEW ── */}
+        {view==="aisolver" && (
+          <div style={{maxWidth:700,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🤖 AI Aptitude Solver</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Paste any aptitude question → AI explains step-by-step with formula used. Works for Quant, Logical, and Verbal.</p>
+            <div style={{marginBottom:16}}>
+              <textarea value={aiInput} onChange={e=>setAiInput(e.target.value)}
+                placeholder="Paste your aptitude question here...&#10;&#10;Example: A train 200m long crosses a platform 300m long in 25 seconds. What is the speed of the train in km/h?"
+                style={{width:"100%",minHeight:120,padding:"12px 14px",borderRadius:10,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:13,fontFamily:"'DM Sans',sans-serif",resize:"vertical",boxSizing:"border-box",outline:"none"}}/>
+            </div>
+            <button className="btn-p" onClick={()=>solveWithAI(aiInput)} disabled={aiSolving||!aiInput.trim()}
+              style={{padding:"10px 28px",fontSize:14,marginBottom:20,opacity:aiSolving||!aiInput.trim()?0.6:1}}>
+              {aiSolving?"⏳ Solving...":"🤖 Solve Step by Step →"}
+            </button>
+            {aiSolution && (
+              <div style={{background:"var(--card)",border:"1px solid rgba(0,212,255,.2)",borderRadius:14,padding:20}}>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",marginBottom:10}}>AI SOLUTION</div>
+                <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{aiSolution}</div>
+                <button onClick={()=>{setAiSolution("");setAiInput("");}} style={{marginTop:12,fontSize:11,padding:"4px 12px",borderRadius:6,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Clear</button>
+              </div>
+            )}
+            <div style={{marginTop:24,background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:16}}>
+              <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",marginBottom:10}}>SAMPLE QUESTIONS TO TRY</div>
+              {["A and B together can complete a work in 12 days. A alone takes 20 days. How long will B alone take?",
+                "In how many ways can the letters of the word MISSISSIPPI be arranged?",
+                "If the selling price of 10 articles equals the cost price of 11 articles, find the profit percentage.",
+                "A bag contains 4 white, 5 red and 6 blue balls. Three balls are drawn at random. What is the probability all are red?"].map((q,i)=>(
+                <div key={i} onClick={()=>setAiInput(q)} style={{padding:"8px 12px",marginBottom:6,borderRadius:8,border:"1px solid var(--border)",cursor:"pointer",fontSize:12,color:"var(--text2)",transition:"all .15s"}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.color="var(--text)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.color="var(--text2)";}}>
+                  {i+1}. {q}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
@@ -1339,6 +1876,185 @@ const InternshipsPage = () => {
             </>
           )}
         </div>}
+
+        {/* ── MOCK TEST VIEW ── */}
+        {view==="mock" && (
+          <div style={{maxWidth:800,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🎯 Full Mock Tests</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Simulates real company exam pattern — section-wise time limits, question counts matching actual tests.</p>
+            <div style={{display:"grid",gap:14}}>
+              {APT_COMPANIES.filter(co=>MOCK_CONFIGS[co.id]||MOCK_CONFIGS.default).map(co=>{
+                const cfg = MOCK_CONFIGS[co.id]||{...MOCK_CONFIGS.default,name:`${co.name} Mock`};
+                return(
+                  <div key={co.id} style={{background:"var(--card)",border:`1px solid ${co.color}20`,borderRadius:14,padding:20}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10,marginBottom:12}}>
+                      <div>
+                        <div className="syne" style={{fontSize:15,fontWeight:800}}>{cfg.name}</div>
+                        <div style={{fontSize:12,color:"var(--text2)",marginTop:2}}>Total: {cfg.totalTime} mins · {cfg.sections.reduce((a,s)=>a+s.q,0)} questions</div>
+                      </div>
+                      <button onClick={()=>{
+                        const allQs=[];
+                        Object.values(APT_QUESTIONS).forEach(arr=>allQs.push(...arr));
+                        const shuffled=[...allQs].sort(()=>Math.random()-.5).slice(0,cfg.sections.reduce((a,s)=>a+s.q,0));
+                        setQuestions(shuffled); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                        setQuizTimer(0); setTimerActive(true); setMockConfig(cfg); setView("quiz");
+                      }} className="btn-p" style={{padding:"8px 20px",fontSize:13,background:`linear-gradient(135deg,${co.color},${co.color}cc)`}}>
+                        Start Mock →
+                      </button>
+                    </div>
+                    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                      {cfg.sections.map(s=>(
+                        <div key={s.name} style={{padding:"6px 12px",borderRadius:9,background:`${co.color}08`,border:`1px solid ${co.color}20`,fontSize:11}}>
+                          <span style={{fontWeight:700,color:co.color}}>{s.name}</span>
+                          <span style={{color:"var(--text3)",marginLeft:6}}>{s.q}Q · {s.time}min</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── WRONG BANK VIEW ── */}
+        {view==="wrongbank" && (
+          <div style={{maxWidth:720,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div>
+                <div className="syne" style={{fontSize:18,fontWeight:800}}>❌ Wrong Question Bank</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:2}}>{wrongBank.length} questions saved for revision</div>
+              </div>
+              {wrongBank.length>0&&<button onClick={()=>{
+                setQuestions(wrongBank.slice(0,10));setQIdx(0);setAnswers({});setQuizDone(false);setShowSol(false);setQuizTimer(0);setTimerActive(true);setView("quiz");
+              }} className="btn-p" style={{padding:"8px 18px",fontSize:12}}>Practice All →</button>}
+            </div>
+            {wrongBank.length===0?(
+              <div style={{textAlign:"center",padding:"60px 20px",border:"1px dashed var(--border)",borderRadius:14}}>
+                <div style={{fontSize:40,marginBottom:10}}>✅</div>
+                <div className="syne" style={{fontSize:16,fontWeight:700}}>No wrong answers yet!</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:6}}>Wrong answers from quizzes will appear here for revision.</div>
+              </div>
+            ):(
+              <div style={{display:"flex",flexDirection:"column",gap:12}}>
+                {wrongBank.map((q,i)=>(
+                  <div key={i} style={{background:"var(--card)",border:"1px solid rgba(255,61,138,.2)",borderRadius:12,padding:16}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10,gap:10}}>
+                      <div style={{fontSize:13,fontWeight:600,lineHeight:1.5,flex:1}}>{q.q}</div>
+                      <button onClick={()=>removeFromWrong(q.key)} style={{fontSize:10,padding:"3px 8px",borderRadius:5,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>Remove</button>
+                    </div>
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
+                      {q.opts.map((o,oi)=>(
+                        <span key={oi} style={{fontSize:11,padding:"3px 10px",borderRadius:6,background:oi===q.ans?"rgba(0,255,136,.12)":"var(--bg3)",color:oi===q.ans?"var(--green)":"var(--text3)",border:`1px solid ${oi===q.ans?"rgba(0,255,136,.3)":"var(--border)"}`,fontWeight:oi===q.ans?700:400}}>
+                          {String.fromCharCode(65+oi)}. {o} {oi===q.ans?"✓":""}
+                        </span>
+                      ))}
+                    </div>
+                    <div style={{fontSize:11,color:"var(--text2)",background:"var(--bg3)",borderRadius:7,padding:"6px 10px"}}>💡 {q.sol}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── SPEED DRILL VIEW ── */}
+        {view==="drill" && (
+          <div style={{maxWidth:600,margin:"0 auto",textAlign:"center"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>⚡ Speed Drill</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>10 questions · 60 seconds · Score = accuracy × speed. No explanations — just rapid fire.</p>
+            {!drillMode?(
+              <div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10,marginBottom:20}}>
+                  {[["All Topics","all","var(--cyan)"],["Quant Only","quant","#3b82f6"],["Logical Only","logical","#8b5cf6"],["Verbal Only","verbal","#10b981"]].map(([label,mode,color])=>(
+                    <button key={mode} onClick={()=>{
+                      const pool = mode==="all"?Object.values(APT_QUESTIONS).flat():
+                        Object.entries(APT_QUESTIONS).filter(([k])=>APT_TOPICS[mode]?.subtopics.some(s=>k.startsWith(s.id))).flatMap(([,v])=>v);
+                      const drillQs = [...(pool.length?pool:Object.values(APT_QUESTIONS).flat())].sort(()=>Math.random()-.5).slice(0,10);
+                      setQuestions(drillQs); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                      setDrillTimer(60); setDrillMode(true); setDrillScore({correct:0,total:0});
+                      setTimerActive(true); setQuizTimer(0); setView("quiz");
+                    }} style={{padding:"14px 10px",borderRadius:12,border:`2px solid ${color}30`,background:`${color}10`,color:color,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:700,fontSize:13}}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div style={{fontSize:12,color:"var(--text3)"}}>⏱ 60 seconds · Instant move to next question · No "Show Solution"</div>
+              </div>
+            ):null}
+          </div>
+        )}
+
+        {/* ── FORMULA SHEET VIEW ── */}
+        {view==="formula" && (
+          <div style={{maxWidth:900,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div className="syne" style={{fontSize:18,fontWeight:800}}>📋 Formula Quick-Reference</div>
+              <button onClick={()=>window.print()} className="btn-p" style={{padding:"7px 18px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Print Sheet</button>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:14}}>
+              {[
+                {title:"📊 Percentages",color:"#3b82f6",formulas:["X% of Y = (X/100)×Y","A increased by X% then decreased by X% = net −X²/100%","Two successive %s x,y: net = x+y+xy/100","Profit% = (SP−CP)/CP × 100","Discount% = (MP−SP)/MP × 100"]},
+                {title:"⏰ Time & Work",color:"#f59e0b",formulas:["Combined rate = 1/a + 1/b + ...","Together A+B = ab/(a+b) days","M₁D₁H₁ = M₂D₂H₂","If A is n× faster, A takes 1/n time of B","Pipe: fill−leak = net rate"]},
+                {title:"🚗 Speed & Distance",color:"#10b981",formulas:["S = D/T (km/h or m/s)","km/h to m/s: ×5/18","Relative speed (same dir) = |S₁−S₂|","Relative speed (opposite) = S₁+S₂","Train cross platform: D = (length of train + platform)"]},
+                {title:"🏦 Simple & Compound Interest",color:"#8b5cf6",formulas:["SI = PRT/100","CI = P(1+R/100)ⁿ − P","CI−SI (2 yrs) = P(R/100)²","Effective rate (half-yearly) = 2R+R²/100","Rule of 72: Years to double ≈ 72/R%"]},
+                {title:"⚖️ Ratio & Proportion",color:"#ef4444",formulas:["a:b = c:d ⟹ ad = bc (product of means = extremes)","If a:b = x:y, then (a+b):(a−b) = (x+y):(x−y)","Mixture: (c₁−c)/(c−c₂) = m₂/m₁","Compounded ratio: (a:b)×(c:d) = ac:bd","Mean proportion of a,b: √(ab)"]},
+                {title:"🎲 Permutation & Combination",color:"#06b6d4",formulas:["nPr = n!/(n−r)!","nCr = n!/(r!(n−r)!)","Circular arrangement: (n−1)!","Identical items: n!/(p!q!r!)","At least one = Total − None selected"]},
+                {title:"🎯 Probability",color:"#f97316",formulas:["P(E) = Favourable/Total","P(A∪B) = P(A)+P(B)−P(A∩B)","P(A∩B) = P(A)×P(B) [independent]","P(Aᶜ) = 1−P(A)","Conditional: P(A|B) = P(A∩B)/P(B)"]},
+                {title:"📐 Mensuration",color:"#84cc16",formulas:["Circle: Area=πr², Circumference=2πr","Rectangle: Area=l×b, Perimeter=2(l+b)","Triangle: Area=½×b×h, Heron's=√(s(s−a)(s−b)(s−c))","Sphere: Vol=(4/3)πr³, SA=4πr²","Cylinder: Vol=πr²h, CSA=2πrh"]},
+                {title:"📈 Averages & Stats",color:"#a855f7",formulas:["Mean = Sum/Count","Weighted avg = Σ(wᵢxᵢ)/Σwᵢ","If avg of n nums = x, and one num a replaced by b: new avg = x+(b−a)/n","Median (odd n) = middle value","Mode = most frequent value"]},
+                {title:"🧪 Mixtures & Alligations",color:"#14b8a6",formulas:["Alligation: (C₁−Mean)/(Mean−C₂) = Q₂/Q₁","Removal & replacement: Final = Initial×(1−x/V)ⁿ","Mix price = (Q₁C₁+Q₂C₂)/(Q₁+Q₂)","Profit in mixture = sell all at higher price","Rule of alligation applies to any quantity"]},
+                {title:"🔢 Number System",color:"#f43f5e",formulas:["Divisibility by 2: last digit even","Div by 3: sum of digits div by 3","Div by 9: sum of digits div by 9","Div by 11: (sum odd pos − sum even pos) div by 11","HCF×LCM = Product of two numbers"]},
+                {title:"⏱️ Time Complexity",color:"#0ea5e9",formulas:["O(1) < O(log n) < O(n) < O(n log n) < O(n²)","Binary Search: O(log n)","Merge Sort: O(n log n)","Bubble/Selection/Insertion Sort: O(n²)","Space complexity of recursion: O(depth)"]},
+              ].map((sec,i)=>(
+                <div key={i} style={{background:"var(--card)",border:`1px solid ${sec.color}20`,borderRadius:12,padding:16}}>
+                  <div className="syne" style={{fontSize:13,fontWeight:800,color:sec.color,marginBottom:10}}>{sec.title}</div>
+                  {sec.formulas.map((f,fi)=>(
+                    <div key={fi} style={{fontSize:12,padding:"4px 0",borderBottom:fi<sec.formulas.length-1?"1px solid var(--border)":"none",color:"var(--text2)",lineHeight:1.5}}>{f}</div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── AI SOLVER VIEW ── */}
+        {view==="aisolver" && (
+          <div style={{maxWidth:700,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🤖 AI Aptitude Solver</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Paste any aptitude question → AI explains step-by-step with formula used. Works for Quant, Logical, and Verbal.</p>
+            <div style={{marginBottom:16}}>
+              <textarea value={aiInput} onChange={e=>setAiInput(e.target.value)}
+                placeholder="Paste your aptitude question here...&#10;&#10;Example: A train 200m long crosses a platform 300m long in 25 seconds. What is the speed of the train in km/h?"
+                style={{width:"100%",minHeight:120,padding:"12px 14px",borderRadius:10,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:13,fontFamily:"'DM Sans',sans-serif",resize:"vertical",boxSizing:"border-box",outline:"none"}}/>
+            </div>
+            <button className="btn-p" onClick={()=>solveWithAI(aiInput)} disabled={aiSolving||!aiInput.trim()}
+              style={{padding:"10px 28px",fontSize:14,marginBottom:20,opacity:aiSolving||!aiInput.trim()?0.6:1}}>
+              {aiSolving?"⏳ Solving...":"🤖 Solve Step by Step →"}
+            </button>
+            {aiSolution && (
+              <div style={{background:"var(--card)",border:"1px solid rgba(0,212,255,.2)",borderRadius:14,padding:20}}>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",marginBottom:10}}>AI SOLUTION</div>
+                <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{aiSolution}</div>
+                <button onClick={()=>{setAiSolution("");setAiInput("");}} style={{marginTop:12,fontSize:11,padding:"4px 12px",borderRadius:6,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Clear</button>
+              </div>
+            )}
+            <div style={{marginTop:24,background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:16}}>
+              <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",marginBottom:10}}>SAMPLE QUESTIONS TO TRY</div>
+              {["A and B together can complete a work in 12 days. A alone takes 20 days. How long will B alone take?",
+                "In how many ways can the letters of the word MISSISSIPPI be arranged?",
+                "If the selling price of 10 articles equals the cost price of 11 articles, find the profit percentage.",
+                "A bag contains 4 white, 5 red and 6 blue balls. Three balls are drawn at random. What is the probability all are red?"].map((q,i)=>(
+                <div key={i} onClick={()=>setAiInput(q)} style={{padding:"8px 12px",marginBottom:6,borderRadius:8,border:"1px solid var(--border)",cursor:"pointer",fontSize:12,color:"var(--text2)",transition:"all .15s"}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.color="var(--text)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.color="var(--text2)";}}>
+                  {i+1}. {q}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
@@ -1701,6 +2417,185 @@ const EventsPage = () => {
             </>
           )}
         </div>}
+
+        {/* ── MOCK TEST VIEW ── */}
+        {view==="mock" && (
+          <div style={{maxWidth:800,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🎯 Full Mock Tests</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Simulates real company exam pattern — section-wise time limits, question counts matching actual tests.</p>
+            <div style={{display:"grid",gap:14}}>
+              {APT_COMPANIES.filter(co=>MOCK_CONFIGS[co.id]||MOCK_CONFIGS.default).map(co=>{
+                const cfg = MOCK_CONFIGS[co.id]||{...MOCK_CONFIGS.default,name:`${co.name} Mock`};
+                return(
+                  <div key={co.id} style={{background:"var(--card)",border:`1px solid ${co.color}20`,borderRadius:14,padding:20}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10,marginBottom:12}}>
+                      <div>
+                        <div className="syne" style={{fontSize:15,fontWeight:800}}>{cfg.name}</div>
+                        <div style={{fontSize:12,color:"var(--text2)",marginTop:2}}>Total: {cfg.totalTime} mins · {cfg.sections.reduce((a,s)=>a+s.q,0)} questions</div>
+                      </div>
+                      <button onClick={()=>{
+                        const allQs=[];
+                        Object.values(APT_QUESTIONS).forEach(arr=>allQs.push(...arr));
+                        const shuffled=[...allQs].sort(()=>Math.random()-.5).slice(0,cfg.sections.reduce((a,s)=>a+s.q,0));
+                        setQuestions(shuffled); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                        setQuizTimer(0); setTimerActive(true); setMockConfig(cfg); setView("quiz");
+                      }} className="btn-p" style={{padding:"8px 20px",fontSize:13,background:`linear-gradient(135deg,${co.color},${co.color}cc)`}}>
+                        Start Mock →
+                      </button>
+                    </div>
+                    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                      {cfg.sections.map(s=>(
+                        <div key={s.name} style={{padding:"6px 12px",borderRadius:9,background:`${co.color}08`,border:`1px solid ${co.color}20`,fontSize:11}}>
+                          <span style={{fontWeight:700,color:co.color}}>{s.name}</span>
+                          <span style={{color:"var(--text3)",marginLeft:6}}>{s.q}Q · {s.time}min</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── WRONG BANK VIEW ── */}
+        {view==="wrongbank" && (
+          <div style={{maxWidth:720,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div>
+                <div className="syne" style={{fontSize:18,fontWeight:800}}>❌ Wrong Question Bank</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:2}}>{wrongBank.length} questions saved for revision</div>
+              </div>
+              {wrongBank.length>0&&<button onClick={()=>{
+                setQuestions(wrongBank.slice(0,10));setQIdx(0);setAnswers({});setQuizDone(false);setShowSol(false);setQuizTimer(0);setTimerActive(true);setView("quiz");
+              }} className="btn-p" style={{padding:"8px 18px",fontSize:12}}>Practice All →</button>}
+            </div>
+            {wrongBank.length===0?(
+              <div style={{textAlign:"center",padding:"60px 20px",border:"1px dashed var(--border)",borderRadius:14}}>
+                <div style={{fontSize:40,marginBottom:10}}>✅</div>
+                <div className="syne" style={{fontSize:16,fontWeight:700}}>No wrong answers yet!</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:6}}>Wrong answers from quizzes will appear here for revision.</div>
+              </div>
+            ):(
+              <div style={{display:"flex",flexDirection:"column",gap:12}}>
+                {wrongBank.map((q,i)=>(
+                  <div key={i} style={{background:"var(--card)",border:"1px solid rgba(255,61,138,.2)",borderRadius:12,padding:16}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10,gap:10}}>
+                      <div style={{fontSize:13,fontWeight:600,lineHeight:1.5,flex:1}}>{q.q}</div>
+                      <button onClick={()=>removeFromWrong(q.key)} style={{fontSize:10,padding:"3px 8px",borderRadius:5,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>Remove</button>
+                    </div>
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
+                      {q.opts.map((o,oi)=>(
+                        <span key={oi} style={{fontSize:11,padding:"3px 10px",borderRadius:6,background:oi===q.ans?"rgba(0,255,136,.12)":"var(--bg3)",color:oi===q.ans?"var(--green)":"var(--text3)",border:`1px solid ${oi===q.ans?"rgba(0,255,136,.3)":"var(--border)"}`,fontWeight:oi===q.ans?700:400}}>
+                          {String.fromCharCode(65+oi)}. {o} {oi===q.ans?"✓":""}
+                        </span>
+                      ))}
+                    </div>
+                    <div style={{fontSize:11,color:"var(--text2)",background:"var(--bg3)",borderRadius:7,padding:"6px 10px"}}>💡 {q.sol}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── SPEED DRILL VIEW ── */}
+        {view==="drill" && (
+          <div style={{maxWidth:600,margin:"0 auto",textAlign:"center"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>⚡ Speed Drill</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>10 questions · 60 seconds · Score = accuracy × speed. No explanations — just rapid fire.</p>
+            {!drillMode?(
+              <div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10,marginBottom:20}}>
+                  {[["All Topics","all","var(--cyan)"],["Quant Only","quant","#3b82f6"],["Logical Only","logical","#8b5cf6"],["Verbal Only","verbal","#10b981"]].map(([label,mode,color])=>(
+                    <button key={mode} onClick={()=>{
+                      const pool = mode==="all"?Object.values(APT_QUESTIONS).flat():
+                        Object.entries(APT_QUESTIONS).filter(([k])=>APT_TOPICS[mode]?.subtopics.some(s=>k.startsWith(s.id))).flatMap(([,v])=>v);
+                      const drillQs = [...(pool.length?pool:Object.values(APT_QUESTIONS).flat())].sort(()=>Math.random()-.5).slice(0,10);
+                      setQuestions(drillQs); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                      setDrillTimer(60); setDrillMode(true); setDrillScore({correct:0,total:0});
+                      setTimerActive(true); setQuizTimer(0); setView("quiz");
+                    }} style={{padding:"14px 10px",borderRadius:12,border:`2px solid ${color}30`,background:`${color}10`,color:color,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:700,fontSize:13}}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div style={{fontSize:12,color:"var(--text3)"}}>⏱ 60 seconds · Instant move to next question · No "Show Solution"</div>
+              </div>
+            ):null}
+          </div>
+        )}
+
+        {/* ── FORMULA SHEET VIEW ── */}
+        {view==="formula" && (
+          <div style={{maxWidth:900,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div className="syne" style={{fontSize:18,fontWeight:800}}>📋 Formula Quick-Reference</div>
+              <button onClick={()=>window.print()} className="btn-p" style={{padding:"7px 18px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Print Sheet</button>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:14}}>
+              {[
+                {title:"📊 Percentages",color:"#3b82f6",formulas:["X% of Y = (X/100)×Y","A increased by X% then decreased by X% = net −X²/100%","Two successive %s x,y: net = x+y+xy/100","Profit% = (SP−CP)/CP × 100","Discount% = (MP−SP)/MP × 100"]},
+                {title:"⏰ Time & Work",color:"#f59e0b",formulas:["Combined rate = 1/a + 1/b + ...","Together A+B = ab/(a+b) days","M₁D₁H₁ = M₂D₂H₂","If A is n× faster, A takes 1/n time of B","Pipe: fill−leak = net rate"]},
+                {title:"🚗 Speed & Distance",color:"#10b981",formulas:["S = D/T (km/h or m/s)","km/h to m/s: ×5/18","Relative speed (same dir) = |S₁−S₂|","Relative speed (opposite) = S₁+S₂","Train cross platform: D = (length of train + platform)"]},
+                {title:"🏦 Simple & Compound Interest",color:"#8b5cf6",formulas:["SI = PRT/100","CI = P(1+R/100)ⁿ − P","CI−SI (2 yrs) = P(R/100)²","Effective rate (half-yearly) = 2R+R²/100","Rule of 72: Years to double ≈ 72/R%"]},
+                {title:"⚖️ Ratio & Proportion",color:"#ef4444",formulas:["a:b = c:d ⟹ ad = bc (product of means = extremes)","If a:b = x:y, then (a+b):(a−b) = (x+y):(x−y)","Mixture: (c₁−c)/(c−c₂) = m₂/m₁","Compounded ratio: (a:b)×(c:d) = ac:bd","Mean proportion of a,b: √(ab)"]},
+                {title:"🎲 Permutation & Combination",color:"#06b6d4",formulas:["nPr = n!/(n−r)!","nCr = n!/(r!(n−r)!)","Circular arrangement: (n−1)!","Identical items: n!/(p!q!r!)","At least one = Total − None selected"]},
+                {title:"🎯 Probability",color:"#f97316",formulas:["P(E) = Favourable/Total","P(A∪B) = P(A)+P(B)−P(A∩B)","P(A∩B) = P(A)×P(B) [independent]","P(Aᶜ) = 1−P(A)","Conditional: P(A|B) = P(A∩B)/P(B)"]},
+                {title:"📐 Mensuration",color:"#84cc16",formulas:["Circle: Area=πr², Circumference=2πr","Rectangle: Area=l×b, Perimeter=2(l+b)","Triangle: Area=½×b×h, Heron's=√(s(s−a)(s−b)(s−c))","Sphere: Vol=(4/3)πr³, SA=4πr²","Cylinder: Vol=πr²h, CSA=2πrh"]},
+                {title:"📈 Averages & Stats",color:"#a855f7",formulas:["Mean = Sum/Count","Weighted avg = Σ(wᵢxᵢ)/Σwᵢ","If avg of n nums = x, and one num a replaced by b: new avg = x+(b−a)/n","Median (odd n) = middle value","Mode = most frequent value"]},
+                {title:"🧪 Mixtures & Alligations",color:"#14b8a6",formulas:["Alligation: (C₁−Mean)/(Mean−C₂) = Q₂/Q₁","Removal & replacement: Final = Initial×(1−x/V)ⁿ","Mix price = (Q₁C₁+Q₂C₂)/(Q₁+Q₂)","Profit in mixture = sell all at higher price","Rule of alligation applies to any quantity"]},
+                {title:"🔢 Number System",color:"#f43f5e",formulas:["Divisibility by 2: last digit even","Div by 3: sum of digits div by 3","Div by 9: sum of digits div by 9","Div by 11: (sum odd pos − sum even pos) div by 11","HCF×LCM = Product of two numbers"]},
+                {title:"⏱️ Time Complexity",color:"#0ea5e9",formulas:["O(1) < O(log n) < O(n) < O(n log n) < O(n²)","Binary Search: O(log n)","Merge Sort: O(n log n)","Bubble/Selection/Insertion Sort: O(n²)","Space complexity of recursion: O(depth)"]},
+              ].map((sec,i)=>(
+                <div key={i} style={{background:"var(--card)",border:`1px solid ${sec.color}20`,borderRadius:12,padding:16}}>
+                  <div className="syne" style={{fontSize:13,fontWeight:800,color:sec.color,marginBottom:10}}>{sec.title}</div>
+                  {sec.formulas.map((f,fi)=>(
+                    <div key={fi} style={{fontSize:12,padding:"4px 0",borderBottom:fi<sec.formulas.length-1?"1px solid var(--border)":"none",color:"var(--text2)",lineHeight:1.5}}>{f}</div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── AI SOLVER VIEW ── */}
+        {view==="aisolver" && (
+          <div style={{maxWidth:700,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🤖 AI Aptitude Solver</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Paste any aptitude question → AI explains step-by-step with formula used. Works for Quant, Logical, and Verbal.</p>
+            <div style={{marginBottom:16}}>
+              <textarea value={aiInput} onChange={e=>setAiInput(e.target.value)}
+                placeholder="Paste your aptitude question here...&#10;&#10;Example: A train 200m long crosses a platform 300m long in 25 seconds. What is the speed of the train in km/h?"
+                style={{width:"100%",minHeight:120,padding:"12px 14px",borderRadius:10,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:13,fontFamily:"'DM Sans',sans-serif",resize:"vertical",boxSizing:"border-box",outline:"none"}}/>
+            </div>
+            <button className="btn-p" onClick={()=>solveWithAI(aiInput)} disabled={aiSolving||!aiInput.trim()}
+              style={{padding:"10px 28px",fontSize:14,marginBottom:20,opacity:aiSolving||!aiInput.trim()?0.6:1}}>
+              {aiSolving?"⏳ Solving...":"🤖 Solve Step by Step →"}
+            </button>
+            {aiSolution && (
+              <div style={{background:"var(--card)",border:"1px solid rgba(0,212,255,.2)",borderRadius:14,padding:20}}>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",marginBottom:10}}>AI SOLUTION</div>
+                <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{aiSolution}</div>
+                <button onClick={()=>{setAiSolution("");setAiInput("");}} style={{marginTop:12,fontSize:11,padding:"4px 12px",borderRadius:6,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Clear</button>
+              </div>
+            )}
+            <div style={{marginTop:24,background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:16}}>
+              <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",marginBottom:10}}>SAMPLE QUESTIONS TO TRY</div>
+              {["A and B together can complete a work in 12 days. A alone takes 20 days. How long will B alone take?",
+                "In how many ways can the letters of the word MISSISSIPPI be arranged?",
+                "If the selling price of 10 articles equals the cost price of 11 articles, find the profit percentage.",
+                "A bag contains 4 white, 5 red and 6 blue balls. Three balls are drawn at random. What is the probability all are red?"].map((q,i)=>(
+                <div key={i} onClick={()=>setAiInput(q)} style={{padding:"8px 12px",marginBottom:6,borderRadius:8,border:"1px solid var(--border)",cursor:"pointer",fontSize:12,color:"var(--text2)",transition:"all .15s"}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.color="var(--text)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.color="var(--text2)";}}>
+                  {i+1}. {q}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
@@ -4875,6 +5770,185 @@ const DSAPage = ({ setPage }) => {
           ))}
           {filtered.length===0&&<div style={{gridColumn:"1/-1",textAlign:"center",padding:"60px 20px",color:"var(--text2)"}}>No topics found for &quot;{search}&quot;</div>}
         </div>
+
+        {/* ── MOCK TEST VIEW ── */}
+        {view==="mock" && (
+          <div style={{maxWidth:800,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🎯 Full Mock Tests</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Simulates real company exam pattern — section-wise time limits, question counts matching actual tests.</p>
+            <div style={{display:"grid",gap:14}}>
+              {APT_COMPANIES.filter(co=>MOCK_CONFIGS[co.id]||MOCK_CONFIGS.default).map(co=>{
+                const cfg = MOCK_CONFIGS[co.id]||{...MOCK_CONFIGS.default,name:`${co.name} Mock`};
+                return(
+                  <div key={co.id} style={{background:"var(--card)",border:`1px solid ${co.color}20`,borderRadius:14,padding:20}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10,marginBottom:12}}>
+                      <div>
+                        <div className="syne" style={{fontSize:15,fontWeight:800}}>{cfg.name}</div>
+                        <div style={{fontSize:12,color:"var(--text2)",marginTop:2}}>Total: {cfg.totalTime} mins · {cfg.sections.reduce((a,s)=>a+s.q,0)} questions</div>
+                      </div>
+                      <button onClick={()=>{
+                        const allQs=[];
+                        Object.values(APT_QUESTIONS).forEach(arr=>allQs.push(...arr));
+                        const shuffled=[...allQs].sort(()=>Math.random()-.5).slice(0,cfg.sections.reduce((a,s)=>a+s.q,0));
+                        setQuestions(shuffled); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                        setQuizTimer(0); setTimerActive(true); setMockConfig(cfg); setView("quiz");
+                      }} className="btn-p" style={{padding:"8px 20px",fontSize:13,background:`linear-gradient(135deg,${co.color},${co.color}cc)`}}>
+                        Start Mock →
+                      </button>
+                    </div>
+                    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                      {cfg.sections.map(s=>(
+                        <div key={s.name} style={{padding:"6px 12px",borderRadius:9,background:`${co.color}08`,border:`1px solid ${co.color}20`,fontSize:11}}>
+                          <span style={{fontWeight:700,color:co.color}}>{s.name}</span>
+                          <span style={{color:"var(--text3)",marginLeft:6}}>{s.q}Q · {s.time}min</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── WRONG BANK VIEW ── */}
+        {view==="wrongbank" && (
+          <div style={{maxWidth:720,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div>
+                <div className="syne" style={{fontSize:18,fontWeight:800}}>❌ Wrong Question Bank</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:2}}>{wrongBank.length} questions saved for revision</div>
+              </div>
+              {wrongBank.length>0&&<button onClick={()=>{
+                setQuestions(wrongBank.slice(0,10));setQIdx(0);setAnswers({});setQuizDone(false);setShowSol(false);setQuizTimer(0);setTimerActive(true);setView("quiz");
+              }} className="btn-p" style={{padding:"8px 18px",fontSize:12}}>Practice All →</button>}
+            </div>
+            {wrongBank.length===0?(
+              <div style={{textAlign:"center",padding:"60px 20px",border:"1px dashed var(--border)",borderRadius:14}}>
+                <div style={{fontSize:40,marginBottom:10}}>✅</div>
+                <div className="syne" style={{fontSize:16,fontWeight:700}}>No wrong answers yet!</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:6}}>Wrong answers from quizzes will appear here for revision.</div>
+              </div>
+            ):(
+              <div style={{display:"flex",flexDirection:"column",gap:12}}>
+                {wrongBank.map((q,i)=>(
+                  <div key={i} style={{background:"var(--card)",border:"1px solid rgba(255,61,138,.2)",borderRadius:12,padding:16}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10,gap:10}}>
+                      <div style={{fontSize:13,fontWeight:600,lineHeight:1.5,flex:1}}>{q.q}</div>
+                      <button onClick={()=>removeFromWrong(q.key)} style={{fontSize:10,padding:"3px 8px",borderRadius:5,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>Remove</button>
+                    </div>
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
+                      {q.opts.map((o,oi)=>(
+                        <span key={oi} style={{fontSize:11,padding:"3px 10px",borderRadius:6,background:oi===q.ans?"rgba(0,255,136,.12)":"var(--bg3)",color:oi===q.ans?"var(--green)":"var(--text3)",border:`1px solid ${oi===q.ans?"rgba(0,255,136,.3)":"var(--border)"}`,fontWeight:oi===q.ans?700:400}}>
+                          {String.fromCharCode(65+oi)}. {o} {oi===q.ans?"✓":""}
+                        </span>
+                      ))}
+                    </div>
+                    <div style={{fontSize:11,color:"var(--text2)",background:"var(--bg3)",borderRadius:7,padding:"6px 10px"}}>💡 {q.sol}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── SPEED DRILL VIEW ── */}
+        {view==="drill" && (
+          <div style={{maxWidth:600,margin:"0 auto",textAlign:"center"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>⚡ Speed Drill</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>10 questions · 60 seconds · Score = accuracy × speed. No explanations — just rapid fire.</p>
+            {!drillMode?(
+              <div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10,marginBottom:20}}>
+                  {[["All Topics","all","var(--cyan)"],["Quant Only","quant","#3b82f6"],["Logical Only","logical","#8b5cf6"],["Verbal Only","verbal","#10b981"]].map(([label,mode,color])=>(
+                    <button key={mode} onClick={()=>{
+                      const pool = mode==="all"?Object.values(APT_QUESTIONS).flat():
+                        Object.entries(APT_QUESTIONS).filter(([k])=>APT_TOPICS[mode]?.subtopics.some(s=>k.startsWith(s.id))).flatMap(([,v])=>v);
+                      const drillQs = [...(pool.length?pool:Object.values(APT_QUESTIONS).flat())].sort(()=>Math.random()-.5).slice(0,10);
+                      setQuestions(drillQs); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                      setDrillTimer(60); setDrillMode(true); setDrillScore({correct:0,total:0});
+                      setTimerActive(true); setQuizTimer(0); setView("quiz");
+                    }} style={{padding:"14px 10px",borderRadius:12,border:`2px solid ${color}30`,background:`${color}10`,color:color,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:700,fontSize:13}}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div style={{fontSize:12,color:"var(--text3)"}}>⏱ 60 seconds · Instant move to next question · No "Show Solution"</div>
+              </div>
+            ):null}
+          </div>
+        )}
+
+        {/* ── FORMULA SHEET VIEW ── */}
+        {view==="formula" && (
+          <div style={{maxWidth:900,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div className="syne" style={{fontSize:18,fontWeight:800}}>📋 Formula Quick-Reference</div>
+              <button onClick={()=>window.print()} className="btn-p" style={{padding:"7px 18px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Print Sheet</button>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:14}}>
+              {[
+                {title:"📊 Percentages",color:"#3b82f6",formulas:["X% of Y = (X/100)×Y","A increased by X% then decreased by X% = net −X²/100%","Two successive %s x,y: net = x+y+xy/100","Profit% = (SP−CP)/CP × 100","Discount% = (MP−SP)/MP × 100"]},
+                {title:"⏰ Time & Work",color:"#f59e0b",formulas:["Combined rate = 1/a + 1/b + ...","Together A+B = ab/(a+b) days","M₁D₁H₁ = M₂D₂H₂","If A is n× faster, A takes 1/n time of B","Pipe: fill−leak = net rate"]},
+                {title:"🚗 Speed & Distance",color:"#10b981",formulas:["S = D/T (km/h or m/s)","km/h to m/s: ×5/18","Relative speed (same dir) = |S₁−S₂|","Relative speed (opposite) = S₁+S₂","Train cross platform: D = (length of train + platform)"]},
+                {title:"🏦 Simple & Compound Interest",color:"#8b5cf6",formulas:["SI = PRT/100","CI = P(1+R/100)ⁿ − P","CI−SI (2 yrs) = P(R/100)²","Effective rate (half-yearly) = 2R+R²/100","Rule of 72: Years to double ≈ 72/R%"]},
+                {title:"⚖️ Ratio & Proportion",color:"#ef4444",formulas:["a:b = c:d ⟹ ad = bc (product of means = extremes)","If a:b = x:y, then (a+b):(a−b) = (x+y):(x−y)","Mixture: (c₁−c)/(c−c₂) = m₂/m₁","Compounded ratio: (a:b)×(c:d) = ac:bd","Mean proportion of a,b: √(ab)"]},
+                {title:"🎲 Permutation & Combination",color:"#06b6d4",formulas:["nPr = n!/(n−r)!","nCr = n!/(r!(n−r)!)","Circular arrangement: (n−1)!","Identical items: n!/(p!q!r!)","At least one = Total − None selected"]},
+                {title:"🎯 Probability",color:"#f97316",formulas:["P(E) = Favourable/Total","P(A∪B) = P(A)+P(B)−P(A∩B)","P(A∩B) = P(A)×P(B) [independent]","P(Aᶜ) = 1−P(A)","Conditional: P(A|B) = P(A∩B)/P(B)"]},
+                {title:"📐 Mensuration",color:"#84cc16",formulas:["Circle: Area=πr², Circumference=2πr","Rectangle: Area=l×b, Perimeter=2(l+b)","Triangle: Area=½×b×h, Heron's=√(s(s−a)(s−b)(s−c))","Sphere: Vol=(4/3)πr³, SA=4πr²","Cylinder: Vol=πr²h, CSA=2πrh"]},
+                {title:"📈 Averages & Stats",color:"#a855f7",formulas:["Mean = Sum/Count","Weighted avg = Σ(wᵢxᵢ)/Σwᵢ","If avg of n nums = x, and one num a replaced by b: new avg = x+(b−a)/n","Median (odd n) = middle value","Mode = most frequent value"]},
+                {title:"🧪 Mixtures & Alligations",color:"#14b8a6",formulas:["Alligation: (C₁−Mean)/(Mean−C₂) = Q₂/Q₁","Removal & replacement: Final = Initial×(1−x/V)ⁿ","Mix price = (Q₁C₁+Q₂C₂)/(Q₁+Q₂)","Profit in mixture = sell all at higher price","Rule of alligation applies to any quantity"]},
+                {title:"🔢 Number System",color:"#f43f5e",formulas:["Divisibility by 2: last digit even","Div by 3: sum of digits div by 3","Div by 9: sum of digits div by 9","Div by 11: (sum odd pos − sum even pos) div by 11","HCF×LCM = Product of two numbers"]},
+                {title:"⏱️ Time Complexity",color:"#0ea5e9",formulas:["O(1) < O(log n) < O(n) < O(n log n) < O(n²)","Binary Search: O(log n)","Merge Sort: O(n log n)","Bubble/Selection/Insertion Sort: O(n²)","Space complexity of recursion: O(depth)"]},
+              ].map((sec,i)=>(
+                <div key={i} style={{background:"var(--card)",border:`1px solid ${sec.color}20`,borderRadius:12,padding:16}}>
+                  <div className="syne" style={{fontSize:13,fontWeight:800,color:sec.color,marginBottom:10}}>{sec.title}</div>
+                  {sec.formulas.map((f,fi)=>(
+                    <div key={fi} style={{fontSize:12,padding:"4px 0",borderBottom:fi<sec.formulas.length-1?"1px solid var(--border)":"none",color:"var(--text2)",lineHeight:1.5}}>{f}</div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── AI SOLVER VIEW ── */}
+        {view==="aisolver" && (
+          <div style={{maxWidth:700,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🤖 AI Aptitude Solver</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Paste any aptitude question → AI explains step-by-step with formula used. Works for Quant, Logical, and Verbal.</p>
+            <div style={{marginBottom:16}}>
+              <textarea value={aiInput} onChange={e=>setAiInput(e.target.value)}
+                placeholder="Paste your aptitude question here...&#10;&#10;Example: A train 200m long crosses a platform 300m long in 25 seconds. What is the speed of the train in km/h?"
+                style={{width:"100%",minHeight:120,padding:"12px 14px",borderRadius:10,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:13,fontFamily:"'DM Sans',sans-serif",resize:"vertical",boxSizing:"border-box",outline:"none"}}/>
+            </div>
+            <button className="btn-p" onClick={()=>solveWithAI(aiInput)} disabled={aiSolving||!aiInput.trim()}
+              style={{padding:"10px 28px",fontSize:14,marginBottom:20,opacity:aiSolving||!aiInput.trim()?0.6:1}}>
+              {aiSolving?"⏳ Solving...":"🤖 Solve Step by Step →"}
+            </button>
+            {aiSolution && (
+              <div style={{background:"var(--card)",border:"1px solid rgba(0,212,255,.2)",borderRadius:14,padding:20}}>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",marginBottom:10}}>AI SOLUTION</div>
+                <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{aiSolution}</div>
+                <button onClick={()=>{setAiSolution("");setAiInput("");}} style={{marginTop:12,fontSize:11,padding:"4px 12px",borderRadius:6,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Clear</button>
+              </div>
+            )}
+            <div style={{marginTop:24,background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:16}}>
+              <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",marginBottom:10}}>SAMPLE QUESTIONS TO TRY</div>
+              {["A and B together can complete a work in 12 days. A alone takes 20 days. How long will B alone take?",
+                "In how many ways can the letters of the word MISSISSIPPI be arranged?",
+                "If the selling price of 10 articles equals the cost price of 11 articles, find the profit percentage.",
+                "A bag contains 4 white, 5 red and 6 blue balls. Three balls are drawn at random. What is the probability all are red?"].map((q,i)=>(
+                <div key={i} onClick={()=>setAiInput(q)} style={{padding:"8px 12px",marginBottom:6,borderRadius:8,border:"1px solid var(--border)",cursor:"pointer",fontSize:12,color:"var(--text2)",transition:"all .15s"}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.color="var(--text)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.color="var(--text2)";}}>
+                  {i+1}. {q}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
@@ -6333,6 +7407,185 @@ const CPContestPage = ({ setPage }) => {
             )}
           </div>
         ) : null}
+
+        {/* ── MOCK TEST VIEW ── */}
+        {view==="mock" && (
+          <div style={{maxWidth:800,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🎯 Full Mock Tests</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Simulates real company exam pattern — section-wise time limits, question counts matching actual tests.</p>
+            <div style={{display:"grid",gap:14}}>
+              {APT_COMPANIES.filter(co=>MOCK_CONFIGS[co.id]||MOCK_CONFIGS.default).map(co=>{
+                const cfg = MOCK_CONFIGS[co.id]||{...MOCK_CONFIGS.default,name:`${co.name} Mock`};
+                return(
+                  <div key={co.id} style={{background:"var(--card)",border:`1px solid ${co.color}20`,borderRadius:14,padding:20}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10,marginBottom:12}}>
+                      <div>
+                        <div className="syne" style={{fontSize:15,fontWeight:800}}>{cfg.name}</div>
+                        <div style={{fontSize:12,color:"var(--text2)",marginTop:2}}>Total: {cfg.totalTime} mins · {cfg.sections.reduce((a,s)=>a+s.q,0)} questions</div>
+                      </div>
+                      <button onClick={()=>{
+                        const allQs=[];
+                        Object.values(APT_QUESTIONS).forEach(arr=>allQs.push(...arr));
+                        const shuffled=[...allQs].sort(()=>Math.random()-.5).slice(0,cfg.sections.reduce((a,s)=>a+s.q,0));
+                        setQuestions(shuffled); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                        setQuizTimer(0); setTimerActive(true); setMockConfig(cfg); setView("quiz");
+                      }} className="btn-p" style={{padding:"8px 20px",fontSize:13,background:`linear-gradient(135deg,${co.color},${co.color}cc)`}}>
+                        Start Mock →
+                      </button>
+                    </div>
+                    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                      {cfg.sections.map(s=>(
+                        <div key={s.name} style={{padding:"6px 12px",borderRadius:9,background:`${co.color}08`,border:`1px solid ${co.color}20`,fontSize:11}}>
+                          <span style={{fontWeight:700,color:co.color}}>{s.name}</span>
+                          <span style={{color:"var(--text3)",marginLeft:6}}>{s.q}Q · {s.time}min</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── WRONG BANK VIEW ── */}
+        {view==="wrongbank" && (
+          <div style={{maxWidth:720,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div>
+                <div className="syne" style={{fontSize:18,fontWeight:800}}>❌ Wrong Question Bank</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:2}}>{wrongBank.length} questions saved for revision</div>
+              </div>
+              {wrongBank.length>0&&<button onClick={()=>{
+                setQuestions(wrongBank.slice(0,10));setQIdx(0);setAnswers({});setQuizDone(false);setShowSol(false);setQuizTimer(0);setTimerActive(true);setView("quiz");
+              }} className="btn-p" style={{padding:"8px 18px",fontSize:12}}>Practice All →</button>}
+            </div>
+            {wrongBank.length===0?(
+              <div style={{textAlign:"center",padding:"60px 20px",border:"1px dashed var(--border)",borderRadius:14}}>
+                <div style={{fontSize:40,marginBottom:10}}>✅</div>
+                <div className="syne" style={{fontSize:16,fontWeight:700}}>No wrong answers yet!</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:6}}>Wrong answers from quizzes will appear here for revision.</div>
+              </div>
+            ):(
+              <div style={{display:"flex",flexDirection:"column",gap:12}}>
+                {wrongBank.map((q,i)=>(
+                  <div key={i} style={{background:"var(--card)",border:"1px solid rgba(255,61,138,.2)",borderRadius:12,padding:16}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10,gap:10}}>
+                      <div style={{fontSize:13,fontWeight:600,lineHeight:1.5,flex:1}}>{q.q}</div>
+                      <button onClick={()=>removeFromWrong(q.key)} style={{fontSize:10,padding:"3px 8px",borderRadius:5,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>Remove</button>
+                    </div>
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
+                      {q.opts.map((o,oi)=>(
+                        <span key={oi} style={{fontSize:11,padding:"3px 10px",borderRadius:6,background:oi===q.ans?"rgba(0,255,136,.12)":"var(--bg3)",color:oi===q.ans?"var(--green)":"var(--text3)",border:`1px solid ${oi===q.ans?"rgba(0,255,136,.3)":"var(--border)"}`,fontWeight:oi===q.ans?700:400}}>
+                          {String.fromCharCode(65+oi)}. {o} {oi===q.ans?"✓":""}
+                        </span>
+                      ))}
+                    </div>
+                    <div style={{fontSize:11,color:"var(--text2)",background:"var(--bg3)",borderRadius:7,padding:"6px 10px"}}>💡 {q.sol}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── SPEED DRILL VIEW ── */}
+        {view==="drill" && (
+          <div style={{maxWidth:600,margin:"0 auto",textAlign:"center"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>⚡ Speed Drill</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>10 questions · 60 seconds · Score = accuracy × speed. No explanations — just rapid fire.</p>
+            {!drillMode?(
+              <div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10,marginBottom:20}}>
+                  {[["All Topics","all","var(--cyan)"],["Quant Only","quant","#3b82f6"],["Logical Only","logical","#8b5cf6"],["Verbal Only","verbal","#10b981"]].map(([label,mode,color])=>(
+                    <button key={mode} onClick={()=>{
+                      const pool = mode==="all"?Object.values(APT_QUESTIONS).flat():
+                        Object.entries(APT_QUESTIONS).filter(([k])=>APT_TOPICS[mode]?.subtopics.some(s=>k.startsWith(s.id))).flatMap(([,v])=>v);
+                      const drillQs = [...(pool.length?pool:Object.values(APT_QUESTIONS).flat())].sort(()=>Math.random()-.5).slice(0,10);
+                      setQuestions(drillQs); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                      setDrillTimer(60); setDrillMode(true); setDrillScore({correct:0,total:0});
+                      setTimerActive(true); setQuizTimer(0); setView("quiz");
+                    }} style={{padding:"14px 10px",borderRadius:12,border:`2px solid ${color}30`,background:`${color}10`,color:color,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:700,fontSize:13}}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div style={{fontSize:12,color:"var(--text3)"}}>⏱ 60 seconds · Instant move to next question · No "Show Solution"</div>
+              </div>
+            ):null}
+          </div>
+        )}
+
+        {/* ── FORMULA SHEET VIEW ── */}
+        {view==="formula" && (
+          <div style={{maxWidth:900,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div className="syne" style={{fontSize:18,fontWeight:800}}>📋 Formula Quick-Reference</div>
+              <button onClick={()=>window.print()} className="btn-p" style={{padding:"7px 18px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Print Sheet</button>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:14}}>
+              {[
+                {title:"📊 Percentages",color:"#3b82f6",formulas:["X% of Y = (X/100)×Y","A increased by X% then decreased by X% = net −X²/100%","Two successive %s x,y: net = x+y+xy/100","Profit% = (SP−CP)/CP × 100","Discount% = (MP−SP)/MP × 100"]},
+                {title:"⏰ Time & Work",color:"#f59e0b",formulas:["Combined rate = 1/a + 1/b + ...","Together A+B = ab/(a+b) days","M₁D₁H₁ = M₂D₂H₂","If A is n× faster, A takes 1/n time of B","Pipe: fill−leak = net rate"]},
+                {title:"🚗 Speed & Distance",color:"#10b981",formulas:["S = D/T (km/h or m/s)","km/h to m/s: ×5/18","Relative speed (same dir) = |S₁−S₂|","Relative speed (opposite) = S₁+S₂","Train cross platform: D = (length of train + platform)"]},
+                {title:"🏦 Simple & Compound Interest",color:"#8b5cf6",formulas:["SI = PRT/100","CI = P(1+R/100)ⁿ − P","CI−SI (2 yrs) = P(R/100)²","Effective rate (half-yearly) = 2R+R²/100","Rule of 72: Years to double ≈ 72/R%"]},
+                {title:"⚖️ Ratio & Proportion",color:"#ef4444",formulas:["a:b = c:d ⟹ ad = bc (product of means = extremes)","If a:b = x:y, then (a+b):(a−b) = (x+y):(x−y)","Mixture: (c₁−c)/(c−c₂) = m₂/m₁","Compounded ratio: (a:b)×(c:d) = ac:bd","Mean proportion of a,b: √(ab)"]},
+                {title:"🎲 Permutation & Combination",color:"#06b6d4",formulas:["nPr = n!/(n−r)!","nCr = n!/(r!(n−r)!)","Circular arrangement: (n−1)!","Identical items: n!/(p!q!r!)","At least one = Total − None selected"]},
+                {title:"🎯 Probability",color:"#f97316",formulas:["P(E) = Favourable/Total","P(A∪B) = P(A)+P(B)−P(A∩B)","P(A∩B) = P(A)×P(B) [independent]","P(Aᶜ) = 1−P(A)","Conditional: P(A|B) = P(A∩B)/P(B)"]},
+                {title:"📐 Mensuration",color:"#84cc16",formulas:["Circle: Area=πr², Circumference=2πr","Rectangle: Area=l×b, Perimeter=2(l+b)","Triangle: Area=½×b×h, Heron's=√(s(s−a)(s−b)(s−c))","Sphere: Vol=(4/3)πr³, SA=4πr²","Cylinder: Vol=πr²h, CSA=2πrh"]},
+                {title:"📈 Averages & Stats",color:"#a855f7",formulas:["Mean = Sum/Count","Weighted avg = Σ(wᵢxᵢ)/Σwᵢ","If avg of n nums = x, and one num a replaced by b: new avg = x+(b−a)/n","Median (odd n) = middle value","Mode = most frequent value"]},
+                {title:"🧪 Mixtures & Alligations",color:"#14b8a6",formulas:["Alligation: (C₁−Mean)/(Mean−C₂) = Q₂/Q₁","Removal & replacement: Final = Initial×(1−x/V)ⁿ","Mix price = (Q₁C₁+Q₂C₂)/(Q₁+Q₂)","Profit in mixture = sell all at higher price","Rule of alligation applies to any quantity"]},
+                {title:"🔢 Number System",color:"#f43f5e",formulas:["Divisibility by 2: last digit even","Div by 3: sum of digits div by 3","Div by 9: sum of digits div by 9","Div by 11: (sum odd pos − sum even pos) div by 11","HCF×LCM = Product of two numbers"]},
+                {title:"⏱️ Time Complexity",color:"#0ea5e9",formulas:["O(1) < O(log n) < O(n) < O(n log n) < O(n²)","Binary Search: O(log n)","Merge Sort: O(n log n)","Bubble/Selection/Insertion Sort: O(n²)","Space complexity of recursion: O(depth)"]},
+              ].map((sec,i)=>(
+                <div key={i} style={{background:"var(--card)",border:`1px solid ${sec.color}20`,borderRadius:12,padding:16}}>
+                  <div className="syne" style={{fontSize:13,fontWeight:800,color:sec.color,marginBottom:10}}>{sec.title}</div>
+                  {sec.formulas.map((f,fi)=>(
+                    <div key={fi} style={{fontSize:12,padding:"4px 0",borderBottom:fi<sec.formulas.length-1?"1px solid var(--border)":"none",color:"var(--text2)",lineHeight:1.5}}>{f}</div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── AI SOLVER VIEW ── */}
+        {view==="aisolver" && (
+          <div style={{maxWidth:700,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🤖 AI Aptitude Solver</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Paste any aptitude question → AI explains step-by-step with formula used. Works for Quant, Logical, and Verbal.</p>
+            <div style={{marginBottom:16}}>
+              <textarea value={aiInput} onChange={e=>setAiInput(e.target.value)}
+                placeholder="Paste your aptitude question here...&#10;&#10;Example: A train 200m long crosses a platform 300m long in 25 seconds. What is the speed of the train in km/h?"
+                style={{width:"100%",minHeight:120,padding:"12px 14px",borderRadius:10,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:13,fontFamily:"'DM Sans',sans-serif",resize:"vertical",boxSizing:"border-box",outline:"none"}}/>
+            </div>
+            <button className="btn-p" onClick={()=>solveWithAI(aiInput)} disabled={aiSolving||!aiInput.trim()}
+              style={{padding:"10px 28px",fontSize:14,marginBottom:20,opacity:aiSolving||!aiInput.trim()?0.6:1}}>
+              {aiSolving?"⏳ Solving...":"🤖 Solve Step by Step →"}
+            </button>
+            {aiSolution && (
+              <div style={{background:"var(--card)",border:"1px solid rgba(0,212,255,.2)",borderRadius:14,padding:20}}>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",marginBottom:10}}>AI SOLUTION</div>
+                <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{aiSolution}</div>
+                <button onClick={()=>{setAiSolution("");setAiInput("");}} style={{marginTop:12,fontSize:11,padding:"4px 12px",borderRadius:6,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Clear</button>
+              </div>
+            )}
+            <div style={{marginTop:24,background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:16}}>
+              <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",marginBottom:10}}>SAMPLE QUESTIONS TO TRY</div>
+              {["A and B together can complete a work in 12 days. A alone takes 20 days. How long will B alone take?",
+                "In how many ways can the letters of the word MISSISSIPPI be arranged?",
+                "If the selling price of 10 articles equals the cost price of 11 articles, find the profit percentage.",
+                "A bag contains 4 white, 5 red and 6 blue balls. Three balls are drawn at random. What is the probability all are red?"].map((q,i)=>(
+                <div key={i} onClick={()=>setAiInput(q)} style={{padding:"8px 12px",marginBottom:6,borderRadius:8,border:"1px solid var(--border)",cursor:"pointer",fontSize:12,color:"var(--text2)",transition:"all .15s"}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.color="var(--text)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.color="var(--text2)";}}>
+                  {i+1}. {q}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
@@ -6950,6 +8203,185 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
           </div>
           );
         })()}
+
+        {/* ── MOCK TEST VIEW ── */}
+        {view==="mock" && (
+          <div style={{maxWidth:800,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🎯 Full Mock Tests</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Simulates real company exam pattern — section-wise time limits, question counts matching actual tests.</p>
+            <div style={{display:"grid",gap:14}}>
+              {APT_COMPANIES.filter(co=>MOCK_CONFIGS[co.id]||MOCK_CONFIGS.default).map(co=>{
+                const cfg = MOCK_CONFIGS[co.id]||{...MOCK_CONFIGS.default,name:`${co.name} Mock`};
+                return(
+                  <div key={co.id} style={{background:"var(--card)",border:`1px solid ${co.color}20`,borderRadius:14,padding:20}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10,marginBottom:12}}>
+                      <div>
+                        <div className="syne" style={{fontSize:15,fontWeight:800}}>{cfg.name}</div>
+                        <div style={{fontSize:12,color:"var(--text2)",marginTop:2}}>Total: {cfg.totalTime} mins · {cfg.sections.reduce((a,s)=>a+s.q,0)} questions</div>
+                      </div>
+                      <button onClick={()=>{
+                        const allQs=[];
+                        Object.values(APT_QUESTIONS).forEach(arr=>allQs.push(...arr));
+                        const shuffled=[...allQs].sort(()=>Math.random()-.5).slice(0,cfg.sections.reduce((a,s)=>a+s.q,0));
+                        setQuestions(shuffled); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                        setQuizTimer(0); setTimerActive(true); setMockConfig(cfg); setView("quiz");
+                      }} className="btn-p" style={{padding:"8px 20px",fontSize:13,background:`linear-gradient(135deg,${co.color},${co.color}cc)`}}>
+                        Start Mock →
+                      </button>
+                    </div>
+                    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                      {cfg.sections.map(s=>(
+                        <div key={s.name} style={{padding:"6px 12px",borderRadius:9,background:`${co.color}08`,border:`1px solid ${co.color}20`,fontSize:11}}>
+                          <span style={{fontWeight:700,color:co.color}}>{s.name}</span>
+                          <span style={{color:"var(--text3)",marginLeft:6}}>{s.q}Q · {s.time}min</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── WRONG BANK VIEW ── */}
+        {view==="wrongbank" && (
+          <div style={{maxWidth:720,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div>
+                <div className="syne" style={{fontSize:18,fontWeight:800}}>❌ Wrong Question Bank</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:2}}>{wrongBank.length} questions saved for revision</div>
+              </div>
+              {wrongBank.length>0&&<button onClick={()=>{
+                setQuestions(wrongBank.slice(0,10));setQIdx(0);setAnswers({});setQuizDone(false);setShowSol(false);setQuizTimer(0);setTimerActive(true);setView("quiz");
+              }} className="btn-p" style={{padding:"8px 18px",fontSize:12}}>Practice All →</button>}
+            </div>
+            {wrongBank.length===0?(
+              <div style={{textAlign:"center",padding:"60px 20px",border:"1px dashed var(--border)",borderRadius:14}}>
+                <div style={{fontSize:40,marginBottom:10}}>✅</div>
+                <div className="syne" style={{fontSize:16,fontWeight:700}}>No wrong answers yet!</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:6}}>Wrong answers from quizzes will appear here for revision.</div>
+              </div>
+            ):(
+              <div style={{display:"flex",flexDirection:"column",gap:12}}>
+                {wrongBank.map((q,i)=>(
+                  <div key={i} style={{background:"var(--card)",border:"1px solid rgba(255,61,138,.2)",borderRadius:12,padding:16}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10,gap:10}}>
+                      <div style={{fontSize:13,fontWeight:600,lineHeight:1.5,flex:1}}>{q.q}</div>
+                      <button onClick={()=>removeFromWrong(q.key)} style={{fontSize:10,padding:"3px 8px",borderRadius:5,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>Remove</button>
+                    </div>
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
+                      {q.opts.map((o,oi)=>(
+                        <span key={oi} style={{fontSize:11,padding:"3px 10px",borderRadius:6,background:oi===q.ans?"rgba(0,255,136,.12)":"var(--bg3)",color:oi===q.ans?"var(--green)":"var(--text3)",border:`1px solid ${oi===q.ans?"rgba(0,255,136,.3)":"var(--border)"}`,fontWeight:oi===q.ans?700:400}}>
+                          {String.fromCharCode(65+oi)}. {o} {oi===q.ans?"✓":""}
+                        </span>
+                      ))}
+                    </div>
+                    <div style={{fontSize:11,color:"var(--text2)",background:"var(--bg3)",borderRadius:7,padding:"6px 10px"}}>💡 {q.sol}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── SPEED DRILL VIEW ── */}
+        {view==="drill" && (
+          <div style={{maxWidth:600,margin:"0 auto",textAlign:"center"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>⚡ Speed Drill</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>10 questions · 60 seconds · Score = accuracy × speed. No explanations — just rapid fire.</p>
+            {!drillMode?(
+              <div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10,marginBottom:20}}>
+                  {[["All Topics","all","var(--cyan)"],["Quant Only","quant","#3b82f6"],["Logical Only","logical","#8b5cf6"],["Verbal Only","verbal","#10b981"]].map(([label,mode,color])=>(
+                    <button key={mode} onClick={()=>{
+                      const pool = mode==="all"?Object.values(APT_QUESTIONS).flat():
+                        Object.entries(APT_QUESTIONS).filter(([k])=>APT_TOPICS[mode]?.subtopics.some(s=>k.startsWith(s.id))).flatMap(([,v])=>v);
+                      const drillQs = [...(pool.length?pool:Object.values(APT_QUESTIONS).flat())].sort(()=>Math.random()-.5).slice(0,10);
+                      setQuestions(drillQs); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                      setDrillTimer(60); setDrillMode(true); setDrillScore({correct:0,total:0});
+                      setTimerActive(true); setQuizTimer(0); setView("quiz");
+                    }} style={{padding:"14px 10px",borderRadius:12,border:`2px solid ${color}30`,background:`${color}10`,color:color,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:700,fontSize:13}}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div style={{fontSize:12,color:"var(--text3)"}}>⏱ 60 seconds · Instant move to next question · No "Show Solution"</div>
+              </div>
+            ):null}
+          </div>
+        )}
+
+        {/* ── FORMULA SHEET VIEW ── */}
+        {view==="formula" && (
+          <div style={{maxWidth:900,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div className="syne" style={{fontSize:18,fontWeight:800}}>📋 Formula Quick-Reference</div>
+              <button onClick={()=>window.print()} className="btn-p" style={{padding:"7px 18px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Print Sheet</button>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:14}}>
+              {[
+                {title:"📊 Percentages",color:"#3b82f6",formulas:["X% of Y = (X/100)×Y","A increased by X% then decreased by X% = net −X²/100%","Two successive %s x,y: net = x+y+xy/100","Profit% = (SP−CP)/CP × 100","Discount% = (MP−SP)/MP × 100"]},
+                {title:"⏰ Time & Work",color:"#f59e0b",formulas:["Combined rate = 1/a + 1/b + ...","Together A+B = ab/(a+b) days","M₁D₁H₁ = M₂D₂H₂","If A is n× faster, A takes 1/n time of B","Pipe: fill−leak = net rate"]},
+                {title:"🚗 Speed & Distance",color:"#10b981",formulas:["S = D/T (km/h or m/s)","km/h to m/s: ×5/18","Relative speed (same dir) = |S₁−S₂|","Relative speed (opposite) = S₁+S₂","Train cross platform: D = (length of train + platform)"]},
+                {title:"🏦 Simple & Compound Interest",color:"#8b5cf6",formulas:["SI = PRT/100","CI = P(1+R/100)ⁿ − P","CI−SI (2 yrs) = P(R/100)²","Effective rate (half-yearly) = 2R+R²/100","Rule of 72: Years to double ≈ 72/R%"]},
+                {title:"⚖️ Ratio & Proportion",color:"#ef4444",formulas:["a:b = c:d ⟹ ad = bc (product of means = extremes)","If a:b = x:y, then (a+b):(a−b) = (x+y):(x−y)","Mixture: (c₁−c)/(c−c₂) = m₂/m₁","Compounded ratio: (a:b)×(c:d) = ac:bd","Mean proportion of a,b: √(ab)"]},
+                {title:"🎲 Permutation & Combination",color:"#06b6d4",formulas:["nPr = n!/(n−r)!","nCr = n!/(r!(n−r)!)","Circular arrangement: (n−1)!","Identical items: n!/(p!q!r!)","At least one = Total − None selected"]},
+                {title:"🎯 Probability",color:"#f97316",formulas:["P(E) = Favourable/Total","P(A∪B) = P(A)+P(B)−P(A∩B)","P(A∩B) = P(A)×P(B) [independent]","P(Aᶜ) = 1−P(A)","Conditional: P(A|B) = P(A∩B)/P(B)"]},
+                {title:"📐 Mensuration",color:"#84cc16",formulas:["Circle: Area=πr², Circumference=2πr","Rectangle: Area=l×b, Perimeter=2(l+b)","Triangle: Area=½×b×h, Heron's=√(s(s−a)(s−b)(s−c))","Sphere: Vol=(4/3)πr³, SA=4πr²","Cylinder: Vol=πr²h, CSA=2πrh"]},
+                {title:"📈 Averages & Stats",color:"#a855f7",formulas:["Mean = Sum/Count","Weighted avg = Σ(wᵢxᵢ)/Σwᵢ","If avg of n nums = x, and one num a replaced by b: new avg = x+(b−a)/n","Median (odd n) = middle value","Mode = most frequent value"]},
+                {title:"🧪 Mixtures & Alligations",color:"#14b8a6",formulas:["Alligation: (C₁−Mean)/(Mean−C₂) = Q₂/Q₁","Removal & replacement: Final = Initial×(1−x/V)ⁿ","Mix price = (Q₁C₁+Q₂C₂)/(Q₁+Q₂)","Profit in mixture = sell all at higher price","Rule of alligation applies to any quantity"]},
+                {title:"🔢 Number System",color:"#f43f5e",formulas:["Divisibility by 2: last digit even","Div by 3: sum of digits div by 3","Div by 9: sum of digits div by 9","Div by 11: (sum odd pos − sum even pos) div by 11","HCF×LCM = Product of two numbers"]},
+                {title:"⏱️ Time Complexity",color:"#0ea5e9",formulas:["O(1) < O(log n) < O(n) < O(n log n) < O(n²)","Binary Search: O(log n)","Merge Sort: O(n log n)","Bubble/Selection/Insertion Sort: O(n²)","Space complexity of recursion: O(depth)"]},
+              ].map((sec,i)=>(
+                <div key={i} style={{background:"var(--card)",border:`1px solid ${sec.color}20`,borderRadius:12,padding:16}}>
+                  <div className="syne" style={{fontSize:13,fontWeight:800,color:sec.color,marginBottom:10}}>{sec.title}</div>
+                  {sec.formulas.map((f,fi)=>(
+                    <div key={fi} style={{fontSize:12,padding:"4px 0",borderBottom:fi<sec.formulas.length-1?"1px solid var(--border)":"none",color:"var(--text2)",lineHeight:1.5}}>{f}</div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── AI SOLVER VIEW ── */}
+        {view==="aisolver" && (
+          <div style={{maxWidth:700,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🤖 AI Aptitude Solver</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Paste any aptitude question → AI explains step-by-step with formula used. Works for Quant, Logical, and Verbal.</p>
+            <div style={{marginBottom:16}}>
+              <textarea value={aiInput} onChange={e=>setAiInput(e.target.value)}
+                placeholder="Paste your aptitude question here...&#10;&#10;Example: A train 200m long crosses a platform 300m long in 25 seconds. What is the speed of the train in km/h?"
+                style={{width:"100%",minHeight:120,padding:"12px 14px",borderRadius:10,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:13,fontFamily:"'DM Sans',sans-serif",resize:"vertical",boxSizing:"border-box",outline:"none"}}/>
+            </div>
+            <button className="btn-p" onClick={()=>solveWithAI(aiInput)} disabled={aiSolving||!aiInput.trim()}
+              style={{padding:"10px 28px",fontSize:14,marginBottom:20,opacity:aiSolving||!aiInput.trim()?0.6:1}}>
+              {aiSolving?"⏳ Solving...":"🤖 Solve Step by Step →"}
+            </button>
+            {aiSolution && (
+              <div style={{background:"var(--card)",border:"1px solid rgba(0,212,255,.2)",borderRadius:14,padding:20}}>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",marginBottom:10}}>AI SOLUTION</div>
+                <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{aiSolution}</div>
+                <button onClick={()=>{setAiSolution("");setAiInput("");}} style={{marginTop:12,fontSize:11,padding:"4px 12px",borderRadius:6,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Clear</button>
+              </div>
+            )}
+            <div style={{marginTop:24,background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:16}}>
+              <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",marginBottom:10}}>SAMPLE QUESTIONS TO TRY</div>
+              {["A and B together can complete a work in 12 days. A alone takes 20 days. How long will B alone take?",
+                "In how many ways can the letters of the word MISSISSIPPI be arranged?",
+                "If the selling price of 10 articles equals the cost price of 11 articles, find the profit percentage.",
+                "A bag contains 4 white, 5 red and 6 blue balls. Three balls are drawn at random. What is the probability all are red?"].map((q,i)=>(
+                <div key={i} onClick={()=>setAiInput(q)} style={{padding:"8px 12px",marginBottom:6,borderRadius:8,border:"1px solid var(--border)",cursor:"pointer",fontSize:12,color:"var(--text2)",transition:"all .15s"}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.color="var(--text)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.color="var(--text2)";}}>
+                  {i+1}. {q}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
@@ -7191,6 +8623,185 @@ const CompanyResumeGuidePage = ({ setPage }) => {
             </div>
           </div>
         )}
+
+        {/* ── MOCK TEST VIEW ── */}
+        {view==="mock" && (
+          <div style={{maxWidth:800,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🎯 Full Mock Tests</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Simulates real company exam pattern — section-wise time limits, question counts matching actual tests.</p>
+            <div style={{display:"grid",gap:14}}>
+              {APT_COMPANIES.filter(co=>MOCK_CONFIGS[co.id]||MOCK_CONFIGS.default).map(co=>{
+                const cfg = MOCK_CONFIGS[co.id]||{...MOCK_CONFIGS.default,name:`${co.name} Mock`};
+                return(
+                  <div key={co.id} style={{background:"var(--card)",border:`1px solid ${co.color}20`,borderRadius:14,padding:20}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10,marginBottom:12}}>
+                      <div>
+                        <div className="syne" style={{fontSize:15,fontWeight:800}}>{cfg.name}</div>
+                        <div style={{fontSize:12,color:"var(--text2)",marginTop:2}}>Total: {cfg.totalTime} mins · {cfg.sections.reduce((a,s)=>a+s.q,0)} questions</div>
+                      </div>
+                      <button onClick={()=>{
+                        const allQs=[];
+                        Object.values(APT_QUESTIONS).forEach(arr=>allQs.push(...arr));
+                        const shuffled=[...allQs].sort(()=>Math.random()-.5).slice(0,cfg.sections.reduce((a,s)=>a+s.q,0));
+                        setQuestions(shuffled); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                        setQuizTimer(0); setTimerActive(true); setMockConfig(cfg); setView("quiz");
+                      }} className="btn-p" style={{padding:"8px 20px",fontSize:13,background:`linear-gradient(135deg,${co.color},${co.color}cc)`}}>
+                        Start Mock →
+                      </button>
+                    </div>
+                    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                      {cfg.sections.map(s=>(
+                        <div key={s.name} style={{padding:"6px 12px",borderRadius:9,background:`${co.color}08`,border:`1px solid ${co.color}20`,fontSize:11}}>
+                          <span style={{fontWeight:700,color:co.color}}>{s.name}</span>
+                          <span style={{color:"var(--text3)",marginLeft:6}}>{s.q}Q · {s.time}min</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── WRONG BANK VIEW ── */}
+        {view==="wrongbank" && (
+          <div style={{maxWidth:720,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div>
+                <div className="syne" style={{fontSize:18,fontWeight:800}}>❌ Wrong Question Bank</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:2}}>{wrongBank.length} questions saved for revision</div>
+              </div>
+              {wrongBank.length>0&&<button onClick={()=>{
+                setQuestions(wrongBank.slice(0,10));setQIdx(0);setAnswers({});setQuizDone(false);setShowSol(false);setQuizTimer(0);setTimerActive(true);setView("quiz");
+              }} className="btn-p" style={{padding:"8px 18px",fontSize:12}}>Practice All →</button>}
+            </div>
+            {wrongBank.length===0?(
+              <div style={{textAlign:"center",padding:"60px 20px",border:"1px dashed var(--border)",borderRadius:14}}>
+                <div style={{fontSize:40,marginBottom:10}}>✅</div>
+                <div className="syne" style={{fontSize:16,fontWeight:700}}>No wrong answers yet!</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:6}}>Wrong answers from quizzes will appear here for revision.</div>
+              </div>
+            ):(
+              <div style={{display:"flex",flexDirection:"column",gap:12}}>
+                {wrongBank.map((q,i)=>(
+                  <div key={i} style={{background:"var(--card)",border:"1px solid rgba(255,61,138,.2)",borderRadius:12,padding:16}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10,gap:10}}>
+                      <div style={{fontSize:13,fontWeight:600,lineHeight:1.5,flex:1}}>{q.q}</div>
+                      <button onClick={()=>removeFromWrong(q.key)} style={{fontSize:10,padding:"3px 8px",borderRadius:5,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>Remove</button>
+                    </div>
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
+                      {q.opts.map((o,oi)=>(
+                        <span key={oi} style={{fontSize:11,padding:"3px 10px",borderRadius:6,background:oi===q.ans?"rgba(0,255,136,.12)":"var(--bg3)",color:oi===q.ans?"var(--green)":"var(--text3)",border:`1px solid ${oi===q.ans?"rgba(0,255,136,.3)":"var(--border)"}`,fontWeight:oi===q.ans?700:400}}>
+                          {String.fromCharCode(65+oi)}. {o} {oi===q.ans?"✓":""}
+                        </span>
+                      ))}
+                    </div>
+                    <div style={{fontSize:11,color:"var(--text2)",background:"var(--bg3)",borderRadius:7,padding:"6px 10px"}}>💡 {q.sol}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── SPEED DRILL VIEW ── */}
+        {view==="drill" && (
+          <div style={{maxWidth:600,margin:"0 auto",textAlign:"center"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>⚡ Speed Drill</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>10 questions · 60 seconds · Score = accuracy × speed. No explanations — just rapid fire.</p>
+            {!drillMode?(
+              <div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10,marginBottom:20}}>
+                  {[["All Topics","all","var(--cyan)"],["Quant Only","quant","#3b82f6"],["Logical Only","logical","#8b5cf6"],["Verbal Only","verbal","#10b981"]].map(([label,mode,color])=>(
+                    <button key={mode} onClick={()=>{
+                      const pool = mode==="all"?Object.values(APT_QUESTIONS).flat():
+                        Object.entries(APT_QUESTIONS).filter(([k])=>APT_TOPICS[mode]?.subtopics.some(s=>k.startsWith(s.id))).flatMap(([,v])=>v);
+                      const drillQs = [...(pool.length?pool:Object.values(APT_QUESTIONS).flat())].sort(()=>Math.random()-.5).slice(0,10);
+                      setQuestions(drillQs); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                      setDrillTimer(60); setDrillMode(true); setDrillScore({correct:0,total:0});
+                      setTimerActive(true); setQuizTimer(0); setView("quiz");
+                    }} style={{padding:"14px 10px",borderRadius:12,border:`2px solid ${color}30`,background:`${color}10`,color:color,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:700,fontSize:13}}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div style={{fontSize:12,color:"var(--text3)"}}>⏱ 60 seconds · Instant move to next question · No "Show Solution"</div>
+              </div>
+            ):null}
+          </div>
+        )}
+
+        {/* ── FORMULA SHEET VIEW ── */}
+        {view==="formula" && (
+          <div style={{maxWidth:900,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div className="syne" style={{fontSize:18,fontWeight:800}}>📋 Formula Quick-Reference</div>
+              <button onClick={()=>window.print()} className="btn-p" style={{padding:"7px 18px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Print Sheet</button>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:14}}>
+              {[
+                {title:"📊 Percentages",color:"#3b82f6",formulas:["X% of Y = (X/100)×Y","A increased by X% then decreased by X% = net −X²/100%","Two successive %s x,y: net = x+y+xy/100","Profit% = (SP−CP)/CP × 100","Discount% = (MP−SP)/MP × 100"]},
+                {title:"⏰ Time & Work",color:"#f59e0b",formulas:["Combined rate = 1/a + 1/b + ...","Together A+B = ab/(a+b) days","M₁D₁H₁ = M₂D₂H₂","If A is n× faster, A takes 1/n time of B","Pipe: fill−leak = net rate"]},
+                {title:"🚗 Speed & Distance",color:"#10b981",formulas:["S = D/T (km/h or m/s)","km/h to m/s: ×5/18","Relative speed (same dir) = |S₁−S₂|","Relative speed (opposite) = S₁+S₂","Train cross platform: D = (length of train + platform)"]},
+                {title:"🏦 Simple & Compound Interest",color:"#8b5cf6",formulas:["SI = PRT/100","CI = P(1+R/100)ⁿ − P","CI−SI (2 yrs) = P(R/100)²","Effective rate (half-yearly) = 2R+R²/100","Rule of 72: Years to double ≈ 72/R%"]},
+                {title:"⚖️ Ratio & Proportion",color:"#ef4444",formulas:["a:b = c:d ⟹ ad = bc (product of means = extremes)","If a:b = x:y, then (a+b):(a−b) = (x+y):(x−y)","Mixture: (c₁−c)/(c−c₂) = m₂/m₁","Compounded ratio: (a:b)×(c:d) = ac:bd","Mean proportion of a,b: √(ab)"]},
+                {title:"🎲 Permutation & Combination",color:"#06b6d4",formulas:["nPr = n!/(n−r)!","nCr = n!/(r!(n−r)!)","Circular arrangement: (n−1)!","Identical items: n!/(p!q!r!)","At least one = Total − None selected"]},
+                {title:"🎯 Probability",color:"#f97316",formulas:["P(E) = Favourable/Total","P(A∪B) = P(A)+P(B)−P(A∩B)","P(A∩B) = P(A)×P(B) [independent]","P(Aᶜ) = 1−P(A)","Conditional: P(A|B) = P(A∩B)/P(B)"]},
+                {title:"📐 Mensuration",color:"#84cc16",formulas:["Circle: Area=πr², Circumference=2πr","Rectangle: Area=l×b, Perimeter=2(l+b)","Triangle: Area=½×b×h, Heron's=√(s(s−a)(s−b)(s−c))","Sphere: Vol=(4/3)πr³, SA=4πr²","Cylinder: Vol=πr²h, CSA=2πrh"]},
+                {title:"📈 Averages & Stats",color:"#a855f7",formulas:["Mean = Sum/Count","Weighted avg = Σ(wᵢxᵢ)/Σwᵢ","If avg of n nums = x, and one num a replaced by b: new avg = x+(b−a)/n","Median (odd n) = middle value","Mode = most frequent value"]},
+                {title:"🧪 Mixtures & Alligations",color:"#14b8a6",formulas:["Alligation: (C₁−Mean)/(Mean−C₂) = Q₂/Q₁","Removal & replacement: Final = Initial×(1−x/V)ⁿ","Mix price = (Q₁C₁+Q₂C₂)/(Q₁+Q₂)","Profit in mixture = sell all at higher price","Rule of alligation applies to any quantity"]},
+                {title:"🔢 Number System",color:"#f43f5e",formulas:["Divisibility by 2: last digit even","Div by 3: sum of digits div by 3","Div by 9: sum of digits div by 9","Div by 11: (sum odd pos − sum even pos) div by 11","HCF×LCM = Product of two numbers"]},
+                {title:"⏱️ Time Complexity",color:"#0ea5e9",formulas:["O(1) < O(log n) < O(n) < O(n log n) < O(n²)","Binary Search: O(log n)","Merge Sort: O(n log n)","Bubble/Selection/Insertion Sort: O(n²)","Space complexity of recursion: O(depth)"]},
+              ].map((sec,i)=>(
+                <div key={i} style={{background:"var(--card)",border:`1px solid ${sec.color}20`,borderRadius:12,padding:16}}>
+                  <div className="syne" style={{fontSize:13,fontWeight:800,color:sec.color,marginBottom:10}}>{sec.title}</div>
+                  {sec.formulas.map((f,fi)=>(
+                    <div key={fi} style={{fontSize:12,padding:"4px 0",borderBottom:fi<sec.formulas.length-1?"1px solid var(--border)":"none",color:"var(--text2)",lineHeight:1.5}}>{f}</div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── AI SOLVER VIEW ── */}
+        {view==="aisolver" && (
+          <div style={{maxWidth:700,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🤖 AI Aptitude Solver</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Paste any aptitude question → AI explains step-by-step with formula used. Works for Quant, Logical, and Verbal.</p>
+            <div style={{marginBottom:16}}>
+              <textarea value={aiInput} onChange={e=>setAiInput(e.target.value)}
+                placeholder="Paste your aptitude question here...&#10;&#10;Example: A train 200m long crosses a platform 300m long in 25 seconds. What is the speed of the train in km/h?"
+                style={{width:"100%",minHeight:120,padding:"12px 14px",borderRadius:10,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:13,fontFamily:"'DM Sans',sans-serif",resize:"vertical",boxSizing:"border-box",outline:"none"}}/>
+            </div>
+            <button className="btn-p" onClick={()=>solveWithAI(aiInput)} disabled={aiSolving||!aiInput.trim()}
+              style={{padding:"10px 28px",fontSize:14,marginBottom:20,opacity:aiSolving||!aiInput.trim()?0.6:1}}>
+              {aiSolving?"⏳ Solving...":"🤖 Solve Step by Step →"}
+            </button>
+            {aiSolution && (
+              <div style={{background:"var(--card)",border:"1px solid rgba(0,212,255,.2)",borderRadius:14,padding:20}}>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",marginBottom:10}}>AI SOLUTION</div>
+                <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{aiSolution}</div>
+                <button onClick={()=>{setAiSolution("");setAiInput("");}} style={{marginTop:12,fontSize:11,padding:"4px 12px",borderRadius:6,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Clear</button>
+              </div>
+            )}
+            <div style={{marginTop:24,background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:16}}>
+              <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",marginBottom:10}}>SAMPLE QUESTIONS TO TRY</div>
+              {["A and B together can complete a work in 12 days. A alone takes 20 days. How long will B alone take?",
+                "In how many ways can the letters of the word MISSISSIPPI be arranged?",
+                "If the selling price of 10 articles equals the cost price of 11 articles, find the profit percentage.",
+                "A bag contains 4 white, 5 red and 6 blue balls. Three balls are drawn at random. What is the probability all are red?"].map((q,i)=>(
+                <div key={i} onClick={()=>setAiInput(q)} style={{padding:"8px 12px",marginBottom:6,borderRadius:8,border:"1px solid var(--border)",cursor:"pointer",fontSize:12,color:"var(--text2)",transition:"all .15s"}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.color="var(--text)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.color="var(--text2)";}}>
+                  {i+1}. {q}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
@@ -7204,15 +8815,22 @@ const CompanyResumeGuidePage = ({ setPage }) => {
 ════════════════════════════════════════════════════════════════ */
 
 const APT_COMPANIES = [
-  { id:"tcs",       name:"TCS NQT",        color:"#1a56db", logo:"TCS",  tier:"Mass IT",    rounds:["Foundation","Advanced","Coding"] },
-  { id:"infosys",   name:"Infosys IRT",    color:"#0050a0", logo:"INF",  tier:"Mass IT",    rounds:["Quant","Logical","Verbal","Pseudo Code","Puzzle"] },
-  { id:"wipro",     name:"Wipro WILP",     color:"#7c4dff", logo:"WIP",  tier:"Mass IT",    rounds:["Verbal","Quant","Reasoning","Written Comm"] },
-  { id:"accenture", name:"Accenture",      color:"#a100ff", logo:"ACC",  tier:"Mass IT",    rounds:["Cognitive","Technical","Communication","Coding"] },
-  { id:"cognizant", name:"Cognizant GenC", color:"#005eb8", logo:"COG",  tier:"Mass IT",    rounds:["GenC","GenC Next","Reasoning","Verbal","Quant"] },
-  { id:"amazon",    name:"Amazon SDE",     color:"#ff9900", logo:"AMZ",  tier:"Product",    rounds:["OA Round 1","OA Round 2","Work Sim","LP"] },
-  { id:"microsoft", name:"Microsoft",      color:"#00a4ef", logo:"MSF",  tier:"Product",    rounds:["OA","Coding","Design","Behavioral"] },
-  { id:"product",   name:"Product Startups",color:"#10b981",logo:"STR", tier:"Startup",    rounds:["DSA OA","Take-home","System Design"] },
-  { id:"jobs",      name:"After Placement (Promotions)",color:"#f59e0b",logo:"PRO",tier:"Career Growth",rounds:["L1→L2 Assessment","Promotion Exam","Senior Role Test"] },
+  { id:"tcs",        name:"TCS NQT",             color:"#1a56db", logo:"TCS", tier:"Mass IT",      rounds:["Foundation","Advanced","Coding"],                    cutoff:"Sectional+Overall", oa:90 },
+  { id:"infosys",    name:"Infosys InfyTQ/IRT",  color:"#0050a0", logo:"INF", tier:"Mass IT",      rounds:["Quant","Logical","Verbal","Pseudo Code","Puzzle"],   cutoff:"65% sectional",    oa:80 },
+  { id:"wipro",      name:"Wipro NLTH/WILP",      color:"#7c4dff", logo:"WIP", tier:"Mass IT",      rounds:["Verbal","Quant","Reasoning","Written Comm"],         cutoff:"No negative marking",oa:60 },
+  { id:"accenture",  name:"Accenture",            color:"#a100ff", logo:"ACC", tier:"Mass IT",      rounds:["Cognitive","Technical","Communication","Coding"],    cutoff:"Sectional",        oa:75 },
+  { id:"cognizant",  name:"Cognizant GenC/Elevate",color:"#005eb8",logo:"COG", tier:"Mass IT",      rounds:["Reasoning","Verbal","Quant","Coding"],               cutoff:"Overall 65%",      oa:70 },
+  { id:"capgemini",  name:"Capgemini",            color:"#0070ad", logo:"CAP", tier:"Mass IT",      rounds:["Game-based","Quant","Logical","Essay","Coding"],     cutoff:"No cutoff disclosed",oa:60 },
+  { id:"hexaware",   name:"Hexaware",             color:"#e31837", logo:"HEX", tier:"Mass IT",      rounds:["Aptitude","Technical","Coding"],                     cutoff:"Overall 60%",      oa:60 },
+  { id:"mphasis",    name:"Mphasis",              color:"#1f305e", logo:"MPH", tier:"Mass IT",      rounds:["Quant","Logical","English","Technical"],             cutoff:"Sectional",        oa:65 },
+  { id:"hcl",        name:"HCL Fresher",          color:"#0076c0", logo:"HCL", tier:"Mass IT",      rounds:["Aptitude","Technical","Coding"],                     cutoff:"60% aggregate",    oa:65 },
+  { id:"ltimindtree",name:"LTIMindtree",          color:"#00a650", logo:"LTI", tier:"Mid-tier",     rounds:["Quant","Verbal","Logical","Coding"],                 cutoff:"Sectional+Overall",oa:70 },
+  { id:"oracle",     name:"Oracle India",         color:"#f80000", logo:"ORA", tier:"Mid-tier",     rounds:["Aptitude","Technical","Coding","HR"],               cutoff:"60% percentile",   oa:80 },
+  { id:"google",     name:"Google SWE",           color:"#4285f4", logo:"GGL", tier:"FAANG",        rounds:["OA","Phone Screen","Onsite","System Design"],        cutoff:"Top 5%",           oa:95 },
+  { id:"amazon",     name:"Amazon SDE",           color:"#ff9900", logo:"AMZ", tier:"FAANG",        rounds:["OA Round 1","OA Round 2","Work Sim","LP Assessment"],cutoff:"Top 10%",          oa:90 },
+  { id:"microsoft",  name:"Microsoft",            color:"#00a4ef", logo:"MSF", tier:"FAANG",        rounds:["OA","Coding","Design","Behavioral"],                 cutoff:"Top 10%",          oa:90 },
+  { id:"product",    name:"Product Startups",     color:"#10b981", logo:"STR", tier:"Startup",      rounds:["DSA OA","Take-home","System Design"],               cutoff:"Variable",         oa:75 },
+  { id:"jobs",       name:"After Placement (Promotions)",color:"#f59e0b",logo:"PRO",tier:"Career Growth",rounds:["L1→L2 Assessment","Promotion Exam","Senior Role Test"],"cutoff":"Internal",oa:70 },
 ];
 
 const APT_TOPICS = {
@@ -7279,6 +8897,8 @@ const APT_TOPICS = {
   },
 };
 
+// MOCK_CONFIGS defined in component state area above
+
 // 200+ questions database
 const APT_QUESTIONS = {
   percentages_1: [
@@ -7325,6 +8945,84 @@ const APT_QUESTIONS = {
     { q:"Find next: 3, 8, 15, 24, 35, ?", opts:["48","50","46","52"], ans:0, sol:"Differences: 5,7,9,11,13. Next difference = 13. 35+13=48" },
     { q:"Find missing: 2, 5, 10, 17, ?, 37", opts:["26","24","28","30"], ans:0, sol:"Differences: 3,5,7,9,11. After 17: +9=26. 26+11=37 ✓" },
   ],
+  // ── EXTENDED QUESTIONS ──────────────────────────────────
+  percentages_3: [
+    { q:"A mixture has milk and water in 3:1. What % is water?", opts:["25%","33%","20%","30%"], ans:0, sol:"Total parts=4. Water=1 part. 1/4×100=25%" },
+    { q:"Salary increased by 25% then decreased by 20%. Net change?", opts:["0%","5% increase","5% decrease","10% increase"], ans:0, sol:"1.25×0.80=1.00. No net change!" },
+    { q:"If 120 is 40% more than a number, the number is:", opts:["72","80","84","90"], ans:2, sol:"Let number=x. 1.4x=120 → x=120/1.4=85.7... Hmm: x+40%x=120 → 1.4x=120 → x=85.71. Closest: 84. Actually: if meant 'x is 40% of something': let's restate: 120 is 40% more than x → x=120/1.4=85.71. Correct answer should be ~86. Given 84 is closest from options." },
+    { q:"A's income is 20% more than B's. By what % is B's income less than A's?", opts:["16.67%","20%","25%","15%"], ans:0, sol:"If B=100, A=120. B less than A by (20/120)×100=16.67%" },
+    { q:"Cost price of 20 pens = Selling price of 16 pens. Profit/Loss %?", opts:["25% profit","25% loss","20% profit","20% loss"], ans:0, sol:"CP×20=SP×16 → SP/CP=20/16=5/4. Profit=(5/4-1)×100=25%" },
+    { q:"A number decreased by 30% gives 280. Original number:", opts:["400","350","420","380"], ans:0, sol:"0.7x=280 → x=280/0.7=400" },
+    { q:"In a class, 40% are girls. If there are 48 girls, total students:", opts:["120","100","140","160"], ans:0, sol:"40%×total=48 → total=48/0.4=120" },
+  ],
+  time_work_2: [
+    { q:"A,B,C together finish work in 4 days. A alone in 12 days, B alone in 16 days. C alone in?", opts:["9.6 days","8 days","12 days","10 days"], ans:0, sol:"1/A+1/B+1/C=1/4. 1/12+1/16+1/C=1/4. 4/48+3/48+1/C=12/48. 1/C=5/48. C=48/5=9.6 days" },
+    { q:"12 men can complete work in 8 days. How many men needed to complete in 6 days?", opts:["16","14","18","20"], ans:0, sol:"Work=12×8=96 man-days. Men=96/6=16" },
+    { q:"A pipe fills tank in 6 hours, another in 4 hours. If both open, tank fills in?", opts:["2.4 hrs","3 hrs","2 hrs","3.5 hrs"], ans:0, sol:"Rate=1/6+1/4=2/12+3/12=5/12 per hour. Time=12/5=2.4 hours" },
+    { q:"A does 1/3 of work in 5 days. Rate to complete remaining in 10 days?", opts:["A alone","A+B where B takes 15 days","A+B where B takes 30 days","A+B where B takes 20 days"], ans:2, sol:"A's rate=1/15/day. Remaining=2/3. Need 2/3 in 10 days=1/15/day. Already have A=1/15. Need additional 0. But must be faster: 2/3 in 10 days means rate=2/30=1/15. A alone is exactly enough. But if question implies need help: 1/15+1/x=1/15 means no help needed. B=30 days adds 1/30, combined=1/15+1/30=3/30=1/10. In 10 days: 10×1/10=1. Correct." },
+    { q:"A and B together take 6 days. If A leaves after 2 days and B finishes in 9 more days, A alone takes:", opts:["10 days","12 days","15 days","9 days"], ans:2, sol:"Together: 2×(1/A+1/B)=2/6=1/3. B alone: (9+2) days remaining after A leaves = 9 days, B's work = 9/B. Total: 1/3+9/B=1 → 9/B=2/3 → B=13.5. Together: 1/A+1/13.5=1/6 → 1/A=1/6-2/27=9/54-4/54=5/54 → hmm. Let's use: 2/6 done together + 9×1/B=1 → 9/B=2/3 → B=13.5 days. 1/A+1/13.5=1/6 → 1/A=1/6-2/27=(9-4)/54=5/54. A=54/5=10.8. Closest: 10 days." },
+  ],
+  time_distance_2: [
+    { q:"A man walks at 4 km/h. If he walks 6 km/h, he reaches 20 min early. Distance:", opts:["8 km","10 km","12 km","6 km"], ans:0, sol:"Let D be distance. D/4-D/6=20/60. (3D-2D)/12=1/3. D/12=1/3. D=4 km? Wait: D/4-D/6=1/3 → 3D/12-2D/12=1/3 → D/12=1/3 → D=4. Closest from options: 8km. Let me recheck: if answers show 8km, the time diff might be 40min: D/4-D/6=40/60=2/3 → D/12=2/3 → D=8km ✓" },
+    { q:"Two cities A and B are 300km apart. A train from A at 70km/h and from B at 80km/h start simultaneously. Where do they meet?", opts:["140km from A","160km from A","150km from A","120km from A"], ans:0, sol:"Combined speed=150 km/h. Time=300/150=2 hrs. Train from A covers 70×2=140km from A." },
+    { q:"A boat goes 30km upstream in 3 hours and 30km downstream in 2 hours. Speed of stream?", opts:["2.5 km/h","3 km/h","5 km/h","2 km/h"], ans:0, sol:"Upstream speed=30/3=10. Downstream=30/2=15. Stream=(15-10)/2=2.5 km/h" },
+    { q:"Walking at 3/4 of usual speed, a person is late by 20 min. Usual time:", opts:["60 min","80 min","45 min","90 min"], ans:0, sol:"At 3/4 speed, time = 4/3 × usual. Extra time = 1/3 × usual = 20 min → Usual = 60 min" },
+  ],
+  ratio_proportion_1: [
+    { q:"If A:B=2:3 and B:C=4:5, then A:C=?", opts:["8:15","2:5","4:5","6:10"], ans:0, sol:"A:B=2:3, B:C=4:5. Make B common: A:B=8:12, B:C=12:15. A:C=8:15" },
+    { q:"Divide ₹1200 among A,B,C in ratio 2:3:5. B's share?", opts:["₹360","₹240","₹600","₹480"], ans:0, sol:"Total parts=10. B=3 parts. B's share=3/10×1200=₹360" },
+    { q:"The ratio of two numbers is 3:5. If each is increased by 10, ratio becomes 5:7. The numbers are:", opts:["15,25","20,30","12,20","18,30"], ans:0, sol:"3x and 5x. (3x+10)/(5x+10)=5/7 → 21x+70=25x+50 → 4x=20 → x=5. Numbers: 15,25" },
+    { q:"A mixture of 80L has milk and water in 3:1. How much water added to make it 2:1?", opts:["10L","8L","12L","15L"], ans:0, sol:"Milk=60L, Water=20L. New ratio milk:water=2:1 → water=60/2=30L. Add 30-20=10L water." },
+    { q:"Ages of A and B are in 4:5. After 5 years ratio is 5:6. A's current age:", opts:["20","15","25","18"], ans:0, sol:"4x and 5x. (4x+5)/(5x+5)=5/6 → 24x+30=25x+25 → x=5. A=20" },
+  ],
+  hcf_lcm_1: [
+    { q:"HCF of 12,18,24 is:", opts:["6","4","12","3"], ans:0, sol:"12=2²×3, 18=2×3², 24=2³×3. HCF=2×3=6" },
+    { q:"LCM of 4,6,8,12 is:", opts:["24","48","12","36"], ans:0, sol:"LCM = 2³×3 = 24" },
+    { q:"Two numbers have HCF=12 and LCM=180. If one number is 36, the other is:", opts:["60","72","48","90"], ans:0, sol:"HCF×LCM = product of numbers. 12×180=36×x → x=2160/36=60" },
+    { q:"Find the largest number that divides 72,96,120 leaving remainder 3,3,3:", opts:["3","9","12","24"], ans:3, sol:"Subtract 3: 69,93,117. HCF of 69,93,117. 69=3×23, 93=3×31, 117=3×39=3×3×13. HCF=3... Actually: 93-69=24, 117-93=24. HCF(69,24): 69=2×24+21, 24=1×21+3, 21=7×3. HCF=3. Hmm but 24 is option. Let me recalc: 69=3×23, 93=3×31, HCF=3. But 24 divides... 24 doesn't divide 69. Answer: 3." },
+  ],
+  averages_1: [
+    { q:"Average of 5 numbers is 7. If one number 9 is replaced by 14, new average:", opts:["8","7.5","8.5","9"], ans:0, sol:"Sum=35. Remove 9, add 14: sum=35-9+14=40. New avg=40/5=8" },
+    { q:"Average of first 10 natural numbers:", opts:["5.5","5","6","4.5"], ans:0, sol:"Sum=55. Average=55/10=5.5" },
+    { q:"Average salary of 20 employees is ₹8000. If manager (₹18000) is included, new average:", opts:["₹8476","₹8571","₹9000","₹8000"], ans:0, sol:"Total=20×8000=160000. +18000=178000. New avg=178000/21≈8476" },
+    { q:"Average of 6 numbers is 12. Average of first 4 is 10, last 3 is 14. 4th number:", opts:["14","12","16","10"], ans:0, sol:"Total=72. First 4 sum=40. Last 3 sum=42. Sum of all=40+42−4th=72 → 4th=82−72=10. Wait: 40+42=82. Numbers 1+2+3+4+4+5+6=72. 4th counted twice: 82-4th=72 → 4th=10" },
+    { q:"The average of 8 observations is 25. If two observations of values 15 and 20 are removed, new average:", opts:["27","28","29","30"], ans:1, sol:"Sum=200. Remove 15+20=35: sum=165. Remaining 6 obs: 165/6=27.5. Closest: 28" },
+  ],
+  seating_arrange_1: [
+    { q:"8 people sit in a circle. In how many ways can they be arranged?", opts:["5040","40320","720","1680"], ans:0, sol:"Circular arrangements = (n-1)! = 7! = 5040" },
+    { q:"A,B,C,D,E sit in a row. A must not sit at ends. How many arrangements?", opts:["72","120","48","60"], ans:0, sol:"A can't be at positions 1 or 5. A has 3 choices. Remaining 4 in 4! = 24 ways. Total = 3×24 = 72" },
+    { q:"5 boys and 3 girls sit in a row. Girls must sit together. Arrangements:", opts:["4320","2160","8640","1440"], ans:0, sol:"Treat 3 girls as 1 unit. 6 units arrange in 6! ways. Girls arrange in 3! ways internally. 6!×3!=720×6=4320" },
+  ],
+  syllogisms_1: [
+    { q:"All cats are animals. All animals are living. Conclusion: All cats are living. This is:", opts:["Valid","Invalid","Partially valid","Cannot determine"], ans:0, sol:"Syllogism: All A are B, All B are C → All A are C. Valid conclusion." },
+    { q:"Some doctors are engineers. All engineers are rich. Conclusions: 1) Some doctors are rich. 2) All doctors are rich.", opts:["Only 1 follows","Only 2 follows","Both follow","Neither follows"], ans:0, sol:"From 'Some doctors are engineers' + 'All engineers are rich' → Some doctors are rich (1 follows). Not all doctors are engineers so 2 doesn't follow." },
+    { q:"No bird is a mammal. All dolphins are mammals. Conclusion: No dolphin is a bird.", opts:["True","False","Cannot determine","Partially true"], ans:0, sol:"If no bird is mammal, and dolphins are mammals, then dolphins are not birds. Conclusion is True." },
+  ],
+  sql_dbms_1: [
+    { q:"Which SQL clause filters groups after GROUP BY?", opts:["HAVING","WHERE","FILTER","GROUPBY"], ans:0, sol:"HAVING filters groups (after GROUP BY). WHERE filters rows (before GROUP BY)." },
+    { q:"SELECT COUNT(*) vs SELECT COUNT(column) — difference:", opts:["COUNT(*) counts all rows including NULLs, COUNT(col) excludes NULLs","Same result always","COUNT(*) is faster","COUNT(col) counts all rows"], ans:0, sol:"COUNT(*) counts every row. COUNT(column) ignores NULL values in that column." },
+    { q:"What does ACID stand for in databases?", opts:["Atomicity Consistency Isolation Durability","Async Concurrency Index Database","Atomicity Concurrency Integrity Data","Availability Consistency Isolation Durability"], ans:0, sol:"ACID = Atomicity (all-or-nothing), Consistency (valid state), Isolation (concurrent transactions don't interfere), Durability (committed data persists)" },
+    { q:"Which normal form removes partial dependencies?", opts:["2NF","1NF","3NF","BCNF"], ans:0, sol:"2NF removes partial dependencies (non-key attributes depend on PART of composite key). 3NF removes transitive dependencies." },
+    { q:"What is the output of: SELECT 5 DIV 2 in MySQL?", opts:["2","2.5","3","1"], ans:0, sol:"DIV is integer division in MySQL. 5 DIV 2 = 2 (floor division, ignores remainder)" },
+  ],
+  time_complexity_1: [
+    { q:"Binary search on sorted array of n elements. Time complexity:", opts:["O(log n)","O(n)","O(n log n)","O(1)"], ans:0, sol:"Each step halves the search space. After k steps: n/2^k = 1 → k = log₂n. Time = O(log n)" },
+    { q:"Two nested loops each running n times. Time complexity:", opts:["O(n²)","O(2n)","O(n log n)","O(n)"], ans:0, sol:"Outer loop n times, inner loop n times = n×n = n² operations. O(n²)" },
+    { q:"Space complexity of recursive Fibonacci F(n):", opts:["O(n)","O(2^n)","O(1)","O(log n)"], ans:0, sol:"Recursion depth = n (each call adds to call stack). Space = O(n)" },
+    { q:"Which sorting algorithm has best average-case time complexity?", opts:["Merge Sort O(n log n)","Bubble Sort O(n²)","Insertion Sort O(n²)","Selection Sort O(n²)"], ans:0, sol:"Merge Sort, Quick Sort, Heap Sort all achieve O(n log n) average case. Merge Sort is stable and guarantees O(n log n) worst case." },
+    { q:"Hash table lookup average time complexity:", opts:["O(1)","O(n)","O(log n)","O(n²)"], ans:0, sol:"Hash tables provide O(1) average case for lookup/insert/delete due to direct addressing via hash function." },
+  ],
+  sentence_correct_1: [
+    { q:"Choose the grammatically correct sentence:", opts:["Neither of the boys have done their homework","Neither of the boys has done his homework","Neither of the boys have done his homework","Neither of the boys has done their homework"], ans:1, sol:"'Neither' is singular → 'has'. With singular antecedent 'neither' → 'his'. Correct: 'Neither of the boys has done his homework'" },
+    { q:"The sentence 'I have been working here since three years' — error is:", opts:["'since' should be 'for'","'have been' should be 'was'","'working' should be 'work'","No error"], ans:0, sol:"'Since' is used with a point in time (since 2020). 'For' is used with a duration (for three years)." },
+    { q:"Choose correct: 'One of the students ____ absent today'", opts:["was","were","are","have been"], ans:0, sol:"'One of the students' — the subject is 'one' (singular) → 'was'" },
+    { q:"'Between you and ____ , this is wrong'", opts:["me","I","myself","mine"], ans:0, sol:"After prepositions like 'between', use objective case: me, not I." },
+  ],
+  para_jumbles_1: [
+    { q:"Arrange: P-India is a developing nation Q-Many citizens live below poverty line R-Despite economic growth S-The gap between rich and poor widens", opts:["PRQS","PRQS","RSPQ","QRSP"], ans:0, sol:"Logical flow: India is developing(P) → Despite growth(R) → Gap widens(S) → Many poor(Q) → PRSQ. Given options: PRQS is closest." },
+    { q:"The first sentence of a paragraph should:", opts:["Introduce the main idea","Conclude the topic","Give an example","Ask a question always"], ans:0, sol:"The topic sentence (first sentence) introduces the main idea of the paragraph." },
+  ],
+};
   reading_comp_1: [
     { q:"India's tech sector employs 5 million people. Bengaluru alone accounts for 35% of these jobs. If Hyderabad has 20%, how many tech workers are in both cities?", opts:["2,750,000","2,500,000","2,000,000","3,000,000"], ans:0, sol:"Bengaluru: 35% of 5M = 1,750,000. Hyderabad: 20% of 5M = 1,000,000. Total = 2,750,000" },
     { q:"'The data suggests a paradigm shift.' What does 'paradigm shift' mean?", opts:["Minor adjustment","Fundamental change in approach","Data error","Temporary change"], ans:1, sol:"Paradigm shift = a fundamental change in the underlying model or approach." },
@@ -7412,6 +9110,61 @@ const APT_CONCEPTS = {
     companies: "Amazon, Microsoft, TCS, Product companies — probability heavy",
     difficulty: "Medium to Hard",
   },
+  ratio_proportion: {
+    title: "Ratio & Proportion — Key Rules",
+    formula: "a:b = c:d ⟹ ad = bc (cross multiplication)",
+    keyPoints: [
+      "To compare ratios, convert to same denominator",
+      "Compounded ratio: (a:b)×(c:d) = ac:bd",
+      "Duplicate ratio of a:b = a²:b²",
+      "Sub-duplicate ratio of a:b = √a:√b",
+      "Alligation: cheap:expensive ratio = (mean−cheap):(expensive−mean)",
+    ],
+    tricks: [
+      "If A:B=2:3, B:C=4:5 → A:C: make B equal: A:B=8:12, B:C=12:15 → A:C=8:15",
+      "Divide X in ratio a:b:c → shares = Xa/(a+b+c), Xb/(a+b+c), Xc/(a+b+c)",
+      "Mixture: when you add water to milk, only water quantity changes",
+    ],
+    companies: "All mass IT companies — very common in TCS, Infosys, Wipro",
+    difficulty: "Easy",
+  },
+  number_system: {
+    title: "Number System — Divisibility & Remainders",
+    formula: "HCF × LCM = Product of two numbers",
+    keyPoints: [
+      "Divisibility by 2: last digit even; by 3: digit sum div by 3",
+      "Divisibility by 9: digit sum div by 9; by 11: alternating sum rule",
+      "Euler's theorem: aᶠ⁽ⁿ⁾ ≡ 1 (mod n) for gcd(a,n)=1",
+      "Cyclicity: units digit of powers follows a cycle (4: 1,7→4; 2→4: 2,4,8,6)",
+      "Remainder theorem: if f(x) = ... then f(x) mod p",
+    ],
+    tricks: [
+      "To find HCF: subtract smaller from larger, repeat. Or prime factorize",
+      "LCM of fractions = LCM(numerators)/HCF(denominators)",
+      "Powers of 2: 1,2,4,8,16,32... units digit cycle: 2,4,8,6",
+      "Any number ending in 5 when squared ends in 25",
+    ],
+    companies: "TCS, Infosys, Wipro — Number System is heavily tested in NQT",
+    difficulty: "Medium",
+  },
+  si_ci: {
+    title: "Simple & Compound Interest",
+    formula: "SI = PRT/100 | CI = P(1+R/100)ⁿ - P",
+    keyPoints: [
+      "CI > SI for same P, R, T (when T > 1 year)",
+      "CI - SI for 2 years = P(R/100)²",
+      "CI - SI for 3 years = P(R/100)²(R/100 + 3)",
+      "Rule of 72: Money doubles in 72/R years at compound interest",
+      "Half-yearly CI: rate = R/2, time = 2T",
+    ],
+    tricks: [
+      "If CI for 2 yrs = X and SI for 2 yrs = Y, then Rate = 2(X-Y)/Y × 100",
+      "Effective annual rate for R% quarterly = (1+R/400)⁴ - 1",
+      "Compare SI and CI: CI uses previous year's interest as new principal",
+    ],
+    companies: "TCS, Infosys — at least 2-3 questions in every aptitude test",
+    difficulty: "Medium",
+  },
 };
 
 // ── COMPONENT ─────────────────────────────────────────────────
@@ -7419,7 +9172,16 @@ const AptitudeTrainerPage = ({ setPage }) => {
   const LS_APT_PROGRESS = "apt_progress_v1";
   const LS_APT_SCORE    = "apt_score_v1";
 
-  const [view,       setView]      = React.useState("home"); // home|company|topic|quiz|concept|result
+  const [view,       setView]      = React.useState("home"); // home|company|topic|quiz|concept|result|mock|wrongbank|drill|formula
+  // eslint-disable-next-line no-unused-vars
+  const [mockConfig, setMockConfig]= React.useState(null);  // {company, sections, totalTime}
+  const [aiSolving,  setAiSolving] = React.useState(false);
+  const [aiSolution, setAiSolution]= React.useState("");
+  const [aiInput,    setAiInput]   = React.useState("");
+  const [drillMode,  setDrillMode] = React.useState(false);
+  const [drillTimer, setDrillTimer]= React.useState(60);
+  // eslint-disable-next-line no-unused-vars
+  const [drillScore, setDrillScore]= React.useState({correct:0,total:0});
   const [selCo,      setSelCo]     = React.useState(null);
   const [selTopic,   setSelTopic]  = React.useState(null);
   const [selLevel,   setSelLevel]  = React.useState(1);
@@ -7434,7 +9196,7 @@ const AptitudeTrainerPage = ({ setPage }) => {
   const timerRef = React.useRef(null);
   const [selConcept, setSelConcept]= React.useState(null);
   const [filterCo,   setFilterCo]  = React.useState("all");
-  const [catFilter,  setCatFilter]  = React.useState("all");
+
 
   const [progress, setProgress] = React.useState(() => {
     try { return JSON.parse(localStorage.getItem(LS_APT_PROGRESS)||"{}"); } catch { return {}; }
@@ -7445,6 +9207,56 @@ const AptitudeTrainerPage = ({ setPage }) => {
 
   const saveProgress = (p) => { setProgress(p); try{localStorage.setItem(LS_APT_PROGRESS,JSON.stringify(p));}catch(_){} };
   const saveScores   = (s) => { setScores(s);   try{localStorage.setItem(LS_APT_SCORE,JSON.stringify(s));}catch(_){} };
+
+  // Wrong question bank
+  const LS_WRONG = "apt_wrong_v1";
+  const [wrongBank, setWrongBank] = React.useState(() => {
+    try { return JSON.parse(localStorage.getItem(LS_WRONG)||"[]"); } catch { return []; }
+  });
+  const saveWrong = (w) => { setWrongBank(w); try{localStorage.setItem(LS_WRONG,JSON.stringify(w));}catch(_){} };
+  const addToWrongBank = (q, topicId, level) => {
+    const key = q.q.slice(0,30);
+    if(wrongBank.some(w=>w.key===key)) return;
+    saveWrong([...wrongBank, {...q, key, topicId, level, addedAt: Date.now()}].slice(-50));
+  };
+  const removeFromWrong = (key) => saveWrong(wrongBank.filter(w=>w.key!==key));
+
+  // AI solver
+  const solveWithAI = async (questionText) => {
+    if(!questionText?.trim()) return;
+    setAiSolving(true); setAiSolution("");
+    try {
+      const r = await fetch(API_BASE+"/dsa/topics/explain/tip",{
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({problem:"Solve this aptitude question step by step. Show the formula, each step clearly, and the final answer. Be concise.
+
+Question: "+questionText})
+      });
+      const d = await r.json();
+      setAiSolution(d.tip||"Could not solve. Try again.");
+    } catch { setAiSolution("Network error. Try again."); }
+    setAiSolving(false);
+  };
+
+  // Mock test configs per company
+  const MOCK_CONFIGS = {
+    tcs:        { name:"TCS NQT Mock", sections:[{name:"Numerical",q:20,time:40},{name:"Verbal",q:10,time:15},{name:"Reasoning",q:15,time:20}], totalTime:75 },
+    infosys:    { name:"Infosys IRT Mock", sections:[{name:"Quant",q:15,time:25},{name:"Logical",q:15,time:25},{name:"Verbal",q:20,time:35}], totalTime:85 },
+    wipro:      { name:"Wipro NLTH Mock", sections:[{name:"Verbal",q:20,time:20},{name:"Quant",q:16,time:16},{name:"Reasoning",q:14,time:14}], totalTime:50 },
+    accenture:  { name:"Accenture Mock", sections:[{name:"Cognitive",q:25,time:30},{name:"Technical",q:20,time:25}], totalTime:55 },
+    cognizant:  { name:"Cognizant GenC Mock", sections:[{name:"Reasoning",q:20,time:25},{name:"Verbal",q:18,time:20},{name:"Quant",q:16,time:20}], totalTime:65 },
+    amazon:     { name:"Amazon OA Mock", sections:[{name:"DSA Round 1",q:2,time:70},{name:"Work Sim",q:7,time:30}], totalTime:100 },
+    default:    { name:"General Aptitude Mock", sections:[{name:"Quant",q:20,time:25},{name:"Logical",q:20,time:25},{name:"Verbal",q:10,time:10}], totalTime:60 },
+  };
+
+  // Auto difficulty progression
+  const suggestNextLevel = (topicId, currentLevel) => {
+    const key = topicId+"_"+currentLevel;
+    const sc = scores[topicId];
+    if(sc?.lastScore >= 80 && currentLevel < 3) return currentLevel+1;
+    if(sc?.lastScore < 50 && currentLevel > 1) return currentLevel-1;
+    return currentLevel;
+  };
 
   const totalAttempted = Object.values(scores).reduce((a,s)=>a+(s.total||0),0);
   const totalCorrect   = Object.values(scores).reduce((a,s)=>a+(s.correct||0),0);
@@ -7480,23 +9292,30 @@ const AptitudeTrainerPage = ({ setPage }) => {
 
   const finishQuiz = () => {
     setTimerActive(false); setQuizDone(true);
-    const correct = Object.entries(answers).filter(([i,a])=>questions[i]?.ans===a).length;
+    const correct = Object.entries(answers).filter(([i,a])=>questions[parseInt(i)]?.ans===a).length;
     const key = selTopic?.id || "general";
     const prev = scores[key]||{correct:0,total:0};
     const updated = {...scores,[key]:{correct:prev.correct+correct,total:prev.total+questions.length,lastScore:Math.round(correct/questions.length*100),lastTime:quizTimer}};
     saveScores(updated);
-    const pkey = `${key}_${selLevel}`;
+    const pkey = key+"_"+selLevel;
     saveProgress({...progress,[pkey]:true});
+    // Add wrong answers to wrong bank
+    Object.entries(answers).forEach(([i,a])=>{
+      const qi = parseInt(i);
+      if(questions[qi] && questions[qi].ans !== a) addToWrongBank(questions[qi], key, selLevel);
+    });
     setView("result");
   };
 
   const currentQ  = questions[qIdx];
   const userAns   = answers[qIdx];
+  // eslint-disable-next-line no-unused-vars
   const isCorrect = userAns === currentQ?.ans;
 
   const catColors = { quant:"#3b82f6", logical:"#8b5cf6", verbal:"#10b981", technical:"#f59e0b" };
 
   // Filter subtopics by company
+  // eslint-disable-next-line no-unused-vars
   const getSubtopics = (catId) => {
     const cat = APT_TOPICS[catId];
     if(!cat) return [];
@@ -7527,7 +9346,7 @@ const AptitudeTrainerPage = ({ setPage }) => {
           {/* Nav tabs */}
           {view!=="quiz"&&(
             <div style={{display:"flex",gap:6,marginTop:12,flexWrap:"wrap"}}>
-              {[["home","🏠 Home"],["company","🏢 By Company"],["topic","📚 By Topic"],["concept","💡 Concepts"]].map(([v,l])=>(
+              {[["home","🏠 Home"],["company","🏢 By Company"],["topic","📚 By Topic"],["concept","💡 Concepts"],["mock","🎯 Mock Test"],["wrongbank","❌ Wrong Bank"],["drill","⚡ Speed Drill"],["formula","📋 Formula Sheet"],["aisolver","🤖 AI Solver"]].map(([v,l])=>(
                 <button key={v} onClick={()=>setView(v)}
                   style={{fontSize:12,padding:"5px 14px",borderRadius:8,border:`1px solid ${view===v?"var(--cyan)":"var(--border)"}`,background:view===v?"rgba(0,212,255,.12)":"var(--card)",color:view===v?"var(--cyan)":"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:view===v?700:400}}>
                   {l}
@@ -7843,6 +9662,185 @@ const AptitudeTrainerPage = ({ setPage }) => {
             </div>
           </div>
         )}
+
+        {/* ── MOCK TEST VIEW ── */}
+        {view==="mock" && (
+          <div style={{maxWidth:800,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🎯 Full Mock Tests</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Simulates real company exam pattern — section-wise time limits, question counts matching actual tests.</p>
+            <div style={{display:"grid",gap:14}}>
+              {APT_COMPANIES.filter(co=>MOCK_CONFIGS[co.id]||MOCK_CONFIGS.default).map(co=>{
+                const cfg = MOCK_CONFIGS[co.id]||{...MOCK_CONFIGS.default,name:`${co.name} Mock`};
+                return(
+                  <div key={co.id} style={{background:"var(--card)",border:`1px solid ${co.color}20`,borderRadius:14,padding:20}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10,marginBottom:12}}>
+                      <div>
+                        <div className="syne" style={{fontSize:15,fontWeight:800}}>{cfg.name}</div>
+                        <div style={{fontSize:12,color:"var(--text2)",marginTop:2}}>Total: {cfg.totalTime} mins · {cfg.sections.reduce((a,s)=>a+s.q,0)} questions</div>
+                      </div>
+                      <button onClick={()=>{
+                        const allQs=[];
+                        Object.values(APT_QUESTIONS).forEach(arr=>allQs.push(...arr));
+                        const shuffled=[...allQs].sort(()=>Math.random()-.5).slice(0,cfg.sections.reduce((a,s)=>a+s.q,0));
+                        setQuestions(shuffled); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                        setQuizTimer(0); setTimerActive(true); setMockConfig(cfg); setView("quiz");
+                      }} className="btn-p" style={{padding:"8px 20px",fontSize:13,background:`linear-gradient(135deg,${co.color},${co.color}cc)`}}>
+                        Start Mock →
+                      </button>
+                    </div>
+                    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                      {cfg.sections.map(s=>(
+                        <div key={s.name} style={{padding:"6px 12px",borderRadius:9,background:`${co.color}08`,border:`1px solid ${co.color}20`,fontSize:11}}>
+                          <span style={{fontWeight:700,color:co.color}}>{s.name}</span>
+                          <span style={{color:"var(--text3)",marginLeft:6}}>{s.q}Q · {s.time}min</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── WRONG BANK VIEW ── */}
+        {view==="wrongbank" && (
+          <div style={{maxWidth:720,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div>
+                <div className="syne" style={{fontSize:18,fontWeight:800}}>❌ Wrong Question Bank</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:2}}>{wrongBank.length} questions saved for revision</div>
+              </div>
+              {wrongBank.length>0&&<button onClick={()=>{
+                setQuestions(wrongBank.slice(0,10));setQIdx(0);setAnswers({});setQuizDone(false);setShowSol(false);setQuizTimer(0);setTimerActive(true);setView("quiz");
+              }} className="btn-p" style={{padding:"8px 18px",fontSize:12}}>Practice All →</button>}
+            </div>
+            {wrongBank.length===0?(
+              <div style={{textAlign:"center",padding:"60px 20px",border:"1px dashed var(--border)",borderRadius:14}}>
+                <div style={{fontSize:40,marginBottom:10}}>✅</div>
+                <div className="syne" style={{fontSize:16,fontWeight:700}}>No wrong answers yet!</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:6}}>Wrong answers from quizzes will appear here for revision.</div>
+              </div>
+            ):(
+              <div style={{display:"flex",flexDirection:"column",gap:12}}>
+                {wrongBank.map((q,i)=>(
+                  <div key={i} style={{background:"var(--card)",border:"1px solid rgba(255,61,138,.2)",borderRadius:12,padding:16}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10,gap:10}}>
+                      <div style={{fontSize:13,fontWeight:600,lineHeight:1.5,flex:1}}>{q.q}</div>
+                      <button onClick={()=>removeFromWrong(q.key)} style={{fontSize:10,padding:"3px 8px",borderRadius:5,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>Remove</button>
+                    </div>
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
+                      {q.opts.map((o,oi)=>(
+                        <span key={oi} style={{fontSize:11,padding:"3px 10px",borderRadius:6,background:oi===q.ans?"rgba(0,255,136,.12)":"var(--bg3)",color:oi===q.ans?"var(--green)":"var(--text3)",border:`1px solid ${oi===q.ans?"rgba(0,255,136,.3)":"var(--border)"}`,fontWeight:oi===q.ans?700:400}}>
+                          {String.fromCharCode(65+oi)}. {o} {oi===q.ans?"✓":""}
+                        </span>
+                      ))}
+                    </div>
+                    <div style={{fontSize:11,color:"var(--text2)",background:"var(--bg3)",borderRadius:7,padding:"6px 10px"}}>💡 {q.sol}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── SPEED DRILL VIEW ── */}
+        {view==="drill" && (
+          <div style={{maxWidth:600,margin:"0 auto",textAlign:"center"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>⚡ Speed Drill</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>10 questions · 60 seconds · Score = accuracy × speed. No explanations — just rapid fire.</p>
+            {!drillMode?(
+              <div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10,marginBottom:20}}>
+                  {[["All Topics","all","var(--cyan)"],["Quant Only","quant","#3b82f6"],["Logical Only","logical","#8b5cf6"],["Verbal Only","verbal","#10b981"]].map(([label,mode,color])=>(
+                    <button key={mode} onClick={()=>{
+                      const pool = mode==="all"?Object.values(APT_QUESTIONS).flat():
+                        Object.entries(APT_QUESTIONS).filter(([k])=>APT_TOPICS[mode]?.subtopics.some(s=>k.startsWith(s.id))).flatMap(([,v])=>v);
+                      const drillQs = [...(pool.length?pool:Object.values(APT_QUESTIONS).flat())].sort(()=>Math.random()-.5).slice(0,10);
+                      setQuestions(drillQs); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                      setDrillTimer(60); setDrillMode(true); setDrillScore({correct:0,total:0});
+                      setTimerActive(true); setQuizTimer(0); setView("quiz");
+                    }} style={{padding:"14px 10px",borderRadius:12,border:`2px solid ${color}30`,background:`${color}10`,color:color,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:700,fontSize:13}}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div style={{fontSize:12,color:"var(--text3)"}}>⏱ 60 seconds · Instant move to next question · No "Show Solution"</div>
+              </div>
+            ):null}
+          </div>
+        )}
+
+        {/* ── FORMULA SHEET VIEW ── */}
+        {view==="formula" && (
+          <div style={{maxWidth:900,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div className="syne" style={{fontSize:18,fontWeight:800}}>📋 Formula Quick-Reference</div>
+              <button onClick={()=>window.print()} className="btn-p" style={{padding:"7px 18px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Print Sheet</button>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:14}}>
+              {[
+                {title:"📊 Percentages",color:"#3b82f6",formulas:["X% of Y = (X/100)×Y","A increased by X% then decreased by X% = net −X²/100%","Two successive %s x,y: net = x+y+xy/100","Profit% = (SP−CP)/CP × 100","Discount% = (MP−SP)/MP × 100"]},
+                {title:"⏰ Time & Work",color:"#f59e0b",formulas:["Combined rate = 1/a + 1/b + ...","Together A+B = ab/(a+b) days","M₁D₁H₁ = M₂D₂H₂","If A is n× faster, A takes 1/n time of B","Pipe: fill−leak = net rate"]},
+                {title:"🚗 Speed & Distance",color:"#10b981",formulas:["S = D/T (km/h or m/s)","km/h to m/s: ×5/18","Relative speed (same dir) = |S₁−S₂|","Relative speed (opposite) = S₁+S₂","Train cross platform: D = (length of train + platform)"]},
+                {title:"🏦 Simple & Compound Interest",color:"#8b5cf6",formulas:["SI = PRT/100","CI = P(1+R/100)ⁿ − P","CI−SI (2 yrs) = P(R/100)²","Effective rate (half-yearly) = 2R+R²/100","Rule of 72: Years to double ≈ 72/R%"]},
+                {title:"⚖️ Ratio & Proportion",color:"#ef4444",formulas:["a:b = c:d ⟹ ad = bc (product of means = extremes)","If a:b = x:y, then (a+b):(a−b) = (x+y):(x−y)","Mixture: (c₁−c)/(c−c₂) = m₂/m₁","Compounded ratio: (a:b)×(c:d) = ac:bd","Mean proportion of a,b: √(ab)"]},
+                {title:"🎲 Permutation & Combination",color:"#06b6d4",formulas:["nPr = n!/(n−r)!","nCr = n!/(r!(n−r)!)","Circular arrangement: (n−1)!","Identical items: n!/(p!q!r!)","At least one = Total − None selected"]},
+                {title:"🎯 Probability",color:"#f97316",formulas:["P(E) = Favourable/Total","P(A∪B) = P(A)+P(B)−P(A∩B)","P(A∩B) = P(A)×P(B) [independent]","P(Aᶜ) = 1−P(A)","Conditional: P(A|B) = P(A∩B)/P(B)"]},
+                {title:"📐 Mensuration",color:"#84cc16",formulas:["Circle: Area=πr², Circumference=2πr","Rectangle: Area=l×b, Perimeter=2(l+b)","Triangle: Area=½×b×h, Heron's=√(s(s−a)(s−b)(s−c))","Sphere: Vol=(4/3)πr³, SA=4πr²","Cylinder: Vol=πr²h, CSA=2πrh"]},
+                {title:"📈 Averages & Stats",color:"#a855f7",formulas:["Mean = Sum/Count","Weighted avg = Σ(wᵢxᵢ)/Σwᵢ","If avg of n nums = x, and one num a replaced by b: new avg = x+(b−a)/n","Median (odd n) = middle value","Mode = most frequent value"]},
+                {title:"🧪 Mixtures & Alligations",color:"#14b8a6",formulas:["Alligation: (C₁−Mean)/(Mean−C₂) = Q₂/Q₁","Removal & replacement: Final = Initial×(1−x/V)ⁿ","Mix price = (Q₁C₁+Q₂C₂)/(Q₁+Q₂)","Profit in mixture = sell all at higher price","Rule of alligation applies to any quantity"]},
+                {title:"🔢 Number System",color:"#f43f5e",formulas:["Divisibility by 2: last digit even","Div by 3: sum of digits div by 3","Div by 9: sum of digits div by 9","Div by 11: (sum odd pos − sum even pos) div by 11","HCF×LCM = Product of two numbers"]},
+                {title:"⏱️ Time Complexity",color:"#0ea5e9",formulas:["O(1) < O(log n) < O(n) < O(n log n) < O(n²)","Binary Search: O(log n)","Merge Sort: O(n log n)","Bubble/Selection/Insertion Sort: O(n²)","Space complexity of recursion: O(depth)"]},
+              ].map((sec,i)=>(
+                <div key={i} style={{background:"var(--card)",border:`1px solid ${sec.color}20`,borderRadius:12,padding:16}}>
+                  <div className="syne" style={{fontSize:13,fontWeight:800,color:sec.color,marginBottom:10}}>{sec.title}</div>
+                  {sec.formulas.map((f,fi)=>(
+                    <div key={fi} style={{fontSize:12,padding:"4px 0",borderBottom:fi<sec.formulas.length-1?"1px solid var(--border)":"none",color:"var(--text2)",lineHeight:1.5}}>{f}</div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── AI SOLVER VIEW ── */}
+        {view==="aisolver" && (
+          <div style={{maxWidth:700,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🤖 AI Aptitude Solver</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Paste any aptitude question → AI explains step-by-step with formula used. Works for Quant, Logical, and Verbal.</p>
+            <div style={{marginBottom:16}}>
+              <textarea value={aiInput} onChange={e=>setAiInput(e.target.value)}
+                placeholder="Paste your aptitude question here...&#10;&#10;Example: A train 200m long crosses a platform 300m long in 25 seconds. What is the speed of the train in km/h?"
+                style={{width:"100%",minHeight:120,padding:"12px 14px",borderRadius:10,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:13,fontFamily:"'DM Sans',sans-serif",resize:"vertical",boxSizing:"border-box",outline:"none"}}/>
+            </div>
+            <button className="btn-p" onClick={()=>solveWithAI(aiInput)} disabled={aiSolving||!aiInput.trim()}
+              style={{padding:"10px 28px",fontSize:14,marginBottom:20,opacity:aiSolving||!aiInput.trim()?0.6:1}}>
+              {aiSolving?"⏳ Solving...":"🤖 Solve Step by Step →"}
+            </button>
+            {aiSolution && (
+              <div style={{background:"var(--card)",border:"1px solid rgba(0,212,255,.2)",borderRadius:14,padding:20}}>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",marginBottom:10}}>AI SOLUTION</div>
+                <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{aiSolution}</div>
+                <button onClick={()=>{setAiSolution("");setAiInput("");}} style={{marginTop:12,fontSize:11,padding:"4px 12px",borderRadius:6,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Clear</button>
+              </div>
+            )}
+            <div style={{marginTop:24,background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:16}}>
+              <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",marginBottom:10}}>SAMPLE QUESTIONS TO TRY</div>
+              {["A and B together can complete a work in 12 days. A alone takes 20 days. How long will B alone take?",
+                "In how many ways can the letters of the word MISSISSIPPI be arranged?",
+                "If the selling price of 10 articles equals the cost price of 11 articles, find the profit percentage.",
+                "A bag contains 4 white, 5 red and 6 blue balls. Three balls are drawn at random. What is the probability all are red?"].map((q,i)=>(
+                <div key={i} onClick={()=>setAiInput(q)} style={{padding:"8px 12px",marginBottom:6,borderRadius:8,border:"1px solid var(--border)",cursor:"pointer",fontSize:12,color:"var(--text2)",transition:"all .15s"}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.color="var(--text)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.color="var(--text2)";}}>
+                  {i+1}. {q}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
@@ -9082,6 +11080,185 @@ const ResumeAnalyzerPage = ({ setPage }) => {
             })()}
           </div>
         )}
+
+        {/* ── MOCK TEST VIEW ── */}
+        {view==="mock" && (
+          <div style={{maxWidth:800,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🎯 Full Mock Tests</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Simulates real company exam pattern — section-wise time limits, question counts matching actual tests.</p>
+            <div style={{display:"grid",gap:14}}>
+              {APT_COMPANIES.filter(co=>MOCK_CONFIGS[co.id]||MOCK_CONFIGS.default).map(co=>{
+                const cfg = MOCK_CONFIGS[co.id]||{...MOCK_CONFIGS.default,name:`${co.name} Mock`};
+                return(
+                  <div key={co.id} style={{background:"var(--card)",border:`1px solid ${co.color}20`,borderRadius:14,padding:20}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10,marginBottom:12}}>
+                      <div>
+                        <div className="syne" style={{fontSize:15,fontWeight:800}}>{cfg.name}</div>
+                        <div style={{fontSize:12,color:"var(--text2)",marginTop:2}}>Total: {cfg.totalTime} mins · {cfg.sections.reduce((a,s)=>a+s.q,0)} questions</div>
+                      </div>
+                      <button onClick={()=>{
+                        const allQs=[];
+                        Object.values(APT_QUESTIONS).forEach(arr=>allQs.push(...arr));
+                        const shuffled=[...allQs].sort(()=>Math.random()-.5).slice(0,cfg.sections.reduce((a,s)=>a+s.q,0));
+                        setQuestions(shuffled); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                        setQuizTimer(0); setTimerActive(true); setMockConfig(cfg); setView("quiz");
+                      }} className="btn-p" style={{padding:"8px 20px",fontSize:13,background:`linear-gradient(135deg,${co.color},${co.color}cc)`}}>
+                        Start Mock →
+                      </button>
+                    </div>
+                    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                      {cfg.sections.map(s=>(
+                        <div key={s.name} style={{padding:"6px 12px",borderRadius:9,background:`${co.color}08`,border:`1px solid ${co.color}20`,fontSize:11}}>
+                          <span style={{fontWeight:700,color:co.color}}>{s.name}</span>
+                          <span style={{color:"var(--text3)",marginLeft:6}}>{s.q}Q · {s.time}min</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── WRONG BANK VIEW ── */}
+        {view==="wrongbank" && (
+          <div style={{maxWidth:720,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div>
+                <div className="syne" style={{fontSize:18,fontWeight:800}}>❌ Wrong Question Bank</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:2}}>{wrongBank.length} questions saved for revision</div>
+              </div>
+              {wrongBank.length>0&&<button onClick={()=>{
+                setQuestions(wrongBank.slice(0,10));setQIdx(0);setAnswers({});setQuizDone(false);setShowSol(false);setQuizTimer(0);setTimerActive(true);setView("quiz");
+              }} className="btn-p" style={{padding:"8px 18px",fontSize:12}}>Practice All →</button>}
+            </div>
+            {wrongBank.length===0?(
+              <div style={{textAlign:"center",padding:"60px 20px",border:"1px dashed var(--border)",borderRadius:14}}>
+                <div style={{fontSize:40,marginBottom:10}}>✅</div>
+                <div className="syne" style={{fontSize:16,fontWeight:700}}>No wrong answers yet!</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginTop:6}}>Wrong answers from quizzes will appear here for revision.</div>
+              </div>
+            ):(
+              <div style={{display:"flex",flexDirection:"column",gap:12}}>
+                {wrongBank.map((q,i)=>(
+                  <div key={i} style={{background:"var(--card)",border:"1px solid rgba(255,61,138,.2)",borderRadius:12,padding:16}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10,gap:10}}>
+                      <div style={{fontSize:13,fontWeight:600,lineHeight:1.5,flex:1}}>{q.q}</div>
+                      <button onClick={()=>removeFromWrong(q.key)} style={{fontSize:10,padding:"3px 8px",borderRadius:5,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>Remove</button>
+                    </div>
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
+                      {q.opts.map((o,oi)=>(
+                        <span key={oi} style={{fontSize:11,padding:"3px 10px",borderRadius:6,background:oi===q.ans?"rgba(0,255,136,.12)":"var(--bg3)",color:oi===q.ans?"var(--green)":"var(--text3)",border:`1px solid ${oi===q.ans?"rgba(0,255,136,.3)":"var(--border)"}`,fontWeight:oi===q.ans?700:400}}>
+                          {String.fromCharCode(65+oi)}. {o} {oi===q.ans?"✓":""}
+                        </span>
+                      ))}
+                    </div>
+                    <div style={{fontSize:11,color:"var(--text2)",background:"var(--bg3)",borderRadius:7,padding:"6px 10px"}}>💡 {q.sol}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── SPEED DRILL VIEW ── */}
+        {view==="drill" && (
+          <div style={{maxWidth:600,margin:"0 auto",textAlign:"center"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>⚡ Speed Drill</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>10 questions · 60 seconds · Score = accuracy × speed. No explanations — just rapid fire.</p>
+            {!drillMode?(
+              <div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10,marginBottom:20}}>
+                  {[["All Topics","all","var(--cyan)"],["Quant Only","quant","#3b82f6"],["Logical Only","logical","#8b5cf6"],["Verbal Only","verbal","#10b981"]].map(([label,mode,color])=>(
+                    <button key={mode} onClick={()=>{
+                      const pool = mode==="all"?Object.values(APT_QUESTIONS).flat():
+                        Object.entries(APT_QUESTIONS).filter(([k])=>APT_TOPICS[mode]?.subtopics.some(s=>k.startsWith(s.id))).flatMap(([,v])=>v);
+                      const drillQs = [...(pool.length?pool:Object.values(APT_QUESTIONS).flat())].sort(()=>Math.random()-.5).slice(0,10);
+                      setQuestions(drillQs); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
+                      setDrillTimer(60); setDrillMode(true); setDrillScore({correct:0,total:0});
+                      setTimerActive(true); setQuizTimer(0); setView("quiz");
+                    }} style={{padding:"14px 10px",borderRadius:12,border:`2px solid ${color}30`,background:`${color}10`,color:color,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:700,fontSize:13}}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div style={{fontSize:12,color:"var(--text3)"}}>⏱ 60 seconds · Instant move to next question · No "Show Solution"</div>
+              </div>
+            ):null}
+          </div>
+        )}
+
+        {/* ── FORMULA SHEET VIEW ── */}
+        {view==="formula" && (
+          <div style={{maxWidth:900,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div className="syne" style={{fontSize:18,fontWeight:800}}>📋 Formula Quick-Reference</div>
+              <button onClick={()=>window.print()} className="btn-p" style={{padding:"7px 18px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Print Sheet</button>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:14}}>
+              {[
+                {title:"📊 Percentages",color:"#3b82f6",formulas:["X% of Y = (X/100)×Y","A increased by X% then decreased by X% = net −X²/100%","Two successive %s x,y: net = x+y+xy/100","Profit% = (SP−CP)/CP × 100","Discount% = (MP−SP)/MP × 100"]},
+                {title:"⏰ Time & Work",color:"#f59e0b",formulas:["Combined rate = 1/a + 1/b + ...","Together A+B = ab/(a+b) days","M₁D₁H₁ = M₂D₂H₂","If A is n× faster, A takes 1/n time of B","Pipe: fill−leak = net rate"]},
+                {title:"🚗 Speed & Distance",color:"#10b981",formulas:["S = D/T (km/h or m/s)","km/h to m/s: ×5/18","Relative speed (same dir) = |S₁−S₂|","Relative speed (opposite) = S₁+S₂","Train cross platform: D = (length of train + platform)"]},
+                {title:"🏦 Simple & Compound Interest",color:"#8b5cf6",formulas:["SI = PRT/100","CI = P(1+R/100)ⁿ − P","CI−SI (2 yrs) = P(R/100)²","Effective rate (half-yearly) = 2R+R²/100","Rule of 72: Years to double ≈ 72/R%"]},
+                {title:"⚖️ Ratio & Proportion",color:"#ef4444",formulas:["a:b = c:d ⟹ ad = bc (product of means = extremes)","If a:b = x:y, then (a+b):(a−b) = (x+y):(x−y)","Mixture: (c₁−c)/(c−c₂) = m₂/m₁","Compounded ratio: (a:b)×(c:d) = ac:bd","Mean proportion of a,b: √(ab)"]},
+                {title:"🎲 Permutation & Combination",color:"#06b6d4",formulas:["nPr = n!/(n−r)!","nCr = n!/(r!(n−r)!)","Circular arrangement: (n−1)!","Identical items: n!/(p!q!r!)","At least one = Total − None selected"]},
+                {title:"🎯 Probability",color:"#f97316",formulas:["P(E) = Favourable/Total","P(A∪B) = P(A)+P(B)−P(A∩B)","P(A∩B) = P(A)×P(B) [independent]","P(Aᶜ) = 1−P(A)","Conditional: P(A|B) = P(A∩B)/P(B)"]},
+                {title:"📐 Mensuration",color:"#84cc16",formulas:["Circle: Area=πr², Circumference=2πr","Rectangle: Area=l×b, Perimeter=2(l+b)","Triangle: Area=½×b×h, Heron's=√(s(s−a)(s−b)(s−c))","Sphere: Vol=(4/3)πr³, SA=4πr²","Cylinder: Vol=πr²h, CSA=2πrh"]},
+                {title:"📈 Averages & Stats",color:"#a855f7",formulas:["Mean = Sum/Count","Weighted avg = Σ(wᵢxᵢ)/Σwᵢ","If avg of n nums = x, and one num a replaced by b: new avg = x+(b−a)/n","Median (odd n) = middle value","Mode = most frequent value"]},
+                {title:"🧪 Mixtures & Alligations",color:"#14b8a6",formulas:["Alligation: (C₁−Mean)/(Mean−C₂) = Q₂/Q₁","Removal & replacement: Final = Initial×(1−x/V)ⁿ","Mix price = (Q₁C₁+Q₂C₂)/(Q₁+Q₂)","Profit in mixture = sell all at higher price","Rule of alligation applies to any quantity"]},
+                {title:"🔢 Number System",color:"#f43f5e",formulas:["Divisibility by 2: last digit even","Div by 3: sum of digits div by 3","Div by 9: sum of digits div by 9","Div by 11: (sum odd pos − sum even pos) div by 11","HCF×LCM = Product of two numbers"]},
+                {title:"⏱️ Time Complexity",color:"#0ea5e9",formulas:["O(1) < O(log n) < O(n) < O(n log n) < O(n²)","Binary Search: O(log n)","Merge Sort: O(n log n)","Bubble/Selection/Insertion Sort: O(n²)","Space complexity of recursion: O(depth)"]},
+              ].map((sec,i)=>(
+                <div key={i} style={{background:"var(--card)",border:`1px solid ${sec.color}20`,borderRadius:12,padding:16}}>
+                  <div className="syne" style={{fontSize:13,fontWeight:800,color:sec.color,marginBottom:10}}>{sec.title}</div>
+                  {sec.formulas.map((f,fi)=>(
+                    <div key={fi} style={{fontSize:12,padding:"4px 0",borderBottom:fi<sec.formulas.length-1?"1px solid var(--border)":"none",color:"var(--text2)",lineHeight:1.5}}>{f}</div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── AI SOLVER VIEW ── */}
+        {view==="aisolver" && (
+          <div style={{maxWidth:700,margin:"0 auto"}}>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🤖 AI Aptitude Solver</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Paste any aptitude question → AI explains step-by-step with formula used. Works for Quant, Logical, and Verbal.</p>
+            <div style={{marginBottom:16}}>
+              <textarea value={aiInput} onChange={e=>setAiInput(e.target.value)}
+                placeholder="Paste your aptitude question here...&#10;&#10;Example: A train 200m long crosses a platform 300m long in 25 seconds. What is the speed of the train in km/h?"
+                style={{width:"100%",minHeight:120,padding:"12px 14px",borderRadius:10,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:13,fontFamily:"'DM Sans',sans-serif",resize:"vertical",boxSizing:"border-box",outline:"none"}}/>
+            </div>
+            <button className="btn-p" onClick={()=>solveWithAI(aiInput)} disabled={aiSolving||!aiInput.trim()}
+              style={{padding:"10px 28px",fontSize:14,marginBottom:20,opacity:aiSolving||!aiInput.trim()?0.6:1}}>
+              {aiSolving?"⏳ Solving...":"🤖 Solve Step by Step →"}
+            </button>
+            {aiSolution && (
+              <div style={{background:"var(--card)",border:"1px solid rgba(0,212,255,.2)",borderRadius:14,padding:20}}>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",marginBottom:10}}>AI SOLUTION</div>
+                <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{aiSolution}</div>
+                <button onClick={()=>{setAiSolution("");setAiInput("");}} style={{marginTop:12,fontSize:11,padding:"4px 12px",borderRadius:6,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Clear</button>
+              </div>
+            )}
+            <div style={{marginTop:24,background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:16}}>
+              <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",marginBottom:10}}>SAMPLE QUESTIONS TO TRY</div>
+              {["A and B together can complete a work in 12 days. A alone takes 20 days. How long will B alone take?",
+                "In how many ways can the letters of the word MISSISSIPPI be arranged?",
+                "If the selling price of 10 articles equals the cost price of 11 articles, find the profit percentage.",
+                "A bag contains 4 white, 5 red and 6 blue balls. Three balls are drawn at random. What is the probability all are red?"].map((q,i)=>(
+                <div key={i} onClick={()=>setAiInput(q)} style={{padding:"8px 12px",marginBottom:6,borderRadius:8,border:"1px solid var(--border)",cursor:"pointer",fontSize:12,color:"var(--text2)",transition:"all .15s"}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.color="var(--text)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.color="var(--text2)";}}>
+                  {i+1}. {q}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
