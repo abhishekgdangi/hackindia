@@ -149,8 +149,16 @@ function useInternships({ds="", location="All", isRemote="All"}={}) {
     apiFetch("/internships", params)
       .then(j => {
         if (fetchId.current !== id) return;   // stale response — discard
-        setData(j.data || []);
-        setTotal(j.total || 0);
+        let iData = j.data || [];
+        // Filter: India-only internships
+        const INDIA_I = /india|bangalore|bengaluru|mumbai|delhi|hyderabad|pune|chennai|kolkata|noida|gurugram|gurgaon|kochi|ahmedabad|jaipur|remote|wfh|work from home/i;
+        iData = iData.filter(i => {
+          const loc = (i.location||"").toLowerCase();
+          if (!loc) return true; // no location = include
+          return INDIA_I.test(loc);
+        });
+        setData(iData);
+        setTotal(iData.length);
       })
       .catch(() => { if (fetchId.current === id) setData([]); })
       .finally(() => { if (fetchId.current === id) setLoading(false); });
@@ -191,6 +199,9 @@ function useEvents({type="", city="All", price="All", domain="All", search=""}={
         }
         // Filter out hackathon/internship types (belong to other pages)
         arr = arr.filter(e => e.eventType!=="Hackathon" && e.eventType!=="Internship Event");
+        // Filter out non-tech events (yoga, dance, fitness, personal dev etc from AllEvents)
+        const NON_TECH = /yoga|dance|fitness|meditation|cooking|marriage|wedding|fashion|astrology|personality|motivat|spiritual|self.help|music class|drawing|painting|sports|cricket|football|badminton|gym|zumba|pilates|nutrition|diet|parenting|relationship/i;
+        arr = arr.filter(e => !NON_TECH.test(e.title||"") && !NON_TECH.test(e.description||""));
         // Sort by date ascending (soonest first, TBD last)
         arr.sort((a,b)=>{
           const da = a.date ? new Date(a.date) : null;
@@ -202,7 +213,15 @@ function useEvents({type="", city="All", price="All", domain="All", search=""}={
         });
         // Shuffle within same-date groups to mix platforms
         arr = shuffleGroups(arr);
-        setData(shuffle(arr)); setTotal(j.total||0);
+        // Filter: India-only for offline events
+        arr = arr.filter(e => {
+          const loc = (e.location||e.city||"").toLowerCase();
+          const isOnline = loc.includes("online")||loc.includes("virtual")||loc.includes("remote")||loc==="";
+          if (isOnline) return true;
+          const INDIA = /india|bangalore|bengaluru|mumbai|delhi|hyderabad|pune|chennai|kolkata|noida|gurugram|gurgaon|kochi|ahmedabad|jaipur|indore|surat|chandigarh|lucknow/i;
+          return INDIA.test(loc) || INDIA.test(e.title||"");
+        });
+        setData(shuffle(arr)); setTotal(arr.length);
       })
       .catch(() => { if(fetchId.current===id) { setData([]); setTotal(0); } })
       .finally(() => { if(fetchId.current===id) setLoading(false); });
@@ -1359,7 +1378,8 @@ const EventCard = ({e, compact=false}) => {
     || `${e.eventType||"Event"} · ${city}`;
 
   const dateStr = fmtEventDate(e.date);
-  const hasLink = !!(e.registrationLink && e.registrationLink!=="#" && e.registrationLink!=="");
+  const regUrl = e.registrationLink || e.applyLink || e.url || "";
+  const hasLink = !!(regUrl && regUrl !== "#" && regUrl !== "");
 
   // Skip hackathon/internship types in events page (they belong to other pages)
   const evType = (e.eventType==="Hackathon"||e.eventType==="Internship Event") ? "Event" : (e.eventType||"Event");
@@ -1426,7 +1446,7 @@ const EventCard = ({e, compact=false}) => {
         opacity:hasLink?1:0.4,cursor:hasLink?"pointer":"not-allowed"}}
         onClick={()=>{
           if(!hasLink) return;
-          const url=e.registrationLink.startsWith("http")?e.registrationLink:"https://"+e.registrationLink;
+          const url=regUrl.startsWith("http")?regUrl:"https://"+regUrl;
           window.open(url,"_blank","noopener,noreferrer");
         }}>
         {hasLink?"Register Now →":"Link Unavailable"}
@@ -5174,7 +5194,7 @@ const CPContestPage = ({ setPage }) => {
                 🔄 Refresh
               </button>
               {/* View toggle */}
-              {[["split","⬜ Split"],["list","☰ List"],["calendar","📅 Calendar"]].map(([v,l])=>(
+              {[["split","⬜ Split"],["list","☰ List"]].map(([v,l])=>(
                 <button key={v} onClick={()=>setView(v)}
                   style={{fontSize:12,padding:"6px 14px",borderRadius:8,border:`1px solid ${view===v?"var(--purple)":"var(--border)"}`,background:view===v?"rgba(124,77,255,.15)":"var(--card)",color:view===v?"var(--purple)":"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:view===v?700:400}}>
                   {l}
@@ -5327,52 +5347,6 @@ const CPContestPage = ({ setPage }) => {
                 </div>
               );
             })}
-          </div>
-        ) : (
-          /* Calendar only view */
-          <div style={{maxWidth:900,margin:"0 auto"}}>
-            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
-                <button onClick={()=>setCalMonth(new Date(calYear,calMon-1,1))} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"8px 16px",cursor:"pointer",color:"var(--text2)"}}>‹ Prev</button>
-                <div className="syne" style={{fontSize:22,fontWeight:800}}>{calMonth.toLocaleDateString("en-IN",{month:"long",year:"numeric"})}</div>
-                <button onClick={()=>setCalMonth(new Date(calYear,calMon+1,1))} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"8px 16px",cursor:"pointer",color:"var(--text2)"}}>Next ›</button>
-              </div>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2,marginBottom:8}}>
-                {["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].map(d=>(
-                  <div key={d} style={{textAlign:"center",fontSize:12,fontWeight:700,color:"var(--text3)",padding:"8px 0"}}>{d.slice(0,3)}</div>
-                ))}
-              </div>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:4}}>
-                {calDays.map((day,i)=>{
-                  if(!day) return <div key={`e${i}`} style={{minHeight:90}}/>;
-                  const key=`${calYear}-${String(calMon+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
-                  const contests=contestsOnDay(day);
-                  const isToday=key===todayStr;
-                  const isSel=selDate===key;
-                  const isPast=new Date(key)<new Date(todayStr);
-                  return (
-                    <div key={day} onClick={()=>setSelDate(isSel?null:key)}
-                      style={{minHeight:90,border:`1px solid ${isSel?"var(--purple)":isToday?"var(--cyan)":"var(--border)"}`,borderRadius:10,padding:"8px 6px",cursor:contests.length?"pointer":"default",background:isSel?"rgba(124,77,255,.08)":isToday?"rgba(0,212,255,.05)":isPast?"var(--bg3)":"var(--bg)",opacity:isPast?0.6:1,transition:"all .15s"}}>
-                      <div style={{fontSize:13,fontWeight:isToday?800:500,color:isToday?"var(--cyan)":isPast?"var(--text3)":"var(--text)",marginBottom:5,textAlign:"right"}}>{day}</div>
-                      {contests.slice(0,3).map((c,ci)=>(
-                        <div key={ci} style={{fontSize:10,fontWeight:600,padding:"2px 5px",borderRadius:4,background:`${pColor(c.platform)}18`,color:pColor(c.platform),marginBottom:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
-                          {PLATFORM_ICONS[c.platform]} {c.name.slice(0,16)}
-                        </div>
-                      ))}
-                      {contests.length>3 && <div style={{fontSize:9,color:"var(--text3)"}}>+{contests.length-3} more</div>}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            {selDate && selDateContests.length > 0 && (
-              <div style={{marginTop:16,background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:20}}>
-                <div className="syne" style={{fontSize:16,fontWeight:800,marginBottom:14}}>
-                  {new Date(selDate+"T00:00:00").toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
-                </div>
-                {selDateContests.map(c=><ContestItem key={c.id} c={c}/>)}
-              </div>
-            )}
           </div>
         )}
       </div>
