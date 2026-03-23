@@ -2995,6 +2995,11 @@ const LC150 = [
     {name:"Palindromic Substrings", lc:"palindromic-substrings", diff:"Medium"},
     {name:"Permutation in String", lc:"permutation-in-string", diff:"Medium"},
     {name:"Longest Common Prefix", lc:"longest-common-prefix", diff:"Easy"},
+    {name:"Reverse Words in a String", lc:"reverse-words-in-a-string", diff:"Medium"},
+    {name:"String to Integer (atoi)", lc:"string-to-integer-atoi", diff:"Medium"},
+    {name:"Zigzag Conversion", lc:"zigzag-conversion", diff:"Medium"},
+    {name:"Word Break", lc:"word-break", diff:"Medium"},
+    {name:"Encode and Decode Strings", lc:"encode-and-decode-strings", diff:"Medium"},
   ]},
   { cat:"Sliding Window / Two Pointers", color:"#00ff88", problems:[
     {name:"Container With Most Water", lc:"container-with-most-water", diff:"Medium"},
@@ -3007,6 +3012,11 @@ const LC150 = [
     {name:"Move Zeroes", lc:"move-zeroes", diff:"Easy"},
     {name:"Max Consecutive Ones III", lc:"max-consecutive-ones-iii", diff:"Medium"},
     {name:"Fruits Into Baskets", lc:"fruit-into-baskets", diff:"Medium"},
+    {name:"Squares of a Sorted Array", lc:"squares-of-a-sorted-array", diff:"Easy"},
+    {name:"4Sum", lc:"4sum", diff:"Medium"},
+    {name:"Backspace String Compare", lc:"backspace-string-compare", diff:"Easy"},
+    {name:"Subarray Product Less Than K", lc:"subarray-product-less-than-k", diff:"Medium"},
+    {name:"Longest Subarray of 1s After Deleting One Element", lc:"longest-subarray-of-1s-after-deleting-one-element", diff:"Medium"},
   ]},
   { cat:"Binary Search", color:"#f5a623", problems:[
     {name:"Binary Search", lc:"binary-search", diff:"Easy"},
@@ -3019,6 +3029,11 @@ const LC150 = [
     {name:"Time Based Key-Value Store", lc:"time-based-key-value-store", diff:"Medium"},
     {name:"Find First and Last Position of Element", lc:"find-first-and-last-position-of-element-in-sorted-array", diff:"Medium"},
     {name:"Capacity to Ship Packages Within D Days", lc:"capacity-to-ship-packages-within-d-days", diff:"Medium"},
+    {name:"Split Array Largest Sum", lc:"split-array-largest-sum", diff:"Hard"},
+    {name:"Search in Rotated Sorted Array II", lc:"search-in-rotated-sorted-array-ii", diff:"Medium"},
+    {name:"Find the Duplicate Number", lc:"find-the-duplicate-number", diff:"Medium"},
+    {name:"Single Element in a Sorted Array", lc:"single-element-in-a-sorted-array", diff:"Medium"},
+    {name:"Minimized Maximum of Products Distributed to Any Store", lc:"minimized-maximum-of-products-distributed-to-any-store", diff:"Medium"},
   ]},
   { cat:"Linked List", color:"#ff3d8a", problems:[
     {name:"Reverse Linked List", lc:"reverse-linked-list", diff:"Easy"},
@@ -3274,7 +3289,7 @@ const DSAPage = ({ setPage }) => {
     }
     return ()=>clearInterval(pomTimerRef.current);
   },[pomodoroRunning,pomodoroBreak]);
-  const fmtPom = s=>`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
+  const fmtPom = s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
 
   // ── Daily Challenge ────────────────────────────────────────────
   const dailyProb = React.useMemo(()=>{
