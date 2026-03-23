@@ -100,7 +100,21 @@ function useHackathons(filters={}, page=1) {
     apiFetch("/hackathons", { ...filters, limit:1000 })  // page handled client-side
       .then(j => {
         if (fetchId.current !== id) return;
-        setData(shuffleGroups(sortByDate(j.data || [])));
+        // Sort by registrationDeadline soonest first — no shuffle
+        const hacks = (j.data || []).sort((a,b) => {
+          const da = a.registrationDeadline || a.deadline || "";
+          const db = b.registrationDeadline || b.deadline || "";
+          if (!da && !db) return 0;
+          if (!da) return 1;
+          if (!db) return -1;
+          const ta = new Date(da).getTime();
+          const tb = new Date(db).getTime();
+          if (isNaN(ta) && isNaN(tb)) return 0;
+          if (isNaN(ta)) return 1;
+          if (isNaN(tb)) return -1;
+          return ta - tb;
+        });
+        setData(hacks);
         setTotal(j.total || 0);
         setOffline(false);
       })
@@ -149,7 +163,20 @@ function useInternships({ds="", location="All", isRemote="All"}={}) {
     apiFetch("/internships", params)
       .then(j => {
         if (fetchId.current !== id) return;   // stale response — discard
-        const iData = j.data || [];
+        // Sort by deadline soonest first, null deadlines last
+        const iData = (j.data || []).sort((a,b) => {
+          const da = a.deadline || "";
+          const db = b.deadline || "";
+          if (!da && !db) return 0;
+          if (!da) return 1;
+          if (!db) return -1;
+          const ta = new Date(da).getTime();
+          const tb = new Date(db).getTime();
+          if (isNaN(ta) && isNaN(tb)) return 0;
+          if (isNaN(ta)) return 1;
+          if (isNaN(tb)) return -1;
+          return ta - tb;
+        });
         setData(iData);
         setTotal(iData.length);
       })
@@ -195,17 +222,20 @@ function useEvents({type="", city="All", price="All", domain="All", search=""}={
         // Filter out non-tech events (yoga, dance, fitness, personal dev etc from AllEvents)
         const NON_TECH = /yoga|dance|fitness|meditation|cooking|marriage|wedding|fashion|astrology|personality|motivat|spiritual|self.help|music class|drawing|painting|sports|cricket|football|badminton|gym|zumba|pilates|nutrition|diet|parenting|relationship/i;
         arr = arr.filter(e => !NON_TECH.test(e.title||"") && !NON_TECH.test(e.description||""));
-        // Sort by date ascending (soonest first, TBD last)
+        // Sort by dateISO (most reliable) then date, soonest first, TBD last
         arr.sort((a,b)=>{
-          const da = a.date ? new Date(a.date) : null;
-          const db = b.date ? new Date(b.date) : null;
+          const da = a.dateISO || (a.date && !["TBD","On Demand","Check site"].includes(a.date) ? a.date : null);
+          const db = b.dateISO || (b.date && !["TBD","On Demand","Check site"].includes(b.date) ? b.date : null);
           if(!da && !db) return 0;
           if(!da) return 1;
           if(!db) return -1;
-          return da - db;
+          const ta = new Date(da).getTime();
+          const tb = new Date(db).getTime();
+          if(isNaN(ta) && isNaN(tb)) return 0;
+          if(isNaN(ta)) return 1;
+          if(isNaN(tb)) return -1;
+          return ta - tb;
         });
-        // Shuffle within same-date groups to mix platforms
-        arr = shuffleGroups(arr);
         // Filter: India-only for offline events
         arr = arr.filter(e => {
           const loc = (e.location||e.city||"").toLowerCase();
@@ -3462,6 +3492,67 @@ const ROADMAP_PHASES = [
     ]},
 ];
 
+
+// ── Problem of the Week data (changes every Monday) ───────────
+const POTW_PROBLEMS = [
+  { name:"Median of Two Sorted Arrays",    lc:"median-of-two-sorted-arrays",          diff:"Hard",   hint1:"Think binary search on the smaller array",                          hint2:"Partition both arrays so left halves combined equal right halves",          hint3:"Use binary search to find the correct partition in O(log(min(m,n)))" },
+  { name:"Trapping Rain Water",             lc:"trapping-rain-water",                  diff:"Hard",   hint1:"For each position, water = min(maxLeft, maxRight) - height[i]",       hint2:"Two-pointer approach avoids the extra space",                              hint3:"Track max from left and max from right as you move pointers inward" },
+  { name:"LRU Cache",                       lc:"lru-cache",                            diff:"Medium", hint1:"You need O(1) get and O(1) put — think HashMap + doubly linked list", hint2:"Most recently used goes to front, evict from back",                       hint3:"Use a dummy head and tail to avoid null checks" },
+  { name:"Word Ladder",                     lc:"word-ladder",                          diff:"Hard",   hint1:"Model as graph where edges connect words differing by 1 letter",       hint2:"BFS gives shortest path — don't use DFS here",                            hint3:"Pre-process: for each word, generate all wildcard patterns like *ot" },
+  { name:"Serialize and Deserialize Binary Tree", lc:"serialize-and-deserialize-binary-tree", diff:"Hard", hint1:"Pre-order traversal + null markers works well",               hint2:"Use a queue for deserialization",                                          hint3:"Split string by comma, use index pointer to reconstruct" },
+  { name:"Alien Dictionary",               lc:"alien-dictionary",                     diff:"Hard",   hint1:"Build a directed graph from adjacent word pairs",                     hint2:"If word A is prefix of word B but comes after, return empty string",       hint3:"Topological sort (BFS/Kahn's) gives the character order" },
+  { name:"Regular Expression Matching",    lc:"regular-expression-matching",          diff:"Hard",   hint1:"Think recursion first: base cases for empty string/pattern",          hint2:"'*' means 0 or more of preceding — two choices each time",                hint3:"2D DP: dp[i][j] = does s[0..i] match p[0..j]?" },
+  { name:"Burst Balloons",                 lc:"burst-balloons",                       diff:"Hard",   hint1:"Think about which balloon you burst LAST, not first",                 hint2:"For interval [l,r], k is the last balloon burst — dp[l][r] = max coins",  hint3:"dp[i][j] = max coins from bursting all balloons between i and j" },
+  { name:"Maximum Profit in Job Scheduling", lc:"maximum-profit-in-job-scheduling",   diff:"Hard",   hint1:"Sort by end time, then for each job decide: take it or skip it",     hint2:"Binary search to find last non-overlapping job",                          hint3:"dp[i] = max profit considering first i jobs" },
+  { name:"Strange Printer",               lc:"strange-printer",                       diff:"Hard",   hint1:"Interval DP — dp[i][j] = min turns to print s[i..j]",                hint2:"If s[i] == s[k] for some k in range, we can save one turn",               hint3:"Start with single chars, expand to larger intervals" },
+  { name:"Number of Ways to Reorder Array to Get Same BST", lc:"number-of-ways-to-reorder-array-to-get-same-bst", diff:"Hard", hint1:"Root is always first element. Split remaining into left (<root) and right (>root)", hint2:"Count permutations of left and right subtrees that maintain relative order", hint3:"Answer = C(left+right, left) * ways(left) * ways(right)" },
+  { name:"Recover Binary Search Tree",    lc:"recover-binary-search-tree",            diff:"Medium", hint1:"Two nodes are swapped — find them using inorder traversal",           hint2:"In a valid BST, inorder traversal is strictly increasing",                 hint3:"Track prev node — when prev > current, you found a violation" },
+  { name:"Minimum Window Substring",      lc:"minimum-window-substring",             diff:"Hard",   hint1:"Sliding window with two frequency maps",                              hint2:"Expand right pointer until all chars found, then shrink left",            hint3:"Track 'formed' count to know when window is valid" },
+  { name:"Edit Distance",                 lc:"edit-distance",                        diff:"Medium", hint1:"dp[i][j] = min operations to convert word1[0..i] to word2[0..j]",    hint2:"3 choices: insert, delete, replace",                                      hint3:"If chars match, dp[i][j] = dp[i-1][j-1], else 1 + min of 3 choices" },
+  { name:"Largest Rectangle in Histogram", lc:"largest-rectangle-in-histogram",      diff:"Hard",   hint1:"For each bar, find how far left and right it can extend",             hint2:"Monotonic stack: pop when current bar is shorter",                        hint3:"When popping bar h, width = right boundary - left boundary - 1" },
+  { name:"Jump Game II",                  lc:"jump-game-ii",                         diff:"Medium", hint1:"Greedy: at each position track the farthest you can reach",           hint2:"Count jumps only when you exceed current range",                          hint3:"curEnd = farthest reachable at current jump count" },
+  { name:"Course Schedule II",            lc:"course-schedule-ii",                   diff:"Medium", hint1:"Build adjacency list, topological sort",                             hint2:"Kahn's BFS: start from nodes with in-degree 0",                           hint3:"If all nodes processed, output order; else cycle detected" },
+  { name:"Find Median from Data Stream",  lc:"find-median-from-data-stream",         diff:"Hard",   hint1:"Two heaps: max-heap for lower half, min-heap for upper half",        hint2:"Keep heaps balanced (size diff ≤ 1)",                                     hint3:"Median = top of larger heap, or average of both tops" },
+  { name:"Maximal Rectangle",             lc:"maximal-rectangle",                    diff:"Hard",   hint1:"Convert each row to histogram heights",                              hint2:"Apply largest rectangle in histogram for each row",                       hint3:"dp[i][j] = consecutive 1s ending at row i, col j" },
+  { name:"K Closest Points to Origin",    lc:"k-closest-points-to-origin",           diff:"Medium", hint1:"Max-heap of size k — maintain k closest seen so far",               hint2:"Or use quickselect (partial sort) for O(n) average",                      hint3:"Distance = x²+y² — no need for sqrt" },
+  { name:"Accounts Merge",                lc:"accounts-merge",                       diff:"Medium", hint1:"Union-Find: union emails belonging to same account",                 hint2:"Map each email to its root, group by root",                               hint3:"Sort emails in each group alphabetically, prepend account name" },
+  { name:"Minimum Cost to Connect All Points", lc:"min-cost-to-connect-all-points",  diff:"Medium", hint1:"Minimum Spanning Tree — Prim's or Kruskal's",                       hint2:"Prim's with a min-heap is efficient here",                                hint3:"Manhattan distance = |x1-x2| + |y1-y2|" },
+  { name:"Path With Minimum Effort",      lc:"path-with-minimum-effort",             diff:"Medium", hint1:"Dijkstra but cost = max effort along path, not sum",                 hint2:"Or binary search on answer + BFS/DFS to verify",                         hint3:"Priority queue: (maxEffort, row, col)" },
+  { name:"Binary Tree Maximum Path Sum",  lc:"binary-tree-maximum-path-sum",         diff:"Hard",   hint1:"For each node, consider 4 options: node alone, with left, with right, with both", hint2:"DFS returns the best single-arm value (not both children)", hint3:"Track global max separately — path can go through any node" },
+  { name:"Decode Ways",                   lc:"decode-ways",                          diff:"Medium", hint1:"dp[i] = ways to decode s[0..i-1]",                                   hint2:"Single digit valid (1-9), two digits valid (10-26)",                      hint3:"dp[i] += dp[i-1] if valid single, dp[i] += dp[i-2] if valid double" },
+  { name:"Coin Change",                   lc:"coin-change",                          diff:"Medium", hint1:"dp[amount] = min coins to make amount",                              hint2:"For each coin, update all amounts >= coin value",                         hint3:"Initialize with amount+1 (infinity), dp[0] = 0" },
+  { name:"Longest Increasing Subsequence", lc:"longest-increasing-subsequence",      diff:"Medium", hint1:"dp[i] = LIS ending at index i",                                      hint2:"O(n log n): maintain sorted list, binary search for insertion point",     hint3:"Length of patience sorting piles = LIS length" },
+  { name:"House Robber III",              lc:"house-robber-iii",                     diff:"Medium", hint1:"Tree DP: at each node decide rob or skip",                           hint2:"Return pair: (max if rob this node, max if skip this node)",              hint3:"rob = node.val + skip(left) + skip(right); skip = max(rob,skip) for each child" },
+  { name:"Pacific Atlantic Water Flow",   lc:"pacific-atlantic-water-flow",          diff:"Medium", hint1:"Reverse thinking: flow from oceans inland (reverse direction)",      hint2:"BFS/DFS from all Pacific border cells, then Atlantic border cells",       hint3:"Answer = intersection of cells reachable from both oceans" },
+  { name:"Word Break II",                 lc:"word-break-ii",                        diff:"Hard",   hint1:"Backtracking + memoization to avoid recomputing same suffix",        hint2:"Trie speeds up dictionary lookups",                                        hint3:"Memoize: memo[i] = all sentences possible from s[i:]" },
+  { name:"Sliding Window Maximum",        lc:"sliding-window-maximum",               diff:"Hard",   hint1:"Monotonic deque: front is always the max",                           hint2:"Remove from back if smaller than current, remove from front if out of window", hint3:"Deque stores indices, not values" },
+  { name:"Longest Consecutive Sequence",  lc:"longest-consecutive-sequence",        diff:"Medium", hint1:"HashSet for O(1) lookup",                                            hint2:"Only start counting from n where n-1 is NOT in set",                      hint3:"This ensures each sequence is counted once from its start" },
+  { name:"3Sum",                          lc:"3sum",                                 diff:"Medium", hint1:"Sort first, then two pointers",                                      hint2:"Fix one element, use two pointers for the other two",                     hint3:"Skip duplicates at all three positions to avoid duplicate triplets" },
+  { name:"Container With Most Water",     lc:"container-with-most-water",            diff:"Medium", hint1:"Two pointers from both ends",                                        hint2:"Always move the pointer with the shorter height inward",                   hint3:"Moving the taller one can never increase area, so always move shorter" },
+  { name:"Product of Array Except Self",  lc:"product-of-array-except-self",        diff:"Medium", hint1:"No division allowed — use prefix and suffix products",               hint2:"Left pass: res[i] = product of all elements to the left",                 hint3:"Right pass: multiply by suffix product (tracked as running variable)" },
+  { name:"Maximum Subarray",              lc:"maximum-subarray",                     diff:"Medium", hint1:"Kadane's: if running sum goes negative, restart from current element", hint2:"Keep track of global max separately",                                    hint3:"dp[i] = max subarray ending at i = max(nums[i], dp[i-1]+nums[i])" },
+  { name:"Merge Intervals",               lc:"merge-intervals",                      diff:"Medium", hint1:"Sort by start time",                                                 hint2:"If current start <= last merged end, extend the end",                     hint3:"Otherwise, add to result and start a new interval" },
+  { name:"Group Anagrams",               lc:"group-anagrams",                        diff:"Medium", hint1:"Sort each string → use as hash key",                               hint2:"Or use character frequency tuple as key",                                 hint3:"HashMap<String, List> to group by key" },
+  { name:"Valid Parentheses",             lc:"valid-parentheses",                    diff:"Easy",   hint1:"Stack: push opening brackets, pop on closing",                       hint2:"Check if popped bracket matches current closing bracket",                 hint3:"At end, stack must be empty" },
+  { name:"Two Sum",                       lc:"two-sum",                              diff:"Easy",   hint1:"Brute force is O(n²) — can we do better?",                           hint2:"HashMap: for each number, check if complement exists",                    hint3:"complement = target - nums[i]; store each num with its index" },
+  { name:"Binary Search",                 lc:"binary-search",                        diff:"Easy",   hint1:"Three pointers: left, right, mid",                                   hint2:"mid = left + (right-left)/2 to avoid overflow",                           hint3:"Reduce search space by half each iteration: O(log n)" },
+  { name:"Maximum Depth of Binary Tree",  lc:"maximum-depth-of-binary-tree",         diff:"Easy",   hint1:"Recursion: depth = 1 + max(depth(left), depth(right))",             hint2:"Base case: null node returns 0",                                          hint3:"Iterative: BFS level by level, count levels" },
+  { name:"Climbing Stairs",               lc:"climbing-stairs",                      diff:"Easy",   hint1:"To reach step n, you came from n-1 or n-2",                          hint2:"dp[n] = dp[n-1] + dp[n-2]",                                              hint3:"This is just Fibonacci — only need last 2 values" },
+  { name:"Reverse Linked List",           lc:"reverse-linked-list",                  diff:"Easy",   hint1:"Three pointers: prev, curr, next",                                   hint2:"At each step: save next, point curr to prev, advance both",               hint3:"After loop, prev is the new head" },
+  { name:"Valid Palindrome",              lc:"valid-palindrome",                     diff:"Easy",   hint1:"Two pointers from both ends",                                        hint2:"Skip non-alphanumeric characters",                                        hint3:"Compare lowercased characters at both pointers" },
+  { name:"Best Time to Buy and Sell Stock", lc:"best-time-to-buy-and-sell-stock",    diff:"Easy",   hint1:"Track minimum price seen so far",                                    hint2:"At each day: profit = price - minSoFar; update maxProfit",                hint3:"Single pass O(n) — no need for nested loops" },
+  { name:"Number of Islands",             lc:"number-of-islands",                    diff:"Medium", hint1:"DFS/BFS from each unvisited '1' cell",                               hint2:"Mark visited cells as '0' or use a visited array",                        hint3:"Each DFS/BFS call from a new '1' cell counts as one island" },
+  { name:"Lowest Common Ancestor of BST", lc:"lowest-common-ancestor-of-a-binary-search-tree", diff:"Easy", hint1:"Use BST property: left < root < right",                  hint2:"If both p,q < root → go left; if both > root → go right",                 hint3:"Otherwise, root is the LCA" },
+  { name:"Validate Binary Search Tree",   lc:"validate-binary-search-tree",          diff:"Medium", hint1:"Inorder traversal should be strictly increasing",                    hint2:"Or pass min/max bounds recursively",                                      hint3:"validate(node, min, max): node.val must be in (min, max)" },
+];
+// Get problem of the week — changes every Monday using ISO week number
+function getPOTW() {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const weekNum = Math.ceil(((now - startOfYear) / 86400000 + startOfYear.getDay() + 1) / 7);
+  return POTW_PROBLEMS[weekNum % POTW_PROBLEMS.length];
+}
+
 const DSAPage = ({ setPage }) => {
   const [tab,        setTab]        = useState("topics");
   const [cat,        setCat]        = useState("All");
@@ -3555,6 +3646,16 @@ const DSAPage = ({ setPage }) => {
   const fmtPom = s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
 
   // ── Daily Challenge ────────────────────────────────────────────
+  // ── Problem of the Week ─────────────────────────────────────
+  const potw     = React.useMemo(()=>getPOTW(),[]);
+  const [potwHint, setPotwHint] = React.useState(0); // 0=no hint, 1,2,3
+  const [potwSolved, setPotwSolved] = React.useState(()=>{ try{return localStorage.getItem("potw_solved_"+potw?.lc)==="1";}catch{return false;} });
+
+  const markPotwSolved = () => {
+    setPotwSolved(true);
+    try{localStorage.setItem("potw_solved_"+potw?.lc,"1");}catch(_){}
+  };
+
   const dailyProb = React.useMemo(()=>{
     const allProbs=[];
     if(typeof LC150!=="undefined") LC150.forEach(g=>g.problems.forEach(p=>allProbs.push({...p,cat:g.cat})));
@@ -4676,13 +4777,59 @@ const DSAPage = ({ setPage }) => {
   return (
     <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
       <Header/>
+      {/* Problem of the Week Banner */}
+      {potw && (
+        <div style={{background:"linear-gradient(135deg,rgba(255,107,53,.1),rgba(255,214,10,.06))",borderBottom:"1px solid var(--border)",padding:"14px 24px"}}>
+          <div style={{maxWidth:1200,margin:"0 auto"}}>
+            <div style={{display:"flex",alignItems:"center",gap:12,flexWrap:"wrap",marginBottom:potwHint>0?10:0}}>
+              <span style={{fontSize:18}}>🏆</span>
+              <div style={{flex:1,minWidth:0}}>
+                <span style={{fontSize:10,fontWeight:700,color:"var(--orange)",textTransform:"uppercase",letterSpacing:".1em",marginRight:8}}>Problem of the Week</span>
+                <span style={{fontSize:14,fontWeight:700,color:"var(--text)"}}>{potw.name}</span>
+                <span style={{fontSize:11,padding:"2px 7px",borderRadius:4,marginLeft:8,background:`${potw.diff==="Easy"?"rgba(0,255,136,.15)":potw.diff==="Medium"?"rgba(255,214,10,.15)":"rgba(255,61,138,.15)"}`,color:potw.diff==="Easy"?"var(--green)":potw.diff==="Medium"?"var(--yellow)":"var(--pink)",fontWeight:700}}>{potw.diff}</span>
+              </div>
+              <div style={{display:"flex",gap:6,flexShrink:0,flexWrap:"wrap"}}>
+                {!potwSolved && potwHint < 3 && (
+                  <button onClick={()=>setPotwHint(h=>h+1)}
+                    style={{fontSize:11,padding:"5px 12px",borderRadius:7,border:"1px solid rgba(255,214,10,.4)",background:"rgba(255,214,10,.1)",color:"var(--yellow)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:600}}>
+                    💡 Hint {potwHint+1}
+                  </button>
+                )}
+                {!potwSolved && (
+                  <button onClick={markPotwSolved}
+                    style={{fontSize:11,padding:"5px 12px",borderRadius:7,border:"1px solid rgba(0,255,136,.4)",background:"rgba(0,255,136,.1)",color:"var(--green)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:600}}>
+                    ✅ Mark Solved
+                  </button>
+                )}
+                {potwSolved && <span style={{fontSize:12,color:"var(--green)",fontWeight:700,padding:"5px 10px"}}>✅ Solved this week!</span>}
+                <a href={`https://leetcode.com/problems/${potw.lc}/`} target="_blank" rel="noopener noreferrer"
+                  style={{fontSize:11,padding:"5px 12px",borderRadius:7,background:"rgba(255,107,53,.15)",color:"var(--orange)",border:"1px solid rgba(255,107,53,.3)",textDecoration:"none",fontWeight:700}}>
+                  Solve →
+                </a>
+              </div>
+            </div>
+            {/* Hints */}
+            {potwHint > 0 && (
+              <div style={{display:"flex",flexDirection:"column",gap:6,paddingTop:8,borderTop:"1px solid rgba(255,214,10,.2)"}}>
+                {[potw.hint1, potw.hint2, potw.hint3].slice(0, potwHint).map((hint,i)=>(
+                  <div key={i} style={{display:"flex",gap:8,alignItems:"flex-start"}}>
+                    <span style={{fontSize:11,fontWeight:700,color:"var(--yellow)",flexShrink:0,minWidth:60}}>Hint {i+1}:</span>
+                    <span style={{fontSize:12,color:"var(--text2)",lineHeight:1.5}}>{hint}</span>
+                  </div>
+                ))}
+                {potwHint===3 && <div style={{fontSize:11,color:"var(--text3)",marginTop:4}}>All hints revealed. Try solving it now!</div>}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       {/* Daily Challenge Banner */}
       {dailyProb && (
-        <div style={{background:"linear-gradient(135deg,rgba(124,77,255,.12),rgba(0,212,255,.08))",borderBottom:"1px solid var(--border)",padding:"12px 24px"}}>
+        <div style={{background:"linear-gradient(135deg,rgba(124,77,255,.08),rgba(0,212,255,.05))",borderBottom:"1px solid var(--border)",padding:"10px 24px"}}>
           <div style={{maxWidth:1200,margin:"0 auto",display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
-            <span style={{fontSize:16}}>⚡</span>
+            <span style={{fontSize:14}}>⚡</span>
             <div style={{flex:1,minWidth:0}}>
-              <span style={{fontSize:11,fontWeight:700,color:"var(--purple)",textTransform:"uppercase",letterSpacing:".08em",marginRight:8}}>Today's Challenge</span>
+              <span style={{fontSize:10,fontWeight:700,color:"var(--purple)",textTransform:"uppercase",letterSpacing:".08em",marginRight:8}}>Daily Challenge</span>
               <span style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{dailyProb.name}</span>
               <span style={{fontSize:11,color:"var(--text3)",marginLeft:8}}>{dailyProb.cat}</span>
             </div>
@@ -5181,7 +5328,81 @@ const CPContestPage = ({ setPage }) => {
   const [platforms, setPlatforms] = useState(["all"]);
   const [calMonth,  setCalMonth]  = useState(new Date());
   const [selDate,   setSelDate]   = useState(null);
-  const [view,      setView]      = useState("split"); // split | list | profile
+  const [view,      setView]      = useState("split"); // split | list | profile | virtual
+
+  // ── Virtual Contest state ──────────────────────────────────
+  const [vcActive,  setVcActive]  = useState(false);
+  const [vcContest, setVcContest] = useState(null);
+  const [vcTime,    setVcTime]    = useState(0);
+  const [vcDone,    setVcDone]    = useState({});
+  const [vcRunning, setVcRunning] = useState(false);
+  const vcTimerRef = useRef(null);
+
+  // Curated past CF contests for virtual practice
+  const VIRTUAL_CONTESTS = [
+    { id:"1905", name:"Codeforces Round 911 (Div. 2)", duration:7200, problems:[
+      {idx:"A",name:"Morning Jogging",rating:800,url:"https://codeforces.com/contest/1905/problem/A"},
+      {idx:"B",name:"Chemistry",rating:1000,url:"https://codeforces.com/contest/1905/problem/B"},
+      {idx:"C",name:"Largest Island",rating:1400,url:"https://codeforces.com/contest/1905/problem/C"},
+      {idx:"D",name:"Cyclic MEX",rating:1800,url:"https://codeforces.com/contest/1905/problem/D"},
+      {idx:"E",name:"Rendez-vous de Marian et Robin",rating:2100,url:"https://codeforces.com/contest/1905/problem/E"},
+    ]},
+    { id:"1899", name:"Codeforces Round 908 (Div. 2)", duration:7200, problems:[
+      {idx:"A",name:"Make It Zero",rating:800,url:"https://codeforces.com/contest/1899/problem/A"},
+      {idx:"B",name:"250 Thousand Tons of TNT",rating:1100,url:"https://codeforces.com/contest/1899/problem/B"},
+      {idx:"C",name:"Yarik and Array",rating:1300,url:"https://codeforces.com/contest/1899/problem/C"},
+      {idx:"D",name:"Yarik and Musical Notes",rating:1500,url:"https://codeforces.com/contest/1899/problem/D"},
+      {idx:"E",name:"Queue Sort",rating:1900,url:"https://codeforces.com/contest/1899/problem/E"},
+    ]},
+    { id:"1891", name:"Codeforces Round 905 (Div. 1)", duration:9000, problems:[
+      {idx:"A",name:"Array Coloring",rating:800,url:"https://codeforces.com/contest/1891/problem/A"},
+      {idx:"B",name:"Palindrome Partition",rating:1500,url:"https://codeforces.com/contest/1891/problem/B"},
+      {idx:"C",name:"Tiles",rating:1900,url:"https://codeforces.com/contest/1891/problem/C"},
+      {idx:"D",name:"Tickets",rating:2000,url:"https://codeforces.com/contest/1891/problem/D"},
+      {idx:"E",name:"Graph Cost",rating:2400,url:"https://codeforces.com/contest/1891/problem/E"},
+    ]},
+    { id:"1856", name:"Codeforces Round 891 (Div. 3)", duration:8100, problems:[
+      {idx:"A",name:"Array Fix",rating:800,url:"https://codeforces.com/contest/1856/problem/A"},
+      {idx:"B",name:"Astrophysicists",rating:900,url:"https://codeforces.com/contest/1856/problem/B"},
+      {idx:"C",name:"Autosave",rating:1200,url:"https://codeforces.com/contest/1856/problem/C"},
+      {idx:"D",name:"More Wrong",rating:1600,url:"https://codeforces.com/contest/1856/problem/D"},
+      {idx:"E",name:"City Union",rating:2000,url:"https://codeforces.com/contest/1856/problem/E"},
+    ]},
+    { id:"1842", name:"Codeforces Round 882 (Div. 2)", duration:7200, problems:[
+      {idx:"A",name:"Tenzing and Tsondu",rating:800,url:"https://codeforces.com/contest/1842/problem/A"},
+      {idx:"B",name:"Tenzing and Books",rating:800,url:"https://codeforces.com/contest/1842/problem/B"},
+      {idx:"C",name:"Tenzing and Machines",rating:1200,url:"https://codeforces.com/contest/1842/problem/C"},
+      {idx:"D",name:"Tenzing and His Animal Friends",rating:1600,url:"https://codeforces.com/contest/1842/problem/D"},
+      {idx:"E",name:"Tenzing and Triangle",rating:2000,url:"https://codeforces.com/contest/1842/problem/E"},
+    ]},
+    { id:"1814", name:"Educational Codeforces Round 149", duration:7200, problems:[
+      {idx:"A",name:"Coins",rating:900,url:"https://codeforces.com/contest/1814/problem/A"},
+      {idx:"B",name:"Dorms War",rating:1100,url:"https://codeforces.com/contest/1814/problem/B"},
+      {idx:"C",name:"Robots",rating:1300,url:"https://codeforces.com/contest/1814/problem/C"},
+      {idx:"D",name:"Two Chess Pieces",rating:1700,url:"https://codeforces.com/contest/1814/problem/D"},
+      {idx:"E",name:"Chain",rating:2000,url:"https://codeforces.com/contest/1814/problem/E"},
+    ]},
+  ];
+
+  const startVC = (contest) => {
+    setVcContest(contest); setVcDone({}); setVcTime(contest.duration);
+    setVcRunning(true); setVcActive(true); setView("virtual"); window.scrollTo(0,0);
+  };
+  const stopVC = () => {
+    setVcActive(false); setVcRunning(false); setVcContest(null);
+    clearInterval(vcTimerRef.current); setView("split");
+  };
+
+  React.useEffect(()=>{
+    if(vcRunning){
+      vcTimerRef.current=setInterval(()=>{
+        setVcTime(t=>{ if(t<=1){clearInterval(vcTimerRef.current);setVcRunning(false);return 0;} return t-1; });
+      },1000);
+    }
+    return()=>clearInterval(vcTimerRef.current);
+  },[vcRunning]);
+
+  const fmtVC = (s)=>`${String(Math.floor(s/3600)).padStart(2,"0")}:${String(Math.floor((s%3600)/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
 
   // ── Profile / Rating tracker state ───────────────────────────
   const [cfHandle,     setCfHandle]     = useState(() => localStorage.getItem(LS_CF_HANDLE) || "");
@@ -5309,6 +5530,7 @@ const CPContestPage = ({ setPage }) => {
 
   // ── LeetCode stats ─────────────────────────────────────────
   // eslint-disable-next-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars
   const [lcHandle,  setLcHandle]  = React.useState(() => localStorage.getItem("lc_handle_v1")||"");
   const [lcInput,   setLcInput]   = React.useState(() => localStorage.getItem("lc_handle_v1")||"");
   const [lcData,    setLcData]    = React.useState(null);
@@ -5367,6 +5589,7 @@ const CPContestPage = ({ setPage }) => {
   };
 
   // ── AtCoder stats ──────────────────────────────────────────
+  // eslint-disable-next-line no-unused-vars
   // eslint-disable-next-line no-unused-vars
   const [acHandle,  setAcHandle]  = React.useState(() => localStorage.getItem("ac_handle_v1")||"");
   const [acInput,   setAcInput]   = React.useState(() => localStorage.getItem("ac_handle_v1")||"");
@@ -5514,7 +5737,7 @@ const CPContestPage = ({ setPage }) => {
                 🔄 Refresh
               </button>
               {/* View toggle */}
-              {[["split","⬜ Split"],["list","☰ List"],["profile","👤 My Profile"]].map(([v,l])=>(
+              {[["split","⬜ Split"],["list","☰ List"],["profile","👤 My Profile"],["virtual","🎮 Virtual"]].map(([v,l])=>(
                 <button key={v} onClick={()=>setView(v)}
                   style={{fontSize:12,padding:"6px 14px",borderRadius:8,border:`1px solid ${view===v?"var(--purple)":"var(--border)"}`,background:view===v?"rgba(124,77,255,.15)":"var(--card)",color:view===v?"var(--purple)":"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:view===v?700:400}}>
                   {l}
@@ -5667,6 +5890,94 @@ const CPContestPage = ({ setPage }) => {
                 </div>
               );
             })}
+          </div>
+        ) : view === "virtual" && !vcActive ? (
+          /* Virtual Contest Selection */
+          <div style={{maxWidth:860,margin:"0 auto"}}>
+            <div style={{marginBottom:20}}>
+              <div className="syne" style={{fontSize:20,fontWeight:800,marginBottom:6}}>🎮 Virtual Contest Mode</div>
+              <p style={{color:"var(--text2)",fontSize:13}}>Practice with real past Codeforces contests under timed conditions. Problems open in CF — solve there, mark your progress here.</p>
+            </div>
+            <div style={{display:"grid",gap:14}}>
+              {VIRTUAL_CONTESTS.map(vc=>(
+                <div key={vc.id} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:20,transition:"all .2s"}}
+                  onMouseEnter={e=>e.currentTarget.style.borderColor="var(--purple)"}
+                  onMouseLeave={e=>e.currentTarget.style.borderColor="var(--border)"}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12,flexWrap:"wrap",gap:8}}>
+                    <div>
+                      <div className="syne" style={{fontSize:15,fontWeight:800,marginBottom:3}}>{vc.name}</div>
+                      <div style={{fontSize:12,color:"var(--text3)"}}>⏱ {Math.floor(vc.duration/3600)}h {(vc.duration%3600)/60>0?`${(vc.duration%3600)/60}m`:""} · {vc.problems.length} problems</div>
+                    </div>
+                    <button className="btn-p" onClick={()=>startVC(vc)} style={{padding:"8px 20px",fontSize:13,background:"linear-gradient(135deg,var(--purple),#5a2fd4)"}}>
+                      🎮 Start Virtual
+                    </button>
+                  </div>
+                  <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                    {vc.problems.map(p=>(
+                      <span key={p.idx} style={{fontSize:11,padding:"3px 9px",borderRadius:6,background:`${p.rating>=2000?"rgba(255,61,138,.1)":p.rating>=1600?"rgba(255,107,53,.1)":p.rating>=1200?"rgba(255,214,10,.1)":"rgba(0,255,136,.1)"}`,color:p.rating>=2000?"var(--pink)":p.rating>=1600?"var(--orange)":p.rating>=1200?"var(--yellow)":"var(--green)",border:`1px solid ${p.rating>=2000?"rgba(255,61,138,.3)":p.rating>=1600?"rgba(255,107,53,.3)":p.rating>=1200?"rgba(255,214,10,.3)":"rgba(0,255,136,.3)"}`}}>
+                        {p.idx}: {p.name.slice(0,20)} ({p.rating})
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : view === "virtual" && vcActive && vcContest ? (
+          /* Active Virtual Contest */
+          <div style={{maxWidth:860,margin:"0 auto"}}>
+            <div style={{background:"var(--card)",border:`2px solid ${vcRunning?"var(--purple)":"var(--border)"}`,borderRadius:16,padding:24,marginBottom:20}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:12}}>
+                <div>
+                  <div style={{fontSize:11,fontWeight:700,color:"var(--purple)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:4}}>🎮 Virtual Contest</div>
+                  <div className="syne" style={{fontSize:18,fontWeight:800}}>{vcContest.name}</div>
+                </div>
+                <div style={{display:"flex",gap:16,alignItems:"center"}}>
+                  <div style={{textAlign:"center"}}>
+                    <div className="syne mono" style={{fontSize:32,fontWeight:900,color:vcTime<600?"var(--pink)":vcTime<1800?"var(--yellow)":"var(--cyan)"}}>{fmtVC(vcTime)}</div>
+                    <div style={{fontSize:10,color:"var(--text3)"}}>time remaining</div>
+                  </div>
+                  <div style={{textAlign:"center"}}>
+                    <div className="syne" style={{fontSize:32,fontWeight:900,color:"var(--green)"}}>{Object.values(vcDone).filter(Boolean).length}/{vcContest.problems.length}</div>
+                    <div style={{fontSize:10,color:"var(--text3)"}}>solved</div>
+                  </div>
+                  <button onClick={stopVC} style={{padding:"8px 16px",borderRadius:9,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif"}}>End Contest</button>
+                </div>
+              </div>
+              {vcTime===0&&<div style={{marginTop:12,padding:"10px 16px",background:"rgba(255,61,138,.08)",border:"1px solid rgba(255,61,138,.3)",borderRadius:10,color:"var(--pink)",fontWeight:700,fontSize:14}}>⏰ Time is up! You solved {Object.values(vcDone).filter(Boolean).length}/{vcContest.problems.length} problems.</div>}
+            </div>
+            <div style={{display:"grid",gap:12}}>
+              {vcContest.problems.map(p=>{
+                const done=vcDone[p.idx]||false;
+                return(
+                  <div key={p.idx} style={{background:"var(--card)",border:`1px solid ${done?"rgba(0,255,136,.3)":"var(--border)"}`,borderRadius:14,padding:20,display:"flex",alignItems:"center",gap:14,flexWrap:"wrap",transition:"all .2s"}}>
+                    <div style={{width:36,height:36,borderRadius:"50%",background:"rgba(124,77,255,.15)",color:"var(--purple)",fontWeight:900,fontSize:14,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{p.idx}</div>
+                    <div style={{flex:1,minWidth:160}}>
+                      <div className="syne" style={{fontSize:15,fontWeight:700,color:done?"var(--green)":"var(--text)",marginBottom:2}}>{p.name}</div>
+                      <div style={{fontSize:11,color:"var(--text3)"}}>Rating: {p.rating}</div>
+                    </div>
+                    <div style={{display:"flex",gap:8,flexShrink:0}}>
+                      <a href={p.url} target="_blank" rel="noopener noreferrer"
+                        style={{fontSize:12,padding:"7px 16px",borderRadius:8,background:"rgba(255,107,53,.1)",color:"var(--orange)",border:"1px solid rgba(255,107,53,.3)",textDecoration:"none",fontWeight:600}}>
+                        Open Problem →
+                      </a>
+                      <button onClick={()=>setVcDone(d=>({...d,[p.idx]:!d[p.idx]}))}
+                        style={{fontSize:12,padding:"7px 16px",borderRadius:8,border:`1px solid ${done?"var(--green)":"var(--border)"}`,background:done?"rgba(0,255,136,.15)":"var(--card)",color:done?"var(--green)":"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:700,transition:"all .15s"}}>
+                        {done?"✅ Solved":"Mark Solved"}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {Object.values(vcDone).filter(Boolean).length===vcContest.problems.length&&(
+              <div style={{marginTop:16,background:"rgba(0,255,136,.08)",border:"1px solid rgba(0,255,136,.3)",borderRadius:14,padding:20,textAlign:"center"}}>
+                <div style={{fontSize:32,marginBottom:8}}>🎉</div>
+                <div className="syne" style={{fontSize:20,fontWeight:800,color:"var(--green)",marginBottom:6}}>All problems solved!</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginBottom:16}}>You finished with {fmtVC(vcContest.duration-vcTime)} elapsed.</div>
+                <button onClick={stopVC} className="btn-p" style={{padding:"10px 28px",fontSize:14,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>Back to Contest Tracker</button>
+              </div>
+            )}
           </div>
         ) : view === "profile" ? (
           <div style={{maxWidth:960,margin:"0 auto"}}>
