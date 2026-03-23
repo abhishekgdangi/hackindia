@@ -43,6 +43,8 @@ function shuffle(arr) {
   return a;
 }
 // Shuffle within date groups so same platform doesn't cluster, but soonest still first
+// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-vars
 function shuffleGroups(arr) {
   if (!arr.length) return arr;
   const groups = {};
@@ -64,7 +66,7 @@ function shuffleGroups(arr) {
 }
 
 
-// Sort by date ascending (soonest first), TBD goes last
+// eslint-disable-next-line no-unused-vars
 function sortByDate(arr) {
   return [...arr].sort((a, b) => {
     const da = a.deadline || a.date || a.startDate || "";
