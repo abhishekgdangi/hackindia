@@ -6344,18 +6344,27 @@ const CPContestPage = ({ setPage }) => {
    3 ATS-friendly templates | Fill form → Live preview → Print PDF
 ════════════════════════════════════════════════════════════════ */
 const RT_TEMPLATES = [
-  { id:"classic", name:"Classic",    color:"#1a1a2e", accent:"#2563eb", desc:"Clean single-column. Best for product/dev roles." },
-  { id:"modern",  name:"Modern",     color:"#0f172a", accent:"#7c3aed", desc:"Two-column with sidebar. Great for FAANG applications." },
-  { id:"minimal", name:"Minimal",    color:"#111827", accent:"#059669", desc:"Ultra-clean. Perfect for startups & design roles." },
+  { id:"classic",    name:"Classic",     color:"#1a1a2e", accent:"#2563eb", desc:"Clean single-column. Best for product/dev roles." },
+  { id:"modern",     name:"Modern",      color:"#0f172a", accent:"#7c3aed", desc:"Two-column with sidebar. Great for FAANG applications." },
+  { id:"minimal",    name:"Minimal",     color:"#111827", accent:"#059669", desc:"Ultra-clean. Perfect for startups & design roles." },
+  { id:"executive",  name:"Executive",   color:"#1e293b", accent:"#dc2626", desc:"Bold header with red accent. Senior roles & leadership." },
+  { id:"creative",   name:"Creative",    color:"#0c0a09", accent:"#f97316", desc:"Side accent bar with orange. Design, PM & creative roles." },
+  { id:"corporate",  name:"Corporate",   color:"#f8fafc", accent:"#0f172a", desc:"Traditional black & white. Banking, consulting, PSUs." },
 ];
 
 const RT_SKILLS_PRESETS = {
-  "Frontend":  ["React","JavaScript","TypeScript","HTML/CSS","Next.js","Redux","Tailwind CSS","REST APIs"],
-  "Backend":   ["Node.js","Python","Java","Express","Django","MongoDB","PostgreSQL","Redis","Docker"],
-  "Full Stack":["React","Node.js","Python","MongoDB","PostgreSQL","Docker","AWS","REST APIs","GraphQL"],
-  "Data Science":["Python","Pandas","NumPy","Scikit-learn","TensorFlow","SQL","Tableau","Jupyter"],
-  "DevOps":    ["Docker","Kubernetes","AWS","CI/CD","Terraform","Linux","Jenkins","Prometheus"],
-  "Android":   ["Kotlin","Java","Android SDK","Jetpack Compose","Firebase","REST APIs","MVVM"],
+  "Frontend":    ["React","JavaScript","TypeScript","HTML/CSS","Next.js","Redux","Tailwind CSS","REST APIs","Git"],
+  "Backend":     ["Node.js","Python","Java","Express","Django","MongoDB","PostgreSQL","Redis","Docker","AWS"],
+  "Full Stack":  ["React","Node.js","Python","MongoDB","PostgreSQL","Docker","AWS","REST APIs","GraphQL","Git"],
+  "Data Science":["Python","Pandas","NumPy","Scikit-learn","TensorFlow","SQL","Tableau","Jupyter","Matplotlib","Seaborn"],
+  "DevOps":      ["Docker","Kubernetes","AWS","CI/CD","Terraform","Linux","Jenkins","Prometheus","Ansible","GitLab"],
+  "Android":     ["Kotlin","Java","Android SDK","Jetpack Compose","Firebase","REST APIs","MVVM","Room DB","Retrofit"],
+  "iOS":         ["Swift","SwiftUI","Objective-C","Xcode","Core Data","UIKit","Combine","REST APIs","CocoaPods"],
+  "ML/AI":       ["Python","PyTorch","TensorFlow","Scikit-learn","Hugging Face","LangChain","OpenCV","SQL","Git"],
+  "Cloud/AWS":   ["AWS","EC2","S3","Lambda","RDS","CloudFormation","Terraform","Docker","Python","Linux"],
+  "Cybersecurity":["Network Security","Penetration Testing","SIEM","Python","Linux","Wireshark","Metasploit","OWASP"],
+  "Product Manager":["Product Roadmap","Agile/Scrum","JIRA","User Research","A/B Testing","SQL","Figma","Stakeholder Mgmt"],
+  "Data Engineer":["Python","Spark","Kafka","Airflow","AWS","SQL","ETL","Hadoop","Snowflake","dbt"],
 };
 
 const BLANK_FORM = {
@@ -6374,11 +6383,86 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
     try { return JSON.parse(localStorage.getItem("rt_form_v1")||"null") || {...BLANK_FORM}; }
     catch { return {...BLANK_FORM}; }
   });
-  const [tab,      setTab]      = React.useState("personal"); // personal | experience | education | skills | projects | preview
+  const [tab,      setTab]      = React.useState("personal");
   const [skillInput, setSkillInput] = React.useState("");
+  const [accentColor, setAccentColor] = React.useState("");  // custom override
+  const [bulletAI, setBulletAI] = React.useState({});       // AI improved bullets
+  const [bulletLoading, setBulletLoading] = React.useState({});
+  const [atsScore, setAtsScore] = React.useState(null);     // computed in preview
+
+  // Sample data for demo fill
+  const SAMPLE_DATA = {
+    name:"Arjun Mehta", role:"Software Engineer", email:"arjun.mehta@gmail.com",
+    phone:"+91 98765 43210", location:"Bengaluru, Karnataka",
+    linkedin:"linkedin.com/in/arjunmehta", github:"github.com/arjunmehta", portfolio:"arjunmehta.dev",
+    summary:"Full-stack engineer with 2+ years building scalable web applications serving 50K+ users. Experienced in React, Node.js, and cloud infrastructure. Open source contributor with 500+ GitHub stars. Seeking SDE-2 role at product-led companies.",
+    exp:[
+      { company:"Razorpay", title:"Software Engineer", duration:"Jul 2023 – Present",
+        bullets:["Reduced checkout latency by 40% by migrating legacy jQuery to React 18 with concurrent features","Built real-time payment status WebSocket service handling 10K concurrent connections with 99.9% uptime","Led migration of 3 microservices to Node.js 20, cutting cold start time from 800ms to 120ms","Mentored 2 junior engineers; conducted 30+ technical interviews improving team hiring quality by 25%"] },
+      { company:"Swiggy", title:"SDE Intern", duration:"Jan 2023 – Jun 2023",
+        bullets:["Developed order tracking feature used by 500K daily active users with sub-100ms API response time","Wrote 80+ unit tests achieving 94% code coverage on the tracking service module","Fixed 15 critical production bugs reducing error rate from 0.8% to 0.1%"] },
+    ],
+    edu:[{ school:"BITS Pilani", degree:"B.E. Computer Science", year:"2019 – 2023", gpa:"8.7/10" }],
+    skills:["React","Node.js","TypeScript","Python","MongoDB","PostgreSQL","Redis","AWS","Docker","Git","GraphQL","REST APIs"],
+    projects:[
+      { name:"HackIndia Platform", tech:"React, Node.js, MongoDB, Vercel",
+        bullets:["Aggregates 1000+ hackathons and internships from 15 platforms for Indian students","Built AI-powered recommendation engine using Groq LLM with 200ms avg response time","15K monthly active users, featured in YourStory and The Hindu TechPlus"] },
+      { name:"CodeLens — DSA Tracker", tech:"React, LocalStorage, CF API",
+        bullets:["Browser extension tracking 500+ LeetCode problems with spaced repetition algorithm","Published on Chrome Web Store with 2K+ installs and 4.6/5 rating"] },
+    ],
+    certs:[
+      { name:"AWS Certified Solutions Architect – Associate", issuer:"Amazon Web Services", year:"2023" },
+      { name:"Meta Frontend Developer Professional Certificate", issuer:"Coursera", year:"2022" },
+    ],
+  };
+
+  // ATS score calculator (rule-based, no API)
+  const calcATS = (f) => {
+    let score = 0; const issues = []; const passes = [];
+    const check = (cond, pts, pass, fail) => { if(cond){score+=pts;passes.push(pass);}else{issues.push(fail);} };
+    check(f.name?.length>2,          8,  "Full name present",              "Missing full name");
+    check(f.email?.includes("@"),    8,  "Email address present",          "Missing email");
+    check(f.phone?.length>8,         8,  "Phone number present",           "Missing phone number");
+    check(f.location?.length>2,      5,  "Location included",              "Add city/state (ATS filters by location)");
+    check(f.linkedin?.length>4,      5,  "LinkedIn profile linked",        "Add LinkedIn URL — increases callbacks by 40%");
+    check(f.github?.length>4,        3,  "GitHub profile linked",          "Add GitHub for tech roles");
+    check(f.summary?.length>80,      8,  "Strong summary (80+ chars)",     "Summary too short — aim for 2-3 impactful sentences");
+    check(f.summary?.length<600,     3,  "Summary concise (<600 chars)",   "Summary too long — keep under 4 sentences");
+    check(f.exp?.some(e=>e.company), 10, "Work experience included",       "Add at least one work/internship experience");
+    check(f.exp?.some(e=>e.bullets?.some(b=>b?.length>20)), 8, "Experience has bullet points", "Add achievement bullets to your experience");
+    check(f.exp?.some(e=>e.bullets?.some(b=>/\d/.test(b))), 8, "Bullets contain numbers/metrics", "Add quantified results (e.g. '40% faster', '10K users')");
+    check(f.edu?.some(e=>e.school),  8,  "Education section present",      "Add your education details");
+    check(f.skills?.length>=5,       8,  "5+ skills listed",               `Only ${f.skills?.length||0} skills — add more (target 8-12)`);
+    check(f.skills?.length<=20,      3,  "Skill count reasonable",         "Too many skills — keep 8-15, focus on relevance");
+    check(f.projects?.some(p=>p.name), 5, "Projects section present",     "Add 1-2 strong projects");
+    check((f.certs||[]).length>0,    3,  "Certifications listed",          "Add certifications if you have any (AWS, Google, Meta etc.)");
+    return { score: Math.min(100, score), issues, passes };
+  };
 
   const save = (f) => { setForm(f); try{localStorage.setItem("rt_form_v1",JSON.stringify(f));}catch(_){} };
   const upd  = (field, val) => save({...form, [field]:val});
+
+  const improveBullet = async (key, text) => {
+    if(!text?.trim()||text.length<10) return;
+    setBulletLoading(l=>({...l,[key]:true}));
+    try {
+      const r = await fetch(`${API_BASE}/dsa/topics/explain/tip`,{
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({problem:`Rewrite this resume bullet point to be stronger, more impactful, and ATS-friendly. Add specific metrics if missing. Keep under 25 words. Return ONLY the rewritten bullet, no explanation:
+
+"${text}"`})
+      });
+      const d = await r.json();
+      const improved = (d.tip||"").split("\n").filter(l=>l.trim())[0]?.replace(/^["']|["']$/g,"")?.trim();
+      if(improved) setBulletAI(b=>({...b,[key]:improved}));
+    } catch(e) {}
+    setBulletLoading(l=>({...l,[key]:false}));
+  };
+
+  const effectiveAccent = (tmplId) => {
+    if(accentColor) return accentColor;
+    return RT_TEMPLATES.find(t=>t.id===tmplId)?.accent || "#2563eb";
+  };
 
   // Experience helpers
   const addExp  = () => save({...form, exp:[...form.exp,{company:"",title:"",duration:"",bullets:["","",""]}]});
@@ -6480,6 +6564,78 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
         </div>
       </div>`;
 
+    // executive
+    if (template === "executive") {
+      const ac = effectiveAccent("executive");
+      return `<div style="font-family:Arial,sans-serif;max-width:760px;margin:0 auto;padding:0;font-size:13px;line-height:1.5;background:#fff">
+        <div style="background:${t.color};color:#fff;padding:32px 36px 24px">
+          <h1 style="margin:0 0 4px;font-size:30px;font-weight:900;letter-spacing:-.5px">${f.name||"Your Name"}</h1>
+          <div style="color:${ac};font-size:15px;font-weight:700;margin-bottom:10px">${f.role||"Senior Software Engineer"}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:16px;font-size:11px;color:rgba(255,255,255,.75)">
+            ${f.email?`<span>✉ ${f.email}</span>`:""}${f.phone?`<span>📞 ${f.phone}</span>`:""}${f.location?`<span>📍 ${f.location}</span>`:""}${f.linkedin?`<span>in ${f.linkedin}</span>`:""}${f.github?`<span>⚡ ${f.github}</span>`:""}
+          </div>
+        </div>
+        <div style="height:4px;background:${ac}"></div>
+        <div style="padding:28px 36px">
+          ${f.summary?`<div style="margin-bottom:22px;padding:14px 18px;background:#fef2f2;border-left:4px solid ${ac}"><p style="margin:0;font-size:13px;color:#374151;line-height:1.7">${f.summary}</p></div>`:""}
+          ${f.exp.some(e=>e.company||e.title)?`<div style="margin-bottom:22px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div style="height:2px;flex:1;background:${ac}"></div><h2 style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:${ac};white-space:nowrap">Professional Experience</h2><div style="height:2px;flex:1;background:${ac}"></div></div>${f.exp.filter(e=>e.company||e.title).map(e=>`<div style="margin-bottom:16px"><div style="display:flex;justify-content:space-between;align-items:baseline"><div><strong style="font-size:14px">${e.title||""}</strong> <span style="color:${ac};font-weight:600">@ ${e.company||""}</span></div><span style="font-size:11px;color:#6b7280;font-style:italic">${e.duration||""}</span></div>${bullets(e.bullets||[])}</div>`).join("")}</div>`:""}
+          ${f.edu.some(e=>e.school)?`<div style="margin-bottom:22px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div style="height:2px;flex:1;background:${ac}"></div><h2 style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:${ac};white-space:nowrap">Education</h2><div style="height:2px;flex:1;background:${ac}"></div></div>${f.edu.filter(e=>e.school).map(e=>`<div style="margin-bottom:8px;display:flex;justify-content:space-between"><div><strong>${e.school}</strong> — ${e.degree||""}${e.gpa?` (${e.gpa})`:""}</div><span style="font-size:11px;color:#6b7280">${e.year||""}</span></div>`).join("")}</div>`:""}
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px">
+            ${f.skills.length?`<div><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div style="height:2px;flex:1;background:${ac}"></div><h2 style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:${ac};white-space:nowrap">Skills</h2><div style="height:2px;flex:1;background:${ac}"></div></div><div style="display:flex;flex-wrap:wrap;gap:5px">${f.skills.map(s=>`<span style="background:#fef2f2;color:${ac};padding:3px 10px;border-radius:3px;font-size:11px;border:1px solid ${ac}30">${s}</span>`).join("")}</div></div>`:""}
+            ${f.projects.some(p=>p.name)?`<div><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div style="height:2px;flex:1;background:${ac}"></div><h2 style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:.15em;color:${ac};white-space:nowrap">Projects</h2><div style="height:2px;flex:1;background:${ac}"></div></div>${f.projects.filter(p=>p.name).map(p=>`<div style="margin-bottom:8px"><strong>${p.name}</strong>${p.tech?` <span style="font-size:11px;color:#666">(${p.tech})</span>`:""} ${bullets(p.bullets||[])}</div>`).join("")}</div>`:""}
+          </div>
+        </div></div>`;
+    }
+
+    // creative
+    if (template === "creative") {
+      const ac = effectiveAccent("creative");
+      return `<div style="font-family:Arial,sans-serif;max-width:760px;margin:0 auto;display:grid;grid-template-columns:8px 1fr;font-size:13px;line-height:1.5;background:#fff">
+        <div style="background:${ac}"></div>
+        <div>
+          <div style="padding:28px 32px 20px;border-bottom:1px solid #f1f5f9">
+            <h1 style="margin:0 0 2px;font-size:28px;font-weight:900;color:#0c0a09">${f.name||"Your Name"}</h1>
+            <div style="color:${ac};font-size:14px;font-weight:700;margin-bottom:8px">${f.role||"Software Engineer"}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:14px;font-size:11px;color:#64748b">
+              ${f.email?`<span>✉ ${f.email}</span>`:""}${f.phone?`<span>📞 ${f.phone}</span>`:""}${f.location?`<span>📍 ${f.location}</span>`:""}${f.linkedin?`<span>${f.linkedin}</span>`:""}${f.github?`<span>${f.github}</span>`:""}
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 260px;gap:0">
+            <div style="padding:24px 28px;border-right:1px solid #f1f5f9">
+              ${f.summary?`<div style="margin-bottom:20px"><h2 style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:${ac};margin-bottom:8px;font-weight:800">Profile</h2><p style="margin:0;color:#374151">${f.summary}</p></div>`:""}
+              ${f.exp.some(e=>e.company||e.title)?`<div style="margin-bottom:20px"><h2 style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:${ac};margin-bottom:10px;font-weight:800">Experience</h2>${f.exp.filter(e=>e.company||e.title).map(e=>`<div style="margin-bottom:14px;padding-left:12px;border-left:2px solid ${ac}20"><div style="display:flex;justify-content:space-between"><strong>${e.title||""}</strong><span style="font-size:11px;color:#94a3b8">${e.duration||""}</span></div><div style="color:${ac};font-size:12px;margin-bottom:3px;font-weight:600">${e.company||""}</div>${bullets(e.bullets||[])}</div>`).join("")}</div>`:""}
+              ${f.projects.some(p=>p.name)?`<div><h2 style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:${ac};margin-bottom:10px;font-weight:800">Projects</h2>${f.projects.filter(p=>p.name).map(p=>`<div style="margin-bottom:12px;padding-left:12px;border-left:2px solid ${ac}20"><strong>${p.name}</strong>${p.tech?` <span style="font-size:11px;color:#94a3b8">(${p.tech})</span>`:""} ${bullets(p.bullets||[])}</div>`).join("")}</div>`:""}
+            </div>
+            <div style="padding:24px 20px;background:#f8fafc">
+              ${f.skills.length?`<div style="margin-bottom:20px"><h2 style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:${ac};margin-bottom:10px;font-weight:800">Skills</h2>${f.skills.map(s=>`<div style="font-size:12px;margin-bottom:5px;padding:4px 10px;background:#fff;border-radius:4px;border-left:3px solid ${ac}">${s}</div>`).join("")}</div>`:""}
+              ${f.edu.some(e=>e.school)?`<div style="margin-bottom:20px"><h2 style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:${ac};margin-bottom:10px;font-weight:800">Education</h2>${f.edu.filter(e=>e.school).map(e=>`<div style="margin-bottom:10px"><strong style="font-size:12px">${e.school}</strong><div style="font-size:11px;color:#64748b">${e.degree||""}</div><div style="font-size:11px;color:#94a3b8">${e.year||""} ${e.gpa?`· ${e.gpa}`:""}</div></div>`).join("")}</div>`:""}
+              ${(f.certs||[]).some(c=>c.name)?`<div><h2 style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:${ac};margin-bottom:10px;font-weight:800">Certifications</h2>${f.certs.filter(c=>c.name).map(c=>`<div style="font-size:11px;margin-bottom:6px"><strong>${c.name}</strong><div style="color:#94a3b8">${c.issuer||""} ${c.year||""}</div></div>`).join("")}</div>`:""}
+            </div>
+          </div>
+        </div></div>`;
+    }
+
+    // corporate
+    if (template === "corporate") {
+      const ac = effectiveAccent("corporate");
+      return `<div style="font-family:'Times New Roman',serif;max-width:740px;margin:0 auto;padding:36px;color:#000;font-size:13px;line-height:1.6;background:#fff">
+        <div style="text-align:center;margin-bottom:16px;border-bottom:2px solid #000;padding-bottom:12px">
+          <h1 style="margin:0 0 2px;font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:2px">${f.name||"YOUR NAME"}</h1>
+          <div style="font-size:12px;color:#333;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">${f.role||"SOFTWARE ENGINEER"}</div>
+          <div style="font-size:11px;color:#555;display:flex;justify-content:center;flex-wrap:wrap;gap:12px">
+            ${f.email?`<span>${f.email}</span>`:""}${f.phone?`<span>${f.phone}</span>`:""}${f.location?`<span>${f.location}</span>`:""}
+          </div>
+          ${f.linkedin||f.github?`<div style="font-size:10px;color:#555;margin-top:4px">${f.linkedin?`${f.linkedin}  `:""} ${f.github||""}</div>`:""}
+        </div>
+        ${f.summary?`<div style="margin-bottom:14px"><h2 style="font-size:11px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #000;padding-bottom:2px;margin-bottom:6px">Objective</h2><p style="margin:0;text-align:justify">${f.summary}</p></div>`:""}
+        ${f.edu.some(e=>e.school)?`<div style="margin-bottom:14px"><h2 style="font-size:11px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #000;padding-bottom:2px;margin-bottom:6px">Education</h2>${f.edu.filter(e=>e.school).map(e=>`<div style="display:flex;justify-content:space-between;margin-bottom:4px"><div><strong>${e.school}</strong>, ${e.degree||""}${e.gpa?` — CGPA: ${e.gpa}`:""}</div><span>${e.year||""}</span></div>`).join("")}</div>`:""}
+        ${f.exp.some(e=>e.company||e.title)?`<div style="margin-bottom:14px"><h2 style="font-size:11px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #000;padding-bottom:2px;margin-bottom:6px">Experience</h2>${f.exp.filter(e=>e.company||e.title).map(e=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between"><strong>${e.title||""}, ${e.company||""}</strong><span>${e.duration||""}</span></div>${bullets(e.bullets||[])}</div>`).join("")}</div>`:""}
+        ${f.skills.length?`<div style="margin-bottom:14px"><h2 style="font-size:11px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #000;padding-bottom:2px;margin-bottom:6px">Technical Skills</h2><p style="margin:0">${f.skills.join(", ")}</p></div>`:""}
+        ${f.projects.some(p=>p.name)?`<div style="margin-bottom:14px"><h2 style="font-size:11px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #000;padding-bottom:2px;margin-bottom:6px">Projects</h2>${f.projects.filter(p=>p.name).map(p=>`<div style="margin-bottom:8px"><strong>${p.name}</strong>${p.tech?` (${p.tech})`:""} ${bullets(p.bullets||[])}</div>`).join("")}</div>`:""}
+        ${(f.certs||[]).some(c=>c.name)?`<div><h2 style="font-size:11px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #000;padding-bottom:2px;margin-bottom:6px">Certifications</h2>${f.certs.filter(c=>c.name).map(c=>`<div>${c.name}${c.issuer?`, ${c.issuer}`:""}${c.year?` (${c.year})`:""}</div>`).join("")}</div>`:""}
+      </div>`;
+    }
+
     // minimal
     return `
       <div style="font-family:'Georgia',serif;max-width:720px;margin:0 auto;padding:40px 32px;color:#1a1a1a;font-size:13px;line-height:1.6">
@@ -6533,14 +6689,27 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
             </div>
             <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
               {/* Template selector */}
-              {RT_TEMPLATES.map(t=>(
-                <button key={t.id} onClick={()=>setTmpl(t.id)}
-                  style={{fontSize:12,padding:"7px 16px",borderRadius:9,border:`2px solid ${tmpl===t.id?t.accent:"var(--border)"}`,background:tmpl===t.id?`${t.accent}15`:"var(--card)",color:tmpl===t.id?t.accent:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:tmpl===t.id?700:400,transition:"all .15s"}}>
-                  {t.name}
-                </button>
-              ))}
-              <button className="btn-p" onClick={handlePrint} style={{padding:"7px 20px",fontSize:13,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>
-                🖨️ Download PDF
+              <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+                {RT_TEMPLATES.map(t=>(
+                  <button key={t.id} onClick={()=>setTmpl(t.id)} title={t.desc}
+                    style={{fontSize:11,padding:"5px 12px",borderRadius:8,border:`2px solid ${tmpl===t.id?t.accent:"var(--border)"}`,background:tmpl===t.id?`${t.accent}15`:"var(--card)",color:tmpl===t.id?t.accent:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:tmpl===t.id?700:400,transition:"all .15s"}}>
+                    {t.name}
+                  </button>
+                ))}
+              </div>
+              <div style={{display:"flex",gap:6,alignItems:"center"}}>
+                <span style={{fontSize:11,color:"var(--text3)"}}>Accent:</span>
+                <input type="color" value={accentColor||(RT_TEMPLATES.find(t=>t.id===tmpl)?.accent||"#2563eb")}
+                  onChange={e=>setAccentColor(e.target.value)}
+                  title="Customize accent color"
+                  style={{width:28,height:28,padding:0,border:"1px solid var(--border)",borderRadius:6,cursor:"pointer",background:"none"}}/>
+                {accentColor&&<button onClick={()=>setAccentColor("")} style={{fontSize:10,padding:"2px 6px",borderRadius:4,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>reset</button>}
+              </div>
+              <button onClick={()=>save({...SAMPLE_DATA})} style={{fontSize:11,padding:"6px 13px",borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>
+                📋 Sample Data
+              </button>
+              <button className="btn-p" onClick={handlePrint} style={{padding:"6px 16px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>
+                🖨️ PDF
               </button>
             </div>
           </div>
@@ -6730,20 +6899,291 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
         )}
 
         {/* ── PREVIEW ── */}
-        {tab==="preview" && (
+        {tab==="preview" && (()=>{
+          const ats = calcATS(form);
+          return (
           <div>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16,flexWrap:"wrap",gap:10}}>
-              <div className="syne" style={{fontSize:16,fontWeight:800}}>Live Preview — {RT_TEMPLATES.find(t=>t.id===tmpl)?.name}</div>
-              <div style={{display:"flex",gap:8}}>
-                <button onClick={()=>setTab("personal")} style={{fontSize:13,padding:"8px 16px",borderRadius:9,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Edit</button>
-                <button className="btn-p" onClick={handlePrint} style={{padding:"8px 20px",fontSize:13,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Download PDF</button>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 320px",gap:20,marginBottom:16,flexWrap:"wrap"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
+                <div className="syne" style={{fontSize:16,fontWeight:800}}>Live Preview — {RT_TEMPLATES.find(t=>t.id===tmpl)?.name}</div>
+                <div style={{display:"flex",gap:8}}>
+                  <button onClick={()=>setTab("personal")} style={{fontSize:12,padding:"7px 14px",borderRadius:9,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Edit</button>
+                  <button className="btn-p" onClick={handlePrint} style={{padding:"7px 18px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Download PDF</button>
+                </div>
+              </div>
+              {/* ATS Score panel */}
+              <div style={{background:"var(--card)",border:`2px solid ${ats.score>=80?"rgba(0,255,136,.4)":ats.score>=60?"rgba(255,214,10,.4)":"rgba(255,61,138,.4)"}`,borderRadius:14,padding:16}}>
+                <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:10}}>
+                  <div className="syne" style={{fontSize:32,fontWeight:900,color:ats.score>=80?"var(--green)":ats.score>=60?"var(--yellow)":"var(--pink)"}}>{ats.score}</div>
+                  <div>
+                    <div style={{fontSize:13,fontWeight:700}}>ATS Score</div>
+                    <div style={{fontSize:11,color:"var(--text2)"}}>{ats.score>=80?"Strong resume ✅":ats.score>=60?"Needs improvement ⚠️":"Needs work ❌"}</div>
+                  </div>
+                  <div style={{marginLeft:"auto",width:48,height:48}}>
+                    <svg viewBox="0 0 36 36"><path d="M18 2a16 16 0 1 1 0 32A16 16 0 0 1 18 2" fill="none" stroke="var(--border)" strokeWidth="3"/><path d="M18 2a16 16 0 1 1 0 32A16 16 0 0 1 18 2" fill="none" stroke={ats.score>=80?"var(--green)":ats.score>=60?"var(--yellow)":"var(--pink)"} strokeWidth="3" strokeDasharray={`${ats.score} 100`} strokeLinecap="round" transform="rotate(-90 18 18)"/></svg>
+                  </div>
+                </div>
+                <div style={{maxHeight:140,overflowY:"auto"}}>
+                  {ats.issues.slice(0,4).map((issue,i)=>(
+                    <div key={i} style={{fontSize:11,color:"var(--text2)",marginBottom:4,display:"flex",gap:5}}>
+                      <span style={{color:"var(--pink)",flexShrink:0}}>✗</span>{issue}
+                    </div>
+                  ))}
+                  {ats.passes.slice(0,3).map((p,i)=>(
+                    <div key={i} style={{fontSize:11,color:"var(--text3)",marginBottom:4,display:"flex",gap:5}}>
+                      <span style={{color:"var(--green)",flexShrink:0}}>✓</span>{p}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             <div style={{border:"1px solid var(--border)",borderRadius:12,overflow:"hidden",background:"#fff",boxShadow:"0 4px 24px rgba(0,0,0,.12)"}}>
               <div dangerouslySetInnerHTML={{__html:getPreviewHTML(tmpl)}}/>
             </div>
             <div style={{marginTop:12,fontSize:12,color:"var(--text3)",textAlign:"center"}}>
-              Click "Download PDF" → your browser's print dialog opens → select "Save as PDF" → choose destination
+              Click "Download PDF" → browser print dialog → select "Save as PDF" → A4 format | See company-specific tips in
+            </div>
+          </div>
+          );
+        })()}
+      </div>
+    </div>
+  );
+};
+
+
+/* ════════════════════════════════════════════════════════════════
+   COMPANY-WISE RESUME GUIDE PAGE
+════════════════════════════════════════════════════════════════ */
+const COMPANY_GUIDES = [
+  { id:"google", name:"Google", logo:"G", color:"#4285f4", tier:"FAANG",
+    template:"modern", accentSuggestion:"#4285f4",
+    mustHave:["Strong algorithmic problem solving","LeetCode Hard problems","System design for scale (millions of users)","Open source contributions / side projects","GPA 8+ from tier-1 college (optional but helps)"],
+    avoid:["Generic objectives like 'seeking challenging role'","Listing tools without depth (e.g. 'know Python')","No quantified impact in bullets","More than 2 pages","Spelling/grammar errors"],
+    keywords:["distributed systems","scalability","algorithms","data structures","golang","C++","Kubernetes","MapReduce","Bigtable"],
+    tips:["Lead with a strong technical summary","Quantify everything: users, latency, uptime %","Show impact at scale — numbers matter","1 page strictly for < 5 years exp","Highlight competitive programming (ICPC, CF)"],
+    rounds:"OA → Technical Phone Screen → 5-6 Onsite (4 coding + 1 system design + Googleyness)",
+    focusAreas:["Arrays & Strings","Trees & Graphs","Dynamic Programming","System Design","Behavioral (Googleyness)"],
+  },
+  { id:"amazon", name:"Amazon", logo:"A", color:"#ff9900", tier:"FAANG",
+    template:"executive", accentSuggestion:"#ff9900",
+    mustHave:["Leadership Principles (LP) stories in every bullet","Star format for experience bullets","Ownership and bias for action examples","Customer-obsession examples","Data-driven decision making"],
+    avoid:["Bullets without LP connection","Vague impact statements","No mention of ownership/leadership","Team accomplishments without your individual role","Missing metrics"],
+    keywords:["ownership","scalability","microservices","AWS","customer obsession","data-driven","bias for action","deliver results"],
+    tips:["Every bullet = Action + Metric + LP connection","STAR format: Situation, Task, Action, Result","16 Leadership Principles — know them all","Show examples of doing more than your role","Quantify customer impact, not just technical"],
+    rounds:"OA → 2 Phone Screens → 5-6 Virtual Onsite (LP heavy) → Bar Raiser round",
+    focusAreas:["Leadership Principles (top priority)","LLD","System Design","Arrays, Trees, DP","Behavioral Stories"],
+  },
+  { id:"microsoft", name:"Microsoft", logo:"M", color:"#00a4ef", tier:"FAANG",
+    template:"classic", accentSuggestion:"#00a4ef",
+    mustHave:["Collaboration and growth mindset examples","Impact across teams/orgs","Azure/Cloud experience","Full stack or backend depth","Open source or GitHub activity"],
+    avoid:["Solo-only work — Microsoft values collaboration","No mention of learning from failure","Missing soft skills demonstrations","Old tech stack without modernization"],
+    keywords:["Azure","TypeScript","C#",".NET","growth mindset","collaboration","cloud","distributed systems","Agile"],
+    tips:["Show cross-team collaboration explicitly","Demonstrate learning agility (new tech adopted)","Azure experience is a strong differentiator","Microsoft values 'growth mindset' — show it","Include hackathon wins if any"],
+    rounds:"OA → Recruiter Screen → 4-5 Onsite (Coding + Design + Behavioral)",
+    focusAreas:["Arrays, Strings, Trees","LLD & System Design","Behavioral (growth mindset)","Azure architecture"],
+  },
+  { id:"meta", name:"Meta", logo:"f", color:"#1877f2", tier:"FAANG",
+    template:"modern", accentSuggestion:"#1877f2",
+    mustHave:["Move fast and ship culture fit","Concrete impact at scale","React/frontend depth (for web roles)","Distributed systems experience","Data-intensive application experience"],
+    avoid:["Slow, process-heavy examples","No mention of iteration speed","Missing scale numbers","Overly cautious approach stories"],
+    keywords:["React","GraphQL","Hack","Python","distributed systems","news feed","ads","ranking","Presto","Spark"],
+    tips:["Show bias to action and shipping quickly","Meta culture: imperfect > perfect but shipped","Emphasize scale: billions of users, petabytes","Coding rounds are very LeetCode-hard heavy","Include any published research/papers"],
+    rounds:"Recruiter Screen → 2 Technical Screens → 2 Coding + 1 System Design + 1 Behavioral onsite",
+    focusAreas:["LeetCode Hard","System Design at scale","Behavioral (move fast)","Frontend + React (for web)"],
+  },
+  { id:"flipkart", name:"Flipkart", logo:"F", color:"#2874f0", tier:"Top Indian",
+    template:"classic", accentSuggestion:"#2874f0",
+    mustHave:["E-commerce domain knowledge helpful","Scale handling (festival sale traffic)","Payments & inventory systems experience","Strong DSA fundamentals","India-specific problem solving"],
+    avoid:["Purely academic projects without real users","No mention of performance optimization","Missing backend depth"],
+    keywords:["Java","Spring Boot","Kafka","Redis","MySQL","microservices","e-commerce","supply chain","payments"],
+    tips:["Mention experience with high-traffic systems","Flipkart values Java + Spring Boot heavily","Show understanding of e-commerce flows","Include any competitive programming ratings"],
+    rounds:"OA → 2-3 Technical Rounds → Hiring Manager Round",
+    focusAreas:["DSA (LeetCode Medium/Hard)","Java + OOP","System Design","LLD"],
+  },
+  { id:"razorpay", name:"Razorpay", logo:"R", color:"#2EB5C9", tier:"Top Indian",
+    template:"creative", accentSuggestion:"#2EB5C9",
+    mustHave:["Fintech domain awareness","API design experience","High reliability systems","Payment flows understanding (optional)","Strong backend skills"],
+    avoid:["No real projects — only academic","Missing ownership examples","Vague impact metrics"],
+    keywords:["Node.js","Go","Python","payments","APIs","Redis","Kafka","reliability","latency","fintech"],
+    tips:["Show passion for developer experience","Razorpay is a product company — show product thinking","Payments reliability > new features mindset","Include any open source API work"],
+    rounds:"OA → Technical Phone Screen → 3-4 Technical + 1 Culture Fit",
+    focusAreas:["System Design","DSA","API Design","Fintech concepts (optional)"],
+  },
+  { id:"swiggy", name:"Swiggy", logo:"S", color:"#fc8019", tier:"Top Indian",
+    template:"executive", accentSuggestion:"#fc8019",
+    mustHave:["Real-time systems experience","Location/geo services (bonus)","High-throughput backend","Mobile or backend depth","Rapid iteration examples"],
+    avoid:["No mention of performance at scale","Missing product sense","Only academic depth"],
+    keywords:["Python","Go","React","real-time","geospatial","logistics","Kafka","Redis","ML recommendation"],
+    tips:["Swiggy heavily values product thinking for backend roles","Show experience with real-time data pipelines","Include any ML/recommendation work","Demonstrate rapid feature iteration"],
+    rounds:"Online Assessment → 2-3 Technical → Product/Design Round → Hiring Manager",
+    focusAreas:["System Design","DSA","Product Sense","Real-time systems"],
+  },
+  { id:"zepto", name:"Zepto", logo:"Z", color:"#8b5cf6", tier:"Top Indian",
+    template:"minimal", accentSuggestion:"#8b5cf6",
+    mustHave:["Startup mentality — wear many hats","Full-stack or deep backend skills","Move-fast culture fit","Proven ownership of features end-to-end","Real impact examples"],
+    avoid:["Enterprise/slow pace mindset","No startup/fast iteration experience","Missing ownership stories"],
+    keywords:["React","Node.js","Go","quick commerce","logistics","real-time","Redis","MongoDB","microservices"],
+    tips:["Zepto is early stage — show you can own features","Demonstrate speed of shipping","Show you've built things from scratch","Competitive comp but high ownership expected"],
+    rounds:"Technical Screen → 2-3 Technical + Culture Interview",
+    focusAreas:["Full stack","System Design basics","Product thinking","Culture fit"],
+  },
+  { id:"infosys", name:"Infosys / TCS / Wipro", logo:"I", color:"#007cc3", tier:"Mass Recruiter",
+    template:"corporate", accentSuggestion:"#007cc3",
+    mustHave:["Clear CGPA (6.5+ typically required)","Any internship or project experience","Basic Java/Python fundamentals","Communication skills demonstration","Certifications (AWS, Azure, Google)"],
+    avoid:["Gaps without explanation","Too many buzzwords with no substance","Poorly formatted resume","Incorrect personal details"],
+    keywords:["Java","Python","SQL","Agile","communication","teamwork","leadership","certifications","cloud"],
+    tips:["Mass recruiters care about CGPA cutoffs first","Get AWS/Azure certified before applying","Prepare for aptitude, verbal, coding tests","Resume is less important than clearing the OA","1 page is mandatory"],
+    rounds:"Online Aptitude Test → Technical Interview → HR Interview",
+    focusAreas:["Aptitude (Quant + Verbal)","Basic DSA","OOP concepts","Communication skills"],
+  },
+  { id:"startups", name:"Early Stage Startups", logo:"🚀", color:"#10b981", tier:"Startup",
+    template:"creative", accentSuggestion:"#10b981",
+    mustHave:["Side projects with real users","GitHub activity and commit history","Ability to work independently","Full-stack or T-shaped skills","Fast learning examples"],
+    avoid:["No side projects / only course work","Corporate-sounding language","Missing GitHub link","Overly formal tone"],
+    keywords:["React","Node.js","founder mode","shipped","side project","product","users","growth","full-stack","self-starter"],
+    tips:["Startups hire for potential, not pedigree","GitHub matters more than CGPA here","Show projects with actual users/deployments","Creative template fits startup culture better","Cover letter often more important than resume"],
+    rounds:"Usually just 1-2 technical rounds + founder/team fit",
+    focusAreas:["Projects portfolio","Technical breadth","Product thinking","Culture fit with founders"],
+  },
+];
+
+const CompanyResumeGuidePage = ({ setPage }) => {
+  const [selCo, setSelCo] = React.useState(null);
+  const [tier,  setTier]  = React.useState("All");
+  const tiers = ["All","FAANG","Top Indian","Mass Recruiter","Startup"];
+  const filtered = tier==="All" ? COMPANY_GUIDES : COMPANY_GUIDES.filter(c=>c.tier===tier);
+
+  return (
+    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"24px"}}>
+        <div style={{maxWidth:1200,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+            <button onClick={()=>setPage("resumebuilder")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Builder</button>
+            <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>🧰 Tools</button>
+          </div>
+          <h1 className="syne" style={{fontSize:26,fontWeight:800,marginBottom:4}}>🏢 Company-wise Resume Guide</h1>
+          <p style={{color:"var(--text2)",fontSize:13,margin:"0 0 14px"}}>What each company looks for — keywords, template recommendations, must-haves and red flags.</p>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+            {tiers.map(t=>(
+              <button key={t} onClick={()=>setTier(t)}
+                style={{fontSize:12,padding:"5px 14px",borderRadius:20,border:`1px solid ${tier===t?"var(--cyan)":"var(--border)"}`,background:tier===t?"rgba(0,212,255,.12)":"var(--card)",color:tier===t?"var(--cyan)":"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:tier===t?700:400}}>
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"24px",display:"grid",gridTemplateColumns:"280px 1fr",gap:20}}>
+        {/* Company list */}
+        <div style={{position:"sticky",top:80,height:"fit-content"}}>
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            {filtered.map(co=>(
+              <button key={co.id} onClick={()=>setSelCo(co)}
+                style={{display:"flex",alignItems:"center",gap:12,padding:"12px 16px",borderRadius:12,border:`1px solid ${selCo?.id===co.id?co.color:"var(--border)"}`,background:selCo?.id===co.id?`${co.color}10`:"var(--card)",cursor:"pointer",textAlign:"left",transition:"all .15s",fontFamily:"'DM Sans',sans-serif"}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor=co.color;}}
+                onMouseLeave={e=>{if(selCo?.id!==co.id)e.currentTarget.style.borderColor="var(--border)";}}>
+                <div style={{width:36,height:36,borderRadius:9,background:`${co.color}15`,border:`1px solid ${co.color}30`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,fontWeight:900,color:co.color,flexShrink:0}}>
+                  {typeof co.logo==="string"&&co.logo.length===1?co.logo:co.logo}
+                </div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:13,fontWeight:700,color:"var(--text)"}}>{co.name}</div>
+                  <div style={{fontSize:10,color:"var(--text3)",marginTop:1}}>{co.tier}</div>
+                </div>
+                <div style={{fontSize:9,padding:"2px 7px",borderRadius:4,background:`${co.color}10`,color:co.color,fontWeight:700,flexShrink:0}}>{co.template}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Guide detail */}
+        {selCo ? (
+          <div>
+            <div style={{background:"var(--card)",border:`2px solid ${selCo.color}30`,borderRadius:16,padding:24,marginBottom:16}}>
+              <div style={{display:"flex",gap:16,alignItems:"center",marginBottom:16,flexWrap:"wrap"}}>
+                <div style={{width:56,height:56,borderRadius:14,background:`${selCo.color}15`,border:`2px solid ${selCo.color}30`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,fontWeight:900,color:selCo.color}}>
+                  {selCo.logo}
+                </div>
+                <div>
+                  <div className="syne" style={{fontSize:20,fontWeight:900,marginBottom:2}}>{selCo.name}</div>
+                  <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                    <span style={{fontSize:11,padding:"2px 9px",borderRadius:12,background:`${selCo.color}15`,color:selCo.color,fontWeight:700}}>{selCo.tier}</span>
+                    <span style={{fontSize:11,padding:"2px 9px",borderRadius:12,background:"rgba(124,77,255,.1)",color:"var(--purple)",fontWeight:700}}>Use: {selCo.template} template</span>
+                  </div>
+                </div>
+                <button className="btn-p" onClick={()=>setPage("resumebuilder")} style={{marginLeft:"auto",padding:"8px 18px",fontSize:12,background:`linear-gradient(135deg,${selCo.color},${selCo.color}cc)`}}>
+                  Build Resume →
+                </button>
+              </div>
+              <div style={{background:"var(--bg)",borderRadius:10,padding:"10px 14px"}}>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:4}}>Interview Process</div>
+                <div style={{fontSize:12,color:"var(--text2)"}}>{selCo.rounds}</div>
+              </div>
+            </div>
+
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:14}}>
+              {/* Must have */}
+              <div style={{background:"var(--card)",border:"1px solid rgba(0,255,136,.2)",borderRadius:14,padding:18}}>
+                <div className="syne" style={{fontSize:13,fontWeight:800,color:"var(--green)",marginBottom:12}}>✅ Must Have</div>
+                {selCo.mustHave.map((item,i)=>(
+                  <div key={i} style={{display:"flex",gap:8,marginBottom:8}}>
+                    <span style={{color:"var(--green)",flexShrink:0,marginTop:1}}>✓</span>
+                    <span style={{fontSize:12,color:"var(--text2)",lineHeight:1.5}}>{item}</span>
+                  </div>
+                ))}
+              </div>
+              {/* Avoid */}
+              <div style={{background:"var(--card)",border:"1px solid rgba(255,61,138,.2)",borderRadius:14,padding:18}}>
+                <div className="syne" style={{fontSize:13,fontWeight:800,color:"var(--pink)",marginBottom:12}}>❌ Red Flags</div>
+                {selCo.avoid.map((item,i)=>(
+                  <div key={i} style={{display:"flex",gap:8,marginBottom:8}}>
+                    <span style={{color:"var(--pink)",flexShrink:0,marginTop:1}}>✗</span>
+                    <span style={{fontSize:12,color:"var(--text2)",lineHeight:1.5}}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:14}}>
+              {/* Keywords */}
+              <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:18}}>
+                <div className="syne" style={{fontSize:13,fontWeight:800,marginBottom:12}}>🔑 ATS Keywords</div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                  {selCo.keywords.map(k=>(
+                    <span key={k} style={{fontSize:11,padding:"3px 10px",borderRadius:12,background:`${selCo.color}10`,color:selCo.color,border:`1px solid ${selCo.color}25`,fontWeight:600}}>{k}</span>
+                  ))}
+                </div>
+              </div>
+              {/* Focus areas */}
+              <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:18}}>
+                <div className="syne" style={{fontSize:13,fontWeight:800,marginBottom:12}}>🎯 Focus Areas</div>
+                {selCo.focusAreas.map((area,i)=>(
+                  <div key={i} style={{display:"flex",gap:8,alignItems:"center",marginBottom:8}}>
+                    <div style={{width:20,height:20,borderRadius:"50%",background:`${selCo.color}15`,color:selCo.color,fontSize:10,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{i+1}</div>
+                    <span style={{fontSize:12,color:"var(--text2)"}}>{area}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Tips */}
+            <div style={{background:"var(--card)",border:`1px solid ${selCo.color}20`,borderRadius:14,padding:18}}>
+              <div className="syne" style={{fontSize:13,fontWeight:800,marginBottom:12}}>💡 Resume Tips for {selCo.name}</div>
+              {selCo.tips.map((tip,i)=>(
+                <div key={i} style={{display:"flex",gap:10,marginBottom:10}}>
+                  <div style={{width:22,height:22,borderRadius:6,background:`${selCo.color}15`,color:selCo.color,fontSize:11,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{i+1}</div>
+                  <span style={{fontSize:13,color:"var(--text)",lineHeight:1.6}}>{tip}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"60px 20px",border:"1px dashed var(--border)",borderRadius:16,textAlign:"center"}}>
+            <div style={{fontSize:56,marginBottom:16}}>🏢</div>
+            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:8}}>Select a company</div>
+            <div style={{fontSize:13,color:"var(--text2)",maxWidth:400}}>
+              Get tailored resume advice — what keywords to include, which template to use, what interviewers look for, and common red flags to avoid.
             </div>
           </div>
         )}
@@ -6776,6 +7216,18 @@ const STUDENT_TOOLS = [
     stats: [{ label: "Platforms", value: "7" }, { label: "View", value: "Split" }, { label: "Updates", value: "30min" }],
     color: "var(--yellow)",
     gradient: "linear-gradient(135deg,rgba(255,214,10,.15),rgba(255,214,10,.03))",
+  },
+  {
+    id: "companyguide",
+    icon: "🏢",
+    title: "Company-wise Resume Guide",
+    desc: "Tailored resume tips for Google, Amazon, Flipkart, Razorpay & more — keywords, red flags, templates, interview process.",
+    badge: "10 Companies · ATS Keywords · Tips",
+    badgeColor: "var(--cyan)",
+    tags: ["Google","Amazon","Flipkart","Razorpay","FAANG","Keywords","Templates"],
+    stats: [{ label: "Companies", value: "10" }, { label: "Tiers", value: "4" }, { label: "Guides", value: "Full" }],
+    color: "var(--cyan)",
+    gradient: "linear-gradient(135deg,rgba(0,212,255,.15),rgba(0,212,255,.03))",
   },
   {
     id: "resumebuilder",
@@ -7998,6 +8450,7 @@ export default function App() {
           {page==="cp"     && <CPContestPage setPage={setPage}/>}
           {page==="dsa"    && <DSAPage setPage={setPage}/>}
           {page==="resumebuilder" && <ResumeTemplateBuilderPage setPage={setPage}/>}
+          {page==="companyguide" && <CompanyResumeGuidePage setPage={setPage}/>}
           {page==="resume" && <ResumeAnalyzerPage setPage={setPage}/>}
         </main>
         <Footer setPage={setPage}/>
