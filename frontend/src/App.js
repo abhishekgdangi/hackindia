@@ -149,14 +149,7 @@ function useInternships({ds="", location="All", isRemote="All"}={}) {
     apiFetch("/internships", params)
       .then(j => {
         if (fetchId.current !== id) return;   // stale response — discard
-        let iData = j.data || [];
-        // Filter: India-only internships
-        const INDIA_I = /india|bangalore|bengaluru|mumbai|delhi|hyderabad|pune|chennai|kolkata|noida|gurugram|gurgaon|kochi|ahmedabad|jaipur|remote|wfh|work from home/i;
-        iData = iData.filter(i => {
-          const loc = (i.location||"").toLowerCase();
-          if (!loc) return true; // no location = include
-          return INDIA_I.test(loc);
-        });
+        const iData = j.data || [];
         setData(iData);
         setTotal(iData.length);
       })
