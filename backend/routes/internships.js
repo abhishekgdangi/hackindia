@@ -26,9 +26,14 @@ router.get("/", async (req, res) => {
       $and: [
         { $or: [{ status: { $ne: "CLOSED" } }, { status: null }, { status: { $exists: false } }] },
         { $or: [{ isActive: { $ne: false } }, { isActive: null }, { isActive: { $exists: false } }] },
+        // Allow null/missing deadlines (Internshala doesn't always store them)
+        // Only block explicitly PAST deadlines
+        { $or: [
+          { deadline: { $gte: new Date() } },
+          { deadline: null },
+          { deadline: { $exists: false } },
+        ]},
       ],
-      // Only show internships with future deadline — no expired, no null deadline
-      deadline: { $gte: new Date() },
     };
 
     if (search) filter.$text = { $search: search };
