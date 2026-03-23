@@ -20,7 +20,7 @@ function shuffle(arr) {
 /* ── GET /api/internships ──────────────────────────────────────── */
 router.get("/", async (req, res) => {
   try {
-    const { search, skills, location, isRemote, page = 1, limit = 1000 } = req.query;
+    const { search, skills, location, isRemote, page = 1, limit = 10000 } = req.query;
 
     const filter = {
       // Accept any internship that isn't explicitly closed/inactive
@@ -44,7 +44,7 @@ router.get("/", async (req, res) => {
       .find(filter)
       .sort({ deadline: 1, stipendNumeric: -1 })
       .skip(skip)
-      .limit(Math.min(parseInt(limit), 1000))
+      .limit(Math.min(parseInt(limit), 10000))
       .lean();
 
     shuffle(data);

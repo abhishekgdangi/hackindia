@@ -140,7 +140,7 @@ function useInternships({ds="", location="All", isRemote="All"}={}) {
     const id = ++fetchId.current;
     setLoading(true);
 
-    const params = { limit:1000 };
+    const params = { limit:10000 };  // no cap — show all
     if(ds) params.search = ds;
     if(isRemote==="Remote") params.isRemote = "true";
     if(location!=="All" && location!=="Remote/WFH") params.location = location;
@@ -854,12 +854,16 @@ const HackathonsPage = () => {
   const [hackCalMonth,setHackCalMonth]=useState(new Date()); const [hackSelDate,setHackSelDate]=useState(null);
   useEffect(()=>{const t=setTimeout(()=>setDs(search),350);return()=>clearTimeout(t);},[search]);
   const {data:rawHacks,total,loading,offline} = useHackathons({domain,mode,city,teamSize:team,sort,search:ds},page);
-  // Filter: keep online hackathons from anywhere, but offline only if India location
+  // Filter: only live/upcoming hackathons + India offline only
   const INDIA_RE = /india|bangalore|bengaluru|mumbai|delhi|hyderabad|pune|chennai|kolkata|noida|gurugram|kochi|ahmedabad|jaipur/i;
   const data = rawHacks.filter(h => {
+    // Remove expired — deadline passed more than 1 day ago
+    if (h.registrationDeadline) {
+      const days = Math.ceil((new Date(h.registrationDeadline) - new Date()) / 86400000);
+      if (days < -1) return false;
+    }
     const isOnline = (h.mode||"").toLowerCase()==="online" || (h.city||"").toLowerCase()==="online";
     if (isOnline) return true;
-    // Offline: only show if India location or no location info
     const loc = (h.city||h.location||h.name||"").toLowerCase();
     return !loc || INDIA_RE.test(loc) || loc.includes("india");
   });
@@ -1070,9 +1074,8 @@ const InternshipsPage = () => {
   const [isRemote,setIsRemote]=useState("All");
   const [skill,setSkill]=useState("All");
   const [iPage,setIPage]=useState(1);
-  // eslint-disable-next-line no-unused-vars
-  const [intView,setIntView]=useState("list"); // eslint-disable-next-line no-unused-vars
-  const [intCalMonth,setIntCalMonth]=useState(new Date()); // eslint-disable-next-line no-unused-vars
+  const [intView,setIntView]=useState("list");
+  const [intCalMonth,setIntCalMonth]=useState(new Date());
   const [intSelDate,setIntSelDate]=useState(null);
   useEffect(()=>{const t=setTimeout(()=>setDs(search),350);return()=>clearTimeout(t);},[search]);
   // Reset to page 1 whenever any filter changes
@@ -1101,9 +1104,15 @@ const InternshipsPage = () => {
               <div style={{fontSize:12,color:"var(--text2)"}}>open internships</div>
             </div>
           </div>
-          <div style={{position:"relative",maxWidth:540}}>
-            <span style={{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",color:"var(--text3)"}}>🔍</span>
-            <input className="input" placeholder="Search companies, roles, skills…" value={search} onChange={e=>setSearch(e.target.value)} style={{padding:"12px 16px 12px 42px",fontSize:14}}/>
+          <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
+            <div style={{position:"relative",flex:1,minWidth:240}}>
+              <span style={{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",color:"var(--text3)"}}>🔍</span>
+              <input className="input" placeholder="Search companies, roles, skills…" value={search} onChange={e=>setSearch(e.target.value)} style={{padding:"12px 16px 12px 42px",fontSize:14}}/>
+            </div>
+            <button onClick={()=>setIntView(v=>v==="list"?"calendar":"list")}
+              style={{padding:"10px 18px",borderRadius:10,border:`1px solid ${intView==="calendar"?"var(--purple)":"var(--border)"}`,background:intView==="calendar"?"rgba(124,77,255,.15)":"var(--card)",color:intView==="calendar"?"var(--purple)":"var(--text2)",cursor:"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif",fontWeight:intView==="calendar"?700:400,whiteSpace:"nowrap"}}>
+              {intView==="calendar"?"☰ List View":"📅 Calendar View"}
+            </button>
           </div>
         </div>
       </div>
@@ -1111,8 +1120,76 @@ const InternshipsPage = () => {
       {/* Body — sidebar + cards */}
       <div style={{maxWidth:1200,margin:"0 auto",padding:"24px",display:"flex",gap:20,alignItems:"flex-start"}}>
 
+        {/* Internship Calendar View */}
+        {intView==="calendar" && (() => {
+          const calYear=intCalMonth.getFullYear(); const calMon=intCalMonth.getMonth();
+          const firstDay=new Date(calYear,calMon,1).getDay();
+          const daysInMonth=new Date(calYear,calMon+1,0).getDate();
+          const calDays=Array.from({length:firstDay+daysInMonth},(_,i)=>i<firstDay?null:i-firstDay+1);
+          const todayStr=new Date().toLocaleDateString("en-CA");
+          const grouped={};
+          filtered.forEach(i=>{
+            if(!i.deadline) return;
+            try{const key=new Date(i.deadline).toLocaleDateString("en-CA"); if(key==="Invalid Date") return; if(!grouped[key]) grouped[key]=[]; grouped[key].push(i);}catch(e){}
+          });
+          return (
+            <div style={{width:"100%"}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 360px",gap:20}}>
+                <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:20}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+                    <button onClick={()=>setIntCalMonth(new Date(calYear,calMon-1,1))} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"6px 14px",cursor:"pointer",color:"var(--text2)"}}>‹</button>
+                    <div className="syne" style={{fontSize:18,fontWeight:800}}>{intCalMonth.toLocaleDateString("en-IN",{month:"long",year:"numeric"})}</div>
+                    <button onClick={()=>setIntCalMonth(new Date(calYear,calMon+1,1))} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"6px 14px",cursor:"pointer",color:"var(--text2)"}}>›</button>
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:3,marginBottom:8}}>
+                    {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=><div key={d} style={{textAlign:"center",fontSize:11,fontWeight:700,color:"var(--text3)",padding:"4px 0"}}>{d}</div>)}
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:4}}>
+                    {calDays.map((day,ci)=>{
+                      if(!day) return <div key={`e${ci}`} style={{minHeight:72}}/>;
+                      const key=`${calYear}-${String(calMon+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+                      const items=grouped[key]||[]; const isToday=key===todayStr; const isSel=intSelDate===key;
+                      const isPast=new Date(key)<new Date(todayStr);
+                      return (
+                        <div key={day} onClick={()=>items.length&&setIntSelDate(isSel?null:key)}
+                          style={{minHeight:72,border:`1px solid ${isSel?"var(--cyan)":isToday?"var(--green)":"var(--border)"}`,borderRadius:9,padding:"5px",cursor:items.length?"pointer":"default",background:isSel?"rgba(0,212,255,.08)":isToday?"rgba(0,255,136,.05)":isPast?"var(--bg3)":"var(--bg)",opacity:isPast?0.6:1,transition:"all .15s"}}
+                          onMouseEnter={e=>{if(items.length)e.currentTarget.style.borderColor="var(--cyan)";}}
+                          onMouseLeave={e=>{e.currentTarget.style.borderColor=isSel?"var(--cyan)":isToday?"var(--green)":"var(--border)";}}>
+                          <div style={{fontSize:12,fontWeight:isToday?800:400,color:isToday?"var(--green)":isPast?"var(--text3)":"var(--text)",textAlign:"right",marginBottom:3}}>{day}</div>
+                          {items.slice(0,2).map((it,ii)=>(
+                            <div key={ii} style={{fontSize:9,padding:"1px 4px",borderRadius:3,background:"rgba(0,255,136,.12)",color:"var(--green)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:1}}>💼 {it.company.slice(0,12)}</div>
+                          ))}
+                          {items.length>2&&<div style={{fontSize:9,color:"var(--text3)"}}>+{items.length-2} more</div>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:20,overflowY:"auto",maxHeight:600}}>
+                  <div className="syne" style={{fontSize:15,fontWeight:800,marginBottom:14,color:"var(--text2)"}}>
+                    {intSelDate?new Date(intSelDate+"T00:00:00").toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"}):"Click a date to see internships"}
+                  </div>
+                  {intSelDate && (grouped[intSelDate]||[]).map((it,ii)=>(
+                    <div key={ii} style={{padding:"12px 14px",marginBottom:8,background:"var(--bg)",border:"1px solid var(--border)",borderRadius:12}}>
+                      <div className="syne" style={{fontSize:13,fontWeight:700,marginBottom:3}}>{it.company}</div>
+                      <div style={{fontSize:12,color:"var(--text2)",marginBottom:4}}>{it.role}</div>
+                      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:6}}>
+                        <span style={{fontSize:10,color:"var(--green)"}}>{it.stipend||"—"}</span>
+                        <span style={{fontSize:10,color:"var(--text3)"}}>📍 {it.location||"—"}</span>
+                        <span style={{fontSize:10,color:"var(--text3)"}}>⏰ Deadline: {fmtDate(it.deadline)}</span>
+                      </div>
+                      {it.applyLink&&<a href={it.applyLink} target="_blank" rel="noopener noreferrer" style={{fontSize:11,color:"var(--cyan)",textDecoration:"none",fontWeight:600}}>Apply Now →</a>}
+                    </div>
+                  ))}
+                  {intSelDate&&!grouped[intSelDate]?.length&&<div style={{color:"var(--text3)",fontSize:13}}>No internship deadlines on this date.</div>}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* LEFT SIDEBAR FILTERS */}
-        <div style={{width:220,flexShrink:0,background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:18,position:"sticky",top:80}}>
+        <div style={{width:220,flexShrink:0,background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:18,position:"sticky",top:80,display:intView==="calendar"?"none":"block"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
             <span style={{fontWeight:700,fontSize:14}}>⚙️ Filters</span>
             {hasFilter && <button onClick={()=>{setLocation("All");setSkill("All");setIsRemote("All");setSearch("");}} style={{fontSize:11,color:"var(--pink)",background:"transparent",border:"none",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:600}}>✕ Reset</button>}
@@ -1149,7 +1226,7 @@ const InternshipsPage = () => {
         </div>
 
         {/* RIGHT CARDS */}
-        <div style={{flex:1,minWidth:0}}>
+        {intView!=="calendar" && <div style={{flex:1,minWidth:0}}>
           {loading ? (
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))",gap:15}}>
               {[1,2,3,4,5,6].map(i=><div key={i} className="skel" style={{height:220,borderRadius:16}}/>)}
@@ -1218,7 +1295,7 @@ const InternshipsPage = () => {
             )}
             </>
           )}
-        </div>
+        </div>}
       </div>
     </div>
   );
@@ -4999,6 +5076,7 @@ const CPContestPage = ({ setPage }) => {
   });
 
   const running  = filtered.filter(c => c.status === "RUNNING");
+  // eslint-disable-next-line no-unused-vars
   const upcoming = filtered.filter(c => c.status !== "RUNNING");
 
   // Group by date for left panel
