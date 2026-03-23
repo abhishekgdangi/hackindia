@@ -4884,7 +4884,7 @@ const ResumeAnalyzerPage = ({ setPage }) => {
 
   const runInjector = () => {
     if(!jdKeywords.trim()||!result) return;
-    const jdWords = jdKeywords.toLowerCase().match(/[a-z][a-z0-9+#.]{2,}/g)||[];
+    const jdWords = jdKeywords.toLowerCase().match(/\b[a-z][a-z0-9+#.]{2,}\b/g)||[];
     const resumeText = [
       ...(result.skills_analysis?.found||[]),
       ...(result.section_rewrite?.experience||[]),
