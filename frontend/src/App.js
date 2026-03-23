@@ -6386,9 +6386,10 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
   const [tab,      setTab]      = React.useState("personal");
   const [skillInput, setSkillInput] = React.useState("");
   const [accentColor, setAccentColor] = React.useState("");  // custom override
+  // eslint-disable-next-line no-unused-vars
   const [bulletAI, setBulletAI] = React.useState({});       // AI improved bullets
+  // eslint-disable-next-line no-unused-vars
   const [bulletLoading, setBulletLoading] = React.useState({});
-  const [atsScore, setAtsScore] = React.useState(null);     // computed in preview
 
   // Sample data for demo fill
   const SAMPLE_DATA = {
@@ -6442,6 +6443,7 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
   const save = (f) => { setForm(f); try{localStorage.setItem("rt_form_v1",JSON.stringify(f));}catch(_){} };
   const upd  = (field, val) => save({...form, [field]:val});
 
+  // eslint-disable-next-line no-unused-vars
   const improveBullet = async (key, text) => {
     if(!text?.trim()||text.length<10) return;
     setBulletLoading(l=>({...l,[key]:true}));
@@ -6566,6 +6568,7 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
 
     // executive
     if (template === "executive") {
+      // eslint-disable-next-line no-unused-vars
       const ac = effectiveAccent("executive");
       return `<div style="font-family:Arial,sans-serif;max-width:760px;margin:0 auto;padding:0;font-size:13px;line-height:1.5;background:#fff">
         <div style="background:${t.color};color:#fff;padding:32px 36px 24px">
@@ -6617,6 +6620,7 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
 
     // corporate
     if (template === "corporate") {
+      // eslint-disable-next-line no-unused-vars
       const ac = effectiveAccent("corporate");
       return `<div style="font-family:'Times New Roman',serif;max-width:740px;margin:0 auto;padding:36px;color:#000;font-size:13px;line-height:1.6;background:#fff">
         <div style="text-align:center;margin-bottom:16px;border-bottom:2px solid #000;padding-bottom:12px">
