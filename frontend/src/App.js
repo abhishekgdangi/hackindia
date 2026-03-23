@@ -4967,8 +4967,7 @@ const ResumeAnalyzerPage = ({ setPage }) => {
         body:JSON.stringify({problem:`Generate 5 LinkedIn headline variations for a ${type} software engineer with skills: ${skills}. Target roles: ${roles}. Return only 5 numbered headlines, each under 220 characters. No extra explanation.`})
       });
       const d=await r.json();
-      const lines=(d.tip||"").split("
-").filter(l=>l.trim()&&/^\d/.test(l.trim())).slice(0,5);
+      const lines=(d.tip||"").split("\n").filter(l=>l.trim()&&/^\d/.test(l.trim())).slice(0,5);
       setLiHeadlines(lines.length?lines:["Could not generate — try again."]);
     } catch { setLiHeadlines(["Network error — try again."]); }
     setLiLoading(false);
