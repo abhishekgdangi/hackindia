@@ -6376,7 +6376,6 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
   });
   const [tab,      setTab]      = React.useState("personal"); // personal | experience | education | skills | projects | preview
   const [skillInput, setSkillInput] = React.useState("");
-  const [preset,   setPreset]   = React.useState("");
 
   const save = (f) => { setForm(f); try{localStorage.setItem("rt_form_v1",JSON.stringify(f));}catch(_){} };
   const upd  = (field, val) => save({...form, [field]:val});
