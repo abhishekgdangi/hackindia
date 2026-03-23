@@ -8830,6 +8830,16 @@ const APT_COMPANIES = [
   { id:"amazon",     name:"Amazon SDE",           color:"#ff9900", logo:"AMZ", tier:"FAANG",        rounds:["OA Round 1","OA Round 2","Work Sim","LP Assessment"],cutoff:"Top 10%",          oa:90 },
   { id:"microsoft",  name:"Microsoft",            color:"#00a4ef", logo:"MSF", tier:"FAANG",        rounds:["OA","Coding","Design","Behavioral"],                 cutoff:"Top 10%",          oa:90 },
   { id:"product",    name:"Product Startups",     color:"#10b981", logo:"STR", tier:"Startup",      rounds:["DSA OA","Take-home","System Design"],               cutoff:"Variable",         oa:75 },
+  { id:"ibm",        name:"IBM India",             color:"#1f70c1", logo:"IBM", tier:"Mid-tier",      rounds:["Quant","Logical","Verbal","Technical","Coding"],     cutoff:"60% aggregate",    oa:70 },
+  { id:"sap",        name:"SAP Labs India",        color:"#0070f3", logo:"SAP", tier:"Mid-tier",      rounds:["Quant","Logical","Technical","Coding"],              cutoff:"Top 30%",          oa:80 },
+  { id:"adobe",      name:"Adobe India",           color:"#ff0000", logo:"ADB", tier:"Product",       rounds:["OA","DSA Rounds","System Design","HR"],             cutoff:"Top 15%",          oa:85 },
+  { id:"deloitte",   name:"Deloitte USI",          color:"#86bc25", logo:"DEL", tier:"Consulting",    rounds:["Quant","Verbal","Logical","Case Study","HR"],        cutoff:"Sectional 60%",    oa:70 },
+  { id:"persistent", name:"Persistent Systems",    color:"#e8452c", logo:"PST", tier:"Mid-tier",      rounds:["Quant","Verbal","Logical","Technical","Coding"],     cutoff:"Overall 60%",      oa:65 },
+  { id:"zensar",     name:"Zensar Technologies",   color:"#b51a29", logo:"ZEN", tier:"Mid-tier",      rounds:["Aptitude","Technical","Coding","HR"],               cutoff:"60% aggregate",    oa:60 },
+  { id:"paypal",     name:"PayPal India",          color:"#003087", logo:"PPL", tier:"Product",       rounds:["OA","Technical Screen","System Design","HR"],       cutoff:"Top 20%",          oa:85 },
+  { id:"qualcomm",   name:"Qualcomm India",        color:"#3253dc", logo:"QCM", tier:"Core",          rounds:["Technical","Embedded/DSP","DSA","System Design"],   cutoff:"CGPA 7.5+ B.Tech EE/ECE/CS", oa:90 },
+  { id:"vmware",     name:"VMware/Broadcom India", color:"#607078", logo:"VMW", tier:"Product",       rounds:["OA","Technical","Design","Culture Fit"],            cutoff:"Top 15%",          oa:82 },
+  { id:"intuit",     name:"Intuit India",          color:"#236cff", logo:"INT", tier:"Product",       rounds:["OA","DSA","Product Sense","Design","Behavioral"],   cutoff:"Top 20%",          oa:85 },
   { id:"jobs",       name:"After Placement (Promotions)",color:"#f59e0b",logo:"PRO",tier:"Career Growth",rounds:["L1→L2 Assessment","Promotion Exam","Senior Role Test"],"cutoff":"Internal",oa:70 },
 ];
 
@@ -8895,6 +8905,26 @@ const APT_TOPICS = {
       { id:"estimation",      name:"Fermi Estimation / Guesstimate",levels:[1,2,3],icon:"🔭",companies:["microsoft","product","jobs"] },
     ]
   },
+  case_study_1: [
+    { q:"A consulting firm advises a bank. First step to improve digital adoption:", opts:["Identify current digital usage by customer segment","Launch new mobile app immediately","Train all employees first","Reduce branch staff by 30%"], ans:0, sol:"Always start with data — understand current state (who uses digital, who doesn't, why) before recommending solutions. Classic Deloitte/McKinsey case framework." },
+    { q:"Company revenue grew 20% but profit fell 5%. Most likely reason:", opts:["Costs grew faster than revenue","Revenue recognition error","Tax increase only","Market share loss"], ans:0, sol:"Revenue up 20%, profit down 5% = expenses grew faster than revenue. Cost structure issue — check COGS, opex, or one-time charges." },
+    { q:"Revenue=₹100Cr, Fixed costs=₹40Cr, Variable costs=45% of revenue. Operating profit:", opts:["₹15Cr","₹20Cr","₹25Cr","₹10Cr"], ans:0, sol:"Variable costs = 45%×100 = ₹45Cr. Total costs = 40+45 = ₹85Cr. Op profit = 100-85 = ₹15Cr" },
+    { q:"Break-even units formula:", opts:["Fixed Costs / (Price - Variable Cost per unit)","Fixed Costs / Price","Revenue / Variable Costs","Total Costs / Units"], ans:0, sol:"Break-even = Fixed Costs ÷ Contribution Margin per unit. Contribution = Selling Price − Variable Cost per unit." },
+    { q:"Estimate TAM for food delivery in India (best answer):", opts:["₹50,000-60,000 Cr","₹500-1,000 Cr","₹5,00,000 Cr","₹10,000 Cr"], ans:0, sol:"50M users × ₹250/order × 2 orders/month × 12 = ₹30,000Cr. With growth factor ≈ ₹50,000-60,000Cr TAM." },
+  ],
+  embedded_core_1: [
+    { q:"In embedded C, 'volatile' keyword means:", opts:["Variable can change unexpectedly, prevent compiler optimization","Variable is constant","Variable stored in ROM","Speeds up access"], ans:0, sol:"volatile = compiler cannot cache this variable. Every read goes to memory. Used for hardware registers, ISR-modified variables." },
+    { q:"int a=5; printf('%d', a<<2); Output:", opts:["20","10","40","2"], ans:0, sol:"Left shift by 2 = multiply by 4. 5×4=20." },
+    { q:"Interrupt latency is:", opts:["Time from interrupt signal to first instruction of ISR","Time to complete the ISR","Clock frequency of CPU","Stack pointer depth"], ans:0, sol:"Interrupt latency = delay between interrupt assertion and ISR execution start. Critical in real-time systems." },
+    { q:"Which memory loses data when power off:", opts:["SRAM/DRAM (RAM)","Flash","EEPROM","Mask ROM"], ans:0, sol:"RAM is volatile — loses data without power. Flash/EEPROM/ROM are non-volatile." },
+    { q:"int *p = NULL; *p = 5; This causes:", opts:["Segmentation fault / undefined behavior","p is assigned 5","Null pointer is initialized","Compiler error"], ans:0, sol:"Dereferencing NULL pointer causes segmentation fault at runtime. Classic embedded bug." },
+  ],
+  ibm_technical_1: [
+    { q:"In cloud computing, IaaS provides:", opts:["Virtual machines, storage, networking","Only software applications","Only database services","Development platforms only"], ans:0, sol:"IaaS (Infrastructure as a Service) = VMs, storage, networking. PaaS = dev platform. SaaS = software apps. IBM Cloud is IaaS+PaaS." },
+    { q:"In DevOps, CI/CD stands for:", opts:["Continuous Integration / Continuous Deployment","Code Inspection / Code Delivery","Container Integration / Container Deployment","Central Infrastructure / Central Distribution"], ans:0, sol:"CI = merge code frequently, automated testing. CD = automated deployment to production. Core of modern DevOps." },
+    { q:"IBM's AI platform is called:", opts:["Watson","Einstein","Gemini","Cortana"], ans:0, sol:"IBM Watson is IBM's AI/ML platform. Salesforce=Einstein, Google=Gemini, Microsoft=Copilot/Cortana." },
+    { q:"Which IBM tool is used for business process automation:", opts:["IBM RPA (Robotic Process Automation)","IBM DB2","IBM MQ","IBM SPSS"], ans:0, sol:"IBM RPA automates repetitive tasks. DB2=database, MQ=messaging, SPSS=statistics." },
+  ],
 };
 
 // MOCK_CONFIGS defined in component state area above
@@ -9178,6 +9208,7 @@ const AptitudeTrainerPage = ({ setPage }) => {
   const [aiSolution, setAiSolution]= React.useState("");
   const [aiInput,    setAiInput]   = React.useState("");
   const [drillMode,  setDrillMode] = React.useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [drillTimer, setDrillTimer]= React.useState(60);
   // eslint-disable-next-line no-unused-vars
   const [drillScore, setDrillScore]= React.useState({correct:0,total:0});
@@ -9245,6 +9276,12 @@ Question: "+questionText})
     accenture:  { name:"Accenture Mock", sections:[{name:"Cognitive",q:25,time:30},{name:"Technical",q:20,time:25}], totalTime:55 },
     cognizant:  { name:"Cognizant GenC Mock", sections:[{name:"Reasoning",q:20,time:25},{name:"Verbal",q:18,time:20},{name:"Quant",q:16,time:20}], totalTime:65 },
     amazon:     { name:"Amazon OA Mock", sections:[{name:"DSA Round 1",q:2,time:70},{name:"Work Sim",q:7,time:30}], totalTime:100 },
+    ibm:        { name:"IBM Hiring Mock",       sections:[{name:"Quant",q:15,time:20},{name:"Logical",q:15,time:20},{name:"Verbal",q:10,time:15},{name:"Technical",q:20,time:25}], totalTime:80 },
+    sap:        { name:"SAP Labs OA Mock",      sections:[{name:"Quant",q:20,time:25},{name:"Logical",q:15,time:20},{name:"Technical",q:25,time:30}], totalTime:75 },
+    adobe:      { name:"Adobe OA Mock",         sections:[{name:"DSA",q:3,time:90},{name:"Quant",q:10,time:15}], totalTime:105 },
+    deloitte:   { name:"Deloitte USI Mock",     sections:[{name:"Quant",q:20,time:25},{name:"Verbal",q:20,time:25},{name:"Logical",q:10,time:15}], totalTime:65 },
+    persistent: { name:"Persistent Mock",       sections:[{name:"Quant",q:15,time:20},{name:"Verbal",q:10,time:15},{name:"Logical",q:15,time:20},{name:"Technical",q:10,time:15}], totalTime:70 },
+    paypal:     { name:"PayPal OA Mock",        sections:[{name:"Quant",q:15,time:20},{name:"Logical",q:15,time:20},{name:"Technical",q:20,time:25}], totalTime:65 },
     default:    { name:"General Aptitude Mock", sections:[{name:"Quant",q:20,time:25},{name:"Logical",q:20,time:25},{name:"Verbal",q:10,time:10}], totalTime:60 },
   };
 
