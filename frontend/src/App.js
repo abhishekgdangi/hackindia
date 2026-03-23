@@ -983,10 +983,14 @@ const HackathonsPage = () => {
                     {hackSelDate ? new Date(hackSelDate+"T00:00:00").toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"}) : "Click a date to see hackathons"}
                   </div>
                   {hackSelDate && (grouped[hackSelDate]||[]).map(h=>(
-                    <div key={h._id} onClick={()=>setModal(h)} className="hcard" style={{padding:"12px 14px",marginBottom:8,cursor:"pointer"}}>
-                      <div className="syne" style={{fontSize:13,fontWeight:700,marginBottom:4}}>{h.name}</div>
+                    <div key={h._id} style={{padding:"12px 14px",marginBottom:8,background:"var(--bg)",border:"1px solid var(--border)",borderRadius:12}}>
+                      <div className="syne" style={{fontSize:13,fontWeight:700,marginBottom:3,cursor:"pointer"}} onClick={()=>setModal(h)}>{h.name}</div>
                       <div style={{fontSize:11,color:"var(--text2)",marginBottom:4}}>{h.organizer} · {h.mode}</div>
-                      <div style={{fontSize:11,color:dcColor(h.registrationDeadline)}}>⏳ Deadline: {fmtDate(h.registrationDeadline)}</div>
+                      <div style={{fontSize:11,color:dcColor(h.registrationDeadline),marginBottom:8}}>⏳ Deadline: {fmtDate(h.registrationDeadline)}</div>
+                      <div style={{display:"flex",gap:6}}>
+                        <button onClick={()=>setModal(h)} style={{fontSize:11,padding:"4px 10px",borderRadius:6,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Details</button>
+                        {h.applyLink&&<a href={h.applyLink} target="_blank" rel="noopener noreferrer" style={{fontSize:11,padding:"4px 10px",borderRadius:6,background:"var(--purple)",color:"#fff",textDecoration:"none",fontWeight:700}}>Apply →</a>}
+                      </div>
                     </div>
                   ))}
                   {hackSelDate && !grouped[hackSelDate]?.length && <div style={{color:"var(--text3)",fontSize:13}}>No hackathons on this date.</div>}
@@ -1567,10 +1571,10 @@ const EventsPage = () => {
                   {evSelDate && (grouped[evSelDate]||[]).map((ev,i)=>(
                     <div key={i} style={{padding:"12px 14px",marginBottom:8,background:"var(--bg)",border:"1px solid var(--border)",borderRadius:12}}>
                       <div className="syne" style={{fontSize:13,fontWeight:700,marginBottom:4}}>{ev.title}</div>
-                      <div style={{fontSize:11,color:"var(--text2)",marginBottom:4}}>{ev.platform} · {ev.eventType}</div>
-                      <div style={{display:"flex",gap:8}}>
-                        <span style={{fontSize:10,padding:"2px 7px",borderRadius:4,background:ev.price==="Free"?"rgba(0,255,136,.12)":"rgba(255,107,53,.12)",color:ev.price==="Free"?"var(--green)":"var(--orange)"}}>{ev.price||"Free"}</span>
-                        {ev.applyLink&&<a href={ev.applyLink} target="_blank" rel="noopener noreferrer" style={{fontSize:11,color:"var(--cyan)",textDecoration:"none"}}>Register →</a>}
+                      <div style={{fontSize:11,color:"var(--text2)",marginBottom:6}}>{ev.platform} · {ev.eventType}</div>
+                      <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
+                        <span style={{fontSize:10,padding:"2px 7px",borderRadius:4,background:ev.price==="Free"?"rgba(0,255,136,.12)":"rgba(255,107,53,.12)",color:ev.price==="Free"?"var(--green)":"var(--orange)"}}>{ev.price||"Check site"}</span>
+                        {(()=>{const u=ev.registrationLink||ev.applyLink||ev.url||"";return u&&u!=="#"?<a href={u.startsWith("http")?u:"https://"+u} target="_blank" rel="noopener noreferrer" style={{fontSize:12,padding:"4px 12px",borderRadius:6,background:"var(--purple)",color:"#fff",textDecoration:"none",fontWeight:700}}>Register →</a>:null;})()}
                       </div>
                     </div>
                   ))}
