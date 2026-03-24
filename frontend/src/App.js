@@ -9414,7 +9414,10 @@ export default function App() {
           {page==="cp"     && <CPContestPage setPage={setPage}/>}
           {page==="dsa"    && <DSAPage setPage={setPage}/>}
           {page==="resumebuilder" && <ResumeTemplateBuilderPage setPage={setPage}/>}
-          {page==="aptitude" && <AptitudeTrainerPage setPage={setPage}/>}
+          {page==="aptitude" && (()=>{
+            try { return <AptitudeTrainerPage setPage={setPage}/>; }
+            catch(e) { return <div style={{padding:40,color:"red",fontFamily:"monospace"}}><h2>Aptitude Trainer Error:</h2><pre>{e.message}</pre><pre>{e.stack}</pre></div>; }
+          })()}
           {page==="companyguide" && <CompanyResumeGuidePage setPage={setPage}/>}
           {page==="resume" && <ResumeAnalyzerPage setPage={setPage}/>}
         </main>
