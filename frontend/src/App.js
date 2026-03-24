@@ -7682,7 +7682,9 @@ const AptitudeTrainerPage = ({ setPage }) => {
   };
 
   // Auto difficulty progression
+  // eslint-disable-next-line no-unused-vars
   const suggestNextLevel = (topicId, currentLevel) => {
+    // eslint-disable-next-line no-unused-vars
     const key = topicId+"_"+currentLevel;
     const sc = scores[topicId];
     if(sc?.lastScore >= 80 && currentLevel < 3) return currentLevel+1;
