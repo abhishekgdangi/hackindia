@@ -7596,170 +7596,126 @@ const APT_CONCEPTS = {
 
 // ── COMPONENT ─────────────────────────────────────────────────
 const AptitudeTrainerPage = ({ setPage }) => {
-  const LS_APT_PROGRESS = "apt_progress_v1";
-  const LS_APT_SCORE    = "apt_score_v1";
-
-  const [view,       setView]      = React.useState("home"); // home|company|topic|quiz|concept|result|mock|wrongbank|drill|formula
-  // eslint-disable-next-line no-unused-vars
-  const [mockConfig, setMockConfig]= React.useState(null);  // {company, sections, totalTime}
-  const [aiSolving,  setAiSolving] = React.useState(false);
-  const [aiSolution, setAiSolution]= React.useState("");
-  const [aiInput,    setAiInput]   = React.useState("");
-  const [drillMode,  setDrillMode] = React.useState(false);
-  // eslint-disable-next-line no-unused-vars
-  const [drillTimer, setDrillTimer]= React.useState(60);
-  // eslint-disable-next-line no-unused-vars
-  const [drillScore, setDrillScore]= React.useState({correct:0,total:0});
-  const [selCo,      setSelCo]     = React.useState(null);
-  const [selTopic,   setSelTopic]  = React.useState(null);
-  const [selLevel,   setSelLevel]  = React.useState(1);
-  const [selCat,     setSelCat]    = React.useState("quant");
-  const [questions,  setQuestions] = React.useState([]);
-  const [qIdx,       setQIdx]      = React.useState(0);
-  const [answers,    setAnswers]   = React.useState({});
-  const [quizDone,   setQuizDone]  = React.useState(false);
-  const [showSol,    setShowSol]   = React.useState(false);
-  const [quizTimer,  setQuizTimer] = React.useState(0);
-  const [timerActive,setTimerActive]=React.useState(false);
-  const timerRef = React.useRef(null);
-  const [selConcept, setSelConcept]= React.useState(null);
-  const [filterCo,   setFilterCo]  = React.useState("all");
-
-
-  const [progress, setProgress] = React.useState(() => {
-    try { return JSON.parse(localStorage.getItem(LS_APT_PROGRESS)||"{}"); } catch { return {}; }
-  });
-  const [scores, setScores] = React.useState(() => {
-    try { return JSON.parse(localStorage.getItem(LS_APT_SCORE)||"{}"); } catch { return {}; }
-  });
-
-  const saveProgress = (p) => { setProgress(p); try{localStorage.setItem(LS_APT_PROGRESS,JSON.stringify(p));}catch(_){} };
-  const saveScores   = (s) => { setScores(s);   try{localStorage.setItem(LS_APT_SCORE,JSON.stringify(s));}catch(_){} };
-
-  // Wrong question bank
+  const LS_PROG  = "apt_progress_v1";
+  const LS_SCORE = "apt_score_v1";
   const LS_WRONG = "apt_wrong_v1";
-  const [wrongBank, setWrongBank] = React.useState(() => {
-    try { return JSON.parse(localStorage.getItem(LS_WRONG)||"[]"); } catch { return []; }
+
+  const [view,        setView]       = React.useState("home");
+  const [selCo,       setSelCo]      = React.useState(null);
+  const [selTopic,    setSelTopic]   = React.useState(null);
+  const [selLevel,    setSelLevel]   = React.useState(1);
+  const [selCat,      setSelCat]     = React.useState("quant");
+  const [selConcept,  setSelConcept] = React.useState(null);
+  const [questions,   setQuestions]  = React.useState([]);
+  const [qIdx,        setQIdx]       = React.useState(0);
+  const [answers,     setAnswers]    = React.useState({});
+  const [showSol,     setShowSol]    = React.useState(false);
+  const [quizTimer,   setQuizTimer]  = React.useState(0);
+  const [timerActive, setTimerActive]= React.useState(false);
+  const [aiInput,     setAiInput]    = React.useState("");
+  const [aiSolving,   setAiSolving]  = React.useState(false);
+  const [aiSolution,  setAiSolution] = React.useState("");
+  const timerRef = React.useRef(null);
+
+  const [progress, setProgress] = React.useState(()=>{
+    try{return JSON.parse(localStorage.getItem(LS_PROG)||"{}");}catch{return {};}
   });
-  const saveWrong = (w) => { setWrongBank(w); try{localStorage.setItem(LS_WRONG,JSON.stringify(w));}catch(_){} };
-  const addToWrongBank = (q, topicId, level) => {
-    const key = q.q.slice(0,30);
-    if(wrongBank.some(w=>w.key===key)) return;
-    saveWrong([...wrongBank, {...q, key, topicId, level, addedAt: Date.now()}].slice(-50));
-  };
-  const removeFromWrong = (key) => saveWrong(wrongBank.filter(w=>w.key!==key));
+  const [scores, setScores] = React.useState(()=>{
+    try{return JSON.parse(localStorage.getItem(LS_SCORE)||"{}");}catch{return {};}
+  });
+  const [wrongBank, setWrongBank] = React.useState(()=>{
+    try{return JSON.parse(localStorage.getItem(LS_WRONG)||"[]");}catch{return [];}
+  });
 
-  // AI solver
-  const solveWithAI = async (questionText) => {
-    if(!questionText?.trim()) return;
-    setAiSolving(true); setAiSolution("");
-    try {
-      const r = await fetch(API_BASE+"/dsa/topics/explain/tip",{
-        method:"POST", headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({problem:"Solve this aptitude question step by step. Show the formula, each step clearly, and the final answer. Be concise.\n\nQuestion: "+questionText})
-      });
-      const d = await r.json();
-      setAiSolution(d.tip||"Could not solve. Try again.");
-    } catch { setAiSolution("Network error. Try again."); }
-    setAiSolving(false);
-  };
-
-  // Mock test configs per company
-  const MOCK_CONFIGS = {
-    tcs:        { name:"TCS NQT Mock", sections:[{name:"Numerical",q:20,time:40},{name:"Verbal",q:10,time:15},{name:"Reasoning",q:15,time:20}], totalTime:75 },
-    infosys:    { name:"Infosys IRT Mock", sections:[{name:"Quant",q:15,time:25},{name:"Logical",q:15,time:25},{name:"Verbal",q:20,time:35}], totalTime:85 },
-    wipro:      { name:"Wipro NLTH Mock", sections:[{name:"Verbal",q:20,time:20},{name:"Quant",q:16,time:16},{name:"Reasoning",q:14,time:14}], totalTime:50 },
-    accenture:  { name:"Accenture Mock", sections:[{name:"Cognitive",q:25,time:30},{name:"Technical",q:20,time:25}], totalTime:55 },
-    cognizant:  { name:"Cognizant GenC Mock", sections:[{name:"Reasoning",q:20,time:25},{name:"Verbal",q:18,time:20},{name:"Quant",q:16,time:20}], totalTime:65 },
-    amazon:     { name:"Amazon OA Mock", sections:[{name:"DSA Round 1",q:2,time:70},{name:"Work Sim",q:7,time:30}], totalTime:100 },
-    ibm:        { name:"IBM Hiring Mock",       sections:[{name:"Quant",q:15,time:20},{name:"Logical",q:15,time:20},{name:"Verbal",q:10,time:15},{name:"Technical",q:20,time:25}], totalTime:80 },
-    sap:        { name:"SAP Labs OA Mock",      sections:[{name:"Quant",q:20,time:25},{name:"Logical",q:15,time:20},{name:"Technical",q:25,time:30}], totalTime:75 },
-    adobe:      { name:"Adobe OA Mock",         sections:[{name:"DSA",q:3,time:90},{name:"Quant",q:10,time:15}], totalTime:105 },
-    deloitte:   { name:"Deloitte USI Mock",     sections:[{name:"Quant",q:20,time:25},{name:"Verbal",q:20,time:25},{name:"Logical",q:10,time:15}], totalTime:65 },
-    persistent: { name:"Persistent Mock",       sections:[{name:"Quant",q:15,time:20},{name:"Verbal",q:10,time:15},{name:"Logical",q:15,time:20},{name:"Technical",q:10,time:15}], totalTime:70 },
-    paypal:     { name:"PayPal OA Mock",        sections:[{name:"Quant",q:15,time:20},{name:"Logical",q:15,time:20},{name:"Technical",q:20,time:25}], totalTime:65 },
-    default:    { name:"General Aptitude Mock", sections:[{name:"Quant",q:20,time:25},{name:"Logical",q:20,time:25},{name:"Verbal",q:10,time:10}], totalTime:60 },
-  };
-
-  // Auto difficulty progression
-  // eslint-disable-next-line no-unused-vars
-  const suggestNextLevel = (topicId, currentLevel) => {
-    // eslint-disable-next-line no-unused-vars
-    const key = topicId+"_"+currentLevel;
-    const sc = scores[topicId];
-    if(sc?.lastScore >= 80 && currentLevel < 3) return currentLevel+1;
-    if(sc?.lastScore < 50 && currentLevel > 1) return currentLevel-1;
-    return currentLevel;
-  };
-
-  const totalAttempted = Object.values(scores).reduce((a,s)=>a+(s.total||0),0);
-  const totalCorrect   = Object.values(scores).reduce((a,s)=>a+(s.correct||0),0);
-  const accuracy = totalAttempted ? Math.round(totalCorrect/totalAttempted*100) : 0;
+  const saveProgress = p=>{setProgress(p);try{localStorage.setItem(LS_PROG,JSON.stringify(p));}catch(_){}};
+  const saveScores   = s=>{setScores(s);try{localStorage.setItem(LS_SCORE,JSON.stringify(s));}catch(_){}};
+  const saveWrong    = w=>{setWrongBank(w);try{localStorage.setItem(LS_WRONG,JSON.stringify(w));}catch(_){}};
 
   React.useEffect(()=>{
-    if(timerActive){
-      timerRef.current=setInterval(()=>setQuizTimer(t=>t+1),1000);
-    }else clearInterval(timerRef.current);
+    if(timerActive){timerRef.current=setInterval(()=>setQuizTimer(t=>t+1),1000);}
+    else clearInterval(timerRef.current);
     return()=>clearInterval(timerRef.current);
   },[timerActive]);
 
-  const fmtTimer=(s)=>`${Math.floor(s/60).toString().padStart(2,"0")}:${(s%60).toString().padStart(2,"0")}`;
+  const fmt = s=>`${Math.floor(s/60).toString().padStart(2,"0")}:${(s%60).toString().padStart(2,"0")}`;
 
-  const startQuiz = (topicId, level) => {
-    const key = `${topicId}_${level}`;
-    const qs = APT_QUESTIONS[key] || APT_QUESTIONS[topicId+"_1"] || [];
-    if(!qs.length){alert("Questions for this topic coming soon! Try another topic.");return;}
-    setQuestions(qs); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
-    setQuizTimer(0); setTimerActive(true); setView("quiz");
+  const totalDone    = Object.values(scores).reduce((a,s)=>a+(s.total||0),0);
+  const totalCorrect = Object.values(scores).reduce((a,s)=>a+(s.correct||0),0);
+  const accuracy     = totalDone ? Math.round(totalCorrect/totalDone*100) : 0;
+
+  const MOCK_CONFIGS = {
+    tcs:       {name:"TCS NQT Mock",       sections:[{name:"Numerical",q:20,time:40},{name:"Verbal",q:10,time:15},{name:"Reasoning",q:15,time:20}],totalTime:75},
+    infosys:   {name:"Infosys IRT Mock",   sections:[{name:"Quant",q:15,time:25},{name:"Logical",q:15,time:25},{name:"Verbal",q:20,time:35}],totalTime:85},
+    wipro:     {name:"Wipro NLTH Mock",    sections:[{name:"Verbal",q:20,time:20},{name:"Quant",q:16,time:16},{name:"Reasoning",q:14,time:14}],totalTime:50},
+    accenture: {name:"Accenture Mock",     sections:[{name:"Cognitive",q:25,time:30},{name:"Technical",q:20,time:25}],totalTime:55},
+    cognizant: {name:"Cognizant GenC Mock",sections:[{name:"Reasoning",q:20,time:25},{name:"Verbal",q:18,time:20},{name:"Quant",q:16,time:20}],totalTime:65},
+    amazon:    {name:"Amazon OA Mock",     sections:[{name:"DSA Round 1",q:2,time:70},{name:"Work Sim",q:7,time:30}],totalTime:100},
+    ibm:       {name:"IBM Hiring Mock",    sections:[{name:"Quant",q:15,time:20},{name:"Logical",q:15,time:20},{name:"Verbal",q:10,time:15},{name:"Technical",q:20,time:25}],totalTime:80},
+    sap:       {name:"SAP Labs OA Mock",   sections:[{name:"Quant",q:20,time:25},{name:"Logical",q:15,time:20},{name:"Technical",q:25,time:30}],totalTime:75},
+    adobe:     {name:"Adobe OA Mock",      sections:[{name:"DSA",q:3,time:90},{name:"Quant",q:10,time:15}],totalTime:105},
+    deloitte:  {name:"Deloitte USI Mock",  sections:[{name:"Quant",q:20,time:25},{name:"Verbal",q:20,time:25},{name:"Logical",q:10,time:15}],totalTime:65},
+    persistent:{name:"Persistent Mock",   sections:[{name:"Quant",q:15,time:20},{name:"Verbal",q:10,time:15},{name:"Logical",q:15,time:20},{name:"Technical",q:10,time:15}],totalTime:70},
+    paypal:    {name:"PayPal OA Mock",     sections:[{name:"Quant",q:15,time:20},{name:"Logical",q:15,time:20},{name:"Technical",q:20,time:25}],totalTime:65},
+    default:   {name:"General Mock",       sections:[{name:"Quant",q:20,time:25},{name:"Logical",q:20,time:25},{name:"Verbal",q:10,time:10}],totalTime:60},
   };
 
-  const submitAnswer = (optIdx) => {
+  const startQuiz = (topicId, level) => {
+    const key = topicId+"_"+level;
+    const qs = APT_QUESTIONS[key] || APT_QUESTIONS[topicId+"_1"] || [];
+    if(!qs.length){alert("Questions coming soon! Try another topic.");return;}
+    setQuestions(qs);setQIdx(0);setAnswers({});setShowSol(false);
+    setQuizTimer(0);setTimerActive(true);setView("quiz");
+  };
+
+  const submitAnswer = optIdx => {
     if(answers[qIdx]!==undefined) return;
     setAnswers(a=>({...a,[qIdx]:optIdx}));
     setShowSol(true);
   };
 
-  const nextQuestion = () => {
-    if(qIdx < questions.length-1){ setQIdx(q=>q+1); setShowSol(false); }
+  const nextQ = () => {
+    if(qIdx < questions.length-1){setQIdx(q=>q+1);setShowSol(false);}
     else finishQuiz();
   };
 
   const finishQuiz = () => {
-    setTimerActive(false); setQuizDone(true);
+    setTimerActive(false);
     const correct = Object.entries(answers).filter(([i,a])=>questions[parseInt(i)]?.ans===a).length;
-    const key = selTopic?.id || "general";
-    const prev = scores[key]||{correct:0,total:0};
-    const updated = {...scores,[key]:{correct:prev.correct+correct,total:prev.total+questions.length,lastScore:Math.round(correct/questions.length*100),lastTime:quizTimer}};
-    saveScores(updated);
-    const pkey = key+"_"+selLevel;
-    saveProgress({...progress,[pkey]:true});
-    // Add wrong answers to wrong bank
+    const k = selTopic?.id||"general";
+    const prev = scores[k]||{correct:0,total:0};
+    saveScores({...scores,[k]:{correct:prev.correct+correct,total:prev.total+questions.length,lastScore:Math.round(correct/questions.length*100),lastTime:quizTimer}});
+    saveProgress({...progress,[k+"_"+selLevel]:true});
     Object.entries(answers).forEach(([i,a])=>{
-      const qi = parseInt(i);
-      if(questions[qi] && questions[qi].ans !== a) addToWrongBank(questions[qi], key, selLevel);
+      const qi=parseInt(i);
+      if(questions[qi]&&questions[qi].ans!==a){
+        const wk=questions[qi].q.slice(0,30);
+        if(!wrongBank.some(w=>w.key===wk))
+          saveWrong([...wrongBank,{...questions[qi],key:wk,topicId:k,addedAt:Date.now()}].slice(-50));
+      }
     });
     setView("result");
   };
 
-  const currentQ  = questions[qIdx];
-  const userAns   = answers[qIdx];
-  // eslint-disable-next-line no-unused-vars
-  const isCorrect = userAns === currentQ?.ans;
-
-  const catColors = { quant:"#3b82f6", logical:"#8b5cf6", verbal:"#10b981", technical:"#f59e0b" };
-
-  // Filter subtopics by company
-  // eslint-disable-next-line no-unused-vars
-  const getSubtopics = (catId) => {
-    const cat = APT_TOPICS[catId];
-    if(!cat) return [];
-    if(filterCo==="all") return cat.subtopics;
-    return cat.subtopics.filter(s=>s.companies.includes(filterCo));
+  const solveWithAI = async txt => {
+    if(!txt?.trim()) return;
+    setAiSolving(true);setAiSolution("");
+    try {
+      const r = await fetch(API_BASE+"/dsa/topics/explain/tip",{
+        method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({problem:"Solve this aptitude question step by step with formula and clear steps. Be concise.\n\nQuestion: "+txt})
+      });
+      const d = await r.json();
+      setAiSolution(d.tip||"Could not solve. Try again.");
+    } catch{setAiSolution("Network error. Try again.");}
+    setAiSolving(false);
   };
+
+  const currentQ = questions[qIdx];
+  const catColors = {quant:"#3b82f6",logical:"#8b5cf6",verbal:"#10b981",technical:"#f59e0b"};
+  const TABS = [["home","🏠 Home"],["company","🏢 By Company"],["topic","📚 By Topic"],["concept","💡 Concepts"],["mock","🎯 Mock Test"],["wrongbank","❌ Wrong Bank"],["drill","⚡ Speed Drill"],["formula","📋 Formulas"],["aisolver","🤖 AI Solver"]];
 
   return (
     <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
-      {/* Header */}
       <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"20px 24px"}}>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
@@ -7769,20 +7725,19 @@ const AptitudeTrainerPage = ({ setPage }) => {
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:12}}>
             <div>
               <h1 className="syne" style={{fontSize:24,fontWeight:900,marginBottom:2}}>🎯 Aptitude <span className="gtext">Trainer</span></h1>
-              <p style={{color:"var(--text2)",fontSize:13,margin:0}}>Company-wise · Topic-wise · Level-wise. Pre-placement to career growth.</p>
+              <p style={{color:"var(--text2)",fontSize:13,margin:0}}>26 companies · 40+ topics · 500+ questions · Pre-placement to career growth</p>
             </div>
             <div style={{display:"flex",gap:16,textAlign:"center"}}>
-              <div><div className="syne" style={{fontSize:22,fontWeight:900,color:"var(--cyan)"}}>{totalAttempted}</div><div style={{fontSize:10,color:"var(--text3)"}}>Questions done</div></div>
-              <div><div className="syne" style={{fontSize:22,fontWeight:900,color:"var(--green)"}}>{accuracy}%</div><div style={{fontSize:10,color:"var(--text3)"}}>Accuracy</div></div>
-              <div><div className="syne" style={{fontSize:22,fontWeight:900,color:"var(--purple)"}}>{Object.keys(progress).length}</div><div style={{fontSize:10,color:"var(--text3)"}}>Topics done</div></div>
+              {[[totalDone,"Done","var(--cyan)"],[accuracy+"%","Accuracy","var(--green)"],[Object.keys(progress).length,"Topics","var(--purple)"]].map(([v,l,c])=>(
+                <div key={l}><div className="syne" style={{fontSize:20,fontWeight:900,color:c}}>{v}</div><div style={{fontSize:10,color:"var(--text3)"}}>{l}</div></div>
+              ))}
             </div>
           </div>
-          {/* Nav tabs */}
           {view!=="quiz"&&(
-            <div style={{display:"flex",gap:6,marginTop:12,flexWrap:"wrap"}}>
-              {[["home","🏠 Home"],["company","🏢 By Company"],["topic","📚 By Topic"],["concept","💡 Concepts"],["mock","🎯 Mock Test"],["wrongbank","❌ Wrong Bank"],["drill","⚡ Speed Drill"],["formula","📋 Formula Sheet"],["aisolver","🤖 AI Solver"]].map(([v,l])=>(
+            <div style={{display:"flex",gap:5,marginTop:12,flexWrap:"wrap"}}>
+              {TABS.map(([v,l])=>(
                 <button key={v} onClick={()=>setView(v)}
-                  style={{fontSize:12,padding:"5px 14px",borderRadius:8,border:`1px solid ${view===v?"var(--cyan)":"var(--border)"}`,background:view===v?"rgba(0,212,255,.12)":"var(--card)",color:view===v?"var(--cyan)":"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:view===v?700:400}}>
+                  style={{fontSize:11,padding:"5px 12px",borderRadius:7,border:`1px solid ${view===v?"var(--cyan)":"var(--border)"}`,background:view===v?"rgba(0,212,255,.12)":"var(--card)",color:view===v?"var(--cyan)":"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:view===v?700:400}}>
                   {l}
                 </button>
               ))}
@@ -7793,60 +7748,47 @@ const AptitudeTrainerPage = ({ setPage }) => {
 
       <div style={{maxWidth:1200,margin:"0 auto",padding:"24px"}}>
 
-        {/* ── HOME VIEW ── */}
-        {view==="home" && (
+        {view==="home"&&(
           <div>
-            {/* Stats bar */}
-            {totalAttempted>0&&(
-              <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:16,marginBottom:20,display:"flex",gap:20,flexWrap:"wrap",alignItems:"center"}}>
-                <div style={{flex:1,minWidth:200}}>
-                  <div style={{fontSize:12,fontWeight:700,marginBottom:6}}>Overall Progress</div>
-                  <div style={{height:8,background:"var(--bg3)",borderRadius:4,overflow:"hidden"}}>
-                    <div style={{height:"100%",width:`${Math.min(100,Math.round(Object.keys(progress).length/40*100))}%`,background:"var(--green)",borderRadius:4}}/>
-                  </div>
-                  <div style={{fontSize:11,color:"var(--text3)",marginTop:4}}>{Object.keys(progress).length}/40 topics attempted</div>
+            {totalDone>0&&(
+              <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:"12px 18px",marginBottom:20}}>
+                <div style={{height:6,background:"var(--bg3)",borderRadius:3,overflow:"hidden",marginBottom:4}}>
+                  <div style={{height:"100%",width:`${Math.min(100,Math.round(Object.keys(progress).length/40*100))}%`,background:"var(--green)",borderRadius:3}}/>
                 </div>
-                <div style={{fontSize:12,color:"var(--text2)"}}>{totalCorrect}/{totalAttempted} correct · {accuracy}% accuracy · {Object.keys(scores).length} topics attempted</div>
+                <div style={{fontSize:11,color:"var(--text3)"}}>{Object.keys(progress).length}/40 topics · {accuracy}% accuracy · {totalDone} questions done</div>
               </div>
             )}
-
-            {/* Company cards */}
-            <div className="syne" style={{fontSize:16,fontWeight:800,marginBottom:14}}>Prepare by Company</div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:12,marginBottom:28}}>
+            <div className="syne" style={{fontSize:15,fontWeight:800,marginBottom:12}}>Prepare by Company</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:10,marginBottom:24}}>
               {APT_COMPANIES.map(co=>(
-                <div key={co.id} onClick={()=>{setSelCo(co);setView("company");setFilterCo(co.id);}}
-                  style={{background:"var(--card)",border:`1px solid ${co.color}20`,borderRadius:12,padding:"16px 18px",cursor:"pointer",transition:"all .2s"}}
+                <div key={co.id} onClick={()=>{setSelCo(co);setView("company");}}
+                  style={{background:"var(--card)",border:`1px solid ${co.color}20`,borderRadius:11,padding:"14px 16px",cursor:"pointer",transition:"all .2s"}}
                   onMouseEnter={e=>{e.currentTarget.style.borderColor=co.color;e.currentTarget.style.transform="translateY(-2px)";}}
-                  onMouseLeave={e=>{e.currentTarget.style.borderColor=`${co.color}20`;e.currentTarget.style.transform="none";}}>
-                  <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:10}}>
-                    <div style={{width:36,height:36,borderRadius:9,background:`${co.color}15`,color:co.color,fontWeight:900,fontSize:12,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{co.logo}</div>
-                    <div>
-                      <div style={{fontSize:13,fontWeight:700}}>{co.name}</div>
-                      <div style={{fontSize:10,color:"var(--text3)"}}>{co.tier}</div>
-                    </div>
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor=`${co.color}20`;e.currentTarget.style.transform="";}}>
+                  <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:8}}>
+                    <div style={{width:34,height:34,borderRadius:8,background:`${co.color}15`,color:co.color,fontWeight:900,fontSize:11,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{co.logo}</div>
+                    <div><div style={{fontSize:12,fontWeight:700}}>{co.name}</div><div style={{fontSize:10,color:"var(--text3)"}}>{co.tier}</div></div>
                   </div>
-                  <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
-                    {co.rounds.slice(0,3).map(r=><span key={r} style={{fontSize:9,padding:"2px 6px",borderRadius:4,background:`${co.color}10`,color:co.color,fontWeight:600}}>{r}</span>)}
+                  <div style={{display:"flex",flexWrap:"wrap",gap:3}}>
+                    {co.rounds.slice(0,3).map(r=><span key={r} style={{fontSize:8,padding:"1px 5px",borderRadius:3,background:`${co.color}10`,color:co.color,fontWeight:600}}>{r}</span>)}
                   </div>
                 </div>
               ))}
             </div>
-
-            {/* Topic quick-start */}
-            <div className="syne" style={{fontSize:16,fontWeight:800,marginBottom:14}}>Quick Practice by Topic</div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:10}}>
-              {Object.entries(APT_TOPICS).map(([catId,cat])=>
+            <div className="syne" style={{fontSize:15,fontWeight:800,marginBottom:12}}>Quick Practice</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(170px,1fr))",gap:8}}>
+              {Object.entries(APT_TOPICS).flatMap(([catId,cat])=>
                 cat.subtopics.slice(0,3).map(sub=>(
-                  <div key={sub.id} onClick={()=>{setSelTopic(sub);setSelLevel(1);startQuiz(sub.id,1);}}
-                    style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:10,padding:"12px 14px",cursor:"pointer",display:"flex",gap:10,alignItems:"center",transition:"all .15s"}}
-                    onMouseEnter={e=>{e.currentTarget.style.borderColor=cat.color;}}
+                  <div key={`${catId}_${sub.id}`} onClick={()=>{setSelTopic(sub);setSelLevel(1);startQuiz(sub.id,1);}}
+                    style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:9,padding:"10px 12px",cursor:"pointer",display:"flex",gap:8,alignItems:"center",transition:"all .15s"}}
+                    onMouseEnter={e=>{e.currentTarget.style.borderColor=catColors[catId]||"var(--cyan)";}}
                     onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";}}>
-                    <span style={{fontSize:18}}>{sub.icon}</span>
+                    <span style={{fontSize:16}}>{sub.icon}</span>
                     <div>
-                      <div style={{fontSize:12,fontWeight:600,color:"var(--text)"}}>{sub.name}</div>
-                      <div style={{fontSize:10,color:`${cat.color}`,marginTop:1}}>{cat.name.slice(2)}</div>
+                      <div style={{fontSize:11,fontWeight:600}}>{sub.name}</div>
+                      <div style={{fontSize:9,color:catColors[catId]||"var(--cyan)",marginTop:1}}>{cat.name.slice(2)}</div>
                     </div>
-                    {progress[`${sub.id}_1`]&&<span style={{marginLeft:"auto",fontSize:10,color:"var(--green)"}}>✓</span>}
+                    {progress[sub.id+"_1"]&&<span style={{marginLeft:"auto",fontSize:10,color:"var(--green)"}}>✓</span>}
                   </div>
                 ))
               )}
@@ -7854,281 +7796,243 @@ const AptitudeTrainerPage = ({ setPage }) => {
           </div>
         )}
 
-        {/* ── COMPANY VIEW ── */}
-        {view==="company" && selCo && (
+        {view==="company"&&(
           <div>
-            <div style={{background:"var(--card)",border:`2px solid ${selCo.color}30`,borderRadius:14,padding:20,marginBottom:20}}>
-              <div style={{display:"flex",gap:14,alignItems:"center",flexWrap:"wrap",marginBottom:12}}>
-                <div style={{width:48,height:48,borderRadius:12,background:`${selCo.color}15`,color:selCo.color,fontWeight:900,fontSize:14,display:"flex",alignItems:"center",justifyContent:"center"}}>{selCo.logo}</div>
-                <div>
-                  <div className="syne" style={{fontSize:18,fontWeight:900}}>{selCo.name} Preparation</div>
-                  <div style={{fontSize:12,color:"var(--text2)",marginTop:2}}>Rounds: {selCo.rounds.join(" → ")}</div>
-                </div>
-              </div>
-              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-                {selCo.rounds.map(r=><span key={r} style={{fontSize:11,padding:"3px 10px",borderRadius:12,background:`${selCo.color}12`,color:selCo.color,border:`1px solid ${selCo.color}25`,fontWeight:600}}>{r}</span>)}
-              </div>
-            </div>
-
-            {Object.entries(APT_TOPICS).map(([catId,cat])=>{
-              const subs = cat.subtopics.filter(s=>s.companies.includes(selCo.id));
-              if(!subs.length) return null;
-              return (
-                <div key={catId} style={{marginBottom:20}}>
-                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
-                    <div style={{width:10,height:10,borderRadius:"50%",background:cat.color}}/>
-                    <div className="syne" style={{fontSize:14,fontWeight:800,color:cat.color}}>{cat.name}</div>
+            {!selCo?(
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:10}}>
+                {APT_COMPANIES.map(co=>(
+                  <div key={co.id} onClick={()=>setSelCo(co)}
+                    style={{background:"var(--card)",border:`1px solid ${co.color}20`,borderRadius:11,padding:14,cursor:"pointer"}}
+                    onMouseEnter={e=>e.currentTarget.style.borderColor=co.color}
+                    onMouseLeave={e=>e.currentTarget.style.borderColor=`${co.color}20`}>
+                    <div style={{fontSize:12,fontWeight:700}}>{co.name}</div>
+                    <div style={{fontSize:10,color:"var(--text3)"}}>{co.tier}</div>
                   </div>
-                  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:10}}>
-                    {subs.map(sub=>(
-                      <div key={sub.id} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:16}}>
-                        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
-                          <div>
-                            <div style={{fontSize:18,marginBottom:4}}>{sub.icon}</div>
-                            <div style={{fontSize:13,fontWeight:700}}>{sub.name}</div>
-                          </div>
-                          {progress[`${sub.id}_1`]&&<span style={{fontSize:16}}>✅</span>}
-                        </div>
-                        <div style={{display:"flex",gap:6,marginBottom:10}}>
-                          {[1,2,3].map(l=>(
-                            <button key={l} onClick={()=>{setSelTopic(sub);setSelLevel(l);startQuiz(sub.id,l);}}
-                              style={{flex:1,padding:"6px 4px",borderRadius:7,border:`1px solid ${progress[`${sub.id}_${l}`]?"var(--green)":"var(--border)"}`,background:progress[`${sub.id}_${l}`]?"rgba(0,255,136,.1)":"var(--bg)",color:progress[`${sub.id}_${l}`]?"var(--green)":"var(--text2)",cursor:"pointer",fontSize:11,fontFamily:"'DM Sans',sans-serif",fontWeight:600}}>
-                              L{l} {progress[`${sub.id}_${l}`]?"✓":""}
-                            </button>
-                          ))}
-                        </div>
-                        <div style={{fontSize:10,color:"var(--text3)"}}>
-                          {scores[sub.id]?.lastScore!==undefined?`Last score: ${scores[sub.id].lastScore}%`:"Not attempted yet"}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* ── TOPIC VIEW ── */}
-        {view==="topic" && (
-          <div>
-            <div style={{display:"flex",gap:6,marginBottom:20,flexWrap:"wrap"}}>
-              {Object.entries(APT_TOPICS).map(([catId,cat])=>(
-                <button key={catId} onClick={()=>setSelCat(catId)}
-                  style={{fontSize:12,padding:"6px 16px",borderRadius:20,border:`1px solid ${selCat===catId?cat.color:"var(--border)"}`,background:selCat===catId?`${cat.color}15`:"var(--card)",color:selCat===catId?cat.color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:selCat===catId?700:400}}>
-                  {cat.name}
-                </button>
-              ))}
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:14}}>
-              {APT_TOPICS[selCat]?.subtopics.map(sub=>(
-                <div key={sub.id} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:18,transition:"all .2s"}}
-                  onMouseEnter={e=>e.currentTarget.style.borderColor=catColors[selCat]}
-                  onMouseLeave={e=>e.currentTarget.style.borderColor="var(--border)"}>
-                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
-                    <div style={{fontSize:24}}>{sub.icon}</div>
-                    <div style={{display:"flex",gap:4}}>
-                      {sub.companies.slice(0,3).map(c=>{
-                        const co = APT_COMPANIES.find(x=>x.id===c);
-                        return co?<span key={c} style={{fontSize:8,padding:"1px 5px",borderRadius:3,background:`${co.color}12`,color:co.color,fontWeight:700}}>{co.logo}</span>:null;
-                      })}
-                    </div>
-                  </div>
-                  <div style={{fontSize:14,fontWeight:700,marginBottom:8}}>{sub.name}</div>
-                  <div style={{display:"flex",gap:6,marginBottom:12}}>
-                    {[["Level 1","Easy","var(--green)"],["Level 2","Medium","var(--yellow)"],["Level 3","Hard","var(--pink)"]].map(([label,diff,color],li)=>(
-                      <button key={li} onClick={()=>{setSelTopic(sub);setSelLevel(li+1);startQuiz(sub.id,li+1);}}
-                        style={{flex:1,padding:"7px 4px",borderRadius:8,border:`1px solid ${progress[`${sub.id}_${li+1}`]?"var(--green)":color+"40"}`,background:progress[`${sub.id}_${li+1}`]?"rgba(0,255,136,.08)":`${color}08`,color:progress[`${sub.id}_${li+1}`]?"var(--green)":color,cursor:"pointer",fontSize:10,fontFamily:"'DM Sans',sans-serif",fontWeight:700}}>
-                        {diff}<br/>{progress[`${sub.id}_${li+1}`]?"✓":""}
-                      </button>
-                    ))}
-                  </div>
-                  <div style={{fontSize:10,color:"var(--text3)"}}>Companies: {sub.companies.slice(0,4).join(", ")}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ── CONCEPTS VIEW ── */}
-        {view==="concept" && (
-          <div style={{display:"grid",gridTemplateColumns:"240px 1fr",gap:20}}>
-            <div>
-              {Object.entries(APT_CONCEPTS).map(([key,con])=>(
-                <button key={key} onClick={()=>setSelConcept(con)}
-                  style={{display:"block",width:"100%",textAlign:"left",padding:"12px 16px",borderRadius:10,marginBottom:8,border:`1px solid ${selConcept?.title===con.title?"var(--cyan)":"var(--border)"}`,background:selConcept?.title===con.title?"rgba(0,212,255,.08)":"var(--card)",color:"var(--text)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:selConcept?.title===con.title?700:400}}>
-                  {con.title.split("—")[0].trim()}
-                </button>
-              ))}
-            </div>
-            {selConcept ? (
-              <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:24}}>
-                <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:16}}>{selConcept.title}</div>
-                <div style={{background:"rgba(0,212,255,.08)",border:"1px solid rgba(0,212,255,.2)",borderRadius:10,padding:14,marginBottom:16}}>
-                  <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",marginBottom:4}}>CORE FORMULA</div>
-                  <div className="mono" style={{fontSize:14,color:"var(--text)"}}>{selConcept.formula}</div>
-                </div>
-                <div style={{marginBottom:16}}>
-                  <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>Key Points</div>
-                  {selConcept.keyPoints.map((p,i)=>(
-                    <div key={i} style={{display:"flex",gap:8,marginBottom:8}}>
-                      <span style={{color:"var(--green)",flexShrink:0}}>✓</span>
-                      <span style={{fontSize:13,color:"var(--text2)",lineHeight:1.5}}>{p}</span>
-                    </div>
-                  ))}
-                </div>
-                <div style={{marginBottom:16}}>
-                  <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:8}}>⚡ Speed Tricks</div>
-                  {selConcept.tricks.map((t,i)=>(
-                    <div key={i} style={{display:"flex",gap:8,marginBottom:8}}>
-                      <span style={{color:"var(--yellow)",flexShrink:0}}>💡</span>
-                      <span style={{fontSize:13,color:"var(--text2)",lineHeight:1.5}}>{t}</span>
-                    </div>
-                  ))}
-                </div>
-                <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
-                  <div style={{padding:"8px 14px",borderRadius:9,background:"rgba(0,255,136,.08)",border:"1px solid rgba(0,255,136,.2)",fontSize:12,color:"var(--green)"}}>{selConcept.companies}</div>
-                  <div style={{padding:"8px 14px",borderRadius:9,background:"rgba(255,214,10,.08)",border:"1px solid rgba(255,214,10,.2)",fontSize:12,color:"var(--yellow)"}}>{selConcept.difficulty}</div>
-                </div>
+                ))}
               </div>
             ):(
-              <div style={{display:"flex",alignItems:"center",justifyContent:"center",border:"1px dashed var(--border)",borderRadius:14,color:"var(--text3)",fontSize:14}}>
-                ← Select a concept to study
+              <div>
+                <div style={{background:"var(--card)",border:`2px solid ${selCo.color}30`,borderRadius:13,padding:18,marginBottom:18}}>
+                  <div style={{display:"flex",gap:12,alignItems:"center",flexWrap:"wrap",marginBottom:10}}>
+                    <div style={{width:44,height:44,borderRadius:11,background:`${selCo.color}15`,color:selCo.color,fontWeight:900,fontSize:13,display:"flex",alignItems:"center",justifyContent:"center"}}>{selCo.logo}</div>
+                    <div><div className="syne" style={{fontSize:17,fontWeight:900}}>{selCo.name}</div><div style={{fontSize:11,color:"var(--text2)"}}>{selCo.rounds.join(" → ")}</div></div>
+                    <button onClick={()=>setSelCo(null)} style={{marginLeft:"auto",fontSize:11,padding:"4px 10px",borderRadius:6,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← All Companies</button>
+                  </div>
+                </div>
+                {Object.entries(APT_TOPICS).map(([catId,cat])=>{
+                  const subs=cat.subtopics.filter(s=>s.companies.includes(selCo.id));
+                  if(!subs.length) return null;
+                  return(
+                    <div key={catId} style={{marginBottom:18}}>
+                      <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:10}}>
+                        <div style={{width:8,height:8,borderRadius:"50%",background:cat.color}}/>
+                        <div className="syne" style={{fontSize:13,fontWeight:800,color:cat.color}}>{cat.name}</div>
+                      </div>
+                      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(230px,1fr))",gap:10}}>
+                        {subs.map(sub=>(
+                          <div key={sub.id} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:11,padding:14}}>
+                            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
+                              <div><div style={{fontSize:16,marginBottom:3}}>{sub.icon}</div><div style={{fontSize:12,fontWeight:700}}>{sub.name}</div></div>
+                              {progress[sub.id+"_1"]&&<span style={{fontSize:14}}>✅</span>}
+                            </div>
+                            <div style={{display:"flex",gap:5,marginBottom:8}}>
+                              {[1,2,3].map(l=>(
+                                <button key={l} onClick={()=>{setSelTopic(sub);setSelLevel(l);startQuiz(sub.id,l);}}
+                                  style={{flex:1,padding:"5px 3px",borderRadius:6,border:`1px solid ${progress[sub.id+"_"+l]?"var(--green)":"var(--border)"}`,background:progress[sub.id+"_"+l]?"rgba(0,255,136,.08)":"var(--bg)",color:progress[sub.id+"_"+l]?"var(--green)":"var(--text2)",cursor:"pointer",fontSize:10,fontFamily:"'DM Sans',sans-serif",fontWeight:600}}>
+                                  L{l}{progress[sub.id+"_"+l]?" ✓":""}
+                                </button>
+                              ))}
+                            </div>
+                            <div style={{fontSize:10,color:"var(--text3)"}}>{scores[sub.id]?.lastScore!=null?`Last: ${scores[sub.id].lastScore}%`:"Not attempted"}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
         )}
 
-        {/* ── QUIZ VIEW ── */}
-        {view==="quiz" && currentQ && !quizDone && (
-          <div style={{maxWidth:700,margin:"0 auto"}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-              <div>
-                <span style={{fontSize:13,color:"var(--text2)"}}>Question {qIdx+1} of {questions.length}</span>
-                {selTopic&&<span style={{fontSize:11,marginLeft:10,padding:"2px 8px",borderRadius:12,background:"var(--bg3)",color:"var(--text3)"}}>{selTopic.name} · L{selLevel}</span>}
+        {view==="topic"&&(
+          <div>
+            <div style={{display:"flex",gap:6,marginBottom:18,flexWrap:"wrap"}}>
+              {Object.entries(APT_TOPICS).map(([catId,cat])=>(
+                <button key={catId} onClick={()=>setSelCat(catId)}
+                  style={{fontSize:12,padding:"6px 15px",borderRadius:18,border:`1px solid ${selCat===catId?cat.color:"var(--border)"}`,background:selCat===catId?`${cat.color}15`:"var(--card)",color:selCat===catId?cat.color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:selCat===catId?700:400}}>
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(250px,1fr))",gap:12}}>
+              {(APT_TOPICS[selCat]?.subtopics||[]).map(sub=>(
+                <div key={sub.id} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:13,padding:16,transition:"all .2s"}}
+                  onMouseEnter={e=>e.currentTarget.style.borderColor=catColors[selCat]||"var(--cyan)"}
+                  onMouseLeave={e=>e.currentTarget.style.borderColor="var(--border)"}>
+                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:10}}>
+                    <div style={{fontSize:22}}>{sub.icon}</div>
+                    <div style={{display:"flex",gap:3}}>
+                      {sub.companies.slice(0,4).map(c=>{const co=APT_COMPANIES.find(x=>x.id===c);return co?<span key={c} style={{fontSize:7,padding:"1px 4px",borderRadius:3,background:`${co.color}12`,color:co.color,fontWeight:700}}>{co.logo}</span>:null;})}
+                    </div>
+                  </div>
+                  <div style={{fontSize:13,fontWeight:700,marginBottom:8}}>{sub.name}</div>
+                  <div style={{display:"flex",gap:5,marginBottom:10}}>
+                    {[["Easy","var(--green)"],["Medium","var(--yellow)"],["Hard","var(--pink)"]].map(([diff,color],li)=>(
+                      <button key={li} onClick={()=>{setSelTopic(sub);setSelLevel(li+1);startQuiz(sub.id,li+1);}}
+                        style={{flex:1,padding:"6px 3px",borderRadius:7,border:`1px solid ${progress[sub.id+"_"+(li+1)]?"var(--green)":color+"40"}`,background:progress[sub.id+"_"+(li+1)]?"rgba(0,255,136,.07)":`${color}07`,color:progress[sub.id+"_"+(li+1)]?"var(--green)":color,cursor:"pointer",fontSize:10,fontFamily:"'DM Sans',sans-serif",fontWeight:700}}>
+                        {diff}{progress[sub.id+"_"+(li+1)]?" ✓":""}
+                      </button>
+                    ))}
+                  </div>
+                  <div style={{fontSize:10,color:"var(--text3)"}}>{sub.companies.slice(0,4).join(", ")}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {view==="concept"&&(
+          <div style={{display:"grid",gridTemplateColumns:"220px 1fr",gap:18}}>
+            <div>
+              {Object.entries(APT_CONCEPTS).map(([key,con])=>(
+                <button key={key} onClick={()=>setSelConcept(con)}
+                  style={{display:"block",width:"100%",textAlign:"left",padding:"10px 14px",borderRadius:9,marginBottom:7,border:`1px solid ${selConcept?.title===con.title?"var(--cyan)":"var(--border)"}`,background:selConcept?.title===con.title?"rgba(0,212,255,.08)":"var(--card)",color:"var(--text)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:selConcept?.title===con.title?700:400}}>
+                  {con.title.split("—")[0].trim()}
+                </button>
+              ))}
+            </div>
+            {selConcept?(
+              <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:13,padding:22}}>
+                <div className="syne" style={{fontSize:17,fontWeight:800,marginBottom:14}}>{selConcept.title}</div>
+                <div style={{background:"rgba(0,212,255,.07)",border:"1px solid rgba(0,212,255,.2)",borderRadius:9,padding:12,marginBottom:14}}>
+                  <div style={{fontSize:10,fontWeight:700,color:"var(--cyan)",marginBottom:3}}>FORMULA</div>
+                  <div className="mono" style={{fontSize:13}}>{selConcept.formula}</div>
+                </div>
+                <div style={{marginBottom:14}}>
+                  <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",marginBottom:7}}>Key Points</div>
+                  {selConcept.keyPoints.map((p,i)=><div key={i} style={{display:"flex",gap:7,marginBottom:6}}><span style={{color:"var(--green)",flexShrink:0}}>✓</span><span style={{fontSize:12,color:"var(--text2)",lineHeight:1.5}}>{p}</span></div>)}
+                </div>
+                <div style={{marginBottom:14}}>
+                  <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",marginBottom:7}}>Speed Tricks</div>
+                  {selConcept.tricks.map((t,i)=><div key={i} style={{display:"flex",gap:7,marginBottom:6}}><span style={{color:"var(--yellow)",flexShrink:0}}>💡</span><span style={{fontSize:12,color:"var(--text2)",lineHeight:1.5}}>{t}</span></div>)}
+                </div>
+                <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                  <span style={{padding:"6px 12px",borderRadius:8,background:"rgba(0,255,136,.07)",border:"1px solid rgba(0,255,136,.2)",fontSize:11,color:"var(--green)"}}>{selConcept.companies}</span>
+                  <span style={{padding:"6px 12px",borderRadius:8,background:"rgba(255,214,10,.07)",border:"1px solid rgba(255,214,10,.2)",fontSize:11,color:"var(--yellow)"}}>{selConcept.difficulty}</span>
+                </div>
               </div>
+            ):(
+              <div style={{display:"flex",alignItems:"center",justifyContent:"center",border:"1px dashed var(--border)",borderRadius:13,color:"var(--text3)",fontSize:13,padding:40}}>← Select a concept</div>
+            )}
+          </div>
+        )}
+
+        {view==="quiz"&&currentQ&&(
+          <div style={{maxWidth:700,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+              <span style={{fontSize:12,color:"var(--text2)"}}>Q {qIdx+1}/{questions.length} · {selTopic?.name||""} L{selLevel}</span>
               <div style={{display:"flex",gap:10,alignItems:"center"}}>
-                <span className="mono" style={{fontSize:14,color:quizTimer>120?"var(--pink)":"var(--text2)"}}>{fmtTimer(quizTimer)}</span>
-                <button onClick={finishQuiz} style={{fontSize:11,padding:"4px 10px",borderRadius:6,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>End Quiz</button>
+                <span className="mono" style={{fontSize:13,color:quizTimer>120?"var(--pink)":"var(--text2)"}}>{fmt(quizTimer)}</span>
+                <button onClick={finishQuiz} style={{fontSize:10,padding:"3px 9px",borderRadius:5,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>End</button>
               </div>
             </div>
-            {/* Progress bar */}
-            <div style={{height:4,background:"var(--bg3)",borderRadius:2,marginBottom:20,overflow:"hidden"}}>
+            <div style={{height:4,background:"var(--bg3)",borderRadius:2,marginBottom:18,overflow:"hidden"}}>
               <div style={{height:"100%",width:`${(qIdx/questions.length)*100}%`,background:"var(--cyan)",borderRadius:2,transition:"width .3s"}}/>
             </div>
-            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24,marginBottom:16}}>
-              <div style={{fontSize:15,fontWeight:600,lineHeight:1.7,marginBottom:20}}>{currentQ.q}</div>
-              <div style={{display:"flex",flexDirection:"column",gap:10}}>
+            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:22,marginBottom:14}}>
+              <div style={{fontSize:14,fontWeight:600,lineHeight:1.7,marginBottom:18}}>{currentQ.q}</div>
+              <div style={{display:"flex",flexDirection:"column",gap:9}}>
                 {currentQ.opts.map((opt,i)=>{
-                  const chosen = userAns===i;
-                  const correct = i===currentQ.ans;
-                  let bg="var(--bg)"; let border="var(--border)"; let col="var(--text)";
-                  if(showSol && correct){bg="rgba(0,255,136,.1)";border="var(--green)";col="var(--green)";}
-                  else if(showSol && chosen && !correct){bg="rgba(255,61,138,.1)";border="var(--pink)";col="var(--pink)";}
-                  else if(chosen&&!showSol){bg="rgba(0,212,255,.08)";border="var(--cyan)";}
+                  const chosen=answers[qIdx]===i,correct=i===currentQ.ans;
+                  let bg="var(--bg)",br="var(--border)",cl="var(--text)";
+                  if(showSol&&correct){bg="rgba(0,255,136,.1)";br="var(--green)";cl="var(--green)";}
+                  else if(showSol&&chosen&&!correct){bg="rgba(255,61,138,.1)";br="var(--pink)";cl="var(--pink)";}
+                  else if(chosen&&!showSol){bg="rgba(0,212,255,.07)";br="var(--cyan)";}
                   return(
                     <button key={i} onClick={()=>submitAnswer(i)} disabled={showSol}
-                      style={{padding:"12px 16px",borderRadius:10,border:`1px solid ${border}`,background:bg,color:col,cursor:showSol?"default":"pointer",textAlign:"left",fontSize:13,fontFamily:"'DM Sans',sans-serif",fontWeight:chosen?600:400,transition:"all .15s"}}>
-                      <span style={{fontWeight:700,marginRight:8}}>{String.fromCharCode(65+i)}.</span>{opt}
-                      {showSol && correct && <span style={{float:"right",fontWeight:700}}>✅</span>}
-                      {showSol && chosen && !correct && <span style={{float:"right",fontWeight:700}}>❌</span>}
+                      style={{padding:"11px 14px",borderRadius:9,border:`1px solid ${br}`,background:bg,color:cl,cursor:showSol?"default":"pointer",textAlign:"left",fontSize:12,fontFamily:"'DM Sans',sans-serif",fontWeight:chosen?600:400,transition:"all .15s"}}>
+                      <span style={{fontWeight:700,marginRight:7}}>{String.fromCharCode(65+i)}.</span>{opt}
+                      {showSol&&correct&&<span style={{float:"right"}}>✅</span>}
+                      {showSol&&chosen&&!correct&&<span style={{float:"right"}}>❌</span>}
                     </button>
                   );
                 })}
               </div>
             </div>
-            {showSol && (
-              <div style={{background:"rgba(0,212,255,.06)",border:"1px solid rgba(0,212,255,.2)",borderRadius:12,padding:16,marginBottom:16}}>
-                <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",marginBottom:6}}>💡 SOLUTION</div>
-                <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.6}}>{currentQ.sol}</div>
-              </div>
-            )}
-            {showSol && (
-              <button className="btn-p" onClick={nextQuestion} style={{width:"100%",justifyContent:"center",padding:"12px",fontSize:14}}>
-                {qIdx<questions.length-1?"Next Question →":"See Results →"}
-              </button>
-            )}
+            {showSol&&<div style={{background:"rgba(0,212,255,.05)",border:"1px solid rgba(0,212,255,.2)",borderRadius:11,padding:14,marginBottom:14}}><div style={{fontSize:10,fontWeight:700,color:"var(--cyan)",marginBottom:5}}>SOLUTION</div><div style={{fontSize:12,color:"var(--text2)",lineHeight:1.6}}>{currentQ.sol}</div></div>}
+            {showSol&&<button className="btn-p" onClick={nextQ} style={{width:"100%",justifyContent:"center",padding:"11px",fontSize:13}}>{qIdx<questions.length-1?"Next Question →":"See Results →"}</button>}
+          </div>
+        )}
+        {view==="quiz"&&!currentQ&&(
+          <div style={{textAlign:"center",padding:60}}>
+            <div style={{fontSize:13,color:"var(--text2)",marginBottom:16}}>No questions loaded.</div>
+            <button onClick={()=>setView("home")} className="btn-p">← Back to Home</button>
           </div>
         )}
 
-        {/* ── RESULT VIEW ── */}
-        {view==="result" && (
-          <div style={{maxWidth:600,margin:"0 auto",textAlign:"center"}}>
-            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:32,marginBottom:20}}>
-              {(()=>{
-                const correct = Object.entries(answers).filter(([i,a])=>questions[parseInt(i)]?.ans===a).length;
-                const pct = Math.round(correct/questions.length*100);
-                return (
-                  <>
-                    <div style={{fontSize:48,marginBottom:12}}>{pct>=80?"🎉":pct>=60?"👍":"📚"}</div>
-                    <div className="syne" style={{fontSize:28,fontWeight:900,marginBottom:4,color:pct>=80?"var(--green)":pct>=60?"var(--yellow)":"var(--pink)"}}>{pct}%</div>
-                    <div style={{fontSize:15,color:"var(--text2)",marginBottom:6}}>{correct} / {questions.length} correct</div>
-                    <div className="mono" style={{fontSize:13,color:"var(--text3)",marginBottom:16}}>⏱ Time: {fmtTimer(quizTimer)}</div>
-                    <div style={{fontSize:14,color:"var(--text2)",marginBottom:20}}>{pct>=80?"Excellent! You're well-prepared for this topic.":pct>=60?"Good attempt! Review the wrong answers and retry.":"Practice more! Read the concept guide and try again."}</div>
-                    <div style={{display:"flex",gap:10,justifyContent:"center",flexWrap:"wrap"}}>
-                      <button className="btn-p" onClick={()=>{setQIdx(0);setAnswers({});setQuizDone(false);setShowSol(false);setQuizTimer(0);setTimerActive(true);setView("quiz");}}>🔄 Retry</button>
-                      <button onClick={()=>setView("topic")} style={{padding:"10px 20px",borderRadius:9,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif"}}>📚 More Topics</button>
-                      <button onClick={()=>setView("concept")} style={{padding:"10px 20px",borderRadius:9,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif"}}>💡 Study Concepts</button>
-                    </div>
-                  </>
-                );
-              })()}
-            </div>
-            {/* Question review */}
-            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:20,textAlign:"left"}}>
-              <div className="syne" style={{fontSize:14,fontWeight:800,marginBottom:14}}>📋 Review</div>
-              {questions.map((q,i)=>{
-                const ua = answers[i];
-                const correct = ua===q.ans;
-                return(
-                  <div key={i} style={{marginBottom:12,padding:"10px 14px",borderRadius:10,border:`1px solid ${correct?"rgba(0,255,136,.2)":"rgba(255,61,138,.2)"}`,background:correct?"rgba(0,255,136,.04)":"rgba(255,61,138,.04)"}}>
-                    <div style={{display:"flex",gap:6,alignItems:"flex-start"}}>
-                      <span style={{color:correct?"var(--green)":"var(--pink)",flexShrink:0,fontWeight:700}}>{correct?"✅":"❌"}</span>
-                      <div>
-                        <div style={{fontSize:12,fontWeight:600,marginBottom:4}}>{q.q.slice(0,80)}{q.q.length>80?"...":""}</div>
-                        {!correct&&<div style={{fontSize:11,color:"var(--green)"}}>Correct: {q.opts[q.ans]}</div>}
-                        <div style={{fontSize:11,color:"var(--text3)",marginTop:2}}>{q.sol.slice(0,100)}{q.sol.length>100?"...":""}</div>
+        {view==="result"&&(()=>{
+          const correct=Object.entries(answers).filter(([i,a])=>questions[parseInt(i)]?.ans===a).length;
+          const pct=questions.length?Math.round(correct/questions.length*100):0;
+          return(
+            <div style={{maxWidth:600,margin:"0 auto",textAlign:"center"}}>
+              <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:28,marginBottom:18}}>
+                <div style={{fontSize:44,marginBottom:10}}>{pct>=80?"🎉":pct>=60?"👍":"📚"}</div>
+                <div className="syne" style={{fontSize:26,fontWeight:900,marginBottom:3,color:pct>=80?"var(--green)":pct>=60?"var(--yellow)":"var(--pink)"}}>{pct}%</div>
+                <div style={{fontSize:14,color:"var(--text2)",marginBottom:4}}>{correct}/{questions.length} correct · {fmt(quizTimer)}</div>
+                <div style={{fontSize:13,color:"var(--text2)",marginBottom:18}}>{pct>=80?"Excellent! Well prepared.":pct>=60?"Good! Review wrong answers.":"Keep practicing! Read concepts first."}</div>
+                <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
+                  <button className="btn-p" onClick={()=>{setQIdx(0);setAnswers({});setShowSol(false);setQuizTimer(0);setTimerActive(true);setView("quiz");}}>🔄 Retry</button>
+                  <button onClick={()=>setView("topic")} style={{padding:"9px 18px",borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontSize:12,fontFamily:"'DM Sans',sans-serif"}}>📚 Topics</button>
+                  <button onClick={()=>setView("concept")} style={{padding:"9px 18px",borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontSize:12,fontFamily:"'DM Sans',sans-serif"}}>💡 Concepts</button>
+                </div>
+              </div>
+              <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:13,padding:18,textAlign:"left"}}>
+                <div className="syne" style={{fontSize:13,fontWeight:800,marginBottom:12}}>Review</div>
+                {questions.map((q,i)=>{
+                  const ua=answers[i],ok=ua===q.ans;
+                  return(
+                    <div key={i} style={{marginBottom:10,padding:"9px 12px",borderRadius:9,border:`1px solid ${ok?"rgba(0,255,136,.2)":"rgba(255,61,138,.2)"}`,background:ok?"rgba(0,255,136,.04)":"rgba(255,61,138,.04)"}}>
+                      <div style={{display:"flex",gap:5,alignItems:"flex-start"}}>
+                        <span style={{color:ok?"var(--green)":"var(--pink)",flexShrink:0,fontWeight:700}}>{ok?"✅":"❌"}</span>
+                        <div>
+                          <div style={{fontSize:11,fontWeight:600,marginBottom:3}}>{q.q.slice(0,80)}{q.q.length>80?"...":""}</div>
+                          {!ok&&<div style={{fontSize:10,color:"var(--green)"}}>Correct: {q.opts[q.ans]}</div>}
+                          <div style={{fontSize:10,color:"var(--text3)",marginTop:2}}>{q.sol.slice(0,90)}{q.sol.length>90?"...":""}</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
-        {/* ── MOCK TEST VIEW ── */}
-        {view==="mock" && (
+        {view==="mock"&&(
           <div style={{maxWidth:800,margin:"0 auto"}}>
-            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🎯 Full Mock Tests</div>
-            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Simulates real company exam pattern — section-wise time limits, question counts matching actual tests.</p>
-            <div style={{display:"grid",gap:14}}>
-              {APT_COMPANIES.filter(co=>MOCK_CONFIGS[co.id]||MOCK_CONFIGS.default).map(co=>{
-                const cfg = MOCK_CONFIGS[co.id]||{...MOCK_CONFIGS.default,name:`${co.name} Mock`};
+            <div className="syne" style={{fontSize:17,fontWeight:800,marginBottom:5}}>🎯 Full Mock Tests</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:18}}>Real company exam patterns — section-wise time limits.</p>
+            <div style={{display:"grid",gap:12}}>
+              {APT_COMPANIES.map(co=>{
+                const cfg=MOCK_CONFIGS[co.id]||{...MOCK_CONFIGS.default,name:`${co.name} Mock`};
                 return(
-                  <div key={co.id} style={{background:"var(--card)",border:`1px solid ${co.color}20`,borderRadius:14,padding:20}}>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10,marginBottom:12}}>
+                  <div key={co.id} style={{background:"var(--card)",border:`1px solid ${co.color}20`,borderRadius:13,padding:18}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10,marginBottom:10}}>
                       <div>
-                        <div className="syne" style={{fontSize:15,fontWeight:800}}>{cfg.name}</div>
-                        <div style={{fontSize:12,color:"var(--text2)",marginTop:2}}>Total: {cfg.totalTime} mins · {cfg.sections.reduce((a,s)=>a+s.q,0)} questions</div>
+                        <div className="syne" style={{fontSize:14,fontWeight:800}}>{cfg.name}</div>
+                        <div style={{fontSize:11,color:"var(--text2)",marginTop:2}}>{cfg.totalTime} min · {cfg.sections.reduce((a,s)=>a+s.q,0)} questions</div>
                       </div>
                       <button onClick={()=>{
-                        const allQs=[];
-                        Object.values(APT_QUESTIONS).forEach(arr=>allQs.push(...arr));
-                        const shuffled=[...allQs].sort(()=>Math.random()-.5).slice(0,cfg.sections.reduce((a,s)=>a+s.q,0));
-                        setQuestions(shuffled); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
-                        setQuizTimer(0); setTimerActive(true); setMockConfig(cfg); setView("quiz");
-                      }} className="btn-p" style={{padding:"8px 20px",fontSize:13,background:`linear-gradient(135deg,${co.color},${co.color}cc)`}}>
-                        Start Mock →
-                      </button>
+                        const allQs=Object.values(APT_QUESTIONS).flat();
+                        const total=cfg.sections.reduce((a,s)=>a+s.q,0);
+                        const shuffled=[...allQs].sort(()=>Math.random()-.5).slice(0,Math.min(total,allQs.length));
+                        setSelTopic({id:"mock_"+co.id,name:cfg.name});setSelLevel(1);
+                        setQuestions(shuffled);setQIdx(0);setAnswers({});setShowSol(false);setQuizTimer(0);setTimerActive(true);setView("quiz");
+                      }} className="btn-p" style={{padding:"7px 18px",fontSize:12,background:`linear-gradient(135deg,${co.color},${co.color}cc)`}}>Start →</button>
                     </div>
-                    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                      {cfg.sections.map(s=>(
-                        <div key={s.name} style={{padding:"6px 12px",borderRadius:9,background:`${co.color}08`,border:`1px solid ${co.color}20`,fontSize:11}}>
-                          <span style={{fontWeight:700,color:co.color}}>{s.name}</span>
-                          <span style={{color:"var(--text3)",marginLeft:6}}>{s.q}Q · {s.time}min</span>
-                        </div>
-                      ))}
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                      {cfg.sections.map(s=><div key={s.name} style={{padding:"4px 10px",borderRadius:7,background:`${co.color}08`,border:`1px solid ${co.color}18`,fontSize:10}}><span style={{fontWeight:700,color:co.color}}>{s.name}</span><span style={{color:"var(--text3)",marginLeft:5}}>{s.q}Q·{s.time}m</span></div>)}
                     </div>
                   </div>
                 );
@@ -8137,40 +8041,29 @@ const AptitudeTrainerPage = ({ setPage }) => {
           </div>
         )}
 
-        {/* ── WRONG BANK VIEW ── */}
-        {view==="wrongbank" && (
+        {view==="wrongbank"&&(
           <div style={{maxWidth:720,margin:"0 auto"}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-              <div>
-                <div className="syne" style={{fontSize:18,fontWeight:800}}>❌ Wrong Question Bank</div>
-                <div style={{fontSize:13,color:"var(--text2)",marginTop:2}}>{wrongBank.length} questions saved for revision</div>
-              </div>
-              {wrongBank.length>0&&<button onClick={()=>{
-                setQuestions(wrongBank.slice(0,10));setQIdx(0);setAnswers({});setQuizDone(false);setShowSol(false);setQuizTimer(0);setTimerActive(true);setView("quiz");
-              }} className="btn-p" style={{padding:"8px 18px",fontSize:12}}>Practice All →</button>}
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+              <div><div className="syne" style={{fontSize:17,fontWeight:800}}>❌ Wrong Bank</div><div style={{fontSize:12,color:"var(--text2)",marginTop:2}}>{wrongBank.length} saved</div></div>
+              {wrongBank.length>0&&<button onClick={()=>{setSelTopic({id:"wrong",name:"Wrong Bank"});setSelLevel(1);setQuestions(wrongBank.slice(0,10));setQIdx(0);setAnswers({});setShowSol(false);setQuizTimer(0);setTimerActive(true);setView("quiz");}} className="btn-p" style={{padding:"7px 16px",fontSize:12}}>Practice All →</button>}
             </div>
             {wrongBank.length===0?(
-              <div style={{textAlign:"center",padding:"60px 20px",border:"1px dashed var(--border)",borderRadius:14}}>
-                <div style={{fontSize:40,marginBottom:10}}>✅</div>
-                <div className="syne" style={{fontSize:16,fontWeight:700}}>No wrong answers yet!</div>
-                <div style={{fontSize:13,color:"var(--text2)",marginTop:6}}>Wrong answers from quizzes will appear here for revision.</div>
+              <div style={{textAlign:"center",padding:"50px 20px",border:"1px dashed var(--border)",borderRadius:13}}>
+                <div style={{fontSize:36,marginBottom:8}}>✅</div>
+                <div className="syne" style={{fontSize:15,fontWeight:700}}>No wrong answers yet!</div>
               </div>
             ):(
-              <div style={{display:"flex",flexDirection:"column",gap:12}}>
+              <div style={{display:"flex",flexDirection:"column",gap:10}}>
                 {wrongBank.map((q,i)=>(
-                  <div key={i} style={{background:"var(--card)",border:"1px solid rgba(255,61,138,.2)",borderRadius:12,padding:16}}>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10,gap:10}}>
-                      <div style={{fontSize:13,fontWeight:600,lineHeight:1.5,flex:1}}>{q.q}</div>
-                      <button onClick={()=>removeFromWrong(q.key)} style={{fontSize:10,padding:"3px 8px",borderRadius:5,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>Remove</button>
+                  <div key={i} style={{background:"var(--card)",border:"1px solid rgba(255,61,138,.2)",borderRadius:11,padding:14}}>
+                    <div style={{display:"flex",justifyContent:"space-between",gap:10,marginBottom:9}}>
+                      <div style={{fontSize:12,fontWeight:600,lineHeight:1.5,flex:1}}>{q.q}</div>
+                      <button onClick={()=>saveWrong(wrongBank.filter((_,j)=>j!==i))} style={{fontSize:10,padding:"2px 7px",borderRadius:4,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>✕</button>
                     </div>
-                    <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
-                      {q.opts.map((o,oi)=>(
-                        <span key={oi} style={{fontSize:11,padding:"3px 10px",borderRadius:6,background:oi===q.ans?"rgba(0,255,136,.12)":"var(--bg3)",color:oi===q.ans?"var(--green)":"var(--text3)",border:`1px solid ${oi===q.ans?"rgba(0,255,136,.3)":"var(--border)"}`,fontWeight:oi===q.ans?700:400}}>
-                          {String.fromCharCode(65+oi)}. {o} {oi===q.ans?"✓":""}
-                        </span>
-                      ))}
+                    <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:7}}>
+                      {q.opts.map((o,oi)=><span key={oi} style={{fontSize:10,padding:"2px 8px",borderRadius:5,background:oi===q.ans?"rgba(0,255,136,.1)":"var(--bg3)",color:oi===q.ans?"var(--green)":"var(--text3)",border:`1px solid ${oi===q.ans?"rgba(0,255,136,.3)":"var(--border)"}`,fontWeight:oi===q.ans?700:400}}>{String.fromCharCode(65+oi)}. {o}{oi===q.ans?" ✓":""}</span>)}
                     </div>
-                    <div style={{fontSize:11,color:"var(--text2)",background:"var(--bg3)",borderRadius:7,padding:"6px 10px"}}>💡 {q.sol}</div>
+                    <div style={{fontSize:10,color:"var(--text2)",background:"var(--bg3)",borderRadius:6,padding:"5px 9px"}}>💡 {q.sol}</div>
                   </div>
                 ))}
               </div>
@@ -8178,96 +8071,66 @@ const AptitudeTrainerPage = ({ setPage }) => {
           </div>
         )}
 
-        {/* ── SPEED DRILL VIEW ── */}
-        {view==="drill" && (
+        {view==="drill"&&(
           <div style={{maxWidth:600,margin:"0 auto",textAlign:"center"}}>
-            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>⚡ Speed Drill</div>
-            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>10 questions · 60 seconds · Score = accuracy × speed. No explanations — just rapid fire.</p>
-            {!drillMode?(
-              <div>
-                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10,marginBottom:20}}>
-                  {[["All Topics","all","var(--cyan)"],["Quant Only","quant","#3b82f6"],["Logical Only","logical","#8b5cf6"],["Verbal Only","verbal","#10b981"]].map(([label,mode,color])=>(
-                    <button key={mode} onClick={()=>{
-                      const pool = mode==="all"?Object.values(APT_QUESTIONS).flat():
-                        Object.entries(APT_QUESTIONS).filter(([k])=>APT_TOPICS[mode]?.subtopics.some(s=>k.startsWith(s.id))).flatMap(([,v])=>v);
-                      const drillQs = [...(pool.length?pool:Object.values(APT_QUESTIONS).flat())].sort(()=>Math.random()-.5).slice(0,10);
-                      setQuestions(drillQs); setQIdx(0); setAnswers({}); setQuizDone(false); setShowSol(false);
-                      setDrillTimer(60); setDrillMode(true); setDrillScore({correct:0,total:0});
-                      setTimerActive(true); setQuizTimer(0); setView("quiz");
-                    }} style={{padding:"14px 10px",borderRadius:12,border:`2px solid ${color}30`,background:`${color}10`,color:color,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:700,fontSize:13}}>
-                      {label}
-                    </button>
-                  ))}
-                </div>
-                <div style={{fontSize:12,color:"var(--text3)"}}>⏱ 60 seconds · Instant move to next question · No "Show Solution"</div>
-              </div>
-            ):null}
+            <div className="syne" style={{fontSize:17,fontWeight:800,marginBottom:5}}>⚡ Speed Drill</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>10 random questions · timer running · no explanations.</p>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:10,maxWidth:380,margin:"0 auto"}}>
+              {[["All Topics","all","var(--cyan)"],["Quant Only","quant","#3b82f6"],["Logical Only","logical","#8b5cf6"],["Verbal Only","verbal","#10b981"]].map(([label,mode,color])=>(
+                <button key={mode} onClick={()=>{
+                  const allQs=Object.values(APT_QUESTIONS).flat();
+                  const drillQs=[...allQs].sort(()=>Math.random()-.5).slice(0,10);
+                  setSelTopic({id:"drill_"+mode,name:label});setSelLevel(1);
+                  setQuestions(drillQs);setQIdx(0);setAnswers({});setShowSol(false);setQuizTimer(0);setTimerActive(true);setView("quiz");
+                }} style={{padding:"14px 10px",borderRadius:11,border:`2px solid ${color}30`,background:`${color}10`,color,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:700,fontSize:12}}>
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
-        {/* ── FORMULA SHEET VIEW ── */}
-        {view==="formula" && (
-          <div style={{maxWidth:900,margin:"0 auto"}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-              <div className="syne" style={{fontSize:18,fontWeight:800}}>📋 Formula Quick-Reference</div>
-              <button onClick={()=>window.print()} className="btn-p" style={{padding:"7px 18px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Print Sheet</button>
+        {view==="formula"&&(
+          <div style={{maxWidth:920,margin:"0 auto"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+              <div className="syne" style={{fontSize:17,fontWeight:800}}>📋 Formula Sheet</div>
+              <button onClick={()=>window.print()} className="btn-p" style={{padding:"6px 16px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Print</button>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:14}}>
-              {[
-                {title:"📊 Percentages",color:"#3b82f6",formulas:["X% of Y = (X/100)×Y","A increased by X% then decreased by X% = net −X²/100%","Two successive %s x,y: net = x+y+xy/100","Profit% = (SP−CP)/CP × 100","Discount% = (MP−SP)/MP × 100"]},
-                {title:"⏰ Time & Work",color:"#f59e0b",formulas:["Combined rate = 1/a + 1/b + ...","Together A+B = ab/(a+b) days","M₁D₁H₁ = M₂D₂H₂","If A is n× faster, A takes 1/n time of B","Pipe: fill−leak = net rate"]},
-                {title:"🚗 Speed & Distance",color:"#10b981",formulas:["S = D/T (km/h or m/s)","km/h to m/s: ×5/18","Relative speed (same dir) = |S₁−S₂|","Relative speed (opposite) = S₁+S₂","Train cross platform: D = (length of train + platform)"]},
-                {title:"🏦 Simple & Compound Interest",color:"#8b5cf6",formulas:["SI = PRT/100","CI = P(1+R/100)ⁿ − P","CI−SI (2 yrs) = P(R/100)²","Effective rate (half-yearly) = 2R+R²/100","Rule of 72: Years to double ≈ 72/R%"]},
-                {title:"⚖️ Ratio & Proportion",color:"#ef4444",formulas:["a:b = c:d ⟹ ad = bc (product of means = extremes)","If a:b = x:y, then (a+b):(a−b) = (x+y):(x−y)","Mixture: (c₁−c)/(c−c₂) = m₂/m₁","Compounded ratio: (a:b)×(c:d) = ac:bd","Mean proportion of a,b: √(ab)"]},
-                {title:"🎲 Permutation & Combination",color:"#06b6d4",formulas:["nPr = n!/(n−r)!","nCr = n!/(r!(n−r)!)","Circular arrangement: (n−1)!","Identical items: n!/(p!q!r!)","At least one = Total − None selected"]},
-                {title:"🎯 Probability",color:"#f97316",formulas:["P(E) = Favourable/Total","P(A∪B) = P(A)+P(B)−P(A∩B)","P(A∩B) = P(A)×P(B) [independent]","P(Aᶜ) = 1−P(A)","Conditional: P(A|B) = P(A∩B)/P(B)"]},
-                {title:"📐 Mensuration",color:"#84cc16",formulas:["Circle: Area=πr², Circumference=2πr","Rectangle: Area=l×b, Perimeter=2(l+b)","Triangle: Area=½×b×h, Heron's=√(s(s−a)(s−b)(s−c))","Sphere: Vol=(4/3)πr³, SA=4πr²","Cylinder: Vol=πr²h, CSA=2πrh"]},
-                {title:"📈 Averages & Stats",color:"#a855f7",formulas:["Mean = Sum/Count","Weighted avg = Σ(wᵢxᵢ)/Σwᵢ","If avg of n nums = x, and one num a replaced by b: new avg = x+(b−a)/n","Median (odd n) = middle value","Mode = most frequent value"]},
-                {title:"🧪 Mixtures & Alligations",color:"#14b8a6",formulas:["Alligation: (C₁−Mean)/(Mean−C₂) = Q₂/Q₁","Removal & replacement: Final = Initial×(1−x/V)ⁿ","Mix price = (Q₁C₁+Q₂C₂)/(Q₁+Q₂)","Profit in mixture = sell all at higher price","Rule of alligation applies to any quantity"]},
-                {title:"🔢 Number System",color:"#f43f5e",formulas:["Divisibility by 2: last digit even","Div by 3: sum of digits div by 3","Div by 9: sum of digits div by 9","Div by 11: (sum odd pos − sum even pos) div by 11","HCF×LCM = Product of two numbers"]},
-                {title:"⏱️ Time Complexity",color:"#0ea5e9",formulas:["O(1) < O(log n) < O(n) < O(n log n) < O(n²)","Binary Search: O(log n)","Merge Sort: O(n log n)","Bubble/Selection/Insertion Sort: O(n²)","Space complexity of recursion: O(depth)"]},
-              ].map((sec,i)=>(
-                <div key={i} style={{background:"var(--card)",border:`1px solid ${sec.color}20`,borderRadius:12,padding:16}}>
-                  <div className="syne" style={{fontSize:13,fontWeight:800,color:sec.color,marginBottom:10}}>{sec.title}</div>
-                  {sec.formulas.map((f,fi)=>(
-                    <div key={fi} style={{fontSize:12,padding:"4px 0",borderBottom:fi<sec.formulas.length-1?"1px solid var(--border)":"none",color:"var(--text2)",lineHeight:1.5}}>{f}</div>
-                  ))}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(270px,1fr))",gap:12}}>
+              {[{title:"📊 Percentages",color:"#3b82f6",f:["X% of Y = (X/100)×Y","Increase X% then decrease X% = net −X²/100%","Two successive % x,y: net = x+y+xy/100","Profit% = (SP−CP)/CP × 100","Discount% = (MP−SP)/MP × 100"]},{title:"⏰ Time & Work",color:"#f59e0b",f:["Together A+B = ab/(a+b) days","M₁D₁H₁ = M₂D₂H₂","Pipe fill+leak: net = fill−leak rate","If A is n× faster → A takes time/n","Rate = work done per day"]},{title:"🚗 Speed Distance",color:"#10b981",f:["S = D/T","km/h to m/s: ×5/18","Relative speed opposite = S₁+S₂","Relative speed same dir = |S₁−S₂|","Train cross: D = train+platform length"]},{title:"🏦 SI & CI",color:"#8b5cf6",f:["SI = PRT/100","CI = P(1+R/100)ⁿ − P","CI−SI (2yr) = P(R/100)²","Rule of 72: double in 72/R years","Half-yearly: use R/2 and 2×time"]},{title:"⚖️ Ratio Proportion",color:"#ef4444",f:["a:b=c:d → ad=bc","Alligation: (c₁−mean)/(mean−c₂)=Q₂/Q₁","Compounded ratio: ac:bd","Mean proportion of a,b = √(ab)","(A+B):(A−B) = (x+y):(x−y)"]},{title:"🎲 Permutation Combo",color:"#06b6d4",f:["nPr = n!/(n−r)!","nCr = n!/(r!(n−r)!)","Circular arrangements = (n−1)!","Identical items: n!/(p!q!r!)","At least one = Total − None selected"]},{title:"🎯 Probability",color:"#f97316",f:["P(E) = Favourable/Total","P(A∪B) = P(A)+P(B)−P(A∩B)","P(A∩B) = P(A)×P(B) if independent","P(Aᶜ) = 1−P(A)","P(A|B) = P(A∩B)/P(B)"]},{title:"📐 Mensuration",color:"#84cc16",f:["Circle: A=πr², C=2πr","Rectangle: A=l×b, P=2(l+b)","Triangle: A=½bh, Heron=√s(s−a)(s−b)(s−c)","Sphere: V=4πr³/3, SA=4πr²","Cylinder: V=πr²h, CSA=2πrh"]},{title:"📈 Averages Stats",color:"#a855f7",f:["Mean = Sum/Count","Weighted avg = Σ(wᵢxᵢ)/Σwᵢ","Replace a→b: new avg = x+(b−a)/n","Median = middle of sorted list","Mode = most frequent value"]},{title:"⏱️ Complexity",color:"#0ea5e9",f:["O(1) < O(log n) < O(n) < O(n log n) < O(n²)","Binary Search: O(log n)","Merge Sort: O(n log n)","Bubble/Insertion/Selection: O(n²)","Hash lookup average: O(1)"]},{title:"🔢 Number System",color:"#f43f5e",f:["Div by 2: last digit even","Div by 3: digit sum divisible by 3","Div by 9: digit sum divisible by 9","Div by 11: alternating digit sum rule","HCF × LCM = product of two numbers"]},{title:"🧪 Mixtures",color:"#14b8a6",f:["Alligation: (C₁−mean)/(mean−C₂)=Q₂/Q₁","Replacement: Final=Init×(1−x/V)ⁿ","Mix price = (Q₁C₁+Q₂C₂)/(Q₁+Q₂)","Removal then replacement uses compound","Cross-check by total concentration"]}].map((sec,i)=>(
+                <div key={i} style={{background:"var(--card)",border:`1px solid ${sec.color}20`,borderRadius:11,padding:14}}>
+                  <div className="syne" style={{fontSize:12,fontWeight:800,color:sec.color,marginBottom:9}}>{sec.title}</div>
+                  {sec.f.map((f,fi)=><div key={fi} style={{fontSize:11,padding:"3px 0",borderBottom:fi<sec.f.length-1?"1px solid var(--border)":"none",color:"var(--text2)",lineHeight:1.5}}>{f}</div>)}
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* ── AI SOLVER VIEW ── */}
-        {view==="aisolver" && (
+        {view==="aisolver"&&(
           <div style={{maxWidth:700,margin:"0 auto"}}>
-            <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:6}}>🤖 AI Aptitude Solver</div>
-            <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Paste any aptitude question → AI explains step-by-step with formula used. Works for Quant, Logical, and Verbal.</p>
-            <div style={{marginBottom:16}}>
-              <textarea value={aiInput} onChange={e=>setAiInput(e.target.value)}
-                placeholder="Paste your aptitude question here...&#10;&#10;Example: A train 200m long crosses a platform 300m long in 25 seconds. What is the speed of the train in km/h?"
-                style={{width:"100%",minHeight:120,padding:"12px 14px",borderRadius:10,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:13,fontFamily:"'DM Sans',sans-serif",resize:"vertical",boxSizing:"border-box",outline:"none"}}/>
-            </div>
+            <div className="syne" style={{fontSize:17,fontWeight:800,marginBottom:5}}>🤖 AI Aptitude Solver</div>
+            <p style={{color:"var(--text2)",fontSize:13,marginBottom:18}}>Paste any question → step-by-step AI solution.</p>
+            <textarea value={aiInput} onChange={e=>setAiInput(e.target.value)}
+              placeholder={"Paste your aptitude question here...\n\nExample: A train 200m long crosses a 300m platform in 25 seconds. Speed in km/h?"}
+              style={{width:"100%",minHeight:110,padding:"11px 13px",borderRadius:9,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:12,fontFamily:"'DM Sans',sans-serif",resize:"vertical",boxSizing:"border-box",outline:"none",marginBottom:12}}/>
             <button className="btn-p" onClick={()=>solveWithAI(aiInput)} disabled={aiSolving||!aiInput.trim()}
-              style={{padding:"10px 28px",fontSize:14,marginBottom:20,opacity:aiSolving||!aiInput.trim()?0.6:1}}>
-              {aiSolving?"⏳ Solving...":"🤖 Solve Step by Step →"}
+              style={{padding:"9px 24px",fontSize:13,marginBottom:16,opacity:aiSolving||!aiInput.trim()?0.6:1}}>
+              {aiSolving?"⏳ Solving...":"🤖 Solve →"}
             </button>
-            {aiSolution && (
-              <div style={{background:"var(--card)",border:"1px solid rgba(0,212,255,.2)",borderRadius:14,padding:20}}>
-                <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",marginBottom:10}}>AI SOLUTION</div>
+            {aiSolution&&(
+              <div style={{background:"var(--card)",border:"1px solid rgba(0,212,255,.2)",borderRadius:13,padding:18,marginBottom:16}}>
+                <div style={{fontSize:10,fontWeight:700,color:"var(--cyan)",marginBottom:9}}>AI SOLUTION</div>
                 <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{aiSolution}</div>
-                <button onClick={()=>{setAiSolution("");setAiInput("");}} style={{marginTop:12,fontSize:11,padding:"4px 12px",borderRadius:6,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Clear</button>
+                <button onClick={()=>{setAiSolution("");setAiInput("");}} style={{marginTop:10,fontSize:10,padding:"3px 10px",borderRadius:5,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Clear</button>
               </div>
             )}
-            <div style={{marginTop:24,background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:16}}>
-              <div style={{fontSize:12,fontWeight:700,color:"var(--text3)",marginBottom:10}}>SAMPLE QUESTIONS TO TRY</div>
-              {["A and B together can complete a work in 12 days. A alone takes 20 days. How long will B alone take?",
-                "In how many ways can the letters of the word MISSISSIPPI be arranged?",
-                "If the selling price of 10 articles equals the cost price of 11 articles, find the profit percentage.",
-                "A bag contains 4 white, 5 red and 6 blue balls. Three balls are drawn at random. What is the probability all are red?"].map((q,i)=>(
-                <div key={i} onClick={()=>setAiInput(q)} style={{padding:"8px 12px",marginBottom:6,borderRadius:8,border:"1px solid var(--border)",cursor:"pointer",fontSize:12,color:"var(--text2)",transition:"all .15s"}}
-                  onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.color="var(--text)";}}
-                  onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.color="var(--text2)";}}>
+            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:11,padding:14}}>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",marginBottom:9}}>SAMPLE QUESTIONS</div>
+              {["A and B together finish in 12 days. A alone takes 20 days. How long for B alone?","How many ways can MISSISSIPPI be arranged?","CP of 20 pens = SP of 16 pens. Profit %?","Bag: 4W,5R,6B. Draw 3. P(all red)?"].map((q,i)=>(
+                <div key={i} onClick={()=>setAiInput(q)} style={{padding:"7px 10px",marginBottom:5,borderRadius:7,border:"1px solid var(--border)",cursor:"pointer",fontSize:11,color:"var(--text2)",transition:"all .15s"}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";}}>
                   {i+1}. {q}
                 </div>
               ))}
@@ -8279,6 +8142,7 @@ const AptitudeTrainerPage = ({ setPage }) => {
     </div>
   );
 };
+
 
 const STUDENT_TOOLS = [
   {
