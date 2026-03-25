@@ -7303,31 +7303,8 @@ const APT_TOPICS = {
       { id:"estimation",      name:"Fermi Estimation / Guesstimate",levels:[1,2,3],icon:"🔭",companies:["microsoft","product","jobs"] },
     ]
   },
-  case_study_1: [
-    { q:"A consulting firm advises a bank. First step to improve digital adoption:", opts:["Identify current digital usage by customer segment","Launch new mobile app immediately","Train all employees first","Reduce branch staff by 30%"], ans:0, sol:"Always start with data — understand current state (who uses digital, who doesn't, why) before recommending solutions. Classic Deloitte/McKinsey case framework." },
-    { q:"Company revenue grew 20% but profit fell 5%. Most likely reason:", opts:["Costs grew faster than revenue","Revenue recognition error","Tax increase only","Market share loss"], ans:0, sol:"Revenue up 20%, profit down 5% = expenses grew faster than revenue. Cost structure issue — check COGS, opex, or one-time charges." },
-    { q:"Revenue=₹100Cr, Fixed costs=₹40Cr, Variable costs=45% of revenue. Operating profit:", opts:["₹15Cr","₹20Cr","₹25Cr","₹10Cr"], ans:0, sol:"Variable costs = 45%×100 = ₹45Cr. Total costs = 40+45 = ₹85Cr. Op profit = 100-85 = ₹15Cr" },
-    { q:"Break-even units formula:", opts:["Fixed Costs / (Price - Variable Cost per unit)","Fixed Costs / Price","Revenue / Variable Costs","Total Costs / Units"], ans:0, sol:"Break-even = Fixed Costs ÷ Contribution Margin per unit. Contribution = Selling Price − Variable Cost per unit." },
-    { q:"Estimate TAM for food delivery in India (best answer):", opts:["₹50,000-60,000 Cr","₹500-1,000 Cr","₹5,00,000 Cr","₹10,000 Cr"], ans:0, sol:"50M users × ₹250/order × 2 orders/month × 12 = ₹30,000Cr. With growth factor ≈ ₹50,000-60,000Cr TAM." },
-  ],
-  embedded_core_1: [
-    { q:"In embedded C, 'volatile' keyword means:", opts:["Variable can change unexpectedly, prevent compiler optimization","Variable is constant","Variable stored in ROM","Speeds up access"], ans:0, sol:"volatile = compiler cannot cache this variable. Every read goes to memory. Used for hardware registers, ISR-modified variables." },
-    { q:"int a=5; printf('%d', a<<2); Output:", opts:["20","10","40","2"], ans:0, sol:"Left shift by 2 = multiply by 4. 5×4=20." },
-    { q:"Interrupt latency is:", opts:["Time from interrupt signal to first instruction of ISR","Time to complete the ISR","Clock frequency of CPU","Stack pointer depth"], ans:0, sol:"Interrupt latency = delay between interrupt assertion and ISR execution start. Critical in real-time systems." },
-    { q:"Which memory loses data when power off:", opts:["SRAM/DRAM (RAM)","Flash","EEPROM","Mask ROM"], ans:0, sol:"RAM is volatile — loses data without power. Flash/EEPROM/ROM are non-volatile." },
-    { q:"int *p = NULL; *p = 5; This causes:", opts:["Segmentation fault / undefined behavior","p is assigned 5","Null pointer is initialized","Compiler error"], ans:0, sol:"Dereferencing NULL pointer causes segmentation fault at runtime. Classic embedded bug." },
-  ],
-  ibm_technical_1: [
-    { q:"In cloud computing, IaaS provides:", opts:["Virtual machines, storage, networking","Only software applications","Only database services","Development platforms only"], ans:0, sol:"IaaS (Infrastructure as a Service) = VMs, storage, networking. PaaS = dev platform. SaaS = software apps. IBM Cloud is IaaS+PaaS." },
-    { q:"In DevOps, CI/CD stands for:", opts:["Continuous Integration / Continuous Deployment","Code Inspection / Code Delivery","Container Integration / Container Deployment","Central Infrastructure / Central Distribution"], ans:0, sol:"CI = merge code frequently, automated testing. CD = automated deployment to production. Core of modern DevOps." },
-    { q:"IBM's AI platform is called:", opts:["Watson","Einstein","Gemini","Cortana"], ans:0, sol:"IBM Watson is IBM's AI/ML platform. Salesforce=Einstein, Google=Gemini, Microsoft=Copilot/Cortana." },
-    { q:"Which IBM tool is used for business process automation:", opts:["IBM RPA (Robotic Process Automation)","IBM DB2","IBM MQ","IBM SPSS"], ans:0, sol:"IBM RPA automates repetitive tasks. DB2=database, MQ=messaging, SPSS=statistics." },
-  ],
 };
 
-// MOCK_CONFIGS defined in component state area above
-
-// 200+ questions database
 const APT_QUESTIONS = {
   percentages_1: [
     { q:"A shopkeeper marks his goods 25% above cost price and gives a 10% discount. What is his profit %?", opts:["12.5%","15%","17.5%","10%"], ans:0, sol:"Marked price = 1.25CP. After 10% discount, SP = 1.25 × 0.9 × CP = 1.125CP. Profit = 12.5%" },
@@ -7481,6 +7458,27 @@ const APT_QUESTIONS = {
     { q:"Estimate: How many piano tuners are there in Bengaluru? (Fermi Estimation)", opts:["50-100","1000-2000","5-10","500-1000"], ans:0, sol:"Pop~13M. Households~3M. Pianos owned: ~0.1%=3000 pianos. Each piano tuned twice/year=6000 tunings/yr. Tuner does 4/day×250days=1000/yr. Tuners needed=6000/1000=6. But commercial venues add ~10x=60. Answer: 50-100 is reasonable." },
     { q:"Microsoft asks: 'How many gas stations in India?' Your best estimate:", opts:["80,000-90,000","5,000-10,000","200,000+","1,000-5,000"], ans:0, sol:"India pop=1.4B. Cars+2wheelers~300M vehicles. Each station serves ~1000 vehicles/day. Total daily fueling: 300M×1/week=43M/day. Per station: 1000/day. Stations=43M/1000=43,000. With variation: 80,000-90,000 is the actual number (govt data). Estimation should be within 2x." },
   ],
+  case_study_1: [
+    { q:"A consulting firm advises a bank. First step to improve digital adoption:", opts:["Identify current digital usage by customer segment","Launch new mobile app immediately","Train all employees first","Reduce branch staff by 30%"], ans:0, sol:"Always start with data — understand current state (who uses digital, who doesn't, why) before recommending solutions. Classic Deloitte/McKinsey case framework." },
+    { q:"Company revenue grew 20% but profit fell 5%. Most likely reason:", opts:["Costs grew faster than revenue","Revenue recognition error","Tax increase only","Market share loss"], ans:0, sol:"Revenue up 20%, profit down 5% = expenses grew faster than revenue. Cost structure issue — check COGS, opex, or one-time charges." },
+    { q:"Revenue=₹100Cr, Fixed costs=₹40Cr, Variable costs=45% of revenue. Operating profit:", opts:["₹15Cr","₹20Cr","₹25Cr","₹10Cr"], ans:0, sol:"Variable costs = 45%×100 = ₹45Cr. Total costs = 40+45 = ₹85Cr. Op profit = 100-85 = ₹15Cr" },
+    { q:"Break-even units formula:", opts:["Fixed Costs / (Price - Variable Cost per unit)","Fixed Costs / Price","Revenue / Variable Costs","Total Costs / Units"], ans:0, sol:"Break-even = Fixed Costs ÷ Contribution Margin per unit. Contribution = Selling Price − Variable Cost per unit." },
+    { q:"Estimate TAM for food delivery in India (best answer):", opts:["₹50,000-60,000 Cr","₹500-1,000 Cr","₹5,00,000 Cr","₹10,000 Cr"], ans:0, sol:"50M users × ₹250/order × 2 orders/month × 12 = ₹30,000Cr. With growth factor ≈ ₹50,000-60,000Cr TAM." },
+  ],
+  embedded_core_1: [
+    { q:"In embedded C, 'volatile' keyword means:", opts:["Variable can change unexpectedly, prevent compiler optimization","Variable is constant","Variable stored in ROM","Speeds up access"], ans:0, sol:"volatile = compiler cannot cache this variable. Every read goes to memory. Used for hardware registers, ISR-modified variables." },
+    { q:"int a=5; printf('%d', a<<2); Output:", opts:["20","10","40","2"], ans:0, sol:"Left shift by 2 = multiply by 4. 5×4=20." },
+    { q:"Interrupt latency is:", opts:["Time from interrupt signal to first instruction of ISR","Time to complete the ISR","Clock frequency of CPU","Stack pointer depth"], ans:0, sol:"Interrupt latency = delay between interrupt assertion and ISR execution start. Critical in real-time systems." },
+    { q:"Which memory loses data when power off:", opts:["SRAM/DRAM (RAM)","Flash","EEPROM","Mask ROM"], ans:0, sol:"RAM is volatile — loses data without power. Flash/EEPROM/ROM are non-volatile." },
+    { q:"int *p = NULL; *p = 5; This causes:", opts:["Segmentation fault / undefined behavior","p is assigned 5","Null pointer is initialized","Compiler error"], ans:0, sol:"Dereferencing NULL pointer causes segmentation fault at runtime. Classic embedded bug." },
+  ],
+  ibm_technical_1: [
+    { q:"In cloud computing, IaaS provides:", opts:["Virtual machines, storage, networking","Only software applications","Only database services","Development platforms only"], ans:0, sol:"IaaS (Infrastructure as a Service) = VMs, storage, networking. PaaS = dev platform. SaaS = software apps. IBM Cloud is IaaS+PaaS." },
+    { q:"In DevOps, CI/CD stands for:", opts:["Continuous Integration / Continuous Deployment","Code Inspection / Code Delivery","Container Integration / Container Deployment","Central Infrastructure / Central Distribution"], ans:0, sol:"CI = merge code frequently, automated testing. CD = automated deployment to production. Core of modern DevOps." },
+    { q:"IBM's AI platform is called:", opts:["Watson","Einstein","Gemini","Cortana"], ans:0, sol:"IBM Watson is IBM's AI/ML platform. Salesforce=Einstein, Google=Gemini, Microsoft=Copilot/Cortana." },
+    { q:"Which IBM tool is used for business process automation:", opts:["IBM RPA (Robotic Process Automation)","IBM DB2","IBM MQ","IBM SPSS"], ans:0, sol:"IBM RPA automates repetitive tasks. DB2=database, MQ=messaging, SPSS=statistics." },
+  ],,
+
 };
 
 // Concept explanations (teach mode)
@@ -7715,8 +7713,7 @@ const AptitudeTrainerPage = ({ setPage }) => {
   const TABS = [["home","🏠 Home"],["company","🏢 By Company"],["topic","📚 By Topic"],["concept","💡 Concepts"],["mock","🎯 Mock Test"],["wrongbank","❌ Wrong Bank"],["drill","⚡ Speed Drill"],["formula","📋 Formulas"],["aisolver","🤖 AI Solver"]];
 
   return (
-    <div style={{paddingTop:64,minHeight:"100vh",background:"#060c1a",color:"#fff"}}>
-      <div style={{padding:20,fontSize:20,fontWeight:900}}>APTITUDE TRAINER LOADED ✅</div>
+    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
       <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"20px 24px"}}>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
