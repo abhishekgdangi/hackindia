@@ -7477,7 +7477,7 @@ const APT_QUESTIONS = {
     { q:"In DevOps, CI/CD stands for:", opts:["Continuous Integration / Continuous Deployment","Code Inspection / Code Delivery","Container Integration / Container Deployment","Central Infrastructure / Central Distribution"], ans:0, sol:"CI = merge code frequently, automated testing. CD = automated deployment to production. Core of modern DevOps." },
     { q:"IBM's AI platform is called:", opts:["Watson","Einstein","Gemini","Cortana"], ans:0, sol:"IBM Watson is IBM's AI/ML platform. Salesforce=Einstein, Google=Gemini, Microsoft=Copilot/Cortana." },
     { q:"Which IBM tool is used for business process automation:", opts:["IBM RPA (Robotic Process Automation)","IBM DB2","IBM MQ","IBM SPSS"], ans:0, sol:"IBM RPA automates repetitive tasks. DB2=database, MQ=messaging, SPSS=statistics." },
-  ],,
+  ],
 
 };
 
