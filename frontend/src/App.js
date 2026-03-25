@@ -8151,776 +8151,1197 @@ const AptitudeTrainerPage = ({ setPage }) => {
    CS CORE SUBJECTS — Interview Prep
    DBMS · OS · Computer Networks · OOP · System Design
 ════════════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════════════
+   CS CORE INTERVIEW PREP
+   10 Subjects · Theory · MCQ · Interview Q&A · Applied · Cheat Sheet
+════════════════════════════════════════════════════════════════ */
 const CS_SUBJECTS = [
-  { id:"dbms",   name:"DBMS",              icon:"🗄️",  color:"#3b82f6", tagline:"Database Management Systems" },
-  { id:"os",     name:"OS",                icon:"⚙️",  color:"#8b5cf6", tagline:"Operating Systems" },
-  { id:"cn",     name:"Networks",          icon:"🌐",  color:"#10b981", tagline:"Computer Networks" },
-  { id:"oop",    name:"OOP",               icon:"📦",  color:"#f59e0b", tagline:"Object-Oriented Programming" },
-  { id:"sd",     name:"System Design",     icon:"🏗️",  color:"#ef4444", tagline:"System Design & Architecture" },
-  { id:"se",     name:"Software Engg",     icon:"📋",  color:"#06b6d4", tagline:"SDLC · Agile · Testing" },
+  { id:"dbms",  name:"DBMS",           icon:"🗄️",  color:"#3b82f6", tagline:"Database Management Systems" },
+  { id:"os",    name:"OS",             icon:"⚙️",  color:"#8b5cf6", tagline:"Operating Systems" },
+  { id:"cn",    name:"Networks",       icon:"🌐",  color:"#10b981", tagline:"Computer Networks" },
+  { id:"oop",   name:"OOP",            icon:"📦",  color:"#f59e0b", tagline:"Object-Oriented Programming" },
+  { id:"sd",    name:"System Design",  icon:"🏗️",  color:"#ef4444", tagline:"Scalability & Architecture" },
+  { id:"se",    name:"Software Engg",  icon:"📋",  color:"#06b6d4", tagline:"SDLC · Agile · Git · Testing" },
+  { id:"coa",   name:"COA",            icon:"🔌",  color:"#84cc16", tagline:"Computer Organization & Architecture" },
+  { id:"linux", name:"Linux/Unix",     icon:"🐧",  color:"#f97316", tagline:"Commands · Processes · Permissions" },
+  { id:"sql",   name:"SQL Practice",   icon:"💾",  color:"#a855f7", tagline:"Query Writing · Output Prediction" },
+  { id:"cd",    name:"Compiler Design",icon:"🔣",  color:"#64748b", tagline:"Phases · Lexical · Parsing" },
 ];
 
-const CS_CONTENT = {
+const CS_DATA = {
   dbms: {
     chapters: [
-      {
-        title:"1. Fundamentals & Keys",
-        icon:"🔑",
-        theory:`A **Database** is an organized collection of structured data. A **DBMS** (Database Management System) is software that manages databases — examples: MySQL, PostgreSQL, Oracle, MongoDB.
+      { id:"keys", title:"ER Model & Keys", icon:"🔑",
+        theory: `The **ER (Entity-Relationship) Model** is a conceptual data model that describes the structure of a database. It uses entities, attributes, and relationships.
 
 **Types of Keys:**
-• **Primary Key** — uniquely identifies each row; cannot be NULL
-• **Foreign Key** — references Primary Key of another table; enforces referential integrity
-• **Candidate Key** — any column that can be a Primary Key (minimal superkey)
-• **Super Key** — any combination of columns that uniquely identifies a row
-• **Composite Key** — Primary Key made of 2+ columns
-• **Alternate Key** — Candidate Key that wasn't chosen as Primary Key
+• **Primary Key** — uniquely identifies each row; NOT NULL, unique. E.g., StudentID
+• **Foreign Key** — references PK of another table; enforces referential integrity. Can be NULL.
+• **Candidate Key** — any column that COULD be a Primary Key (minimal superkey)
+• **Super Key** — any set of columns that uniquely identifies a row (superset of candidate key)
+• **Composite Key** — PK made of 2+ columns. E.g., (CourseID, StudentID) in Enrollment table
+• **Alternate Key** — candidate keys NOT chosen as the primary key
+• **Surrogate Key** — system-generated key (auto-increment ID) with no business meaning
 
-**Types of Databases:**
-• Relational (SQL) — tables with rows/columns: MySQL, PostgreSQL
-• NoSQL — documents (MongoDB), key-value (Redis), column (Cassandra), graph (Neo4j)
-• NewSQL — ACID + horizontal scale: CockroachDB, Google Spanner`,
+**ER Diagram Concepts:**
+• **Entity** — object with independent existence (Student, Course)
+• **Weak Entity** — depends on another entity for existence (OrderItem depends on Order)
+• **Relationship cardinality** — 1:1, 1:N, M:N
+• **Participation** — Total (must participate) vs Partial (optional)
+
+**Mapping ER to Tables:**
+• 1:1 relationship — merge tables or add FK to one side
+• 1:N relationship — add FK on the "many" side
+• M:N relationship — create a junction/bridge table`,
         mcqs:[
-          {q:"Which key can have NULL values?",opts:["Primary Key","Foreign Key","Super Key","Candidate Key"],ans:1,sol:"Foreign Key allows NULL values (meaning no relationship). Primary and Candidate Keys cannot be NULL."},
-          {q:"Minimum superkey is called:",opts:["Primary Key","Super Key","Candidate Key","Composite Key"],ans:2,sol:"A Candidate Key is the minimal superkey — no subset of it can uniquely identify rows."},
-          {q:"Referential integrity is enforced by:",opts:["Primary Key","Foreign Key","Unique constraint","Index"],ans:1,sol:"Foreign Key enforces referential integrity — ensures the referenced value exists in the parent table."},
-          {q:"Which is NOT a property of Primary Key?",opts:["Unique","Not Null","Can be composite","Can have duplicates"],ans:3,sol:"Primary Key must be unique and not null. It can be composite (multiple columns) but cannot have duplicates."},
-        ]
+          {q:"A table has composite PK (StudentID, CourseID). GradePoints depends only on StudentID. Which NF is violated?",opts:["1NF","2NF","3NF","BCNF"],ans:1,sol:"2NF violation — partial dependency. GradePoints depends on only part of the composite key (StudentID), not the whole key."},
+          {q:"Which key allows NULL values?",opts:["Primary Key","Foreign Key","Candidate Key","Super Key"],ans:1,sol:"Foreign Key allows NULL (no relationship). Primary and Candidate Keys must be NOT NULL and unique."},
+          {q:"A Weak Entity is one that:",opts:["Has no attributes","Cannot exist without its owner entity","Has multiple PKs","Has no relationships"],ans:1,sol:"A Weak Entity cannot exist independently — it depends on a Strong Entity (owner). E.g., OrderItem cannot exist without an Order."},
+          {q:"For M:N relationship in relational model, we:",opts:["Add FK to one table","Merge both tables","Create a junction table","Nothing needed"],ans:2,sol:"M:N relationships require a junction/bridge table containing FKs from both entities. E.g., Student-Course needs an Enrollment table."},
+        ],
+        interview:[
+          {q:"What is the difference between Primary Key and Unique Key?",a:`Both enforce uniqueness, but:
+• Primary Key: cannot be NULL, only ONE per table, implicitly creates clustered index
+• Unique Key: can have ONE NULL, multiple allowed per table, creates non-clustered index
+• A table can have only 1 PK but multiple unique keys
+• Example: UserID is PK; Email can be Unique Key`,followup:"Can a table have no Primary Key?"},
+          {q:"Explain referential integrity with an example.",a:`Referential integrity ensures that a FK value in a child table always refers to an existing PK in the parent table.
+• Example: Orders table has CustomerID (FK) referencing Customers table (PK)
+• If CustomerID=5 doesn't exist in Customers, you cannot insert it in Orders
+• ON DELETE CASCADE — deletes child rows when parent is deleted
+• ON DELETE SET NULL — sets FK to NULL when parent deleted
+• Prevents orphaned records`,followup:"What happens if you try to delete a parent record that has child records?"},
+        ],
+        applied:{type:"sql",questions:[
+          {q:"Find all students who are enrolled in more than 2 courses",a:`SELECT s.StudentID, s.Name, COUNT(e.CourseID) as CourseCount
+FROM Students s
+JOIN Enrollments e ON s.StudentID = e.StudentID
+GROUP BY s.StudentID, s.Name
+HAVING COUNT(e.CourseID) > 2;`},
+          {q:"Find students who are NOT enrolled in any course",a:`SELECT s.StudentID, s.Name
+FROM Students s
+LEFT JOIN Enrollments e ON s.StudentID = e.StudentID
+WHERE e.CourseID IS NULL;
+-- OR using NOT EXISTS:
+SELECT StudentID, Name FROM Students s
+WHERE NOT EXISTS (SELECT 1 FROM Enrollments WHERE StudentID = s.StudentID);`},
+        ]},
+        revision:["Primary Key: unique + NOT NULL + one per table","Foreign Key: references PK, allows NULL, enforces referential integrity","Candidate Key: minimal superkey (could be PK)","Super Key: any unique combination (not necessarily minimal)","Weak Entity: depends on strong entity, identified by owner's PK + partial key","M:N → junction table | 1:N → FK on 'many' side | 1:1 → FK on either side"],
       },
-      {
-        title:"2. SQL — JOINs & Queries",
-        icon:"📊",
-        theory:`**SQL (Structured Query Language)** is used to interact with relational databases.
-
-**Types of JOINs:**
-• **INNER JOIN** — returns rows where condition matches in BOTH tables
-• **LEFT JOIN** — all rows from left table + matching from right (NULL if no match)
-• **RIGHT JOIN** — all rows from right table + matching from left
-• **FULL OUTER JOIN** — all rows from both tables (NULL where no match)
-• **SELF JOIN** — table joined with itself (e.g., employee-manager hierarchy)
-• **CROSS JOIN** — cartesian product of both tables
-
-**Key SQL Clauses:**
-• WHERE — filter rows (before GROUP BY)
-• HAVING — filter groups (after GROUP BY)
-• GROUP BY — aggregate rows by column
-• ORDER BY — sort results (ASC/DESC)
-• DISTINCT — remove duplicates
-• LIMIT/OFFSET — pagination
-
-**Aggregate Functions:** COUNT, SUM, AVG, MAX, MIN
-**String Functions:** CONCAT, SUBSTRING, LENGTH, UPPER, LOWER, TRIM
-**Date Functions:** NOW(), DATE_DIFF(), DATE_FORMAT()
-
-**Subqueries:**
-• Correlated subquery — references outer query (row by row)
-• Non-correlated — independent of outer query
-
-**UNION vs UNION ALL:** UNION removes duplicates; UNION ALL keeps all rows.`,
-        mcqs:[
-          {q:"Which JOIN returns all rows from left table even if no match in right?",opts:["INNER JOIN","LEFT JOIN","RIGHT JOIN","FULL JOIN"],ans:1,sol:"LEFT JOIN returns all rows from the left table. If no match in right table, NULLs are returned for right table columns."},
-          {q:"WHERE vs HAVING — HAVING is used:",opts:["Before GROUP BY","After GROUP BY to filter groups","To filter individual rows","Both before and after"],ans:1,sol:"HAVING filters GROUPS after GROUP BY. WHERE filters individual rows before grouping."},
-          {q:"SELECT COUNT(*) vs COUNT(col) — difference:",opts:["COUNT(*) includes NULLs, COUNT(col) excludes NULLs","Same result","COUNT(*) is slower","COUNT(col) includes NULLs"],ans:0,sol:"COUNT(*) counts all rows including NULLs. COUNT(column) counts only non-NULL values in that column."},
-          {q:"UNION vs UNION ALL — UNION ALL:",opts:["Removes duplicates","Keeps all rows including duplicates","Is slower than UNION","Both A and C"],ans:1,sol:"UNION ALL keeps all rows including duplicates and is faster. UNION removes duplicates (requires extra sorting/hashing)."},
-        ]
-      },
-      {
-        title:"3. Normalization",
-        icon:"🔧",
-        theory:`**Normalization** is the process of organizing a database to reduce redundancy and improve data integrity.
+      { id:"normalization", title:"Normalization (1NF→BCNF)", icon:"🔧",
+        theory:`**Normalization** organizes a database to reduce data redundancy and improve integrity.
 
 **1NF (First Normal Form):**
-• Each column contains atomic (indivisible) values
-• No repeating groups or arrays
+• Atomic values — no multi-valued attributes (no arrays/lists in a cell)
 • Each row is unique
+• Violation example: Phone column with "9876543210, 8765432109"
+• Fix: Separate row for each phone number
 
 **2NF (Second Normal Form):**
 • Must be in 1NF
-• No partial dependency — every non-key attribute depends on the WHOLE primary key
-• Only applies to tables with composite primary keys
+• No partial dependency — non-key attribute must depend on the WHOLE PK
+• Applies only when PK is composite
+• Violation: (StudentID, CourseID) → CourseName (depends only on CourseID)
+• Fix: Move CourseName to a separate Courses table
 
 **3NF (Third Normal Form):**
 • Must be in 2NF
-• No transitive dependency — non-key attributes don't depend on other non-key attributes
-• Rule: "Every non-prime attribute must depend on the key, the whole key, and nothing but the key"
+• No transitive dependency — non-key → non-key → PK is not allowed
+• Violation: StudentID → ZipCode → City (City depends on ZipCode, not directly on StudentID)
+• Fix: Separate table for ZipCode→City
 
 **BCNF (Boyce-Codd Normal Form):**
 • Stricter version of 3NF
-• For every functional dependency X→Y, X must be a superkey
-• Eliminates anomalies that 3NF misses
+• For every FD X→Y, X must be a superkey
+• 3NF allows Y to be prime attribute; BCNF does not
+• Violation example: (StudentID, Subject) → Teacher AND Teacher → Subject (Teacher is not a superkey)
+• BCNF can lose lossless join decomposition guarantee
 
-**Why Normalize?**
-• Reduces data redundancy
-• Prevents update, insert, delete anomalies
-• Saves storage space
-
-**Denormalization:** Intentionally introducing redundancy for query performance (used in data warehouses, OLAP).`,
+**Anomalies prevented by normalization:**
+• **Insert anomaly** — can't add data without other data
+• **Update anomaly** — updating same fact in multiple places
+• **Delete anomaly** — deleting a record removes other useful data`,
         mcqs:[
-          {q:"A table has composite PK (A,B) and column C depends only on A. Which NF is violated?",opts:["1NF","2NF","3NF","BCNF"],ans:1,sol:"2NF is violated — C has partial dependency on A (part of composite key), not the whole key (A,B)."},
-          {q:"Column City depends on ZipCode which depends on StudentID. Which NF is violated?",opts:["1NF","2NF","3NF","BCNF"],ans:2,sol:"3NF is violated — transitive dependency: StudentID→ZipCode→City. Non-key attribute City depends on non-key ZipCode."},
-          {q:"BCNF is stricter than 3NF because:",opts:["It handles multi-valued dependencies","Every determinant must be a superkey","It requires 4NF compliance","It eliminates all NULL values"],ans:1,sol:"In BCNF, for every functional dependency X→Y, X must be a superkey. 3NF allows exceptions where Y is a prime attribute."},
-          {q:"Denormalization is done for:",opts:["Reducing redundancy","Improving write performance","Improving read/query performance","Ensuring data integrity"],ans:2,sol:"Denormalization intentionally adds redundancy to reduce JOINs and improve read/query performance, common in OLAP and data warehouses."},
-        ]
+          {q:"Which normal form removes transitive dependencies?",opts:["1NF","2NF","3NF","BCNF"],ans:2,sol:"3NF removes transitive dependencies. If A→B→C, then C transitively depends on A through B. Fix: split into separate tables."},
+          {q:"BCNF is stricter than 3NF because:",opts:["It handles multi-valued dependencies","Every determinant must be a superkey (even for prime attributes)","It requires 4NF","It has no anomalies"],ans:1,sol:"In BCNF, for every FD X→Y, X must be a superkey — even if Y is a prime attribute. 3NF makes an exception when Y is prime."},
+          {q:"Denormalization is used to:",opts:["Reduce redundancy","Improve write speed","Improve read/query performance","Enforce constraints"],ans:2,sol:"Denormalization intentionally adds redundancy to reduce JOINs and improve read performance. Used in OLAP, data warehouses, read-heavy systems."},
+          {q:"Table: (EmpID, DeptID, EmpName, DeptName). DeptName depends on DeptID only. This violates:",opts:["1NF","2NF","3NF","Already normalized"],ans:1,sol:"2NF is violated — DeptName has partial dependency on DeptID (part of composite key EmpID+DeptID). Fix: separate Department table."},
+        ],
+        interview:[
+          {q:"Explain 2NF vs 3NF with an example.",a:`2NF removes partial dependencies (non-key depends on PART of composite PK).
+• Example: (OrderID, ProductID) → ProductName violates 2NF
+• Fix: ProductName moves to Products table
+
+3NF removes transitive dependencies (non-key → non-key).
+• Example: EmployeeID → DeptID → DeptName violates 3NF
+• Fix: Create Departments(DeptID, DeptName) table
+• Key rule: "Every non-prime attribute must depend on the key, the whole key, and nothing but the key"`,followup:"When would you intentionally violate normalization?"},
+          {q:"What is a lossless decomposition?",a:`A decomposition is lossless if you can reconstruct the original table by JOINing the decomposed tables — no data is gained or lost.
+• Test: The common attribute(s) in decomposed tables must be a superkey of at least one decomposed table
+• 3NF always guarantees lossless decomposition
+• BCNF may not always preserve all functional dependencies
+• Lossy decomposition creates spurious tuples (fake rows) on JOIN`,followup:"What is dependency preservation in decomposition?"},
+        ],
+        applied:{type:"sql",questions:[
+          {q:"You have Table: Orders(OrderID, CustomerID, CustomerName, CustomerCity, ProductID, ProductName, Qty). Identify violations and normalize to 3NF.",a:`Violations:
+- CustomerName, CustomerCity depend on CustomerID → partial/transitive
+- ProductName depends on ProductID → partial dependency
+
+Normalized 3NF:
+Customers(CustomerID PK, CustomerName, CustomerCity)
+Products(ProductID PK, ProductName)  
+Orders(OrderID PK, CustomerID FK, ProductID FK, Qty)`},
+        ]},
+        revision:["1NF: atomic values, no repeating groups","2NF: no partial dependency (non-key depends on whole composite PK)","3NF: no transitive dependency (non-key → non-key)","BCNF: every determinant must be superkey","Anomalies: Insert, Update, Delete — all caused by redundancy","Denormalization: add redundancy for read performance"],
       },
-      {
-        title:"4. ACID Properties & Transactions",
-        icon:"⚡",
-        theory:`**Transaction:** A sequence of operations performed as a single logical unit.
+      { id:"sql", title:"SQL — JOINs, Subqueries, Aggregates", icon:"📊",
+        theory:`**SQL Joins — the most important interview topic:**
 
-**ACID Properties:**
-• **Atomicity** — All operations succeed or all fail (no partial execution). Uses ROLLBACK on failure.
-• **Consistency** — Database moves from one valid state to another. Constraints are never violated.
-• **Isolation** — Concurrent transactions don't interfere. Achieved via locking/MVCC.
-• **Durability** — Committed transactions survive crashes. Achieved via write-ahead logging (WAL).
+**INNER JOIN** — rows matching condition in BOTH tables
+\`\`\`sql
+SELECT e.Name, d.DeptName FROM Employees e INNER JOIN Departments d ON e.DeptID = d.DeptID
+\`\`\`
 
-**Transaction States:** Active → Partially Committed → Committed (or Failed → Aborted)
+**LEFT JOIN** — ALL rows from left + matching from right (NULL if no match)
+**RIGHT JOIN** — ALL rows from right + matching from left
+**FULL OUTER JOIN** — ALL rows from both (NULL where no match)
+**SELF JOIN** — table joined with itself (manager-employee hierarchy)
+**CROSS JOIN** — cartesian product (every combination)
 
-**Concurrency Problems (without isolation):**
-• **Dirty Read** — reading uncommitted data from another transaction
-• **Non-repeatable Read** — same query returns different results in same transaction
-• **Phantom Read** — new rows appear between two reads in same transaction
-• **Lost Update** — two transactions overwrite each other's updates
+**GROUP BY + HAVING:**
+• WHERE filters rows BEFORE grouping
+• HAVING filters groups AFTER GROUP BY
+• Mistake: using WHERE for aggregate conditions (use HAVING)
 
-**Isolation Levels (SQL standard):**
-| Level | Dirty Read | Non-repeatable | Phantom |
+**Window Functions (Advanced):**
+• ROW_NUMBER() — unique row number per partition
+• RANK() — same rank for ties, gaps after
+• DENSE_RANK() — same rank for ties, no gaps
+• LAG(col,n) / LEAD(col,n) — access previous/next row
+
+**Subqueries:**
+• Correlated: references outer query (runs per row — slow)
+• Non-correlated: independent (runs once — faster)
+• EXISTS vs IN: EXISTS stops at first match; IN evaluates all
+
+**Key SQL Concepts:**
+• DISTINCT removes duplicates
+• UNION removes duplicates; UNION ALL keeps all (faster)
+• COALESCE(col, default) — returns first non-NULL value
+• NULL comparisons: use IS NULL not = NULL`,
+        mcqs:[
+          {q:"Which returns all rows from left table even with no match in right?",opts:["INNER JOIN","LEFT JOIN","RIGHT JOIN","FULL JOIN"],ans:1,sol:"LEFT JOIN returns all rows from left table. If no match in right, NULL is returned for right table columns."},
+          {q:"SELECT DeptID, AVG(Salary) FROM Employees WHERE AVG(Salary) > 50000 — what's wrong?",opts:["Nothing","Cannot use AVG in WHERE","Missing GROUP BY","Wrong syntax"],ans:1,sol:"Aggregate functions (AVG, SUM, COUNT) cannot be used in WHERE clause. Use HAVING after GROUP BY instead: HAVING AVG(Salary) > 50000."},
+          {q:"RANK() vs DENSE_RANK() — if scores are 90,90,80:",opts:["Both give 1,1,2","RANK: 1,1,3 | DENSE_RANK: 1,1,2","RANK: 1,2,3 | DENSE_RANK: 1,1,2","Same result always"],ans:1,sol:"RANK() skips numbers after ties: 1,1,3 (skips 2). DENSE_RANK() doesn't skip: 1,1,2. 'Dense' = no gaps."},
+          {q:"EXISTS vs IN — which is more efficient for large subquery results?",opts:["IN always","EXISTS always","Same always","EXISTS when subquery is large"],ans:3,sol:"EXISTS stops at first match (short-circuits), making it faster for large subquery results. IN evaluates the entire subquery first. For small subqueries, IN can be faster."},
+        ],
+        interview:[
+          {q:"What is the difference between WHERE and HAVING?",a:`• WHERE filters INDIVIDUAL ROWS before grouping
+• HAVING filters GROUPS after GROUP BY
+• WHERE cannot use aggregate functions (COUNT, SUM, AVG)
+• HAVING is designed for aggregate conditions
+• Example: Find departments with more than 5 employees:
+  SELECT DeptID, COUNT(*) FROM Employees GROUP BY DeptID HAVING COUNT(*) > 5
+• You can use both: WHERE (row filter) + GROUP BY + HAVING (group filter)`,followup:"Can you use HAVING without GROUP BY?"},
+          {q:"Write a query to find the 2nd highest salary.",a:`Method 1 - Subquery:
+SELECT MAX(Salary) FROM Employees WHERE Salary < (SELECT MAX(Salary) FROM Employees);
+
+Method 2 - DENSE_RANK:
+SELECT Salary FROM (SELECT Salary, DENSE_RANK() OVER (ORDER BY Salary DESC) AS rnk FROM Employees) t WHERE rnk = 2;
+
+Method 3 - LIMIT/OFFSET:
+SELECT DISTINCT Salary FROM Employees ORDER BY Salary DESC LIMIT 1 OFFSET 1;`,followup:"How would you find the Nth highest salary?"},
+        ],
+        applied:{type:"sql",questions:[
+          {q:"Find departments where average salary > overall average salary",a:`SELECT DeptID, AVG(Salary) as AvgSalary
+FROM Employees
+GROUP BY DeptID
+HAVING AVG(Salary) > (SELECT AVG(Salary) FROM Employees);`},
+          {q:"Find employees who earn more than their manager",a:`SELECT e.Name, e.Salary, m.Name as Manager, m.Salary as ManagerSalary
+FROM Employees e
+JOIN Employees m ON e.ManagerID = m.EmpID
+WHERE e.Salary > m.Salary;`},
+        ]},
+        revision:["INNER JOIN: only matching rows | LEFT JOIN: all left + matching right","WHERE: before grouping (no aggregates) | HAVING: after GROUP BY (aggregates OK)","RANK: gaps after ties | DENSE_RANK: no gaps | ROW_NUMBER: always unique","EXISTS: stops at first match (faster for large sets) | IN: evaluates all","UNION removes duplicates (slower) | UNION ALL keeps all (faster)","Correlated subquery: runs per outer row (slow) | Non-correlated: runs once"],
+      },
+      { id:"transactions", title:"Transactions, ACID & Concurrency", icon:"⚡",
+        theory:`**ACID Properties — every interview asks this:**
+
+• **Atomicity** — all-or-nothing. Either all operations succeed or all are rolled back. Achieved via ROLLBACK.
+• **Consistency** — DB moves from one valid state to another. Constraints never violated.
+• **Isolation** — concurrent transactions don't interfere with each other. Achieved via locks/MVCC.
+• **Durability** — committed transactions survive crashes. Achieved via Write-Ahead Logging (WAL).
+
+**Concurrency Problems:**
+• **Dirty Read** — T2 reads T1's uncommitted data. T1 rolls back → T2 has invalid data.
+• **Non-repeatable Read** — T1 reads row, T2 updates it, T1 reads again → different value.
+• **Phantom Read** — T1 reads set of rows, T2 inserts new row, T1 reads again → new row appears.
+• **Lost Update** — T1 and T2 both read X=100, both add 50, both write 150 → one update lost.
+
+**Isolation Levels:**
+| Level | Dirty | Non-repeatable | Phantom |
 |---|---|---|---|
-| Read Uncommitted | Possible | Possible | Possible |
-| Read Committed | ✗ | Possible | Possible |
-| Repeatable Read | ✗ | ✗ | Possible |
-| Serializable | ✗ | ✗ | ✗ |
+| Read Uncommitted | ✓ occurs | ✓ occurs | ✓ occurs |
+| Read Committed | ✗ prevented | ✓ occurs | ✓ occurs |
+| Repeatable Read | ✗ | ✗ prevented | ✓ occurs |
+| Serializable | ✗ | ✗ | ✗ prevented |
 
-**Deadlock in DBMS:** Two transactions waiting for each other's locks. Resolved by timeout or detection algorithms.`,
+**2PL (Two-Phase Locking):**
+• Growing phase: acquire locks, no release
+• Shrinking phase: release locks, no acquire
+• Ensures serializability but can cause deadlocks
+• Strict 2PL: hold all exclusive locks until commit
+
+**MVCC (Multi-Version Concurrency Control):**
+• Each write creates new version; readers see snapshot
+• PostgreSQL, MySQL InnoDB use MVCC
+• No read locks needed; readers don't block writers`,
         mcqs:[
-          {q:"Which ACID property ensures all operations in a transaction succeed or all fail?",opts:["Consistency","Atomicity","Isolation","Durability"],ans:1,sol:"Atomicity ensures all-or-nothing execution. If any operation fails, the entire transaction is rolled back."},
-          {q:"Reading uncommitted data from another transaction is called:",opts:["Phantom Read","Non-repeatable Read","Dirty Read","Lost Update"],ans:2,sol:"Dirty Read occurs when a transaction reads data written by another transaction that hasn't committed yet."},
-          {q:"Which isolation level prevents ALL concurrency problems?",opts:["Read Committed","Repeatable Read","Serializable","Read Uncommitted"],ans:2,sol:"Serializable is the highest isolation level — transactions execute as if serially, preventing dirty reads, non-repeatable reads, and phantom reads."},
-          {q:"Durability is achieved via:",opts:["Locking mechanisms","Write-Ahead Logging (WAL)","MVCC","All of the above"],ans:1,sol:"Durability is primarily achieved via Write-Ahead Logging — changes are written to log before applying to database, ensuring recovery after crashes."},
-        ]
-      },
-      {
-        title:"5. Indexing & Query Optimization",
-        icon:"⚡",
-        theory:`**Index** is a data structure that speeds up data retrieval at the cost of extra storage and slower writes.
+          {q:"T1 reads balance=1000. T2 updates to 1500 (uncommitted). T1 reads again = 1500. T2 rollback. T1 has wrong data. This is:",opts:["Lost Update","Dirty Read","Phantom Read","Non-repeatable Read"],ans:1,sol:"Dirty Read — T1 read T2's uncommitted (dirty) data. When T2 rolled back, T1's read became invalid."},
+          {q:"Which isolation level prevents dirty reads but allows non-repeatable reads?",opts:["Read Uncommitted","Read Committed","Repeatable Read","Serializable"],ans:1,sol:"Read Committed prevents dirty reads (only reads committed data) but allows non-repeatable reads (same query can return different results within same transaction)."},
+          {q:"In 2PL, the shrinking phase means:",opts:["Only acquire locks","Only release locks, cannot acquire new ones","Both acquire and release","Rollback all changes"],ans:1,sol:"In 2PL shrinking phase, a transaction can ONLY release locks — it cannot acquire new ones. Once it releases any lock, it enters the shrinking phase."},
+          {q:"Durability is primarily achieved via:",opts:["Locking","Checkpoints only","Write-Ahead Logging (WAL)","MVCC"],ans:2,sol:"Write-Ahead Logging (WAL): every change is first written to a log before applying to database. On crash, log is replayed to restore committed transactions."},
+        ],
+        interview:[
+          {q:"Explain ACID with a bank transfer example.",a:`Consider transferring ₹1000 from Account A to Account B:
+• Atomicity: BOTH debit A and credit B must succeed, or BOTH rollback
+• Consistency: Total money before = total money after. No money created/destroyed.
+• Isolation: Another transaction reading A or B mid-transfer sees either old or new values, never intermediate state
+• Durability: Once "Transfer Complete" is shown, even a crash won't lose the transfer
 
-**Types of Indexes:**
-• **Clustered Index** — sorts the actual data rows. Only ONE per table. Usually the Primary Key.
-• **Non-Clustered Index** — separate structure with pointers to data. Multiple allowed per table.
-• **Composite Index** — index on multiple columns. Order matters for query efficiency.
-• **Unique Index** — enforces uniqueness (like UNIQUE constraint).
-• **Full-Text Index** — for text search operations.
+Implementation: Atomicity via ROLLBACK, Durability via WAL, Isolation via locks/MVCC, Consistency via constraints.`,followup:"What if we need to transfer across banks (distributed ACID)?"},
+          {q:"What is the difference between Serializable and Repeatable Read isolation?",a:`Repeatable Read prevents dirty + non-repeatable reads but allows PHANTOM reads.
+• Phantom: New rows matching WHERE clause appear between two reads in same transaction
+• Example: SELECT COUNT(*) WHERE age>25 returns 10. Another transaction inserts a 26-year-old. Same SELECT returns 11.
 
-**B-Tree Index** (most common) — balanced tree structure. Good for range queries and equality.
-**Hash Index** — O(1) lookup for exact match. Bad for range queries.
-**Bitmap Index** — good for low-cardinality columns (gender, status). Used in data warehouses.
+Serializable prevents ALL anomalies including phantoms.
+• Implemented via range locks or predicate locks
+• Most expensive isolation level — high contention
+• Use when data correctness is critical (financial systems)`,followup:"Which isolation level does PostgreSQL use by default?"},
+        ],
+        applied:{type:"scenario",questions:[
+          {q:"Two users simultaneously book the last seat on a flight. How would you handle this using transactions?",a:`Solution using Pessimistic Locking:
+BEGIN TRANSACTION;
+SELECT seats_available FROM Flights WHERE flight_id=123 FOR UPDATE; -- exclusive lock
+IF seats_available > 0 THEN
+    UPDATE Flights SET seats_available = seats_available - 1 WHERE flight_id=123;
+    INSERT INTO Bookings(user_id, flight_id) VALUES(user_id, 123);
+    COMMIT;
+ELSE
+    ROLLBACK; -- No seats available
+END IF;
 
-**When to use an index:**
-✓ Frequently searched columns (WHERE clause)
-✓ JOIN columns (Foreign Keys)
-✓ ORDER BY and GROUP BY columns
-
-**When NOT to index:**
-✗ Small tables
-✗ Columns with many NULLs
-✗ Frequently updated columns (slow writes)
-✗ Very low cardinality (e.g., boolean columns)
-
-**Query Optimization:**
-• EXPLAIN/EXPLAIN ANALYZE — shows query execution plan
-• Avoid SELECT * — specify needed columns
-• Use indexed columns in WHERE
-• Avoid functions on indexed columns: WHERE YEAR(date)=2024 (BAD) vs WHERE date BETWEEN... (GOOD)`,
-        mcqs:[
-          {q:"How many clustered indexes can a table have?",opts:["Unlimited","2","1","Depends on DB"],ans:2,sol:"A table can have only ONE clustered index because the physical data is sorted according to it. Multiple non-clustered indexes are allowed."},
-          {q:"B-Tree index is best for:",opts:["Exact match only","Range queries and equality","Full-text search","Bitmap operations"],ans:1,sol:"B-Tree indexes are excellent for both equality (=) and range queries (BETWEEN, >, <). They're the default index type in most databases."},
-          {q:"Indexing a column with very few distinct values (low cardinality) is:",opts:["Always good","Always bad","Good for read-heavy tables","Usually not beneficial"],ans:3,sol:"Low cardinality indexes (e.g., gender: M/F) are usually not beneficial. The query planner may choose a full table scan instead."},
-          {q:"EXPLAIN command is used to:",opts:["Create an index","View query execution plan","Optimize joins automatically","Show table structure"],ans:1,sol:"EXPLAIN shows the query execution plan — how the database will execute a query, which indexes it uses, and estimated costs. Crucial for optimization."},
-        ]
+FOR UPDATE ensures only one transaction can proceed at a time.
+Optimistic locking alternative: use version column, retry on conflict.`},
+        ]},
+        revision:["ACID: Atomicity (rollback), Consistency (constraints), Isolation (locks/MVCC), Durability (WAL)","Dirty Read → Read Committed | Non-repeatable → Repeatable Read | Phantom → Serializable","2PL: Growing phase (acquire only) → Shrinking phase (release only)","MVCC: multiple versions, readers don't block writers (PostgreSQL/MySQL InnoDB)","Lost Update: both transactions read stale value, overwrite each other"],
       },
     ]
   },
   os: {
     chapters: [
-      {
-        title:"1. Processes & Threads",
-        icon:"⚙️",
-        theory:`**Process:** A program in execution. Has its own memory space (code, data, heap, stack).
-**Thread:** Lightweight process. Shares memory with other threads in same process.
+      { id:"processes", title:"Processes, Threads & Synchronization", icon:"⚙️",
+        theory:`**Process:** A program in execution with its own address space.
+**Thread:** Lightweight process sharing memory with its parent process.
+
+**Process Memory Layout (low to high):**
+Text (code) → Data (global vars) → Heap (dynamic) → Stack (local vars, grows downward)
 
 **Process vs Thread:**
 | | Process | Thread |
 |---|---|---|
-| Memory | Separate | Shared |
+| Memory | Isolated address space | Shared (heap, code, data) |
 | Creation | Heavy (fork) | Light |
-| Communication | IPC (slow) | Direct (fast) |
-| Crash | Isolated | Crashes whole process |
-| Context Switch | Expensive | Cheaper |
+| Communication | IPC (pipes, sockets, shared mem) | Direct (shared memory) |
+| Crash isolation | Yes | No (crashes whole process) |
+| Context switch cost | High | Lower |
 
-**Process States:** New → Ready → Running → Waiting → Terminated
+**Synchronization Problems:**
+**Race Condition:** Two threads access shared resource simultaneously → unpredictable result.
+**Critical Section:** Code that accesses shared resource. Must be mutually exclusive.
 
-**Context Switch:** Saving the state (registers, PC, memory maps) of current process and loading state of next process. Overhead includes saving/restoring registers, flushing TLB, cache misses.
+**Solutions:**
+• **Mutex (Mutual Exclusion Lock)** — binary lock. Only owner can unlock. No busy-wait.
+• **Semaphore** — integer counter. Wait (P) decrements; Signal (V) increments.
+  - Binary Semaphore = Mutex (but any thread can signal)
+  - Counting Semaphore — controls access to N resources
+• **Monitor** — high-level sync construct. Only one thread active at a time. Used in Java.
+• **Spinlock** — busy-waits. Good for very short critical sections on multi-core.
 
-**IPC (Inter-Process Communication) mechanisms:**
-• **Pipes** — unidirectional, parent-child communication
-• **Message Queues** — async message passing
-• **Shared Memory** — fastest IPC; processes access same memory region
-• **Semaphores** — synchronization primitives (count-based)
-• **Sockets** — for network or local communication
-
-**Fork vs Exec:**
-• fork() — creates a copy of current process (copy-on-write)
-• exec() — replaces process memory with new program
-• vfork() — shares parent's memory until exec() call`,
+**Classic Problems:**
+• **Producer-Consumer** — producer fills buffer, consumer empties. Use semaphores.
+• **Reader-Writer** — multiple readers OK, exclusive writer. Readers don't block each other.
+• **Dining Philosophers** — 5 philosophers, 5 forks. Shows deadlock and starvation.`,
         mcqs:[
-          {q:"Which IPC mechanism provides the fastest communication?",opts:["Pipes","Message Queues","Shared Memory","Sockets"],ans:2,sol:"Shared Memory is the fastest IPC — no kernel involvement after setup. Processes directly read/write to same memory region."},
-          {q:"Threads within a process share:",opts:["Stack","Registers","Code segment and heap","All of the above"],ans:2,sol:"Threads share code, data, heap, and file descriptors. Each thread has its own stack and registers."},
-          {q:"Context switch overhead includes:",opts:["Saving/restoring registers only","TLB flush and cache misses","Memory allocation","None of the above"],ans:1,sol:"Context switch overhead includes saving/restoring CPU registers, flushing TLB (Translation Lookaside Buffer), and subsequent cache misses — significant performance cost."},
-          {q:"fork() creates a child process by:",opts:["Creating completely new memory","Copy-on-write of parent's memory","Sharing all memory with parent","Executing a new program"],ans:1,sol:"fork() uses copy-on-write — child initially shares parent's memory pages. New pages are only created when either process writes to them."},
-        ]
+          {q:"Which threads in the same process do NOT share?",opts:["Heap","Code segment","Stack and registers","Global variables"],ans:2,sol:"Each thread has its OWN stack (for local variables, return addresses) and registers (CPU state). Heap, code, data, and file descriptors are shared."},
+          {q:"Mutex vs Semaphore — key difference:",opts:["Mutex allows multiple threads","Mutex ownership — only locker can unlock; semaphore has no ownership","Semaphore is faster","They are identical"],ans:1,sol:"Mutex has ownership — only the thread that locked it can unlock it. Semaphore has no ownership — any thread can signal it. This makes mutexes safer for mutual exclusion."},
+          {q:"A counting semaphore initialized to 3 means:",opts:["3 threads must wait","3 threads can access resource simultaneously","Only 3 operations allowed","3 processes share it"],ans:1,sol:"Counting semaphore initialized to 3 allows up to 3 threads to access the resource simultaneously. When count=0, new threads wait."},
+          {q:"The critical section problem solution must satisfy:",opts:["Mutual exclusion only","Mutual exclusion, Progress, Bounded waiting","Only bounded waiting","Mutual exclusion and deadlock prevention"],ans:1,sol:"Three requirements: (1) Mutual Exclusion — at most one process in CS at a time, (2) Progress — decision must be made in finite time, (3) Bounded Waiting — no starvation."},
+        ],
+        interview:[
+          {q:"What is a deadlock and what are its four necessary conditions?",a:`Deadlock: Two or more processes permanently blocked, each waiting for a resource held by another.
+
+Four necessary conditions (ALL must hold simultaneously):
+1. Mutual Exclusion — resource held by only one process at a time
+2. Hold and Wait — process holds resources while waiting for more
+3. No Preemption — resources can't be forcibly taken away
+4. Circular Wait — P1 waits for P2, P2 waits for P3, P3 waits for P1
+
+Prevention: eliminate any one condition.
+Avoidance: Banker's Algorithm — only allocate if system stays in safe state.
+Detection + Recovery: detect cycles in RAG, then kill/preempt processes.`,followup:"How does the Banker's Algorithm work?"},
+          {q:"Explain the Producer-Consumer problem and its solution.",a:`Problem: Producer adds items to bounded buffer; Consumer removes items. Buffer has max capacity N.
+Issues: Producer must wait if buffer full; Consumer must wait if buffer empty; Race condition on buffer.
+
+Solution using Semaphores:
+• mutex = 1 (mutual exclusion on buffer)
+• empty = N (slots available, producer waits if 0)
+• full = 0 (items available, consumer waits if 0)
+
+Producer: wait(empty) → wait(mutex) → add item → signal(mutex) → signal(full)
+Consumer: wait(full) → wait(mutex) → remove item → signal(mutex) → signal(empty)
+
+Key: mutex must be inner wait (to avoid deadlock if order reversed)`,followup:"What is the difference between mutex and binary semaphore?"},
+        ],
+        applied:{type:"scenario",questions:[
+          {q:"Two threads T1 and T2 both execute: balance += 100. Initial balance=0. What's wrong and how to fix?",a:`Problem — Race Condition:
+T1 reads balance=0, T2 reads balance=0
+T1 computes 0+100=100, T2 computes 0+100=100
+T1 writes 100, T2 writes 100 → Final=100 (should be 200!)
+
+Fix using Mutex:
+mutex.lock()
+balance += 100  // critical section
+mutex.unlock()
+
+Now: T1 gets lock, reads 0, writes 100, releases. T2 gets lock, reads 100, writes 200. Correct!`},
+        ]},
+        revision:["Each thread has own stack+registers; shares heap, code, global data","Mutex: binary lock with ownership | Semaphore: integer counter, no ownership","Critical section requirements: Mutual Exclusion + Progress + Bounded Waiting","Deadlock: Mutual Exclusion + Hold&Wait + No Preemption + Circular Wait (ALL 4)","Semaphore operations: wait/P (decrement, block if <0) | signal/V (increment, wake one)"],
       },
-      {
-        title:"2. CPU Scheduling",
-        icon:"📅",
-        theory:`**CPU Scheduling:** Determines which process gets CPU time.
+      { id:"scheduling", title:"CPU Scheduling & Memory Management", icon:"📅",
+        theory:`**CPU Scheduling Algorithms:**
 
-**Scheduling Criteria:**
-• **CPU Utilization** — keep CPU busy (maximize)
-• **Throughput** — processes completed per unit time (maximize)
-• **Turnaround Time** — submission to completion (minimize)
-• **Waiting Time** — time in ready queue (minimize)
-• **Response Time** — first response time (minimize)
+**FCFS** — First Come First Served. Non-preemptive. Convoy Effect: long job blocks short ones.
+**SJF** — Shortest Job First. Optimal average waiting time. Starvation of long processes.
+**SRTF** — Preemptive SJF. Preempts if new process has shorter remaining time.
+**Round Robin** — Time quantum Q. Preemptive. Fair. High context-switch overhead if Q small.
+**Priority** — Lower number = higher priority (commonly). Starvation → fixed by Aging.
 
-**Scheduling Algorithms:**
+**Formulas:**
+• Turnaround Time = Completion − Arrival
+• Waiting Time = Turnaround − Burst
+• Response Time = First CPU − Arrival
 
-**FCFS (First Come First Served):**
-• Non-preemptive. Simple but Convoy Effect problem.
-• Poor average waiting time if long process arrives first.
+**Memory Management:**
 
-**SJF (Shortest Job First):**
-• Optimal average waiting time. But starvation of long processes.
-• Non-preemptive (SJF) or Preemptive (SRTF — Shortest Remaining Time First)
+**Paging:** Physical memory in fixed-size frames; logical in pages (same size).
+• Page table maps page→frame. OS manages.
+• Eliminates external fragmentation. May have internal fragmentation.
+• TLB caches recent translations for speed.
 
-**Round Robin:**
-• Preemptive. Each process gets time quantum Q.
-• Good response time. Context switch overhead if Q too small.
-• Large Q → FCFS. Small Q → high overhead.
+**Segmentation:** Memory in variable-size segments (code, data, stack).
+• Matches programmer's view. May have external fragmentation.
 
-**Priority Scheduling:**
-• Lower number = higher priority (or vice versa).
-• Problem: **Starvation** of low-priority processes.
-• Solution: **Aging** — gradually increase priority of waiting processes.
-
-**Multilevel Queue:** Different queues for different types (interactive, batch, system).
-
-**Key Formulas:**
-• Turnaround Time = Completion Time − Arrival Time
-• Waiting Time = Turnaround Time − Burst Time
-• Response Time = First CPU Time − Arrival Time`,
-        mcqs:[
-          {q:"Which scheduling algorithm gives optimal average waiting time?",opts:["FCFS","Round Robin","SJF","Priority"],ans:2,sol:"SJF gives minimum average waiting time. It's provably optimal — shorter jobs waiting reduces total waiting time more than longer jobs waiting."},
-          {q:"Convoy Effect occurs in which algorithm?",opts:["SJF","Round Robin","Priority","FCFS"],ans:3,sol:"Convoy Effect in FCFS — a long process holds CPU while many short processes wait. One slow process 'holds up the convoy'."},
-          {q:"Starvation in Priority Scheduling is solved by:",opts:["Increasing time quantum","Aging","Using FCFS instead","Multilevel queues"],ans:1,sol:"Aging gradually increases the priority of waiting processes over time, ensuring no process waits indefinitely regardless of its initial priority."},
-          {q:"In Round Robin, if time quantum is very large, it behaves like:",opts:["SJF","Priority","FCFS","SRTF"],ans:2,sol:"With very large quantum, each process runs to completion before next starts — exactly FCFS behavior."},
-        ]
-      },
-      {
-        title:"3. Memory Management",
-        icon:"🧠",
-        theory:`**Memory Management:** OS manages allocation/deallocation of memory to processes.
-
-**Memory Hierarchy (fastest to slowest):** Registers → Cache (L1/L2/L3) → RAM → SSD → HDD
-
-**Contiguous Allocation:**
-• Fixed partitioning — static sizes, internal fragmentation
-• Variable partitioning — dynamic, external fragmentation
-
-**Paging:**
-• Physical memory divided into **frames**; logical memory into **pages** (same size)
-• Page Table maps logical page → physical frame
-• Eliminates external fragmentation; may have internal fragmentation
-• **TLB (Translation Lookaside Buffer)** caches recent page table entries for speed
-
-**Segmentation:**
-• Memory divided into **segments** (code, data, stack) of variable sizes
-• Eliminates internal fragmentation; may have external fragmentation
-• Segment table: base address + limit
-
-**Virtual Memory:**
-• Allows process to use more memory than physically available
-• **Demand Paging** — pages loaded only when accessed
-• **Page Fault** — accessing a page not in RAM → OS loads it from disk
+**Virtual Memory + Demand Paging:**
+• Process uses more memory than physical RAM.
+• Page loaded on first access (page fault → OS loads from disk).
 
 **Page Replacement Algorithms:**
-• **FIFO** — replace oldest page. Belady's Anomaly: more frames → more faults!
-• **LRU** — replace Least Recently Used. No Belady's anomaly. Expensive to implement.
-• **Optimal** — replace page used farthest in future. Not implementable; used as benchmark.
-• **Clock (Second Chance)** — approximates LRU, efficient implementation.
-
-**Thrashing:** Process spends more time paging than executing. Cause: too many processes, too little memory.`,
+• **FIFO** — replace oldest. Belady's anomaly: more frames → more faults!
+• **LRU** — replace least recently used. No Belady's. Expensive to implement.
+• **Optimal (OPT)** — replace page not used longest in future. Not implementable. Benchmark.
+• **Clock** — approximates LRU efficiently using reference bit.`,
         mcqs:[
-          {q:"TLB is used to speed up:",opts:["Disk access","Page table lookups","Cache operations","Context switches"],ans:1,sol:"TLB (Translation Lookaside Buffer) caches recent virtual-to-physical address translations, avoiding expensive page table walks for every memory access."},
-          {q:"Belady's Anomaly affects which page replacement algorithm?",opts:["LRU","Optimal","FIFO","Clock"],ans:2,sol:"Belady's Anomaly: with FIFO, increasing the number of page frames can sometimes INCREASE page faults. LRU and Optimal don't have this anomaly."},
-          {q:"Thrashing occurs when:",opts:["CPU utilization is 100%","Process spends more time paging than executing","Too much RAM is available","Page size is too large"],ans:1,sol:"Thrashing: process constantly causes page faults, spending most time loading pages from disk rather than executing useful work. Caused by insufficient memory."},
-          {q:"Which page replacement is theoretically optimal but not implementable?",opts:["LRU","FIFO","Optimal (OPT)","Clock"],ans:2,sol:"Optimal (OPT) replaces the page that won't be used for the longest time in future. Not implementable because future accesses are unknown. Used as benchmark."},
-        ]
-      },
-      {
-        title:"4. Deadlocks",
-        icon:"🔒",
-        theory:`**Deadlock:** Two or more processes are permanently blocked, each waiting for a resource held by another.
+          {q:"Process arrives: P1(0,10), P2(1,4), P3(2,2). SRTF. What is average waiting time?",opts:["3.67","4.5","2","5"],ans:0,sol:"SRTF: P1 runs 0-2 (10-2=8 left), P3 arrives (2ms < 8ms, preempt), P3 runs 2-4, P2 preempts P1 (4ms < 8ms), P2 runs 4-8, P1 runs 8-16. Waiting: P1=6, P2=3, P3=0. Avg=9/3=3."},
+          {q:"Belady's anomaly is observed in:",opts:["LRU","Optimal","FIFO","Clock"],ans:2,sol:"Belady's anomaly: in FIFO, increasing page frames can INCREASE page faults. LRU and Optimal are stack algorithms — more frames always ≤ fewer faults."},
+          {q:"TLB is used to speed up:",opts:["Disk access","Page table lookups","Semaphore operations","Context switching"],ans:1,sol:"TLB (Translation Lookaside Buffer) caches recent virtual→physical address translations, avoiding full page table traversal on every memory access."},
+          {q:"Thrashing occurs when:",opts:["CPU is 100% utilized","Processes spend more time paging than executing","Too much RAM is available","Page size is too large"],ans:1,sol:"Thrashing: insufficient physical memory → constant page faults → more time loading pages than executing. Solution: reduce multiprogramming degree, add RAM."},
+        ],
+        interview:[
+          {q:"Why is Round Robin better than FCFS for time-sharing systems?",a:`Round Robin gives each process a fixed time quantum (e.g., 10ms), ensuring no process monopolizes CPU.
+• FCFS: long process can block all others (convoy effect) → poor response time
+• Round Robin: every process gets CPU within one complete cycle → predictable response time
+• Trade-off: small quantum → better response but high context-switch overhead
+• Typical quantum: 10-100ms. If quantum > max burst time, degenerates to FCFS.
+• Best for: interactive/time-sharing systems where response time matters`,followup:"How do you choose the optimal time quantum?"},
+        ],
+        applied:{type:"scenario",questions:[
+          {q:"3 processes with burst times 8,4,2 arrive at t=0. Compare average waiting times for FCFS vs SJF.",a:`FCFS (P1,P2,P3 order):
+P1: 0-8, P2: 8-12, P3: 12-14
+Waiting: P1=0, P2=8, P3=12. Avg=20/3=6.67ms
 
-**4 Necessary Conditions (all must hold):**
-1. **Mutual Exclusion** — resource can be held by only one process
-2. **Hold and Wait** — process holds resources while waiting for more
-3. **No Preemption** — resources cannot be forcibly taken
-4. **Circular Wait** — P1 waits for P2, P2 waits for P3, P3 waits for P1
+SJF (P3,P2,P1 — shortest first):
+P3: 0-2, P2: 2-6, P1: 6-14
+Waiting: P3=0, P2=2, P1=6. Avg=8/3=2.67ms
 
-**Deadlock Handling:**
-
-**Prevention** — ensure at least one condition never holds:
-• Eliminate Hold & Wait: request all resources upfront
-• Allow Preemption: forcibly take resources
-• Eliminate Circular Wait: impose ordering on resource types
-
-**Avoidance — Banker's Algorithm:**
-• System stays in SAFE STATE (all processes can eventually complete)
-• Before granting resource, check if resulting state is safe
-• Requires advance knowledge of maximum needs
-
-**Detection & Recovery:**
-• Use Resource Allocation Graph (RAG) to detect cycles
-• Recovery: process termination (one-by-one) or resource preemption
-
-**Banker's Algorithm:**
-• Available + Allocation = Total Resources
-• If Need ≤ Available for some process → run it, release resources, repeat
-• If all processes can finish → SAFE STATE`,
-        mcqs:[
-          {q:"Which condition for deadlock can be prevented by imposing ordering on resources?",opts:["Mutual Exclusion","Hold and Wait","No Preemption","Circular Wait"],ans:3,sol:"Circular Wait is eliminated by imposing a total ordering on resource types and requiring processes to request in increasing order — breaks the circular chain."},
-          {q:"Banker's Algorithm is used for:",opts:["Deadlock Detection","Deadlock Prevention","Deadlock Avoidance","Deadlock Recovery"],ans:2,sol:"Banker's Algorithm is a deadlock avoidance algorithm — it grants resources only if the resulting state is safe, never allowing the system to enter an unsafe state."},
-          {q:"Resource Allocation Graph (RAG) is used for:",opts:["Deadlock Avoidance","Deadlock Detection","Memory Management","CPU Scheduling"],ans:1,sol:"RAG is used for deadlock detection — a cycle in RAG with single-instance resources indicates deadlock. With multi-instance resources, need further analysis."},
-          {q:"Which is NOT a necessary condition for deadlock?",opts:["Mutual Exclusion","Hold and Wait","Starvation","No Preemption"],ans:2,sol:"Starvation is NOT a necessary condition for deadlock. The four conditions are: Mutual Exclusion, Hold and Wait, No Preemption, and Circular Wait."},
-        ]
+SJF is ~60% better than FCFS here!`},
+        ]},
+        revision:["FCFS: non-preemptive, convoy effect | SJF: optimal avg wait, starvation","Round Robin: preemptive, time quantum, no starvation | Priority: starvation → aging","Turnaround = Completion - Arrival | Waiting = Turnaround - Burst","Paging: fixed-size pages, no external fragmentation, TLB for speed","LRU: best practical replacement | FIFO: simple but Belady's anomaly | OPT: theoretical best"],
       },
     ]
   },
   cn: {
     chapters: [
-      {
-        title:"1. OSI & TCP/IP Models",
-        icon:"🔢",
-        theory:`**OSI Model (7 Layers) — All People Seem To Need Data Processing:**
-7. **Application** — HTTP, FTP, SMTP, DNS (user-facing protocols)
-6. **Presentation** — encryption/decryption, compression, translation (SSL/TLS)
-5. **Session** — establishes/maintains sessions (NetBIOS, RPC)
-4. **Transport** — end-to-end delivery, error control (TCP, UDP)
+      { id:"models", title:"OSI Model & TCP/IP", icon:"🔢",
+        theory:`**OSI Model (7 Layers) — Mnemonic: Please Do Not Throw Sausage Pizza Away (bottom-up)**
+
+7. **Application** — user interface, HTTP, FTP, SMTP, DNS
+6. **Presentation** — encryption, compression, encoding (TLS/SSL, JPEG)
+5. **Session** — establish/manage/terminate sessions (NetBIOS, RPC)
+4. **Transport** — end-to-end delivery, error/flow control (TCP, UDP)
 3. **Network** — routing, logical addressing (IP, ICMP, OSPF, BGP)
-2. **Data Link** — framing, MAC addressing, error detection (Ethernet, PPP, ARP)
-1. **Physical** — bits over medium, cables, signals (Wi-Fi, Bluetooth)
+2. **Data Link** — framing, MAC addressing, error detection (Ethernet, ARP, PPP)
+1. **Physical** — bits over medium, cables, signals (Wi-Fi, Bluetooth, RS-232)
+
+**PDU names:** Data | Data | Data | Segment/Datagram | Packet | Frame | Bits
 
 **TCP/IP Model (4 Layers):**
-4. **Application** (OSI 5+6+7) — HTTP, FTP, DNS, SMTP
-3. **Transport** (OSI 4) — TCP, UDP
-2. **Internet** (OSI 3) — IP, ICMP, ARP
-1. **Network Access** (OSI 1+2) — Ethernet, Wi-Fi
+• Application (OSI 5+6+7) — HTTP, FTP, DNS, SMTP
+• Transport (OSI 4) — TCP, UDP
+• Internet (OSI 3) — IP, ICMP, ARP
+• Network Access (OSI 1+2) — Ethernet, Wi-Fi
 
-**PDU (Protocol Data Unit) per layer:**
-• Application: Data/Message
-• Transport: Segment (TCP) / Datagram (UDP)
-• Network: Packet
-• Data Link: Frame
-• Physical: Bits
+**Why OSI has more layers than TCP/IP:**
+• OSI is theoretical reference model — strict separation
+• TCP/IP is practical implementation — combined layers
+• OSI: Session + Presentation + Application merged → TCP/IP Application
 
-**Key mnemonics:**
-OSI top-down: All People Seem To Need Data Processing
-OSI bottom-up: Please Do Not Throw Sausage Pizza Away`,
+**Key Protocols by Layer:**
+• ARP — maps IP → MAC (Layer 2/3 boundary)
+• ICMP — error reporting, ping (Layer 3)
+• DNS — name→IP resolution (Layer 7, uses UDP port 53)
+• DHCP — automatic IP assignment (Layer 7, uses UDP 67/68)`,
         mcqs:[
-          {q:"Which OSI layer is responsible for routing packets between networks?",opts:["Data Link","Network","Transport","Session"],ans:1,sol:"Network Layer (Layer 3) handles routing using IP addresses. It determines the best path for packets across multiple networks."},
-          {q:"TCP operates at which layer?",opts:["Network","Data Link","Transport","Application"],ans:2,sol:"TCP (Transmission Control Protocol) operates at the Transport Layer (Layer 4), providing reliable, connection-oriented communication."},
-          {q:"ARP (Address Resolution Protocol) maps:",opts:["IP to MAC","MAC to IP","Domain to IP","IP to Port"],ans:0,sol:"ARP maps IP addresses to MAC addresses. When a device knows the IP but needs the MAC to send a frame on the local network, it broadcasts an ARP request."},
-          {q:"The Transport Layer PDU is called:",opts:["Frame","Packet","Segment","Bit"],ans:2,sol:"Transport Layer PDU is called Segment (TCP) or Datagram (UDP). Network=Packet, Data Link=Frame, Physical=Bits."},
-        ]
+          {q:"ARP operates between which OSI layers?",opts:["Layer 1 and 2","Layer 2 and 3","Layer 3 and 4","Layer 4 and 5"],ans:1,sol:"ARP (Address Resolution Protocol) maps Layer 3 (IP addresses) to Layer 2 (MAC addresses). It bridges the Network and Data Link layers."},
+          {q:"Which layer is responsible for end-to-end error recovery and flow control?",opts:["Network","Data Link","Transport","Session"],ans:2,sol:"Transport Layer (Layer 4) provides end-to-end reliable delivery, error recovery, and flow control via TCP. IP/Network layer handles hop-by-hop routing."},
+          {q:"DNS uses which transport protocol?",opts:["TCP only","UDP only","TCP for queries, UDP for zone transfers","UDP for queries, TCP for zone transfers"],ans:3,sol:"DNS uses UDP port 53 for regular queries (fast, small). Uses TCP port 53 for zone transfers (large data, reliability needed) and large responses."},
+          {q:"ICMP is used by which tool?",opts:["FTP","Traceroute and Ping","SSH","Telnet"],ans:1,sol:"Ping uses ICMP Echo Request/Reply to test connectivity. Traceroute uses ICMP Time Exceeded messages to trace the path. ICMP is Layer 3."},
+        ],
+        interview:[
+          {q:"What happens when you type google.com in a browser? (Full stack answer)",a:`1. Browser checks local cache for DNS → OS cache → Router cache
+2. DNS query to local resolver → root server → .com TLD → google.com nameserver → returns IP
+3. Browser initiates TCP connection via 3-way handshake (SYN→SYN-ACK→ACK)
+4. TLS handshake (for HTTPS): cipher negotiation, certificate exchange, key exchange
+5. HTTP GET request sent → Google's server processes → HTTP response returned
+6. Browser parses HTML, sends additional requests for CSS/JS/images
+7. Page rendered, TCP connection closed (FIN→FIN-ACK)
+
+Layers involved: DNS (App), TCP (Transport), IP+routing (Network), Ethernet frames (Data Link), cables/Wi-Fi (Physical)`,followup:"How does HTTPS differ from HTTP in this flow?"},
+        ],
+        applied:{type:"scenario",questions:[
+          {q:"Trace the path of a packet from your laptop to a web server, naming the protocols at each step.",a:`Laptop sends HTTP request:
+1. App Layer: HTTP GET / → data created
+2. Transport: TCP adds source/dest port, sequence number → Segment
+3. Network: IP adds source IP (192.168.1.5) + dest IP → Packet. Router looks up routing table.
+4. Data Link: Ethernet frame, source MAC = laptop, dest MAC = router (via ARP). → Frame
+5. Physical: Bits transmitted over Wi-Fi/cable
+
+At each router:
+- IP packet unwrapped from frame
+- Routing table consulted → next hop
+- New frame created with new MAC addresses
+- Repeated until destination reached`},
+        ]},
+        revision:["OSI 7 layers (top-down): Application, Presentation, Session, Transport, Network, Data Link, Physical","TCP/IP 4 layers: Application, Transport, Internet, Network Access","ARP: IP→MAC | DNS: name→IP | ICMP: errors/ping | DHCP: auto IP assignment","PDUs: Segment(TCP)/Datagram(UDP) | Packet(IP) | Frame(Ethernet) | Bits(Physical)"],
       },
-      {
-        title:"2. TCP vs UDP & Key Protocols",
-        icon:"📡",
-        theory:`**TCP (Transmission Control Protocol):**
-• Connection-oriented (3-way handshake: SYN → SYN-ACK → ACK)
-• Reliable — guaranteed delivery, ordering, error correction
-• Flow control (sliding window) + Congestion control
-• Slower due to overhead
-• Use: HTTP/HTTPS, FTP, SMTP, SSH
+      { id:"tcp", title:"TCP, UDP, IP Addressing & Protocols", icon:"📡",
+        theory:`**TCP vs UDP:**
+| Feature | TCP | UDP |
+|---|---|---|
+| Connection | 3-way handshake | Connectionless |
+| Reliability | Guaranteed delivery | No guarantee |
+| Ordering | In-order | Not guaranteed |
+| Error recovery | Yes (retransmit) | No |
+| Speed | Slower (overhead) | Faster |
+| Use cases | HTTP, FTP, SSH, SMTP | DNS, VoIP, Video, Gaming |
 
-**UDP (User Datagram Protocol):**
-• Connectionless — no handshake
-• Unreliable — no guarantee of delivery/order
-• Low overhead, faster
-• Use: DNS, DHCP, VoIP, Video streaming, Gaming, DNS
-
-**3-Way Handshake (TCP connection):**
+**TCP 3-Way Handshake:**
 Client → SYN → Server
 Server → SYN-ACK → Client
-Client → ACK → Server
-(Connection established!)
+Client → ACK → Server [Connection established]
 
-**4-Way Termination:**
-Client → FIN → Server
-Server → ACK → Client
-Server → FIN → Client
-Client → ACK → Server
+**TCP Flow Control:** Sliding window — receiver advertises window size (how much buffer available). Sender can send up to window size without waiting for ACK.
 
-**Key Protocols & Ports:**
-| Protocol | Port | Layer | Purpose |
-|---|---|---|---|
-| HTTP | 80 | App | Web |
-| HTTPS | 443 | App | Secure Web |
-| FTP | 21 | App | File Transfer |
-| SSH | 22 | App | Secure Shell |
-| DNS | 53 | App | Domain resolution |
-| SMTP | 25 | App | Send Email |
-| IMAP | 143 | App | Receive Email |
-| DHCP | 67/68 | App | IP assignment |
-| POP3 | 110 | App | Email retrieval |`,
+**TCP Congestion Control:**
+• **Slow Start** — exponential growth from 1 MSS until ssthresh
+• **Congestion Avoidance** — linear growth after ssthresh
+• **Fast Retransmit** — retransmit on 3 duplicate ACKs
+• **Fast Recovery** — halve cwnd, don't restart slow start
+
+**IP Addressing:**
+• IPv4: 32-bit, 4 octets, ~4.3 billion addresses
+• IPv6: 128-bit, solves exhaustion
+
+**Subnetting — /24 means 24 bits for network, 8 for hosts:**
+• 192.168.1.0/24 → 256 addresses, 254 usable
+• Usable = 2^(host bits) - 2 (network + broadcast excluded)
+
+**Important Port Numbers:**
+HTTP:80 | HTTPS:443 | SSH:22 | FTP:21 | DNS:53 | SMTP:25 | POP3:110 | IMAP:143 | MySQL:3306 | RDP:3389`,
         mcqs:[
-          {q:"TCP 3-way handshake is: SYN → ?",opts:["ACK → SYN-ACK","SYN-ACK → ACK","ACK → FIN","FIN → ACK"],ans:1,sol:"TCP 3-way handshake: Client sends SYN → Server replies SYN-ACK → Client sends ACK. Connection is now established."},
-          {q:"Which protocol uses UDP?",opts:["HTTP","FTP","DNS","SSH"],ans:2,sol:"DNS uses UDP (port 53) for queries because speed matters more than reliability. DNS queries are small and retrying is easy."},
-          {q:"HTTPS uses port:",opts:["80","21","443","22"],ans:2,sol:"HTTPS (HTTP Secure) uses port 443. HTTP uses port 80. HTTPS encrypts data using TLS/SSL."},
-          {q:"Which is true about UDP?",opts:["Connection-oriented","Guarantees delivery","No flow control","Has 3-way handshake"],ans:2,sol:"UDP has no flow control, no congestion control, no guaranteed delivery. It's connectionless and fast — suitable for real-time applications."},
-        ]
-      },
-      {
-        title:"3. IP Addressing & Subnetting",
-        icon:"🔢",
-        theory:`**IPv4:** 32-bit address (4 octets) e.g., 192.168.1.1
-**IPv6:** 128-bit address e.g., 2001:0db8:85a3::8a2e:0370:7334
+          {q:"TCP 3-way handshake sequence:",opts:["SYN, ACK, SYN-ACK","SYN, SYN-ACK, ACK","SYN, FIN, ACK","ACK, SYN, FIN"],ans:1,sol:"TCP connection: Client sends SYN → Server responds SYN-ACK → Client sends ACK. After this 3-way handshake, connection is established and data can flow."},
+          {q:"TCP Slow Start begins at:",opts:["cwnd = ssthresh","cwnd = max window","cwnd = 1 MSS","cwnd = 0"],ans:2,sol:"TCP Slow Start begins with congestion window (cwnd) = 1 MSS (Maximum Segment Size). Window doubles each RTT until ssthresh is reached."},
+          {q:"How many usable host addresses in a /26 subnet?",opts:["64","62","30","126"],ans:1,sol:"/26 means 6 bits for hosts: 2^6 = 64 addresses. Subtract 2 (network + broadcast) = 62 usable host addresses."},
+          {q:"Which protocol is used by ping?",opts:["TCP","UDP","ICMP","ARP"],ans:2,sol:"Ping uses ICMP (Internet Control Message Protocol) Echo Request and Echo Reply messages. It operates at the Network layer (Layer 3)."},
+        ],
+        interview:[
+          {q:"Why does UDP still exist if TCP is reliable?",a:`UDP's lack of reliability IS its advantage in specific scenarios:
+1. Speed: No handshake, no ACK wait → lower latency
+2. Real-time data: VoIP/Video calls — a late packet is worse than a dropped one
+3. Broadcast/Multicast: UDP supports sending to multiple destinations
+4. DNS queries: Simple request-response, application handles retry
+5. Gaming: Game state is constantly updated, old packets are irrelevant
 
-**IPv4 Classes:**
-| Class | Range | Default Mask | Use |
-|---|---|---|---|
-| A | 1-126 | /8 (255.0.0.0) | Large networks |
-| B | 128-191 | /16 (255.255.0.0) | Medium networks |
-| C | 192-223 | /24 (255.255.255.0) | Small networks |
-| D | 224-239 | — | Multicast |
-| E | 240-255 | — | Research |
+Applications add their own reliability on top of UDP when needed (QUIC/HTTP3 does this).
+TCP overhead: 3-way handshake, ACKs, retransmissions — unacceptable for real-time.`,followup:"How does QUIC/HTTP3 use UDP?"},
+        ],
+        applied:{type:"scenario",questions:[
+          {q:"Design the network configuration for a small office: 50 computers, need internet access. What subnet would you use?",a:`Use 192.168.1.0/26 or /25:
+/26: 62 usable addresses (enough for 50 + router + printer + spare)
+- Network: 192.168.1.0, Broadcast: 192.168.1.63
+- Router: 192.168.1.1 (gateway)
+- DHCP range: 192.168.1.2 - 192.168.1.62
 
-**Private IP Ranges (not routable on internet):**
-• 10.0.0.0/8 (Class A)
-• 172.16.0.0/12 (Class B)
-• 192.168.0.0/16 (Class C)
-
-**Subnetting:**
-• Subnet mask divides IP into Network + Host portions
-• /24 = 255.255.255.0 = 256 addresses (254 usable)
-• /25 = 255.255.255.128 = 128 addresses (126 usable)
-• Usable hosts = 2^(host bits) - 2 (subtract network + broadcast)
-
-**CIDR (Classless Inter-Domain Routing):**
-• 192.168.1.0/24 — last 8 bits for hosts
-• Network address: all host bits = 0
-• Broadcast address: all host bits = 1
-
-**NAT (Network Address Translation):**
-• Maps private IPs to public IP
-• Conserves IPv4 addresses
-• Types: Static, Dynamic, PAT (Port Address Translation)
-
-**DHCP:** Automatically assigns IP, subnet mask, gateway, DNS to devices.`,
-        mcqs:[
-          {q:"How many usable host addresses does a /24 network have?",opts:["256","254","255","252"],ans:1,sol:"A /24 network has 2^8 = 256 addresses. Subtract 2 (network address and broadcast address) = 254 usable host addresses."},
-          {q:"Which is a private IP address?",opts:["8.8.8.8","172.16.0.1","200.100.50.25","203.0.113.1"],ans:1,sol:"172.16.0.1 is in the 172.16.0.0/12 private range. 8.8.8.8 is Google's public DNS. Private ranges: 10.x.x.x, 172.16-31.x.x, 192.168.x.x."},
-          {q:"NAT (Network Address Translation) is used for:",opts:["Encryption","Conserving IPv4 addresses","Routing between networks","Error detection"],ans:1,sol:"NAT allows multiple devices on a private network to share a single public IP address, conserving the limited IPv4 address space."},
-          {q:"Class B IP address range:",opts:["1-126","128-191","192-223","224-239"],ans:1,sol:"Class B: first octet 128-191, default /16 mask. Used for medium-sized networks, provides 65,534 usable host addresses."},
-        ]
-      },
-      {
-        title:"4. Network Devices & Security",
-        icon:"🔒",
-        theory:`**Network Devices:**
-• **Hub** — Layer 1, broadcasts to all ports, half-duplex, creates one collision domain
-• **Switch** — Layer 2, forwards based on MAC table, each port = separate collision domain
-• **Router** — Layer 3, routes between networks using IP, connects different subnets/networks
-• **Bridge** — Layer 2, connects two LAN segments, filters using MAC addresses
-• **Gateway** — translates between different protocols/networks
-• **Firewall** — Layer 3/4, filters traffic based on rules (packet filtering, stateful inspection)
-
-**Hub vs Switch vs Router:**
-| | Hub | Switch | Router |
-|---|---|---|---|
-| Layer | 1 | 2 | 3 |
-| Addressing | None | MAC | IP |
-| Collision | Single domain | Per port | N/A |
-| Broadcast | Yes | Yes (same VLAN) | No |
-
-**HTTP vs HTTPS:**
-• HTTP — plaintext, no encryption, port 80
-• HTTPS — encrypted (TLS/SSL), port 443
-• TLS Handshake: cipher negotiation → certificate exchange → key exchange → encrypted channel
-
-**DNS (Domain Name System):**
-• Resolves domain names to IP addresses
-• Hierarchical: Root → TLD (.com/.in) → Authoritative → Local
-• DNS records: A (IPv4), AAAA (IPv6), CNAME (alias), MX (mail), NS (nameserver)
-• DNS uses UDP port 53 for queries, TCP for zone transfers
-
-**Firewalls:**
-• Packet filtering — checks header (IP, port, protocol)
-• Stateful inspection — tracks connection state
-• Application-layer (WAF) — inspects HTTP traffic`,
-        mcqs:[
-          {q:"Which device operates at Layer 3 and routes between different networks?",opts:["Hub","Switch","Router","Bridge"],ans:2,sol:"Router operates at Layer 3 (Network), using IP addresses to route packets between different networks/subnets. Switches use MAC (Layer 2), Hubs are Layer 1."},
-          {q:"DNS primarily uses which protocol?",opts:["TCP","UDP","HTTP","FTP"],ans:1,sol:"DNS uses UDP port 53 for queries (fast, small packets). It uses TCP port 53 for zone transfers (large data, reliability needed)."},
-          {q:"A switch creates:",opts:["One collision domain for all ports","Separate collision domain per port","One broadcast domain per port","No domains"],ans:1,sol:"Each port on a switch is its own collision domain (full-duplex, no collisions). A switch creates ONE broadcast domain (unless VLANs configured)."},
-          {q:"HTTPS encryption is provided by:",opts:["HTTP headers","TLS/SSL","IPSec","VPN"],ans:1,sol:"HTTPS = HTTP over TLS (Transport Layer Security). TLS provides encryption, authentication (certificates), and data integrity for web communication."},
-        ]
+Setup:
+- Router with NAT (public IP → private 192.168.x.x)
+- DHCP server for automatic IP assignment
+- DNS: 8.8.8.8 (Google) or router's DNS
+- If growth expected, use /25 (126 usable addresses)`},
+        ]},
+        revision:["TCP: connection, reliable, ordered, slower | UDP: connectionless, fast, no guarantee","3-way handshake: SYN → SYN-ACK → ACK","Ports: HTTP=80, HTTPS=443, SSH=22, FTP=21, DNS=53, SMTP=25","Slow Start: cwnd doubles per RTT | Congestion Avoidance: linear increase","Usable hosts = 2^(host bits) - 2"],
       },
     ]
   },
   oop: {
     chapters: [
-      {
-        title:"1. Four Pillars of OOP",
-        icon:"🏛️",
-        theory:`**OOP (Object-Oriented Programming)** organizes code around objects (data + behavior).
+      { id:"pillars", title:"Four Pillars & SOLID Principles", icon:"🏛️",
+        theory:`**Four Pillars of OOP:**
 
-**1. Encapsulation:**
-• Bundling data (attributes) and methods that operate on it into a single unit (class)
-• Hides internal implementation details
+**1. Encapsulation** — Bundling data and methods, hiding internal state.
 • Access modifiers: private, protected, public
-• Achieved via getters/setters
-• Benefits: security, modularity, maintainability
+• Getters/setters provide controlled access
+• Benefits: security, modularity, easy maintenance
+• Real world: ATM — you use buttons, don't access internal circuits
 
-**2. Inheritance:**
-• A class (child/subclass) inherits properties and methods from another class (parent/superclass)
-• Types: Single, Multiple (C++/Python), Multilevel, Hierarchical, Hybrid
-• Java uses 'extends', Python uses parentheses
-• **IS-A relationship** (Dog IS-A Animal)
-• Benefits: code reuse, establishes hierarchy
+**2. Inheritance** — Child class inherits parent's properties/methods.
+• IS-A relationship (Dog IS-A Animal)
+• Types: Single, Multi-level, Hierarchical, Multiple (C++/Python), Hybrid
+• Java: extends (single) | Python: class Dog(Animal) | C++: class Dog : public Animal
+• Method overriding: child provides specific implementation of parent method
+• super() calls parent constructor/method
 
-**3. Polymorphism:**
-• "Many forms" — same interface, different implementation
-• **Compile-time (Static):** Method Overloading — same name, different parameters
-• **Runtime (Dynamic):** Method Overriding — subclass redefines parent method
-• Achieved via virtual functions in C++, @Override in Java
-• Benefits: flexibility, extensibility
+**3. Polymorphism** — Same interface, different behavior.
+• **Compile-time (Static):** Method Overloading — same name, different params/types
+• **Runtime (Dynamic):** Method Overriding — virtual functions, @Override
+• Duck Typing (Python): "if it walks like a duck, quacks like a duck, it's a duck"
 
-**4. Abstraction:**
-• Hiding complex implementation, showing only essential features
-• Achieved via Abstract classes and Interfaces
-• Abstract class: can have both abstract and concrete methods
-• Interface: only abstract methods (Java 8+ can have default methods)
-• **HAS-A relationship** through composition
+**4. Abstraction** — Hiding complexity, showing only essentials.
+• Abstract class: has both abstract (no body) and concrete methods. Can have constructor.
+• Interface: all abstract methods (Java 7). Default methods added in Java 8.
+• Multiple interface implementation allowed (Java doesn't allow multiple class inheritance)
 
-**Abstract class vs Interface:**
+**Abstract Class vs Interface:**
 | | Abstract Class | Interface |
 |---|---|---|
-| Methods | Both abstract + concrete | Only abstract (Java 7) |
+| Methods | Abstract + Concrete | Abstract only (Java 7) |
 | Constructor | Yes | No |
-| Multiple inherit | No | Yes |
-| Access modifiers | Any | Public only |`,
+| Multiple inherit | No | Yes (multiple interfaces) |
+| Use when | "is-a" + shared code | "can-do" capabilities |`,
         mcqs:[
-          {q:"Method Overloading is an example of:",opts:["Runtime Polymorphism","Compile-time Polymorphism","Encapsulation","Abstraction"],ans:1,sol:"Method Overloading (same name, different parameters) is resolved at compile time — compile-time/static polymorphism. Overriding is resolved at runtime."},
-          {q:"Which access modifier provides maximum visibility?",opts:["private","protected","public","package-private"],ans:2,sol:"public allows access from anywhere. private = within class only, protected = same package + subclasses, package-private (default) = same package."},
-          {q:"Interface in Java 7 can have:",opts:["Only concrete methods","Abstract and concrete methods","Only abstract methods","Constructor"],ans:2,sol:"Java 7 interfaces can only have abstract methods (implicitly public abstract). Java 8 added default and static methods."},
-          {q:"'Dog IS-A Animal' represents:",opts:["Composition","Aggregation","Inheritance","Encapsulation"],ans:2,sol:"IS-A relationship represents Inheritance — Dog is a subclass of Animal, inheriting its properties. HAS-A represents Composition/Aggregation."},
-        ]
-      },
-      {
-        title:"2. Advanced OOP Concepts",
-        icon:"🔮",
-        theory:`**Constructor:**
-• Special method, same name as class, no return type
-• Called automatically when object is created
-• Types: Default, Parameterized, Copy constructor
-• Constructor chaining: this() calls same class, super() calls parent
+          {q:"Which OOP concept allows a function to behave differently based on the object calling it?",opts:["Encapsulation","Inheritance","Polymorphism","Abstraction"],ans:2,sol:"Polymorphism allows the same method name to behave differently based on the object — runtime polymorphism via method overriding, compile-time via overloading."},
+          {q:"Interface vs Abstract class — when to use interface?",opts:["When you have common implementation","When unrelated classes need same capability","When you need a constructor","When you need private methods"],ans:1,sol:"Use interfaces for capabilities that unrelated classes can have (Flyable for Bird and Plane). Use abstract class when related classes share common implementation."},
+          {q:"Method overloading is resolved at:",opts:["Runtime","Compile time","Both","Load time"],ans:1,sol:"Method overloading = compile-time (static) polymorphism. The compiler determines which overloaded method to call based on parameter types/count at compile time."},
+          {q:"SOLID — 'O' in Open/Closed Principle means:",opts:["Open for modification, closed for extension","Open for extension, closed for modification","Open source required","Optional feature"],ans:1,sol:"Open/Closed: software entities should be OPEN for extension (add new behavior) but CLOSED for modification (don't change existing code). Achieved via polymorphism/interfaces."},
+        ],
+        interview:[
+          {q:"Explain the difference between method overloading and overriding.",a:`Overloading (Compile-time polymorphism):
+• Same class, same method name, DIFFERENT parameters (type, number, order)
+• Resolved at compile time by compiler
+• Example: add(int,int) and add(double,double) in same class
+• Return type can differ, but not as distinguishing factor alone
 
-**Destructor/Garbage Collection:**
-• Destructor (~ClassName in C++) — called when object is destroyed
-• Java uses Garbage Collector (GC) — automatically frees unused memory
-• finalize() method called before GC (deprecated in Java 9+)
+Overriding (Runtime polymorphism):
+• Different class (parent-child), SAME method signature (name + params + return)
+• Resolved at runtime via virtual dispatch
+• Child provides specific implementation of parent's method
+• @Override annotation in Java helps catch errors
+• Cannot override static, final, or private methods`,followup:"What is covariant return type in method overriding?"},
+          {q:"What are SOLID principles and why do they matter?",a:`S — Single Responsibility: One class, one reason to change. Avoids "God classes".
+O — Open/Closed: Extend behavior without modifying existing code. Use interfaces.
+L — Liskov Substitution: Subclass must be substitutable for parent. No surprising behavior.
+I — Interface Segregation: Don't force classes to implement unused methods. Small interfaces.
+D — Dependency Inversion: Depend on abstractions (interfaces), not concrete implementations.
 
-**Static:**
-• Static variable — shared across all instances (class variable)
-• Static method — belongs to class, not instance; can't access 'this'
-• Static block — runs when class is loaded
-• Singleton pattern uses static
+Why: SOLID code is maintainable, testable, extensible. Violations lead to tightly coupled, fragile code.
+Example: D principle — instead of UserService creating MySQLDatabase directly, inject Database interface.`,followup:"Give an example of Liskov Substitution Principle violation."},
+        ],
+        applied:{type:"scenario",questions:[
+          {q:"Design a Shape hierarchy with Circle, Rectangle implementing area(). Which OOP concepts do you use?",a:`Abstraction: Shape abstract class with abstract area() method
+Inheritance: Circle extends Shape, Rectangle extends Shape
+Polymorphism: shapes.forEach(s -> s.area()) — different calculation per shape
+Encapsulation: radius/length/width are private, accessed via getters
 
-**final keyword (Java):**
-• final variable — constant (can't change)
-• final method — can't be overridden
-• final class — can't be inherited (String is final)
-
-**Design Principles (SOLID):**
-• **S**ingle Responsibility — class has one reason to change
-• **O**pen/Closed — open for extension, closed for modification
-• **L**iskov Substitution — subclass can replace parent without breaking
-• **I**nterface Segregation — don't force implement unused methods
-• **D**ependency Inversion — depend on abstractions, not concretions
-
-**Common Design Patterns:**
-• **Singleton** — one instance only (DB connection, logger)
-• **Factory** — create objects without specifying exact class
-• **Observer** — notify multiple objects of state change (events)
-• **Decorator** — add behavior to objects dynamically
-• **Strategy** — swap algorithms at runtime`,
-        mcqs:[
-          {q:"Static methods cannot access:",opts:["Static variables","Class name","Instance variables (this)","Other static methods"],ans:2,sol:"Static methods belong to the class, not instances. They cannot access instance variables or instance methods (which require 'this' reference) directly."},
-          {q:"Which SOLID principle says a class should have only one reason to change?",opts:["Open/Closed","Liskov Substitution","Single Responsibility","Interface Segregation"],ans:2,sol:"Single Responsibility Principle (SRP) — a class should have only one job/responsibility, giving it only one reason to change. Improves cohesion."},
-          {q:"Singleton pattern ensures:",opts:["Multiple instances","Exactly one instance","No instances","Two instances"],ans:1,sol:"Singleton ensures a class has exactly one instance and provides a global access point to it. Used for DB connections, loggers, config managers."},
-          {q:"Method overriding requires:",opts:["Same name, different parameters","Same name, same parameters, different return","Same signature in parent and child","Different access modifier"],ans:2,sol:"Method overriding requires same method name, same parameters, and same (or covariant) return type in the subclass. The child class provides specific implementation."},
-        ]
+abstract class Shape {
+    abstract double area();
+    void printArea() { System.out.println("Area: " + area()); }
+}
+class Circle extends Shape {
+    private double radius;
+    double area() { return Math.PI * radius * radius; }
+}
+class Rectangle extends Shape {
+    private double l, w;
+    double area() { return l * w; }
+}`},
+        ]},
+        revision:["Encapsulation: data + methods bundled, access via getters/setters","Inheritance: IS-A, code reuse, method overriding with super()","Polymorphism: Overloading=compile-time | Overriding=runtime","Abstraction: abstract class (has constructor) vs interface (no constructor, multiple implement)","SOLID: Single Responsibility, Open/Closed, Liskov, Interface Segregation, Dependency Inversion"],
       },
     ]
   },
   sd: {
     chapters: [
-      {
-        title:"1. System Design Fundamentals",
-        icon:"🏗️",
-        theory:`**System Design** is the process of defining architecture, components, and interfaces for a system to satisfy specified requirements.
+      { id:"fundamentals", title:"Scalability, Caching & Load Balancing", icon:"🏗️",
+        theory:`**System Design = designing large-scale distributed systems.**
 
-**Types of Scaling:**
-• **Vertical Scaling (Scale Up)** — add more CPU/RAM to existing server. Simple but limited.
-• **Horizontal Scaling (Scale Out)** — add more servers. More complex but unlimited.
+**Scalability:**
+• **Vertical (Scale Up)** — bigger server (more CPU/RAM). Simple, limited, single point of failure.
+• **Horizontal (Scale Out)** — more servers. Complex but unlimited. Requires load balancer.
 
-**Key Concepts:**
-
-**Load Balancer:**
-• Distributes traffic across multiple servers
-• Algorithms: Round Robin, Least Connections, IP Hash, Weighted
-• Types: L4 (TCP), L7 (HTTP/application-level)
-• Tools: Nginx, HAProxy, AWS ALB/ELB
+**Load Balancing:**
+Distributes incoming requests across multiple servers.
+Algorithms: Round Robin, Least Connections, IP Hash (sticky sessions), Weighted
+Tools: Nginx, HAProxy, AWS ALB/ELB
+Types: Layer 4 (TCP/IP level), Layer 7 (HTTP, content-aware)
+Benefits: High availability, no single point of failure
 
 **Caching:**
-• Store frequently accessed data in fast storage
-• Levels: Browser cache → CDN → Application cache (Redis) → DB cache
-• Strategies: Cache-aside, Write-through, Write-behind, Refresh-ahead
-• Cache invalidation: TTL (time-to-live), event-based, LRU eviction
-• Tools: Redis, Memcached
+Store frequently accessed data in fast storage to reduce DB load.
+• **Browser cache** — client-side, reduces network requests
+• **CDN** — geographically distributed, serve static content from nearest node
+• **Redis/Memcached** — in-memory cache, sub-millisecond reads
+• **DB query cache** — cache query results
 
-**CDN (Content Delivery Network):**
-• Servers distributed globally, serve static content from nearest node
-• Reduces latency, reduces load on origin server
-• Tools: CloudFlare, AWS CloudFront, Akamai
+**Cache Strategies:**
+• **Cache-aside (lazy loading)** — app checks cache first, loads from DB on miss
+• **Write-through** — write to cache AND DB simultaneously
+• **Write-back (write-behind)** — write to cache first, async write to DB (risk of data loss)
+• **TTL** — time-to-live, auto-expire stale data
 
 **Database Scaling:**
-• **Replication** — master-slave; slave handles reads, master handles writes
-• **Sharding** — split data across multiple DB servers by key
-• Sharding strategies: Hash-based, Range-based, Directory-based
+• **Read Replicas** — master handles writes, slaves handle reads
+• **Sharding** — split data across multiple DBs (horizontal partitioning)
+  - Hash sharding: hash(key) % num_shards
+  - Range sharding: 0-1M on shard1, 1M-2M on shard2
+• **Connection Pooling** — reuse DB connections (PgBouncer, HikariCP)
 
 **CAP Theorem:**
-A distributed system can guarantee only 2 of 3:
-• **C**onsistency — all nodes see same data simultaneously
-• **A**vailability — every request gets a response
-• **P**artition Tolerance — system works despite network partitions
-• CP systems: HBase, Zookeeper | AP systems: DynamoDB, Cassandra | CA: Traditional RDBMS`,
+Distributed system can guarantee only 2 of 3:
+• **C**onsistency — all nodes see same data
+• **A**vailability — every request gets response
+• **P**artition Tolerance — works despite network partition
+In practice: choose CP (banks) or AP (social media, DNS)`,
         mcqs:[
-          {q:"CAP Theorem states a distributed system can guarantee at most:",opts:["1 of 3","2 of 3","All 3","None"],ans:1,sol:"CAP Theorem: a distributed system cannot simultaneously guarantee Consistency, Availability, AND Partition Tolerance. In practice, partition tolerance is required, so you choose between CP or AP."},
-          {q:"Redis is primarily used as:",opts:["Primary database","Cache and message broker","Load balancer","CDN"],ans:1,sol:"Redis is an in-memory data store used primarily as a cache (sub-millisecond reads) and message broker (pub/sub). It can also be used as a primary DB for some use cases."},
-          {q:"Database sharding means:",opts:["Creating read replicas","Splitting data across multiple DB servers","Encrypting database","Creating backups"],ans:1,sol:"Sharding splits data across multiple database servers (shards) based on a shard key. Each shard holds a subset of data — enables horizontal scaling."},
-          {q:"Which load balancing algorithm routes requests from same client to same server?",opts:["Round Robin","Least Connections","IP Hash","Weighted Round Robin"],ans:2,sol:"IP Hash uses client's IP address to determine which server handles the request — ensures same client always goes to same server (session persistence/sticky sessions)."},
-        ]
-      },
-      {
-        title:"2. Microservices & APIs",
-        icon:"🔌",
-        theory:`**Monolith vs Microservices:**
-| | Monolith | Microservices |
-|---|---|---|
-| Deployment | All-at-once | Independent |
-| Scaling | Scale entire app | Scale individual services |
-| Development | Simpler initially | Complex coordination |
-| Technology | Single stack | Polyglot |
-| Failure | Single point | Isolated failures |
+          {q:"CAP Theorem: a distributed DB that must work during network partition can guarantee at most:",opts:["Both C and A","C only or A only, not both","All three","Only P"],ans:1,sol:"Once you choose Partition Tolerance (required in distributed systems), you must sacrifice either Consistency OR Availability during a network partition. You cannot have all three."},
+          {q:"Cache-aside strategy means:",opts:["Cache is always updated on DB write","App checks cache, on miss loads from DB and caches result","DB automatically updates cache","Cache is write-only"],ans:1,sol:"Cache-aside (lazy loading): app checks cache first. On cache miss, load from DB, store in cache, return. On cache hit, return directly. Most common caching pattern."},
+          {q:"Read replica is used for:",opts:["Write scaling","Read scaling","Both read and write","Backup only"],ans:1,sol:"Read replicas handle READ queries (which dominate most applications). Master handles WRITES. This separates read and write load, scaling reads horizontally."},
+          {q:"Hash-based sharding distributes data based on:",opts:["Time of insertion","Data size","Hash of shard key","Alphabetical order"],ans:2,sol:"Hash sharding: shard_id = hash(key) % num_shards. Distributes data uniformly. Downside: resharding when adding shards requires redistributing data."},
+        ],
+        interview:[
+          {q:"Design a URL shortener (bit.ly). What components would you use?",a:`Requirements: Short URL → Long URL redirect, 100M URLs, 10B redirects/day.
 
-**REST API Principles:**
-• Stateless — server stores no client state
-• Client-Server separation
-• Uniform interface (standard methods)
-• HTTP Methods: GET (read), POST (create), PUT (full update), PATCH (partial), DELETE
+Components:
+• API Server: POST /shorten → generate short code, GET /{code} → redirect
+• Short code generation: Base62 encoding of auto-increment ID (0-9, a-z, A-Z)
+• Database: Write original URL + short code. Read on redirect.
+• Cache: Redis caching popular short codes (80/20 rule — 20% URLs get 80% traffic)
+• CDN/Load Balancer: Distribute read traffic
 
-**HTTP Status Codes:**
-• 2xx: Success — 200 OK, 201 Created, 204 No Content
-• 3xx: Redirect — 301 Moved Permanently, 302 Found
-• 4xx: Client Error — 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
-• 5xx: Server Error — 500 Internal Server Error, 503 Service Unavailable
+Scale:
+• Read-heavy (10B reads vs 100M writes) → add read replicas
+• Redis cache for hot URLs → reduces DB load by ~90%
+• Rate limiting on write API to prevent abuse`,followup:"How would you handle custom short codes (user-defined)?"},
+        ],
+        applied:{type:"scenario",questions:[
+          {q:"Your application DB has 10M users and read queries take 2 seconds. What would you do?",a:`Step-by-step optimization:
+1. Add indexes on frequently queried columns (userId, email, created_at)
+2. Add Redis cache for user profile reads (most users read same profiles)
+3. Add read replicas — route SELECT queries to slaves
+4. Optimize queries: EXPLAIN ANALYZE, fix N+1 queries
+5. Connection pooling (PgBouncer) if too many DB connections
+6. If still slow: consider partitioning users table by userId range
+7. Archive old/inactive users to separate table
 
-**GraphQL vs REST:**
-• REST: multiple endpoints, over/under fetching
-• GraphQL: single endpoint, client specifies exact data needed
-
-**Message Queues:**
-• Async communication between services
-• Decouples producer and consumer
-• Tools: Kafka, RabbitMQ, AWS SQS
-• Use cases: email notifications, order processing, logging
-
-**API Gateway:**
-• Single entry point for microservices
-• Handles auth, rate limiting, routing, load balancing
-• Tools: Kong, AWS API Gateway, Nginx`,
-        mcqs:[
-          {q:"HTTP 401 vs 403 — which means the user is authenticated but not authorized?",opts:["401","403","404","500"],ans:1,sol:"401 Unauthorized = not authenticated (needs to login). 403 Forbidden = authenticated but no permission to access this resource."},
-          {q:"Which HTTP method should be idempotent?",opts:["POST","GET and PUT","POST and PATCH","DELETE only"],ans:1,sol:"GET (no side effects), PUT (same result each time), and DELETE (first call deletes, subsequent calls = 404) should be idempotent. POST creates new resource each time."},
-          {q:"Message queues provide:",opts:["Synchronous communication","Tight coupling","Async, decoupled communication","Direct service-to-service calls"],ans:2,sol:"Message queues enable asynchronous, decoupled communication — producer sends message without waiting for consumer. Enables independent scaling and resilience."},
-          {q:"GraphQL advantage over REST:",opts:["Multiple endpoints","Client specifies exact data needed","Server decides what data to send","Uses XML"],ans:1,sol:"GraphQL lets clients specify exactly what data they need in one request, solving REST's over-fetching (getting too much data) and under-fetching (needing multiple requests) problems."},
-        ]
+Caching strategy: cache user profiles with 1-hour TTL, invalidate on profile update.`},
+        ]},
+        revision:["Vertical scaling: bigger server | Horizontal: more servers + load balancer","CAP Theorem: max 2 of 3 — CP (banks) or AP (social media) in practice","Cache-aside: check cache → miss → load DB → cache result","Read replicas: master=writes, slaves=reads | Sharding: split data across DBs","Hash sharding: uniform distribution | Range sharding: easy range queries"],
       },
     ]
   },
   se: {
     chapters: [
-      {
-        title:"1. SDLC Models",
-        icon:"🔄",
-        theory:`**SDLC (Software Development Life Cycle):** Process for planning, creating, testing, and deploying software.
+      { id:"sdlc", title:"SDLC, Agile & Git", icon:"🔄",
+        theory:`**SDLC Models:**
 
-**Phases:** Requirements → Design → Implementation → Testing → Deployment → Maintenance
+**Waterfall** — Sequential phases. Each must complete before next starts.
+Phases: Requirements → Design → Implementation → Testing → Deployment → Maintenance
+Pros: Simple, well-documented | Cons: No flexibility, late testing, changes expensive
+Best for: Fixed requirements, small projects, safety-critical systems
 
-**SDLC Models:**
+**Agile** — Iterative, 2-4 week sprints. Embrace change.
+• Customer collaboration over contract negotiation
+• Working software over documentation
+• Responding to change over following plan
 
-**Waterfall:**
-• Sequential phases, each must complete before next
-• Simple, well-documented, easy to manage
-• Problem: No flexibility. Changes expensive. Late testing.
-• Good for: stable requirements, small projects
+**Scrum (Agile framework):**
+• **Roles:** Product Owner (prioritizes backlog) | Scrum Master (facilitates) | Dev Team
+• **Artifacts:** Product Backlog (all features) | Sprint Backlog (this sprint's work) | Increment
+• **Events:** Sprint Planning | Daily Standup (15 min) | Sprint Review | Sprint Retrospective
 
-**Agile:**
-• Iterative, incremental development (2-4 week sprints)
-• Customer collaboration, adaptive to change
-• Frameworks: Scrum, Kanban, XP (Extreme Programming)
-• Scrum roles: Product Owner, Scrum Master, Dev Team
-• Artifacts: Product Backlog, Sprint Backlog, Increment
+**V-Model** — Each dev phase ↔ corresponding test phase.
+Requirements ↔ Acceptance Testing
+System Design ↔ System Testing
+Detailed Design ↔ Integration Testing
+Coding ↔ Unit Testing
 
-**Spiral:**
-• Risk-driven, iterative. Each loop = Planning+Risk Analysis+Engineering+Evaluation
-• Good for large, risky projects
-• Expensive and complex to manage
+**Git Essential Commands:**
+\`\`\`
+git clone/init          — start a repo
+git add . / git commit  — stage and commit
+git push/pull           — sync with remote
+git branch/checkout     — manage branches
+git merge/rebase        — integrate branches
+git stash               — save uncommitted changes
+git reset/revert        — undo changes
+git log --oneline       — view history
+\`\`\`
 
-**V-Model:**
-• Each development phase has corresponding testing phase
-• More disciplined than Waterfall
-• Requirements ↔ Acceptance Testing
-• Design ↔ System Testing
-• Implementation ↔ Unit Testing
+**Merge vs Rebase:**
+• Merge: creates merge commit, preserves history
+• Rebase: moves commits onto tip of target branch, linear history (rewrites history — don't rebase shared branches!)
 
-**DevOps:**
-• Combines Development + Operations
-• Continuous Integration/Continuous Deployment (CI/CD)
-• Infrastructure as Code (IaC)
-• Tools: Jenkins, GitHub Actions, Docker, Kubernetes
-
-**Agile vs Waterfall:**
-| | Waterfall | Agile |
-|---|---|---|
-| Requirements | Fixed upfront | Evolving |
-| Testing | End of project | Every sprint |
-| Customer | Minimal involvement | Continuous |
-| Changes | Expensive | Welcome |`,
+**Testing Types:**
+• Unit: individual functions | Integration: module interactions | System: full system | UAT: user acceptance
+• Black box: test behavior | White box: test internal logic | Gray box: partial knowledge`,
         mcqs:[
-          {q:"In Scrum, who prioritizes the product backlog?",opts:["Scrum Master","Development Team","Product Owner","Stakeholders"],ans:2,sol:"Product Owner owns and prioritizes the product backlog — decides which features to build next based on business value and stakeholder needs."},
-          {q:"V-Model testing corresponding to unit testing is:",opts:["System testing","Integration testing","Acceptance testing","Code implementation"],ans:3,sol:"V-Model: Requirements↔Acceptance, High-level Design↔System Testing, Low-level Design↔Integration Testing, Coding↔Unit Testing. Unit testing corresponds to the coding/implementation phase."},
-          {q:"CI/CD stands for:",opts:["Code Integration/Code Deployment","Continuous Integration/Continuous Deployment","Customer Interface/Customer Delivery","None"],ans:1,sol:"CI (Continuous Integration) — frequently merge code, run automated tests. CD (Continuous Delivery/Deployment) — automatically deploy to staging/production. Core DevOps practice."},
-          {q:"Which model is best when requirements change frequently?",opts:["Waterfall","V-Model","Agile","Big Bang"],ans:2,sol:"Agile handles changing requirements best through iterative development, regular customer feedback, and sprint flexibility. Waterfall is rigid and expensive to change."},
-        ]
+          {q:"In Scrum, who is responsible for prioritizing the Product Backlog?",opts:["Scrum Master","Development Team","Product Owner","Stakeholders directly"],ans:2,sol:"Product Owner owns and prioritizes the Product Backlog — decides which features have highest business value and should be built next."},
+          {q:"git rebase vs git merge — rebase:",opts:["Creates merge commit","Rewrites commit history for linear log","Preserves complete history","Merges only fast-forward changes"],ans:1,sol:"Rebase rewrites commit history — moves your commits onto the tip of target branch, creating a cleaner linear history. NEVER rebase shared/public branches — it rewrites history others depend on."},
+          {q:"Which testing type validates against user requirements?",opts:["Unit Testing","Integration Testing","System Testing","UAT (User Acceptance Testing)"],ans:3,sol:"UAT (User Acceptance Testing) validates the system meets business requirements from user perspective. Usually done by end users/clients before go-live."},
+          {q:"Agile's main advantage over Waterfall:",opts:["Better documentation","Lower cost always","Adapts to changing requirements","Faster initial delivery"],ans:2,sol:"Agile's core advantage: embraces changing requirements through iterative development and regular customer feedback. Waterfall is rigid — changes are expensive after design phase."},
+        ],
+        interview:[
+          {q:"Explain the difference between git merge and git rebase.",a:`Merge: combines two branches, creates a merge commit, preserves complete history.
+• git checkout main && git merge feature
+• Creates: "Merge branch 'feature'" commit
+• Pros: safe (doesn't rewrite history), shows when branches diverged
+
+Rebase: moves/replays your commits on top of another branch. No merge commit. Linear history.
+• git checkout feature && git rebase main
+• Pros: clean linear history, easier to read git log
+• DANGER: Never rebase commits that have been pushed to shared repo — rewrites history, breaks others' work
+
+Rule: Rebase local/private branches. Merge public/shared branches.`,followup:"What is a detached HEAD state in git?"},
+        ],
+        applied:{type:"scenario",questions:[
+          {q:"Your team of 5 needs to work on the same codebase. Describe your Git branching strategy.",a:`Feature Branch Workflow / GitFlow:
+1. main/master — production-ready code only
+2. develop — integration branch, latest features
+3. feature/xyz — one branch per feature/ticket
+4. hotfix/xyz — urgent production fixes
+5. release/1.x — release preparation
+
+Workflow:
+Developer creates feature branch from develop
+→ Implements feature, commits locally
+→ Pushes to remote, opens Pull Request
+→ Code review by 1-2 teammates
+→ CI/CD runs automated tests
+→ After approval, merge to develop (squash merge)
+→ Weekly release: develop → main with version tag
+
+Protections: main and develop are protected (no direct push).`},
+        ]},
+        revision:["Waterfall: sequential, rigid, late testing | Agile: iterative, sprint, adaptive","Scrum: PO (backlog) + SM (facilitates) + Dev Team | Sprint=2-4 weeks","V-Model: coding↔unit | detailed design↔integration | system design↔system test","git merge: safe, preserves history | git rebase: linear history, don't use on shared branches","Testing: unit→integration→system→UAT | Black box: behavior | White box: code"],
+      },
+    ]
+  },
+  coa: {
+    chapters: [
+      { id:"arch", title:"Computer Architecture & Cache", icon:"🔌",
+        theory:`**Computer Organization vs Architecture:**
+• Architecture: ISA (Instruction Set Architecture) — what programmer sees (registers, instructions, addressing)
+• Organization: How architecture is implemented (circuits, signals, hardware)
+
+**Number Systems:**
+• Binary (base 2), Octal (base 8), Decimal (base 10), Hexadecimal (base 16)
+• 2's Complement for signed integers: flip bits + 1
+  - 5 in 8-bit = 00000101; -5 = 11111010 + 1 = 11111011
+• Sign bit: 0 = positive, 1 = negative
+
+**Instruction Cycle (Fetch-Decode-Execute):**
+1. **Fetch** — PC → MAR; Memory → MDR; MDR → IR; PC++
+2. **Decode** — Control unit interprets IR (opcode + operands)
+3. **Execute** — ALU performs operation, result stored in register/memory
+
+**Addressing Modes:**
+• Immediate: operand IN instruction (MOV AX, 5)
+• Register: operand in register (MOV AX, BX)
+• Direct: instruction has memory address (MOV AX, [1000])
+• Indirect: instruction has address of address (pointer)
+• Indexed: base address + offset
+
+**Cache Memory:**
+• Hierarchy: Registers (fastest) → L1 → L2 → L3 → RAM → Disk (slowest)
+• L1: ~4 cycles | L2: ~12 cycles | L3: ~40 cycles | RAM: ~200 cycles
+• **Hit**: data found in cache | **Miss**: must go to next level
+• **Hit ratio** = hits / (hits + misses). Goal: maximize hit ratio
+
+**Cache Mapping:**
+• Direct Mapped: each memory block → exactly one cache line (conflicts possible)
+• Fully Associative: block → any cache line (expensive, flexible)
+• Set Associative: N-way (block → one of N lines per set) — balance
+
+**Pipelining:**
+Execute multiple instruction stages simultaneously (like assembly line).
+IF → ID → EX → MEM → WB (5-stage classic pipeline)
+Hazards: Structural (resource conflict), Data (dependency), Control (branch)
+Speedup = n stages (ideal) but hazards reduce efficiency`,
+        mcqs:[
+          {q:"2's complement of +7 in 4-bit is 0111. What is -7?",opts:["1000","1001","0111","1111"],ans:1,sol:"To get -7: flip 0111 = 1000, add 1 = 1001. Verification: 0111 + 1001 = 10000, discard carry → 0000 ✓ (7 + (-7) = 0)"},
+          {q:"In pipelining, a data hazard occurs when:",opts:["Two instructions need same hardware","Instruction needs result of previous instruction","Branch prediction fails","Memory is unavailable"],ans:1,sol:"Data hazard: an instruction needs the result of a previous instruction that hasn't completed yet. Solutions: stalling (insert NOPs), forwarding/bypassing, out-of-order execution."},
+          {q:"Cache hit ratio = 0.9, cache access = 10ns, main memory = 100ns. Effective access time:",opts:["19ns","10ns","100ns","55ns"],ans:0,sol:"EAT = hit_ratio × cache_time + (1-hit_ratio) × (cache_time + main_time) = 0.9×10 + 0.1×(10+100) = 9 + 11 = 20ns. Or simple model: 0.9×10 + 0.1×100 = 9+10 = 19ns."},
+          {q:"Set-associative cache is a compromise between:",opts:["L1 and L2 cache","Direct mapped and fully associative","Speed and accuracy","Hardware and software"],ans:1,sol:"Set-associative is a compromise: Direct mapped (simple, fast, conflicts) vs Fully associative (flexible, expensive). N-way set associative balances both."},
+        ],
+        interview:[
+          {q:"What is pipelining and what are its hazards?",a:`Pipelining executes multiple instructions simultaneously in different stages — like an assembly line.
+5-stage: IF(Fetch) → ID(Decode) → EX(Execute) → MEM(Memory access) → WB(Write back)
+Ideal speedup = number of stages. One instruction per cycle (in steady state).
+
+Hazards:
+1. Structural: two instructions need same resource (e.g., single memory port). Fix: duplicate hardware.
+2. Data: instruction needs result of previous. Fix: forwarding/bypassing (send result directly to next stage), or stalling.
+3. Control: branch — don't know next PC until branch resolved. Fix: branch prediction, delayed branching, speculative execution.`,followup:"What is out-of-order execution?"},
+        ],
+        applied:{type:"scenario",questions:[
+          {q:"Convert 255 to binary, octal, and hexadecimal.",a:`Decimal 255:
+Binary: 255 = 128+64+32+16+8+4+2+1 = 11111111
+Octal: 255/8=31 R7, 31/8=3 R7, 3/8=0 R3 → 377
+Hexadecimal: 255 = 15×16 + 15 = FF
+
+Quick way: Binary 11111111 → split in 4s: 1111 1111 → F F = 0xFF
+Binary → Octal: group in 3s: 011 111 111 = 3 7 7 = 0377`},
+        ]},
+        revision:["2's complement: flip all bits + 1 | Sign bit: 0=positive, 1=negative","Instruction cycle: Fetch (get instruction) → Decode → Execute","Cache hierarchy: Registers → L1 → L2 → L3 → RAM → Disk","Hit ratio = hits/(hits+misses) | EAT = HR×T_cache + (1-HR)×T_main","Pipelining hazards: Structural (resource), Data (dependency), Control (branch)"],
+      },
+    ]
+  },
+  linux: {
+    chapters: [
+      { id:"commands", title:"Linux Commands & Process Management", icon:"🐧",
+        theory:`**Essential Linux Commands — Interview Favorites:**
+
+**File System:**
+\`\`\`bash
+ls -la          # list all files (including hidden) with permissions
+cd /path        # change directory
+pwd             # print working directory
+mkdir -p a/b/c  # create nested directories
+cp -r src dst   # copy recursively
+mv old new      # move/rename
+rm -rf dir      # force delete directory (DANGEROUS)
+find / -name "*.log" -size +10M  # find large log files
+\`\`\`
+
+**Text Processing:**
+\`\`\`bash
+grep -r "error" /var/log/    # search recursively
+grep -i "ERROR" file.log     # case insensitive
+grep -v "debug" file.log     # invert match (exclude)
+awk '{print $2}' file        # print 2nd column
+sed 's/old/new/g' file       # replace all occurrences
+tail -f /var/log/syslog      # follow log in real-time
+head -n 20 file              # first 20 lines
+wc -l file                   # count lines
+sort | uniq -c | sort -rn    # count unique, sort by frequency
+\`\`\`
+
+**Process Management:**
+\`\`\`bash
+ps aux              # list all processes
+ps aux | grep nginx # find specific process
+top / htop          # interactive process monitor
+kill -9 PID         # force kill process
+kill -15 PID        # graceful termination (SIGTERM)
+nohup cmd &         # run in background, survive logout
+jobs                # list background jobs
+\`\`\`
+
+**Permissions:**
+\`\`\`
+-rwxr-xr-- 1 user group
+ [owner][group][others]
+ rwx = read(4)+write(2)+execute(1) = 7
+\`\`\`
+\`\`\`bash
+chmod 755 file      # rwxr-xr-x
+chmod +x script.sh  # add execute permission
+chown user:group file
+\`\`\`
+
+**Networking:**
+\`\`\`bash
+netstat -tulpn      # list listening ports
+ss -tulpn           # modern netstat
+curl -I url         # HTTP headers only
+wget url            # download file
+ssh user@host       # remote login
+scp file user@host:/path  # secure copy
+\`\`\``,
+        mcqs:[
+          {q:"What does chmod 644 mean?",opts:["rwxr--r--","rw-r--r--","rwxrwxrwx","rw-rw-rw-"],ans:1,sol:"644 = owner:6(rw-) + group:4(r--) + others:4(r--) = rw-r--r--. Owner can read/write, group and others can only read. Typical for config files."},
+          {q:"kill -9 vs kill -15:",opts:["Same effect","kill -9 is graceful, -15 is force","kill -15 is graceful (SIGTERM), -9 is force (SIGKILL)","kill -9 is slower"],ans:2,sol:"kill -15 (SIGTERM): ask process to terminate gracefully — process can clean up, close files, save state. kill -9 (SIGKILL): kernel forces immediate termination — process cannot catch or ignore this."},
+          {q:"tail -f is used for:",opts:["Show last 10 lines only","Follow file as it grows (real-time)","Delete last lines","Sort file in reverse"],ans:1,sol:"tail -f follows a file as it grows — outputs new lines as they're appended. Essential for monitoring log files in real-time (server logs, application logs)."},
+          {q:"grep -v means:",opts:["Verbose output","Invert match (show non-matching lines)","Version info","Variable replacement"],ans:1,sol:"grep -v inverts the match — shows lines that do NOT match the pattern. Useful for filtering out noise: grep -v 'DEBUG' app.log shows everything except debug lines."},
+        ],
+        interview:[
+          {q:"How would you find the top 5 processes consuming most CPU?",a:`Method 1 - ps command:
+ps aux --sort=-%cpu | head -6
+
+Method 2 - top command:
+top → press 'P' to sort by CPU → view top processes
+
+Method 3 - one-liner:
+ps aux | awk '{print $3, $11}' | sort -rn | head -5
+
+Method 4 - htop (interactive):
+htop → F6 to sort by CPU
+
+To find and kill: 
+ps aux --sort=-%cpu | head -2 | tail -1 | awk '{print $2}' | xargs kill -15`,followup:"How would you troubleshoot a server with high CPU usage?"},
+          {q:"Explain Linux file permissions with an example.",a:`Linux permissions: -rwxr-xr-- (10 characters)
+Position 1: file type (- = file, d = directory, l = symlink)
+Positions 2-4: owner permissions (rwx = read, write, execute)
+Positions 5-7: group permissions
+Positions 8-10: others permissions
+
+Example: -rwxr-xr--
+• Owner: rwx = can read, write, execute
+• Group: r-x = can read and execute, not write
+• Others: r-- = can only read
+
+Numeric: r=4, w=2, x=1. chmod 754:
+• 7 = owner (rwx), 5 = group (r-x), 4 = others (r--)
+
+Special permissions: setuid (4), setgid (2), sticky bit (1)`,followup:"What is the sticky bit used for?"},
+        ],
+        applied:{type:"scenario",questions:[
+          {q:"Your web server is running slow. Write a series of Linux commands to diagnose the issue.",a:`# Check system resources
+top                              # CPU, memory, load average
+free -h                          # memory usage
+df -h                            # disk space
+iostat -x 1 5                    # disk I/O stats
+
+# Check processes
+ps aux --sort=-%cpu | head -20   # top CPU consumers
+ps aux --sort=-%mem | head -20   # top memory consumers
+
+# Check network
+netstat -tulpn                   # listening ports
+netstat -an | grep ESTABLISHED | wc -l  # active connections
+
+# Check logs
+tail -100 /var/log/nginx/error.log  # web server errors
+tail -100 /var/log/syslog           # system logs
+journalctl -xe --since "1 hour ago" # recent system events
+
+# Check application
+curl -w "%{time_total}" http://localhost/  # response time`},
+        ]},
+        revision:["ls -la: all files + permissions | grep -r: recursive search | tail -f: follow file","chmod 755 = rwxr-xr-x | 644 = rw-r--r-- | 777 = rwxrwxrwx","kill -15 (SIGTERM): graceful | kill -9 (SIGKILL): force immediate","ps aux: all processes | top: interactive | grep -v: invert match","awk: column processing | sed: find/replace | sort|uniq: unique count"],
+      },
+    ]
+  },
+  sql: {
+    chapters: [
+      { id:"practice", title:"SQL Query Practice Engine", icon:"💾",
+        theory:`**SQL Practice — Write Queries for Common Patterns:**
+
+**Schema used in all exercises:**
+\`\`\`sql
+Employees(EmpID, Name, Salary, DeptID, ManagerID, JoinDate)
+Departments(DeptID, DeptName, Location)
+Projects(ProjID, ProjName, Budget, DeptID)
+EmpProjects(EmpID, ProjID, HoursWorked)
+\`\`\`
+
+**Pattern 1 — Top N per group (very common):**
+\`\`\`sql
+-- Top 2 earners per department
+SELECT * FROM (
+  SELECT *, DENSE_RANK() OVER (PARTITION BY DeptID ORDER BY Salary DESC) AS rnk
+  FROM Employees
+) t WHERE rnk <= 2;
+\`\`\`
+
+**Pattern 2 — Self Join (hierarchy):**
+\`\`\`sql
+-- Find employees earning more than their manager
+SELECT e.Name, e.Salary, m.Name AS Manager
+FROM Employees e JOIN Employees m ON e.ManagerID = m.EmpID
+WHERE e.Salary > m.Salary;
+\`\`\`
+
+**Pattern 3 — NOT EXISTS / NOT IN (exclusion):**
+\`\`\`sql
+-- Employees not assigned to any project
+SELECT * FROM Employees e
+WHERE NOT EXISTS (SELECT 1 FROM EmpProjects ep WHERE ep.EmpID = e.EmpID);
+\`\`\`
+
+**Pattern 4 — Running total / cumulative:**
+\`\`\`sql
+SELECT Name, Salary,
+  SUM(Salary) OVER (ORDER BY JoinDate) AS RunningTotal
+FROM Employees;
+\`\`\`
+
+**Pattern 5 — Date-based queries:**
+\`\`\`sql
+-- Employees joined in last 30 days
+SELECT * FROM Employees WHERE JoinDate >= CURDATE() - INTERVAL 30 DAY;
+-- Employees who joined in 2023
+SELECT * FROM Employees WHERE YEAR(JoinDate) = 2023;
+\`\`\``,
+        mcqs:[
+          {q:"Output of: SELECT 5 + NULL",opts:["5","NULL","0","Error"],ans:1,sol:"Any arithmetic with NULL returns NULL in SQL. NULL represents unknown — unknown + 5 = unknown. Use COALESCE(col, 0) to treat NULL as 0."},
+          {q:"DELETE vs TRUNCATE vs DROP",opts:["All same","DELETE: rows with WHERE, TRUNCATE: all rows fast, DROP: entire table","DELETE is faster than TRUNCATE","TRUNCATE can be rolled back always"],ans:1,sol:"DELETE: removes specific rows (WHERE clause), logged, can rollback. TRUNCATE: removes all rows faster (minimal logging), resets identity. DROP: removes entire table structure. Truncate usually cannot be rolled back."},
+          {q:"Which query finds duplicate emails in a Users table?",opts:["SELECT email WHERE COUNT>1","SELECT email FROM Users GROUP BY email HAVING COUNT(*)>1","SELECT DISTINCT email FROM Users","SELECT email, COUNT(*) FROM Users"],ans:1,sol:"GROUP BY email groups identical emails, HAVING COUNT(*)>1 filters groups with more than one occurrence. This is the standard 'find duplicates' pattern."},
+          {q:"INNER JOIN vs WHERE clause JOIN — difference?",opts:["Different results","INNER JOIN is faster always","WHERE JOIN is more readable","Logically same, INNER JOIN is preferred standard"],ans:3,sol:"Both produce the same result: WHERE: SELECT * FROM A, B WHERE A.id=B.id | JOIN: SELECT * FROM A JOIN B ON A.id=B.id. JOIN syntax is preferred — more readable, explicit about intent, clearer for outer joins."},
+        ],
+        interview:[
+          {q:"Write a query to find the department with the highest total salary.",a:`SELECT d.DeptName, SUM(e.Salary) AS TotalSalary
+FROM Employees e
+JOIN Departments d ON e.DeptID = d.DeptID
+GROUP BY d.DeptID, d.DeptName
+ORDER BY TotalSalary DESC
+LIMIT 1;
+
+-- OR using subquery to get exact max:
+SELECT d.DeptName, SUM(e.Salary) AS TotalSalary
+FROM Employees e JOIN Departments d ON e.DeptID = d.DeptID
+GROUP BY d.DeptID, d.DeptName
+HAVING SUM(e.Salary) = (
+  SELECT MAX(TotalSal) FROM (
+    SELECT SUM(Salary) AS TotalSal FROM Employees GROUP BY DeptID
+  ) t
+);`,followup:"How would you handle ties (two departments with same total salary)?"},
+        ],
+        applied:{type:"sql",questions:[
+          {q:"Write all 5 common SQL interview query patterns with the Employees/Departments schema.",a:`1. Nth highest salary (N=3):
+SELECT Salary FROM (SELECT DISTINCT Salary, DENSE_RANK() OVER (ORDER BY Salary DESC) r FROM Employees) t WHERE r=3;
+
+2. Department-wise count and avg:
+SELECT d.DeptName, COUNT(e.EmpID) as HeadCount, AVG(e.Salary) as AvgSal
+FROM Departments d LEFT JOIN Employees e ON d.DeptID=e.DeptID GROUP BY d.DeptID;
+
+3. Employees with salary above dept average:
+SELECT e.* FROM Employees e WHERE e.Salary > (SELECT AVG(Salary) FROM Employees WHERE DeptID=e.DeptID);
+
+4. Manager who manages most employees:
+SELECT m.Name, COUNT(*) as Reports FROM Employees e JOIN Employees m ON e.ManagerID=m.EmpID GROUP BY m.EmpID ORDER BY Reports DESC LIMIT 1;
+
+5. Pivot: salary by year:
+SELECT YEAR(JoinDate), SUM(CASE WHEN DeptID=1 THEN Salary END) as Dept1, SUM(CASE WHEN DeptID=2 THEN Salary END) as Dept2 FROM Employees GROUP BY YEAR(JoinDate);`},
+        ]},
+        revision:["NULL arithmetic always returns NULL — use COALESCE(col,0) to handle","GROUP BY + HAVING for aggregates | WHERE for row-level filters","DENSE_RANK() OVER (PARTITION BY dept ORDER BY salary DESC) — top N per group","NOT EXISTS often faster than NOT IN (handles NULLs better)","DELETE: logged, WHERE possible | TRUNCATE: fast, all rows | DROP: table gone"],
+      },
+    ]
+  },
+  cd: {
+    chapters: [
+      { id:"phases", title:"Compiler Phases & Parsing", icon:"🔣",
+        theory:`**Compiler:** Translates high-level source code to machine code.
+
+**6 Phases of a Compiler:**
+
+**1. Lexical Analysis (Scanner)**
+• Input: source code characters
+• Output: stream of tokens (keywords, identifiers, operators, literals)
+• Tool: Lex/Flex
+• Example: int x = 5 + y → [int][x][=][5][+][y]
+• Builds Symbol Table entries for identifiers
+
+**2. Syntax Analysis (Parser)**
+• Input: token stream
+• Output: Parse Tree / Abstract Syntax Tree (AST)
+• Tool: Yacc/Bison, ANTLR
+• Checks grammar rules (context-free grammar)
+• Example: if(x = 5 → syntax error (missing closing paren)
+
+**3. Semantic Analysis**
+• Checks meaning/context (type checking, scope resolution)
+• Example: int x = "hello" → type mismatch error
+• Annotates AST with type information
+
+**4. Intermediate Code Generation**
+• Produces platform-independent intermediate representation (IR)
+• Three-address code: t1 = a + b, t2 = t1 * c
+• LLVM IR is a modern example
+
+**5. Code Optimization**
+• Machine-independent optimizations on IR
+• Examples: constant folding (3+4→7), dead code elimination, loop unrolling
+• Levels: O0 (none), O1, O2, O3, Os (size)
+
+**6. Code Generation**
+• Produces target machine code / assembly
+• Register allocation (which variables go in which registers)
+• Instruction selection
+
+**Parsing Types:**
+• **Top-Down Parsing** — start from root (start symbol), derive to leaves. LL(1) parsers.
+• **Bottom-Up Parsing** — start from leaves, reduce to root. LR, LALR, SLR parsers.
+• **Recursive Descent** — top-down, each non-terminal is a function. Easy to implement.
+
+**Regular Expressions → NFA → DFA → Minimized DFA:** Used in Lexical Analysis.`,
+        mcqs:[
+          {q:"Which compiler phase detects 'int x = hello' (assigning string to int)?",opts:["Lexical Analysis","Syntax Analysis","Semantic Analysis","Code Generation"],ans:2,sol:"Semantic Analysis checks types and meaning — it detects type mismatches, undeclared variables, etc. Lexical just identifies tokens; Syntax checks grammar structure."},
+          {q:"Output of Lexical Analysis is:",opts:["Parse tree","AST","Token stream","Machine code"],ans:2,sol:"Lexical Analysis (Scanner) converts source characters into a stream of tokens (identifiers, keywords, operators, literals) for the parser to process."},
+          {q:"Which optimization replaces '5*4' with '20' at compile time?",opts:["Dead code elimination","Constant folding","Loop unrolling","Register allocation"],ans:1,sol:"Constant folding evaluates constant expressions at compile time. 5*4 → 20, 100/5 → 20. Reduces runtime computation."},
+          {q:"LL(1) parsing is which type?",opts:["Bottom-up","Top-down, left-to-right, leftmost derivation","Bottom-up, rightmost derivation","None of the above"],ans:1,sol:"LL(1): Left-to-right scanning, Leftmost derivation, 1 token lookahead. Top-down parser. LR is bottom-up: Left-to-right, Rightmost derivation."},
+        ],
+        interview:[
+          {q:"What is the difference between compiler and interpreter?",a:`Compiler: translates entire source code to machine code BEFORE execution.
+• Full translation first, then execute
+• Examples: C, C++, Go, Rust
+• Faster execution (already machine code), harder to debug
+• Creates standalone executable
+
+Interpreter: translates and executes source code LINE BY LINE.
+• No separate compilation step
+• Examples: Python, Ruby, older JavaScript
+• Easier to debug (line-by-line), slower execution
+• No executable created
+
+Hybrid (Java): Compiler → bytecode → JVM interprets → JIT compiles hot paths to native code
+JavaScript: V8 engine JIT-compiles to native code at runtime`,followup:"What is Just-In-Time (JIT) compilation?"},
+        ],
+        applied:{type:"scenario",questions:[
+          {q:"What errors would each compiler phase catch? Give an example for each.",a:`Lexical Analysis: Invalid tokens
+• Example: int 123abc = 5; (identifier cannot start with digit)
+
+Syntax Analysis: Grammar violations  
+• Example: if x > 5 { (missing parentheses in C/Java)
+• Example: a = b + * c; (invalid expression)
+
+Semantic Analysis: Type/context errors
+• Example: int x = "hello"; (type mismatch)
+• Example: x = y + z; (y undeclared)
+• Example: return 5; (in void function)
+
+Code Generation: Usually no user errors at this phase
+• Issues: register spilling, sub-optimal instruction selection`},
+        ]},
+        revision:["Lexical: characters→tokens | Syntax: tokens→parse tree | Semantic: type/scope checking","Three-address code: t1=a+b, t2=t1*c (intermediate representation)","Constant folding: evaluate constants at compile time | Dead code: remove unreachable code","LL(1): top-down, 1 lookahead | LR: bottom-up, right derivation","Compiler: full translation then run | Interpreter: line-by-line | JIT: runtime native compilation"],
       },
     ]
   },
@@ -8929,64 +9350,69 @@ A distributed system can guarantee only 2 of 3:
 const CSCorePage = ({ setPage }) => {
   const [selSubject, setSelSubject] = React.useState("dbms");
   const [selChapter, setSelChapter] = React.useState(0);
-  const [view, setView] = React.useState("theory"); // theory | mcq | cheatsheet
-  const [answers, setAnswers] = React.useState({});
-  const [showSol, setShowSol] = React.useState({});
-  const [score, setScore] = React.useState(null);
+  const [view, setView] = React.useState("theory");
+  const [mcqAnswers, setMcqAnswers] = React.useState({});
+  const [mcqShow, setMcqShow] = React.useState({});
+  const [mcqScore, setMcqScore] = React.useState(null);
   const [progress, setProgress] = React.useState(()=>{
-    try{return JSON.parse(localStorage.getItem("cs_progress_v1")||"{}");}catch{return {};}
+    try{return JSON.parse(localStorage.getItem("cs_prog_v2")||"{}");}catch{return {};}
   });
+  const [interviewIdx, setInterviewIdx] = React.useState(0);
+  const [showFollowup, setShowFollowup] = React.useState(false);
+  const [searchQ, setSearchQ] = React.useState("");
 
-  const saveProgress = (p) => {
-    setProgress(p);
-    try{localStorage.setItem("cs_progress_v1",JSON.stringify(p));}catch(_){}
-  };
+  const saveProg = p => { setProgress(p); try{localStorage.setItem("cs_prog_v2",JSON.stringify(p));}catch(_){} };
 
-  const subject = CS_SUBJECTS.find(s=>s.id===selSubject);
-  const chapters = CS_CONTENT[selSubject]?.chapters || [];
-  const chapter = chapters[selChapter];
-  const progressKey = `${selSubject}_${selChapter}`;
+  const subject  = CS_SUBJECTS.find(s=>s.id===selSubject);
+  const chapters = CS_DATA[selSubject]?.chapters||[];
+  const chapter  = chapters[selChapter];
+  const progKey  = `${selSubject}_${selChapter}`;
 
-  const submitMCQ = (qi, optIdx) => {
-    if(answers[qi]!==undefined) return;
-    const ans = {...answers, [qi]:optIdx};
-    setAnswers(ans);
-    setShowSol({...showSol,[qi]:true});
-    if(Object.keys(ans).length === chapter.mcqs.length) {
-      const correct = chapter.mcqs.filter((q,i)=>ans[i]===q.ans).length;
-      setScore(correct);
-      saveProgress({...progress,[progressKey]:correct});
+  const submitMCQ = (qi, oi) => {
+    if(mcqAnswers[qi]!==undefined) return;
+    const a = {...mcqAnswers,[qi]:oi};
+    setMcqAnswers(a);
+    setMcqShow({...mcqShow,[qi]:true});
+    if(Object.keys(a).length===chapter.mcqs.length){
+      const c=chapter.mcqs.filter((q,i)=>a[i]===q.ans).length;
+      setMcqScore(c);
+      saveProg({...progress,[progKey]:c});
     }
   };
+  const resetMCQ = ()=>{ setMcqAnswers({}); setMcqShow({}); setMcqScore(null); };
 
-  const resetMCQ = () => { setAnswers({}); setShowSol({}); setScore(null); };
+  const changeChapter = (idx) => { setSelChapter(idx); setView("theory"); resetMCQ(); setInterviewIdx(0); setShowFollowup(false); };
+  const changeSubject = (id) => { setSelSubject(id); setSelChapter(0); setView("theory"); resetMCQ(); setInterviewIdx(0); setShowFollowup(false); };
 
-  const totalTopics = Object.values(CS_CONTENT).reduce((a,s)=>a+s.chapters.length,0);
-  const doneTopics = Object.keys(progress).length;
+  const totalChapters = Object.values(CS_DATA).reduce((a,s)=>a+s.chapters.length,0);
+  const doneCh = Object.keys(progress).length;
+
+  const iStyle = {padding:"10px 13px",borderRadius:9,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:13,fontFamily:"'DM Sans',sans-serif",outline:"none",width:"100%",boxSizing:"border-box"};
 
   return (
     <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
       {/* Header */}
-      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"20px 24px"}}>
-        <div style={{maxWidth:1200,margin:"0 auto"}}>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"18px 24px"}}>
+        <div style={{maxWidth:1300,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
-            <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Tools</button>
+            <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:12,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Tools</button>
           </div>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:12}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:10}}>
             <div>
-              <h1 className="syne" style={{fontSize:24,fontWeight:900,marginBottom:2}}>💻 CS Core <span className="gtext">Interview Prep</span></h1>
-              <p style={{color:"var(--text2)",fontSize:13,margin:0}}>DBMS · OS · Networks · OOP · System Design · Software Engineering</p>
+              <h1 className="syne" style={{fontSize:22,fontWeight:900,marginBottom:2}}>💻 CS Core <span className="gtext">Interview Prep</span></h1>
+              <p style={{color:"var(--text2)",fontSize:12,margin:0}}>Theory · MCQ · Interview Q&A · Applied Problems · Cheat Sheets</p>
             </div>
-            <div style={{display:"flex",gap:16,textAlign:"center"}}>
-              <div><div className="syne" style={{fontSize:20,fontWeight:900,color:"var(--cyan)"}}>{doneTopics}/{totalTopics}</div><div style={{fontSize:10,color:"var(--text3)"}}>Chapters done</div></div>
-              <div><div className="syne" style={{fontSize:20,fontWeight:900,color:"var(--green)"}}>{totalTopics*4}</div><div style={{fontSize:10,color:"var(--text3)"}}>Total MCQs</div></div>
+            <div style={{display:"flex",gap:14,textAlign:"center"}}>
+              {[[doneCh+"/"+totalChapters,"Chapters","var(--cyan)"],[Object.values(CS_DATA).reduce((a,s)=>a+s.chapters.reduce((b,c)=>b+c.mcqs.length,0),0)+"","MCQs","var(--green)"],["10","Subjects","var(--purple)"]].map(([v,l,c])=>(
+                <div key={l}><div className="syne" style={{fontSize:18,fontWeight:900,color:c}}>{v}</div><div style={{fontSize:10,color:"var(--text3)"}}>{l}</div></div>
+              ))}
             </div>
           </div>
           {/* Subject tabs */}
-          <div style={{display:"flex",gap:6,marginTop:14,flexWrap:"wrap"}}>
+          <div style={{display:"flex",gap:5,marginTop:12,flexWrap:"wrap"}}>
             {CS_SUBJECTS.map(s=>(
-              <button key={s.id} onClick={()=>{setSelSubject(s.id);setSelChapter(0);setView("theory");resetMCQ();}}
-                style={{fontSize:12,padding:"6px 16px",borderRadius:20,border:`2px solid ${selSubject===s.id?s.color:"var(--border)"}`,background:selSubject===s.id?`${s.color}18`:"var(--card)",color:selSubject===s.id?s.color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:selSubject===s.id?700:400,transition:"all .15s"}}>
+              <button key={s.id} onClick={()=>changeSubject(s.id)}
+                style={{fontSize:11,padding:"5px 13px",borderRadius:16,border:`2px solid ${selSubject===s.id?s.color:"var(--border)"}`,background:selSubject===s.id?`${s.color}18`:"var(--card)",color:selSubject===s.id?s.color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:selSubject===s.id?700:400,transition:"all .15s"}}>
                 {s.icon} {s.name}
               </button>
             ))}
@@ -8994,156 +9420,223 @@ const CSCorePage = ({ setPage }) => {
         </div>
       </div>
 
-      <div style={{maxWidth:1200,margin:"0 auto",padding:"24px",display:"grid",gridTemplateColumns:"260px 1fr",gap:20}}>
-        {/* Chapter list sidebar */}
+      <div style={{maxWidth:1300,margin:"0 auto",padding:"20px 24px",display:"grid",gridTemplateColumns:"240px 1fr",gap:18}}>
+        {/* Sidebar */}
         <div>
-          <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:10}}>
+          <div style={{fontSize:10,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>
             {subject?.icon} {subject?.tagline}
           </div>
           {chapters.map((ch,i)=>(
-            <button key={i} onClick={()=>{setSelChapter(i);setView("theory");resetMCQ();}}
-              style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"11px 14px",borderRadius:10,marginBottom:7,border:`1px solid ${selChapter===i?subject?.color:"var(--border)"}`,background:selChapter===i?`${subject?.color}12`:"var(--card)",cursor:"pointer",textAlign:"left",fontFamily:"'DM Sans',sans-serif",transition:"all .15s"}}>
-              <span style={{fontSize:16,flexShrink:0}}>{ch.icon}</span>
+            <button key={i} onClick={()=>changeChapter(i)}
+              style={{display:"flex",alignItems:"center",gap:8,width:"100%",padding:"10px 12px",borderRadius:9,marginBottom:6,border:`1px solid ${selChapter===i?subject?.color:"var(--border)"}`,background:selChapter===i?`${subject?.color}12`:"var(--card)",cursor:"pointer",textAlign:"left",fontFamily:"'DM Sans',sans-serif",transition:"all .15s"}}>
+              <span style={{fontSize:14,flexShrink:0}}>{ch.icon}</span>
               <div style={{flex:1,minWidth:0}}>
-                <div style={{fontSize:12,fontWeight:selChapter===i?700:500,color:selChapter===i?subject?.color:"var(--text)",lineHeight:1.3}}>{ch.title}</div>
+                <div style={{fontSize:11,fontWeight:selChapter===i?700:500,color:selChapter===i?subject?.color:"var(--text)",lineHeight:1.3}}>{ch.title}</div>
               </div>
-              {progress[`${selSubject}_${i}`]!==undefined && (
-                <span style={{fontSize:10,color:"var(--green)",flexShrink:0}}>✓</span>
-              )}
+              {progress[`${selSubject}_${i}`]!==undefined&&<span style={{fontSize:9,color:"var(--green)",flexShrink:0}}>✓{progress[`${selSubject}_${i}`]}/{ch.mcqs.length}</span>}
             </button>
           ))}
-          {/* Progress bar */}
-          <div style={{marginTop:16,padding:"12px 14px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:10}}>
-            <div style={{fontSize:11,color:"var(--text3)",marginBottom:6}}>{subject?.name} Progress</div>
-            <div style={{height:5,background:"var(--bg3)",borderRadius:3,overflow:"hidden"}}>
-              <div style={{height:"100%",background:subject?.color||"var(--cyan)",borderRadius:3,width:`${(chapters.filter((_,i)=>progress[`${selSubject}_${i}`]!==undefined).length/chapters.length)*100}%`,transition:"width .3s"}}/>
+          {/* Subject progress */}
+          <div style={{marginTop:12,padding:"10px 12px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:9}}>
+            <div style={{fontSize:10,color:"var(--text3)",marginBottom:5}}>{subject?.name} progress</div>
+            <div style={{height:4,background:"var(--bg3)",borderRadius:2,overflow:"hidden"}}>
+              <div style={{height:"100%",background:subject?.color||"var(--cyan)",borderRadius:2,width:`${Math.round(chapters.filter((_,i)=>progress[`${selSubject}_${i}`]!==undefined).length/Math.max(1,chapters.length)*100)}%`,transition:"width .3s"}}/>
             </div>
-            <div style={{fontSize:10,color:"var(--text3)",marginTop:4}}>{chapters.filter((_,i)=>progress[`${selSubject}_${i}`]!==undefined).length}/{chapters.length} chapters</div>
+            <div style={{fontSize:9,color:"var(--text3)",marginTop:3}}>{chapters.filter((_,i)=>progress[`${selSubject}_${i}`]!==undefined).length}/{chapters.length} chapters</div>
+          </div>
+          {/* Company mode hints */}
+          <div style={{marginTop:10,padding:"10px 12px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:9}}>
+            <div style={{fontSize:10,fontWeight:700,color:"var(--text3)",marginBottom:7}}>🎯 COMPANY FOCUS</div>
+            {[["Amazon","OS+SD+DBMS"],["TCS/Infosys","DBMS+OS basics"],["Flipkart","DBMS+SD+Linux"],["Startups","SD+OOP+Linux"]].map(([co,sub])=>(
+              <div key={co} style={{fontSize:10,marginBottom:4,display:"flex",justifyContent:"space-between"}}>
+                <span style={{color:"var(--text2)",fontWeight:600}}>{co}</span>
+                <span style={{color:"var(--text3)"}}>{sub}</span>
+              </div>
+            ))}
           </div>
         </div>
 
         {/* Main content */}
         <div>
-          {chapter && (
+          {chapter&&(
             <>
-              {/* View toggle */}
-              <div style={{display:"flex",gap:6,marginBottom:18}}>
-                {[["theory","📖 Theory"],["mcq","❓ MCQ Practice"],["cheatsheet","📋 Quick Reference"]].map(([v,l])=>(
+              {/* View tabs */}
+              <div style={{display:"flex",gap:5,marginBottom:16,flexWrap:"wrap"}}>
+                {[["theory","📖 Theory"],["mcq","❓ MCQ"],["interview","🎤 Interview Q&A"],["applied","⚙️ Applied"],["revision","📋 Cheat Sheet"]].map(([v,l])=>(
                   <button key={v} onClick={()=>{setView(v);if(v==="mcq")resetMCQ();}}
-                    style={{fontSize:12,padding:"7px 16px",borderRadius:9,border:`1px solid ${view===v?subject?.color:"var(--border)"}`,background:view===v?`${subject?.color}15`:"var(--card)",color:view===v?subject?.color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:view===v?700:400}}>
+                    style={{fontSize:11,padding:"6px 14px",borderRadius:8,border:`1px solid ${view===v?subject?.color:"var(--border)"}`,background:view===v?`${subject?.color}15`:"var(--card)",color:view===v?subject?.color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:view===v?700:400}}>
                     {l}
                   </button>
                 ))}
+                {selChapter<chapters.length-1&&(
+                  <button onClick={()=>changeChapter(selChapter+1)} style={{marginLeft:"auto",fontSize:11,padding:"6px 14px",borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>
+                    Next Chapter →
+                  </button>
+                )}
               </div>
 
-              {/* THEORY VIEW */}
-              {view==="theory" && (
-                <div>
-                  <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:24,marginBottom:16}}>
-                    <div className="syne" style={{fontSize:18,fontWeight:800,marginBottom:16,color:subject?.color}}>{chapter.title}</div>
-                    <div style={{fontSize:13,lineHeight:1.9,color:"var(--text2)"}}>
-                      {chapter.theory.split('\n').map((line,i)=>{
-                        if(!line.trim()) return <div key={i} style={{height:8}}/>;
-                        if(line.startsWith('**') && line.endsWith('**') && !line.slice(2,-2).includes('**'))
-                          return <div key={i} className="syne" style={{fontSize:14,fontWeight:800,color:"var(--text)",marginTop:14,marginBottom:4}}>{line.slice(2,-2)}</div>;
-                        if(line.startsWith('• '))
-                          return <div key={i} style={{display:"flex",gap:8,marginBottom:4}}><span style={{color:subject?.color,flexShrink:0,marginTop:2}}>•</span><span style={{flex:1}}>{line.slice(2).replace(/\*\*([^*]+)\*\*/g,(_,t)=>t)}</span></div>;
-                        if(line.startsWith('✓ ') || line.startsWith('✗ '))
-                          return <div key={i} style={{display:"flex",gap:8,marginBottom:4}}><span style={{color:line.startsWith('✓')?'var(--green)':'var(--pink)',flexShrink:0}}>{line[0]}</span><span style={{flex:1}}>{line.slice(2)}</span></div>;
-                        if(line.startsWith('|')) 
-                          return <div key={i} className="mono" style={{fontSize:11,background:"var(--bg3)",padding:"3px 8px",marginBottom:2,borderRadius:4,overflowX:"auto"}}>{line}</div>;
-                        return <div key={i} style={{marginBottom:3}}>{line.replace(/\*\*([^*]+)\*\*/g,(_,t)=>`**${t}**`)}</div>;
-                      })}
-                    </div>
+              {/* THEORY */}
+              {view==="theory"&&(
+                <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:13,padding:22}}>
+                  <div className="syne" style={{fontSize:17,fontWeight:800,marginBottom:14,color:subject?.color}}>{chapter.icon} {chapter.title}</div>
+                  <div style={{fontSize:13,lineHeight:1.95,color:"var(--text2)"}}>
+                    {chapter.theory.split('\n').map((line,i)=>{
+                      if(!line.trim()) return <div key={i} style={{height:6}}/>;
+                      if(/^```/.test(line)) return null;
+                      if(line.startsWith('**')&&line.endsWith('**')&&line.slice(2,-2).indexOf('**')===-1)
+                        return <div key={i} className="syne" style={{fontSize:13,fontWeight:800,color:"var(--text)",marginTop:12,marginBottom:3}}>{line.slice(2,-2)}</div>;
+                      if(line.startsWith('• ')){
+                        const txt=line.slice(2);
+                        const bold=txt.replace(/\*\*([^*]+)\*\*/g,(_,t)=>t);
+                        return <div key={i} style={{display:"flex",gap:7,marginBottom:3,paddingLeft:4}}><span style={{color:subject?.color,flexShrink:0}}>•</span><span style={{flex:1}}>{bold}</span></div>;
+                      }
+                      if(line.startsWith('|'))
+                        return <div key={i} className="mono" style={{fontSize:10,background:"var(--bg3)",padding:"2px 8px",marginBottom:1,borderRadius:3}}>{line}</div>;
+                      const rendered=line.replace(/\*\*([^*]+)\*\*/g,(_,t)=>t);
+                      return <div key={i} style={{marginBottom:2}}>{rendered}</div>;
+                    })}
                   </div>
-                  <button className="btn-p" onClick={()=>{setView("mcq");resetMCQ();}} style={{padding:"10px 24px",fontSize:13}}>
-                    Practice MCQs for this chapter →
+                  <button className="btn-p" onClick={()=>{setView("mcq");resetMCQ();}} style={{marginTop:16,padding:"8px 20px",fontSize:12}}>
+                    Practice MCQs →
                   </button>
                 </div>
               )}
 
-              {/* MCQ VIEW */}
-              {view==="mcq" && (
+              {/* MCQ */}
+              {view==="mcq"&&(
                 <div>
-                  <div className="syne" style={{fontSize:15,fontWeight:800,marginBottom:14}}>❓ MCQ Practice — {chapter.title}</div>
+                  <div className="syne" style={{fontSize:14,fontWeight:800,marginBottom:12}}>❓ MCQ Practice — {chapter.title}</div>
                   {chapter.mcqs.map((q,qi)=>(
-                    <div key={qi} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:13,padding:18,marginBottom:14}}>
-                      <div style={{fontSize:13,fontWeight:600,lineHeight:1.6,marginBottom:14}}>
+                    <div key={qi} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:16,marginBottom:12}}>
+                      <div style={{fontSize:13,fontWeight:600,lineHeight:1.6,marginBottom:12}}>
                         <span style={{color:subject?.color,fontWeight:800,marginRight:6}}>Q{qi+1}.</span>{q.q}
                       </div>
-                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:7}}>
                         {q.opts.map((opt,oi)=>{
-                          const chosen=answers[qi]===oi, correct=oi===q.ans;
+                          const chosen=mcqAnswers[qi]===oi,correct=oi===q.ans;
                           let bg="var(--bg)",br="var(--border)",cl="var(--text)";
-                          if(showSol[qi]&&correct){bg=`rgba(0,255,136,.1)`;br="var(--green)";cl="var(--green)";}
-                          else if(showSol[qi]&&chosen&&!correct){bg="rgba(255,61,138,.1)";br="var(--pink)";cl="var(--pink)";}
-                          else if(chosen&&!showSol[qi]){bg=`${subject?.color}12`;br=subject?.color||"var(--cyan)";}
+                          if(mcqShow[qi]&&correct){bg="rgba(0,255,136,.1)";br="var(--green)";cl="var(--green)";}
+                          else if(mcqShow[qi]&&chosen&&!correct){bg="rgba(255,61,138,.1)";br="var(--pink)";cl="var(--pink)";}
+                          else if(chosen&&!mcqShow[qi]){bg=`${subject?.color}12`;br=subject?.color||"var(--cyan)";}
                           return(
-                            <button key={oi} onClick={()=>submitMCQ(qi,oi)} disabled={showSol[qi]}
-                              style={{padding:"10px 14px",borderRadius:9,border:`1px solid ${br}`,background:bg,color:cl,cursor:showSol[qi]?"default":"pointer",textAlign:"left",fontSize:12,fontFamily:"'DM Sans',sans-serif",fontWeight:chosen?600:400,transition:"all .15s"}}>
-                              <span style={{fontWeight:700,marginRight:6}}>{String.fromCharCode(65+oi)}.</span>{opt}
-                              {showSol[qi]&&correct&&<span style={{float:"right"}}>✅</span>}
-                              {showSol[qi]&&chosen&&!correct&&<span style={{float:"right"}}>❌</span>}
+                            <button key={oi} onClick={()=>submitMCQ(qi,oi)} disabled={!!mcqShow[qi]}
+                              style={{padding:"9px 12px",borderRadius:8,border:`1px solid ${br}`,background:bg,color:cl,cursor:mcqShow[qi]?"default":"pointer",textAlign:"left",fontSize:12,fontFamily:"'DM Sans',sans-serif",fontWeight:chosen?600:400,transition:"all .15s"}}>
+                              <span style={{fontWeight:700,marginRight:5}}>{String.fromCharCode(65+oi)}.</span>{opt}
+                              {mcqShow[qi]&&correct&&<span style={{float:"right"}}>✅</span>}
+                              {mcqShow[qi]&&chosen&&!correct&&<span style={{float:"right"}}>❌</span>}
                             </button>
                           );
                         })}
                       </div>
-                      {showSol[qi]&&(
-                        <div style={{marginTop:10,padding:"8px 12px",background:"rgba(0,212,255,.05)",border:"1px solid rgba(0,212,255,.2)",borderRadius:8,fontSize:11,color:"var(--text2)",lineHeight:1.5}}>
-                          💡 <strong>Explanation:</strong> {q.sol}
+                      {mcqShow[qi]&&(
+                        <div style={{marginTop:9,padding:"7px 11px",background:"rgba(0,212,255,.05)",border:"1px solid rgba(0,212,255,.15)",borderRadius:7,fontSize:11,color:"var(--text2)",lineHeight:1.6}}>
+                          💡 {q.sol}
                         </div>
                       )}
                     </div>
                   ))}
-                  {score !== null && (
-                    <div style={{background:"var(--card)",border:`2px solid ${score===chapter.mcqs.length?"var(--green)":score>=chapter.mcqs.length/2?"var(--yellow)":"var(--pink)"}`,borderRadius:14,padding:20,textAlign:"center"}}>
-                      <div style={{fontSize:32,marginBottom:8}}>{score===chapter.mcqs.length?"🎉":score>=chapter.mcqs.length/2?"👍":"📚"}</div>
-                      <div className="syne" style={{fontSize:22,fontWeight:900,color:score===chapter.mcqs.length?"var(--green)":score>=chapter.mcqs.length/2?"var(--yellow)":"var(--pink)"}}>{score}/{chapter.mcqs.length}</div>
-                      <div style={{fontSize:13,color:"var(--text2)",marginTop:4,marginBottom:16}}>{score===chapter.mcqs.length?"Perfect score! Chapter mastered!":score>=chapter.mcqs.length/2?"Good! Review the wrong ones.":"Revise the theory and try again."}</div>
-                      <div style={{display:"flex",gap:8,justifyContent:"center"}}>
-                        <button onClick={resetMCQ} className="btn-p" style={{padding:"8px 20px",fontSize:12}}>🔄 Retry</button>
-                        {selChapter < chapters.length-1 && (
-                          <button onClick={()=>{setSelChapter(c=>c+1);setView("theory");resetMCQ();}}
-                            style={{padding:"8px 20px",borderRadius:9,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontSize:12,fontFamily:"'DM Sans',sans-serif"}}>
-                            Next Chapter →
-                          </button>
-                        )}
+                  {mcqScore!==null&&(
+                    <div style={{background:"var(--card)",border:`2px solid ${mcqScore===chapter.mcqs.length?"var(--green)":mcqScore>=chapter.mcqs.length/2?"var(--yellow)":"var(--pink)"}`,borderRadius:12,padding:18,textAlign:"center"}}>
+                      <div style={{fontSize:36,marginBottom:8}}>{mcqScore===chapter.mcqs.length?"🎉":mcqScore>=chapter.mcqs.length/2?"👍":"📚"}</div>
+                      <div className="syne" style={{fontSize:22,fontWeight:900,color:mcqScore===chapter.mcqs.length?"var(--green)":mcqScore>=chapter.mcqs.length/2?"var(--yellow)":"var(--pink)"}}>{mcqScore}/{chapter.mcqs.length}</div>
+                      <div style={{fontSize:12,color:"var(--text2)",marginTop:4,marginBottom:14}}>{mcqScore===chapter.mcqs.length?"Perfect! Chapter mastered 🏆":mcqScore>=chapter.mcqs.length/2?"Good! Review wrong answers.":"Revise theory then retry."}</div>
+                      <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
+                        <button onClick={resetMCQ} className="btn-p" style={{padding:"7px 18px",fontSize:12}}>🔄 Retry</button>
+                        <button onClick={()=>setView("interview")} style={{padding:"7px 18px",borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontSize:12,fontFamily:"'DM Sans',sans-serif"}}>🎤 Interview Q&A →</button>
                       </div>
                     </div>
                   )}
                 </div>
               )}
 
-              {/* CHEATSHEET VIEW */}
-              {view==="cheatsheet" && (
+              {/* INTERVIEW Q&A */}
+              {view==="interview"&&(
                 <div>
-                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-                    <div className="syne" style={{fontSize:15,fontWeight:800}}>📋 Quick Reference — {subject?.name}</div>
-                    <button onClick={()=>window.print()} className="btn-p" style={{padding:"6px 16px",fontSize:11,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Print</button>
-                  </div>
-                  {/* Show all chapter key points condensed */}
-                  {chapters.map((ch,i)=>(
-                    <div key={i} style={{background:"var(--card)",border:`1px solid ${subject?.color}20`,borderRadius:12,padding:16,marginBottom:12}}>
-                      <div className="syne" style={{fontSize:13,fontWeight:800,color:subject?.color,marginBottom:8}}>{ch.icon} {ch.title}</div>
-                      <div style={{fontSize:11,lineHeight:1.8,color:"var(--text2)"}}>
-                        {ch.theory.split('\n')
-                          .filter(l=>l.startsWith('• ')||l.startsWith('✓ ')||(l.startsWith('**')&&l.endsWith('**')&&l.length<60))
-                          .slice(0,8)
-                          .map((l,li)=>(
-                            <div key={li} style={{display:"flex",gap:6,marginBottom:2}}>
-                              <span style={{color:l.startsWith('**')?subject?.color:"var(--text3)",flexShrink:0}}>{l.startsWith('**')?'▶':'•'}</span>
-                              <span>{l.replace(/^[•✓✗\s]+/,'').replace(/\*\*/g,'')}</span>
+                  <div className="syne" style={{fontSize:14,fontWeight:800,marginBottom:4}}>🎤 Interview Q&A — {chapter.title}</div>
+                  <div style={{fontSize:11,color:"var(--text3)",marginBottom:14}}>These are real patterns asked at Amazon, Microsoft, Flipkart, TCS, Infosys. Practice giving structured answers.</div>
+                  {chapter.interview.map((qa,i)=>(
+                    <div key={i} style={{background:"var(--card)",border:`1px solid ${subject?.color}25`,borderRadius:12,padding:18,marginBottom:14}}>
+                      <div style={{display:"flex",gap:10,alignItems:"flex-start",marginBottom:12}}>
+                        <div style={{width:26,height:26,borderRadius:7,background:`${subject?.color}20`,color:subject?.color,fontSize:12,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>Q</div>
+                        <div className="syne" style={{fontSize:14,fontWeight:700,lineHeight:1.4,flex:1}}>{qa.q}</div>
+                      </div>
+                      <div style={{background:"var(--bg3)",borderRadius:9,padding:"12px 14px",marginBottom:10}}>
+                        <div style={{fontSize:10,fontWeight:700,color:"var(--green)",marginBottom:6}}>✅ STRONG ANSWER:</div>
+                        <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.8,whiteSpace:"pre-line"}}>{qa.a}</div>
+                      </div>
+                      {qa.followup&&(
+                        <div>
+                          <button onClick={()=>setShowFollowup(s=>s===i?null:i)}
+                            style={{fontSize:11,padding:"4px 12px",borderRadius:6,border:`1px solid ${subject?.color}40`,background:`${subject?.color}10`,color:subject?.color,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>
+                            {showFollowup===i?"▲ Hide":"▼ Follow-up:"} {qa.followup}
+                          </button>
+                          {showFollowup===i&&(
+                            <div style={{marginTop:8,padding:"8px 12px",background:"rgba(255,214,10,.05)",border:"1px solid rgba(255,214,10,.2)",borderRadius:7,fontSize:11,color:"var(--yellow)"}}>
+                              💬 Interviewer follow-up: <strong>{qa.followup}</strong><br/>
+                              <span style={{color:"var(--text3)",fontSize:10}}>Prepare a confident 3-4 line answer for this follow-up — it shows depth of knowledge.</span>
                             </div>
-                          ))
-                        }
-                      </div>
-                      <div style={{marginTop:8,display:"flex",flexWrap:"wrap",gap:5}}>
-                        {ch.mcqs.map((q,qi)=>(
-                          <span key={qi} style={{fontSize:9,padding:"2px 8px",borderRadius:10,background:`${subject?.color}10`,color:subject?.color,border:`1px solid ${subject?.color}20`}}>Q: {q.q.slice(0,30)}...</span>
-                        ))}
-                      </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))}
+                  <div style={{background:"var(--card)",border:"1px solid rgba(0,212,255,.15)",borderRadius:11,padding:14}}>
+                    <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",marginBottom:8}}>💡 INTERVIEW TIPS</div>
+                    {["Start with a clear 1-sentence definition","Give a real-world example or analogy","Compare with alternatives (trade-offs)","Mention when/why you'd use it","Invite follow-up: 'Would you like me to go deeper on any part?'"].map((t,i)=>(
+                      <div key={i} style={{fontSize:11,color:"var(--text2)",marginBottom:4,display:"flex",gap:6}}>
+                        <span style={{color:"var(--cyan)"}}>{i+1}.</span>{t}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* APPLIED */}
+              {view==="applied"&&(
+                <div>
+                  <div className="syne" style={{fontSize:14,fontWeight:800,marginBottom:4}}>⚙️ Applied Problems — {chapter.title}</div>
+                  <div style={{fontSize:11,color:"var(--text3)",marginBottom:14}}>
+                    {chapter.applied.type==="sql"?"SQL Query Writing — write these from scratch":"Scenario-based problems — think aloud like in an interview"}
+                  </div>
+                  {chapter.applied.questions.map((q,i)=>(
+                    <div key={i} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:18,marginBottom:14}}>
+                      <div style={{fontSize:13,fontWeight:600,marginBottom:12,color:"var(--text)",lineHeight:1.5}}>
+                        <span style={{color:subject?.color,fontWeight:800,marginRight:6}}>Problem {i+1}:</span>{q.q}
+                      </div>
+                      <details style={{cursor:"pointer"}}>
+                        <summary style={{fontSize:11,color:"var(--text3)",padding:"6px 0",userSelect:"none"}}>▶ Click to reveal solution</summary>
+                        <div style={{marginTop:10,padding:"12px 14px",background:"var(--bg3)",borderRadius:8,fontFamily:"monospace",fontSize:11,lineHeight:1.8,whiteSpace:"pre-wrap",color:"var(--text2)",overflow:"auto"}}>{q.a}</div>
+                      </details>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* CHEAT SHEET */}
+              {view==="revision"&&(
+                <div>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+                    <div className="syne" style={{fontSize:14,fontWeight:800}}>📋 Cheat Sheet — {subject?.name}: {chapter.title}</div>
+                    <button onClick={()=>window.print()} className="btn-p" style={{padding:"5px 14px",fontSize:11,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Print</button>
+                  </div>
+                  <div style={{background:"var(--card)",border:`2px solid ${subject?.color}30`,borderRadius:12,padding:20}}>
+                    <div className="syne" style={{fontSize:13,fontWeight:800,color:subject?.color,marginBottom:12}}>{chapter.icon} Key Points to Remember</div>
+                    {chapter.revision.map((r,i)=>(
+                      <div key={i} style={{display:"flex",gap:8,marginBottom:8,padding:"6px 10px",borderRadius:7,background:i%2===0?"var(--bg3)":"transparent"}}>
+                        <span style={{color:subject?.color,flexShrink:0,fontWeight:700}}>{i+1}.</span>
+                        <span style={{fontSize:12,color:"var(--text2)",lineHeight:1.5}}>{r}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{marginTop:12,background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:16}}>
+                    <div className="syne" style={{fontSize:12,fontWeight:800,marginBottom:10}}>❓ Quick MCQ Review</div>
+                    {chapter.mcqs.map((q,qi)=>(
+                      <div key={qi} style={{marginBottom:8,fontSize:11,color:"var(--text2)"}}>
+                        <span style={{fontWeight:700,color:subject?.color}}>Q{qi+1}:</span> {q.q}<br/>
+                        <span style={{color:"var(--green)"}}>→ {q.opts[q.ans]}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </>
@@ -9153,6 +9646,7 @@ const CSCorePage = ({ setPage }) => {
     </div>
   );
 };
+
 
 const STUDENT_TOOLS = [
   {
