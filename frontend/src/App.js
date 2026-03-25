@@ -7715,7 +7715,8 @@ const AptitudeTrainerPage = ({ setPage }) => {
   const TABS = [["home","🏠 Home"],["company","🏢 By Company"],["topic","📚 By Topic"],["concept","💡 Concepts"],["mock","🎯 Mock Test"],["wrongbank","❌ Wrong Bank"],["drill","⚡ Speed Drill"],["formula","📋 Formulas"],["aisolver","🤖 AI Solver"]];
 
   return (
-    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+    <div style={{paddingTop:64,minHeight:"100vh",background:"#060c1a",color:"#fff"}}>
+      <div style={{padding:20,fontSize:20,fontWeight:900}}>APTITUDE TRAINER LOADED ✅</div>
       <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"20px 24px"}}>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
@@ -9414,10 +9415,7 @@ export default function App() {
           {page==="cp"     && <CPContestPage setPage={setPage}/>}
           {page==="dsa"    && <DSAPage setPage={setPage}/>}
           {page==="resumebuilder" && <ResumeTemplateBuilderPage setPage={setPage}/>}
-          {page==="aptitude" && (()=>{
-            try { return <AptitudeTrainerPage setPage={setPage}/>; }
-            catch(e) { return <div style={{padding:40,color:"red",fontFamily:"monospace"}}><h2>Aptitude Trainer Error:</h2><pre>{e.message}</pre><pre>{e.stack}</pre></div>; }
-          })()}
+          {page==="aptitude" && <AptitudeTrainerPage setPage={setPage}/>}
           {page==="companyguide" && <CompanyResumeGuidePage setPage={setPage}/>}
           {page==="resume" && <ResumeAnalyzerPage setPage={setPage}/>}
         </main>
