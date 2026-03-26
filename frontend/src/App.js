@@ -9357,8 +9357,10 @@ const CSCorePage = ({ setPage }) => {
   const [progress, setProgress] = React.useState(()=>{
     try{return JSON.parse(localStorage.getItem("cs_prog_v2")||"{}");}catch{return {};}
   });
+  // eslint-disable-next-line no-unused-vars
   const [interviewIdx, setInterviewIdx] = React.useState(0);
   const [showFollowup, setShowFollowup] = React.useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [searchQ, setSearchQ] = React.useState("");
 
   const saveProg = p => { setProgress(p); try{localStorage.setItem("cs_prog_v2",JSON.stringify(p));}catch(_){} };
@@ -9387,6 +9389,7 @@ const CSCorePage = ({ setPage }) => {
   const totalChapters = Object.values(CS_DATA).reduce((a,s)=>a+s.chapters.length,0);
   const doneCh = Object.keys(progress).length;
 
+  // eslint-disable-next-line no-unused-vars
   const iStyle = {padding:"10px 13px",borderRadius:9,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:13,fontFamily:"'DM Sans',sans-serif",outline:"none",width:"100%",boxSizing:"border-box"};
 
   return (
