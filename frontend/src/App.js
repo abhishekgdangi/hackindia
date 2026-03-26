@@ -635,7 +635,7 @@ const TOOLS_MENU = [
   { id:"resumebuilder",icon:"🏗️",label:"Resume Builder",      desc:"6 templates · ATS score · PDF export" },
   { id:"companyguide",icon:"🏢", label:"Company Resume Guide", desc:"Google · Amazon · Razorpay · 10 companies" },
   { id:"resume",      icon:"📄", label:"AI Resume Analyzer",  desc:"ATS · JD match · 3-stage AI pipeline" },
-  { id:"placement",   icon:"🎯", label:"Placement Edge",        desc:"HR Interview · STAR · GD · Email · Soft Skills" },
+  { id:"softskills",   icon:"🎯", label:"Placement Edge",        desc:"HR Interview · STAR · GD · Email · Soft Skills" },
 ];
 
 const Navbar = ({page,setPage,dark,setDark}) => {
@@ -9398,8 +9398,8 @@ const CSCorePage = ({ setPage }) => {
   const chapters = CS_DATA[selSubject]?.chapters||[];
   const chapter  = chapters[selChapter];
   const progKey  = `${selSubject}_${selChapter}`;
-  const diffKey  = `${selSubject}_${selChapter}`;
-  const chDiff   = CS_DIFFICULTY[diffKey]||"medium";
+  // eslint-disable-next-line no-unused-vars
+  const chDiff   = CS_DIFFICULTY[progKey]||"medium";
 
   const submitMCQ = (qi,oi) => {
     if(mcqAnswers[qi]!==undefined) return;
@@ -9433,50 +9433,6 @@ const CSCorePage = ({ setPage }) => {
   // Difficulty-filtered chapters
   const filteredChapters = diffFilter==="all" ? chapters :
     chapters.filter((_,i)=>(CS_DIFFICULTY[`${selSubject}_${i}`]||"medium")===diffFilter);
-  const [selSubject, setSelSubject] = React.useState("dbms");
-  const [selChapter, setSelChapter] = React.useState(0);
-  const [view, setView] = React.useState("theory");
-  const [mcqAnswers, setMcqAnswers] = React.useState({});
-  const [mcqShow, setMcqShow] = React.useState({});
-  const [mcqScore, setMcqScore] = React.useState(null);
-  const [progress, setProgress] = React.useState(()=>{
-    try{return JSON.parse(localStorage.getItem("cs_prog_v2")||"{}");}catch{return {};}
-  });
-  // eslint-disable-next-line no-unused-vars
-  const [interviewIdx, setInterviewIdx] = React.useState(0);
-  const [showFollowup, setShowFollowup] = React.useState(false);
-  // eslint-disable-next-line no-unused-vars
-  const [searchQ, setSearchQ] = React.useState("");
-
-  const saveProg = p => { setProgress(p); try{localStorage.setItem("cs_prog_v2",JSON.stringify(p));}catch(_){} };
-
-  const subject  = CS_SUBJECTS.find(s=>s.id===selSubject);
-  const chapters = CS_DATA[selSubject]?.chapters||[];
-  const chapter  = chapters[selChapter];
-  const progKey  = `${selSubject}_${selChapter}`;
-
-  const submitMCQ = (qi, oi) => {
-    if(mcqAnswers[qi]!==undefined) return;
-    const a = {...mcqAnswers,[qi]:oi};
-    setMcqAnswers(a);
-    setMcqShow({...mcqShow,[qi]:true});
-    if(Object.keys(a).length===chapter.mcqs.length){
-      const c=chapter.mcqs.filter((q,i)=>a[i]===q.ans).length;
-      setMcqScore(c);
-      saveProg({...progress,[progKey]:c});
-    }
-  };
-  const resetMCQ = ()=>{ setMcqAnswers({}); setMcqShow({}); setMcqScore(null); };
-
-  const changeChapter = (idx) => { setSelChapter(idx); setView("theory"); resetMCQ(); setInterviewIdx(0); setShowFollowup(false); };
-  const changeSubject = (id) => { setSelSubject(id); setSelChapter(0); setView("theory"); resetMCQ(); setInterviewIdx(0); setShowFollowup(false); };
-
-  const totalChapters = Object.values(CS_DATA).reduce((a,s)=>a+s.chapters.length,0);
-  const doneCh = Object.keys(progress).length;
-
-  // eslint-disable-next-line no-unused-vars
-  const iStyle = {padding:"10px 13px",borderRadius:9,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:13,fontFamily:"'DM Sans',sans-serif",outline:"none",width:"100%",boxSizing:"border-box"};
-
   return (
     <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
       {/* Header */}
@@ -10374,7 +10330,7 @@ This shows: honesty, logical thinking, coachability — all valued.`,followup:"H
 };
 
 // ── Placement Edge Component ───────────────────────────────────
-const PlacementEdgePage = ({ setPage }) => {
+const SoftSkillsPage = ({ setPage }) => {
   const [selSub,  setSelSub]  = React.useState("hr");
   const [selCh,   setSelCh]   = React.useState(0);
   const [view,    setView]    = React.useState("theory"); // theory|examples|interview|scenarios|checklist
@@ -10695,7 +10651,7 @@ const STUDENT_TOOLS = [
     gradient: "linear-gradient(135deg,rgba(255,107,53,.15),rgba(255,107,53,.03))",
   },
   {
-    id: "placement",
+    id: "softskills",
     icon: "🎯",
     title: "Placement Edge",
     desc: "HR Interview prep · STAR method · Group Discussion · Email writing · Business etiquette · Resume tips · Last-day rapid prep.",
@@ -11916,7 +11872,7 @@ export default function App() {
           {page==="dsa"    && <DSAPage setPage={setPage}/>}
           {page==="resumebuilder" && <ResumeTemplateBuilderPage setPage={setPage}/>}
           {page==="cscore" && <CSCorePage setPage={setPage}/>}
-          {page==="placement" && <PlacementEdgePage setPage={setPage}/>}
+          {page==="softskills" && <SoftSkillsPage setPage={setPage}/>}
           {page==="aptitude" && <AptitudeTrainerPage setPage={setPage}/>}
           {page==="companyguide" && <CompanyResumeGuidePage setPage={setPage}/>}
           {page==="resume" && <ResumeAnalyzerPage setPage={setPage}/>}
