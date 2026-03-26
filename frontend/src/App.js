@@ -635,6 +635,7 @@ const TOOLS_MENU = [
   { id:"resumebuilder",icon:"🏗️",label:"Resume Builder",      desc:"6 templates · ATS score · PDF export" },
   { id:"companyguide",icon:"🏢", label:"Company Resume Guide", desc:"Google · Amazon · Razorpay · 10 companies" },
   { id:"resume",      icon:"📄", label:"AI Resume Analyzer",  desc:"ATS · JD match · 3-stage AI pipeline" },
+  { id:"placement",   icon:"🎯", label:"Placement Edge",        desc:"HR Interview · STAR · GD · Email · Soft Skills" },
 ];
 
 const Navbar = ({page,setPage,dark,setDark}) => {
@@ -8168,6 +8169,34 @@ const CS_SUBJECTS = [
   { id:"cd",    name:"Compiler Design",icon:"🔣",  color:"#64748b", tagline:"Phases · Lexical · Parsing" },
 ];
 
+// Rapid Revision sets - most critical questions per subject
+const CS_RAPID_REVISION = {
+  dbms: ["What is ACID? Explain with bank transfer example.","2NF vs 3NF with example?","Write query for 2nd highest salary","Explain dirty read vs phantom read","What is BCNF?"],
+  os:   ["Four deadlock conditions?","Mutex vs Semaphore?","What is thrashing?","FCFS vs SJF - which is optimal?","What is Belady's anomaly?"],
+  cn:   ["OSI vs TCP/IP?","TCP 3-way handshake?","DNS query process?","What does /26 subnet give?","HTTP vs HTTPS?"],
+  oop:  ["Overloading vs Overriding?","Abstract class vs Interface?","SOLID principles?","What is Liskov Substitution?","Runtime vs compile-time polymorphism?"],
+  sd:   ["CAP theorem?","Cache-aside strategy?","Design URL shortener?","Hash vs Range sharding?","When to use NoSQL?"],
+  se:   ["Agile vs Waterfall?","git merge vs rebase?","Scrum roles?","CI/CD meaning?","UAT testing?"],
+  coa:  ["2's complement of -7?","Pipelining hazards?","Cache hit ratio formula?","RISC vs CISC?","What is TLB?"],
+  linux:["chmod 644 means?","kill -9 vs kill -15?","grep -v flag?","Find top CPU process?","What is a daemon?"],
+  sql:  ["Find Nth highest salary","Find duplicates in table","Employees not in any project","RANK vs DENSE_RANK","Department with highest avg salary"],
+  cd:   ["6 phases of compiler?","Lexical vs Syntax analysis?","What is constant folding?","LL vs LR parsing?","Compiler vs interpreter?"],
+};
+
+// Difficulty tags per chapter
+const CS_DIFFICULTY = {
+  dbms_0:"easy", dbms_1:"medium", dbms_2:"medium", dbms_3:"hard",
+  os_0:"medium", os_1:"medium",
+  cn_0:"easy", cn_1:"medium",
+  oop_0:"easy",
+  sd_0:"hard",
+  se_0:"easy",
+  coa_0:"medium",
+  linux_0:"easy",
+  sql_0:"medium",
+  cd_0:"hard",
+};
+
 const CS_DATA = {
   dbms: {
     chapters: [
@@ -9348,6 +9377,62 @@ Code Generation: Usually no user errors at this phase
 };
 
 const CSCorePage = ({ setPage }) => {
+  // ── State ─────────────────────────────────────────────────
+  const [selSubject,   setSelSubject]   = React.useState("dbms");
+  const [selChapter,   setSelChapter]   = React.useState(0);
+  const [view,         setView]         = React.useState("theory");
+  const [mcqAnswers,   setMcqAnswers]   = React.useState({});
+  const [mcqShow,      setMcqShow]      = React.useState({});
+  const [mcqScore,     setMcqScore]     = React.useState(null);
+  const [showFollowup, setShowFollowup] = React.useState(null);
+  const [rapidMode,    setRapidMode]    = React.useState(false);
+  const [rapidIdx,     setRapidIdx]     = React.useState(0);
+  const [diffFilter,   setDiffFilter]   = React.useState("all"); // all|easy|medium|hard
+  const [weakTopics,   setWeakTopics]   = React.useState(()=>{ try{return JSON.parse(localStorage.getItem("cs_weak_v1")||"[]");}catch{return [];} });
+  const [progress,     setProgress]     = React.useState(()=>{ try{return JSON.parse(localStorage.getItem("cs_prog_v2")||"{}");}catch{return {};} });
+
+  const saveProg = p => { setProgress(p); try{localStorage.setItem("cs_prog_v2",JSON.stringify(p));}catch(_){} };
+  const saveWeak = w => { setWeakTopics(w); try{localStorage.setItem("cs_weak_v1",JSON.stringify(w));}catch(_){} };
+
+  const subject  = CS_SUBJECTS.find(s=>s.id===selSubject);
+  const chapters = CS_DATA[selSubject]?.chapters||[];
+  const chapter  = chapters[selChapter];
+  const progKey  = `${selSubject}_${selChapter}`;
+  const diffKey  = `${selSubject}_${selChapter}`;
+  const chDiff   = CS_DIFFICULTY[diffKey]||"medium";
+
+  const submitMCQ = (qi,oi) => {
+    if(mcqAnswers[qi]!==undefined) return;
+    const a={...mcqAnswers,[qi]:oi};
+    setMcqAnswers(a);
+    setMcqShow({...mcqShow,[qi]:true});
+    if(Object.keys(a).length===chapter.mcqs.length){
+      const c=chapter.mcqs.filter((q,i)=>a[i]===q.ans).length;
+      const pct=Math.round(c/chapter.mcqs.length*100);
+      setMcqScore(c);
+      saveProg({...progress,[progKey]:c});
+      // Weak topic detection: <50% = weak
+      if(pct<50){
+        const wk=[...weakTopics];
+        const entry=`${selSubject}:${chapter.title}`;
+        if(!wk.includes(entry)) saveWeak([...wk,entry].slice(-10));
+      } else {
+        saveWeak(weakTopics.filter(w=>w!==`${selSubject}:${chapter.title}`));
+      }
+    }
+  };
+  const resetMCQ = ()=>{ setMcqAnswers({}); setMcqShow({}); setMcqScore(null); };
+  const changeChapter = i=>{ setSelChapter(i); setView("theory"); resetMCQ(); setShowFollowup(null); };
+  const changeSubject = id=>{ setSelSubject(id); setSelChapter(0); setView("theory"); resetMCQ(); setShowFollowup(null); setRapidMode(false); };
+
+  const totalChapters = Object.values(CS_DATA).reduce((a,s)=>a+s.chapters.length,0);
+  const doneCh = Object.keys(progress).length;
+
+  const diffColors = {easy:"var(--green)",medium:"var(--yellow)",hard:"var(--pink)"};
+
+  // Difficulty-filtered chapters
+  const filteredChapters = diffFilter==="all" ? chapters :
+    chapters.filter((_,i)=>(CS_DIFFICULTY[`${selSubject}_${i}`]||"medium")===diffFilter);
   const [selSubject, setSelSubject] = React.useState("dbms");
   const [selChapter, setSelChapter] = React.useState(0);
   const [view, setView] = React.useState("theory");
@@ -9411,8 +9496,11 @@ const CSCorePage = ({ setPage }) => {
               ))}
             </div>
           </div>
-          {/* Subject tabs */}
-          <div style={{display:"flex",gap:5,marginTop:12,flexWrap:"wrap"}}>
+          {/* Subject tabs + rapid revision */}
+          <div style={{display:"flex",gap:5,marginTop:12,flexWrap:"wrap",alignItems:"center"}}>
+            <button onClick={()=>{setRapidMode(true);setRapidIdx(0);}} style={{fontSize:11,padding:"5px 13px",borderRadius:16,border:"2px solid var(--yellow)",background:"rgba(255,214,10,.1)",color:"var(--yellow)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:700}}>
+              ⚡ Rapid Revision
+            </button>
             {CS_SUBJECTS.map(s=>(
               <button key={s.id} onClick={()=>changeSubject(s.id)}
                 style={{fontSize:11,padding:"5px 13px",borderRadius:16,border:`2px solid ${selSubject===s.id?s.color:"var(--border)"}`,background:selSubject===s.id?`${s.color}18`:"var(--card)",color:selSubject===s.id?s.color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:selSubject===s.id?700:400,transition:"all .15s"}}>
@@ -9423,13 +9511,86 @@ const CSCorePage = ({ setPage }) => {
         </div>
       </div>
 
+
+      {/* ── Rapid Revision Modal ── */}
+      {rapidMode && (()=>{
+        const questions = CS_RAPID_REVISION[selSubject]||[];
+        const q = questions[rapidIdx];
+        return (
+          <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.7)",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+            <div style={{background:"var(--card)",border:`2px solid ${subject?.color}`,borderRadius:16,padding:28,maxWidth:560,width:"100%"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+                <div className="syne" style={{fontSize:15,fontWeight:800,color:subject?.color}}>⚡ Rapid Revision — {subject?.name}</div>
+                <button onClick={()=>setRapidMode(false)} style={{background:"none",border:"none",color:"var(--text3)",fontSize:20,cursor:"pointer"}}>✕</button>
+              </div>
+              <div style={{fontSize:11,color:"var(--text3)",marginBottom:12}}>{rapidIdx+1} / {questions.length}</div>
+              <div style={{height:4,background:"var(--bg3)",borderRadius:2,marginBottom:20,overflow:"hidden"}}>
+                <div style={{height:"100%",width:`${((rapidIdx+1)/questions.length)*100}%`,background:subject?.color,transition:"width .3s"}}/>
+              </div>
+              <div style={{fontSize:16,fontWeight:700,lineHeight:1.6,marginBottom:20,color:"var(--text)"}}>{q}</div>
+              <div style={{display:"flex",gap:10,justifyContent:"space-between"}}>
+                <button onClick={()=>setRapidIdx(Math.max(0,rapidIdx-1))} disabled={rapidIdx===0}
+                  style={{padding:"8px 18px",borderRadius:8,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text2)",cursor:rapidIdx===0?"not-allowed":"pointer",opacity:rapidIdx===0?.5:1,fontFamily:"'DM Sans',sans-serif",fontSize:12}}>← Prev</button>
+                {rapidIdx<questions.length-1?(
+                  <button onClick={()=>setRapidIdx(rapidIdx+1)} className="btn-p" style={{padding:"8px 24px",fontSize:12}}>Next →</button>
+                ):(
+                  <button onClick={()=>setRapidMode(false)} className="btn-p" style={{padding:"8px 24px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>Done ✓</button>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ── Weak Topic Banner ── */}
+      {weakTopics.length>0&&(
+        <div style={{maxWidth:1300,margin:"8px auto",padding:"0 24px"}}>
+          <div style={{background:"rgba(255,61,138,.08)",border:"1px solid rgba(255,61,138,.25)",borderRadius:10,padding:"10px 16px",display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+            <span style={{color:"var(--pink)",fontSize:12,fontWeight:700}}>⚠️ Weak Topics:</span>
+            {weakTopics.map((w,i)=>{
+              const [sub,title]=w.split(':');
+              const co=CS_SUBJECTS.find(s=>s.id===sub);
+              return(
+                <button key={i} onClick={()=>{changeSubject(sub);}}
+                  style={{fontSize:11,padding:"3px 10px",borderRadius:12,border:`1px solid ${co?.color||"var(--pink)"}40`,background:`${co?.color||"var(--pink)"}10`,color:co?.color||"var(--pink)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>
+                  {co?.icon} {title?.slice(0,25)}
+                </button>
+              );
+            })}
+            <button onClick={()=>saveWeak([])} style={{marginLeft:"auto",fontSize:10,padding:"2px 8px",borderRadius:6,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Clear</button>
+          </div>
+        </div>
+      )}
+
       <div style={{maxWidth:1300,margin:"0 auto",padding:"20px 24px",display:"grid",gridTemplateColumns:"240px 1fr",gap:18}}>
         {/* Sidebar */}
         <div>
           <div style={{fontSize:10,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>
             {subject?.icon} {subject?.tagline}
           </div>
-          {chapters.map((ch,i)=>(
+          {/* Difficulty filter */}
+          <div style={{display:"flex",gap:4,marginBottom:10}}>
+            {[["all","All"],["easy","Easy"],["medium","Med"],["hard","Hard"]].map(([d,l])=>(
+              <button key={d} onClick={()=>setDiffFilter(d)}
+                style={{flex:1,fontSize:9,padding:"4px 2px",borderRadius:6,border:`1px solid ${diffFilter===d?diffColors[d]||"var(--cyan)":"var(--border)"}`,background:diffFilter===d?`${diffColors[d]||"var(--cyan)"}15`:"var(--card)",color:diffFilter===d?diffColors[d]||"var(--cyan)":"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:diffFilter===d?700:400}}>
+                {l}
+              </button>
+            ))}
+          </div>
+          {(diffFilter==="all"?chapters:filteredChapters).map((ch,idx)=>{
+            const realIdx = diffFilter==="all"?idx:chapters.indexOf(ch);
+            return(
+            <button key={realIdx} onClick={()=>changeChapter(realIdx)}
+              style={{display:"flex",alignItems:"center",gap:8,width:"100%",padding:"10px 12px",borderRadius:9,marginBottom:6,border:`1px solid ${selChapter===realIdx?subject?.color:"var(--border)"}`,background:selChapter===realIdx?`${subject?.color}12`:"var(--card)",cursor:"pointer",textAlign:"left",fontFamily:"'DM Sans',sans-serif",transition:"all .15s"}}>
+              <span style={{fontSize:14,flexShrink:0}}>{ch.icon}</span>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:11,fontWeight:selChapter===realIdx?700:500,color:selChapter===realIdx?subject?.color:"var(--text)",lineHeight:1.3}}>{ch.title}</div>
+                <div style={{fontSize:9,color:diffColors[CS_DIFFICULTY[`${selSubject}_${realIdx}`]||"medium"],marginTop:1,fontWeight:600}}>{(CS_DIFFICULTY[`${selSubject}_${realIdx}`]||"medium").toUpperCase()}</div>
+              </div>
+              {progress[`${selSubject}_${realIdx}`]!==undefined&&<span style={{fontSize:9,color:"var(--green)",flexShrink:0}}>✓{progress[`${selSubject}_${realIdx}`]}/{ch.mcqs.length}</span>}
+            </button>
+            );
+          })}
             <button key={i} onClick={()=>changeChapter(i)}
               style={{display:"flex",alignItems:"center",gap:8,width:"100%",padding:"10px 12px",borderRadius:9,marginBottom:6,border:`1px solid ${selChapter===i?subject?.color:"var(--border)"}`,background:selChapter===i?`${subject?.color}12`:"var(--card)",cursor:"pointer",textAlign:"left",fontFamily:"'DM Sans',sans-serif",transition:"all .15s"}}>
               <span style={{fontSize:14,flexShrink:0}}>{ch.icon}</span>
@@ -9651,6 +9812,815 @@ const CSCorePage = ({ setPage }) => {
 };
 
 
+
+/* ════════════════════════════════════════════════════════════════
+   PLACEMENT EDGE — Soft Skills & HR Interview Prep
+   Communication · HR Interview · GD · Email · Business Etiquette
+════════════════════════════════════════════════════════════════ */
+const SS_SUBJECTS = [
+  { id:"hr",    name:"HR Interview",      icon:"🎤", color:"#3b82f6", tagline:"Tell me about yourself · STAR method · Behavioral" },
+  { id:"comm",  name:"Communication",     icon:"💬", color:"#8b5cf6", tagline:"STAR method · Verbal/Non-verbal · Common mistakes" },
+  { id:"gd",    name:"Group Discussion",  icon:"👥", color:"#10b981", tagline:"Types · How to start · Handling interruptions" },
+  { id:"email", name:"Email Writing",     icon:"✉️",  color:"#f59e0b", tagline:"Formal structure · Subject lines · Templates" },
+  { id:"soft",  name:"Workplace Skills",  icon:"🤝", color:"#ef4444", tagline:"Teamwork · Leadership · Time management · Conflict" },
+  { id:"etiq",  name:"Business Etiquette",icon:"👔", color:"#06b6d4", tagline:"Meeting etiquette · Professional conduct · Dress" },
+  { id:"resume",name:"Resume Tips",       icon:"📄", color:"#84cc16", tagline:"Action verbs · Quantifying · Common mistakes" },
+  { id:"rapid", name:"Last Day Prep",     icon:"🔥", color:"#f97316", tagline:"60-minute rapid HR prep · Most common questions" },
+];
+
+const SS_DATA = {
+  hr: {
+    chapters: [
+      { id:"intro", title:"Tell Me About Yourself", icon:"👤",
+        theory:`**"Tell me about yourself"** is asked in 99% of interviews. It's not about your life story — it's your 60-second professional pitch.
+
+**The PRESENT → PAST → FUTURE Formula:**
+• **Present:** Your current role/status (final year student / current role)
+• **Past:** Key experiences and achievements that matter for THIS job
+• **Future:** Why you're excited about THIS company/role
+
+**Rules:**
+• Keep it to 60-90 seconds (about 150-200 words)
+• Sound rehearsed but natural — practice 10+ times
+• Every word should be relevant to the job
+• End with enthusiasm for the role
+
+**What interviewers are looking for:**
+• Can you communicate clearly?
+• Do you know what's relevant to mention?
+• Are you confident?
+• Does your background fit this role?`,
+        examples:{
+          bad:`"Hi, I am Priya. I am from Bengaluru. I did my schooling from ABC school and then joined XYZ college for B.Tech. I like coding and have done many projects. I also like cricket. My hobbies are reading and cooking. I am looking for a good job."`,
+          good:`"I'm Priya, a final-year CS student at VIT Vellore with a 9.1 CGPA. Over the last 2 years, I've built real-world projects — including a full-stack internship tracker used by 500+ students, and contributed to open-source React libraries. I'm particularly strong in backend development with Node.js and have cleared all DSA rounds in my internship interviews. I'm excited about this role at Razorpay because I want to build financial systems at scale — and your payments infrastructure is exactly the kind of challenge I'm looking for."`,
+          why:`The good answer: starts with role/context, mentions specific proof points, connects to the company. The bad answer: irrelevant personal details, no proof, no connection to the role.`
+        },
+        interview:[
+          {q:"Tell me about yourself.",a:`I'm [Name], a final-year [Branch] student at [College] with [CGPA/achievements]. 
+During my time here, I've [key project/internship — 1 line with impact].
+I'm particularly strong in [2-3 skills], which I demonstrated by [brief proof].
+I'm drawn to [Company] because [specific reason related to company's work].
+I believe my experience in [X] aligns well with what you're looking for in this role.`,followup:"Walk me through your resume."},
+          {q:"Why should we hire you?",a:`There are three reasons I'm the right fit:
+First, technical foundation — I have strong [relevant skills] demonstrated through [project/internship].
+Second, proven delivery — I [specific achievement with numbers if possible].
+Third, cultural fit — I'm someone who [value that matches company culture].
+I don't just meet the requirements — I'll actively contribute from day one.`,followup:"What's your biggest strength?"},
+        ],
+        scenarios:[
+          {q:"Interviewer says: 'Tell me about a project you're proud of.' What's the WRONG approach?",opts:["Explain the full technical architecture in 10 minutes","Use STAR: Situation, what you built, impact achieved","Mention the project name and move on","Talk about the challenges only"],ans:1,sol:"Best approach: STAR — briefly set context, explain what you built (not every detail), and most importantly — what impact it had. Keep it 90 seconds max."},
+          {q:"You're asked 'Tell me about yourself' and you mention your hobbies for 2 minutes. The interviewer looks distracted. What went wrong?",opts:["Hobbies are important","You spent too much time on non-professional details","You were too confident","The interviewer is rude"],ans:1,sol:"'Tell me about yourself' is a professional question. Hobbies can be mentioned in 1 sentence max. Focus: Present role → Key experiences → Why this company."},
+        ],
+        checklist:["60-90 seconds max — practice with a timer","PRESENT (who you are) → PAST (proof) → FUTURE (why here)","Every word must be relevant to the role","End with a specific reason you want THIS company","Avoid: life story, hobbies, family details, irrelevant achievements","Practice aloud 10+ times before the interview"],
+      },
+      { id:"behavioral", title:"Behavioral Questions & STAR Method", icon:"⭐",
+        theory:`**STAR Method** is the gold standard for answering behavioral questions.
+
+**S — Situation:** Set the context. What was happening? (1-2 sentences)
+**T — Task:** What was your responsibility? What needed to be done? (1 sentence)
+**A — Action:** What did YOU specifically do? (3-4 sentences — this is the most important part)
+**R — Result:** What happened because of your actions? Use NUMBERS. (1-2 sentences)
+
+**Common Behavioral Questions (and what they're really testing):**
+
+| Question | Testing for |
+|---|---|
+| "Tell me about a challenge you overcame" | Resilience, problem-solving |
+| "Conflict with a team member?" | Interpersonal skills, maturity |
+| "Failed at something?" | Self-awareness, growth mindset |
+| "Led a team?" | Leadership potential |
+| "Met a tight deadline?" | Time management |
+| "Disagreed with your manager?" | Professional judgment, courage |
+
+**Critical tips:**
+• Always use a real example — interviewers can tell when you make it up
+• The ACTION section must show YOUR contribution, not "we did..."
+• Numbers make answers memorable: "reduced load time by 40%", "coordinated 8-person team"
+• Keep under 2 minutes per answer
+• Have 5-6 STAR stories ready that can cover multiple questions`,
+        examples:{
+          bad:`"When there was a conflict, I talked to my teammate and we resolved it. Communication is very important for teamwork."`,
+          good:`SITUATION: During my 3rd year project, my team of 4 had a disagreement — my teammate wanted to use MongoDB but I had designed the schema around PostgreSQL relationships.
+TASK: We had 1 week to finalize the architecture and couldn't afford to delay.
+ACTION: I created a quick comparison document showing query complexity for our specific use case, scheduled a 30-minute technical discussion, and proposed we use PostgreSQL but adopt a flexible schema design. I listened to his concerns about flexibility and incorporated them.
+RESULT: Team aligned within 2 days. We delivered on time, and the PostgreSQL choice actually improved our query performance by 3x compared to our prototype.`,
+          why:"The good answer has specifics, shows your individual action, and ends with a quantified result."
+        },
+        interview:[
+          {q:"Tell me about a time you faced a major challenge and how you overcame it.",a:`STAR format:
+S: [Set specific context — what project/situation]
+T: [Your specific responsibility]  
+A: [3-4 specific steps YOU took — not 'we']
+R: [Outcome with numbers/impact]
+Tip: Choose a challenge that shows technical + soft skills together.`,followup:"What would you do differently looking back?"},
+          {q:"Describe a time you disagreed with someone and how you handled it.",a:`S: [Context — who, what project]
+T: I needed to [resolve/align/move forward without damaging relationship]
+A: First I [listened fully to understand their perspective]. Then I [presented data/alternatives]. Finally we [agreed on approach].
+R: [Outcome — relationship intact + goal achieved]
+Key: Show you can disagree respectfully. NOT: "I convinced them I was right."`,followup:"What did you learn about handling disagreement?"},
+        ],
+        scenarios:[
+          {q:"Your STAR answer about 'overcoming a challenge' lasts 5 minutes. What's wrong?",opts:["Nothing, more detail is better","Too long — reduce Situation/Task to 15% of answer, focus on Action+Result","You should only mention Result","The situation needs more explanation"],ans:1,sol:"STAR answers should be 60-120 seconds. Situation+Task = 20%, Action = 60%, Result = 20%. 5 minutes loses the interviewer."},
+          {q:"'Tell me about a failure.' You say 'I never really failed at anything important.' Interviewer's reaction?",opts:["Impressed by your perfect record","You seem like a strong candidate","Red flag — sounds overconfident or not self-aware","They'll move to the next question positively"],ans:2,sol:"Saying you've never failed is a red flag. Everyone fails. Interviewers want self-awareness. Choose a real (minor) failure, explain what you learned, and how you applied that learning."},
+        ],
+        checklist:["STAR = Situation(context) + Task(your role) + Action(what YOU did) + Result(impact)","Action section = 60% of your answer. Make it specific to YOU, not 'we'","Always end with a quantified result: %, numbers, time, money","Keep each STAR answer to 90-120 seconds","Prepare 5-6 STAR stories covering: challenge, failure, leadership, conflict, achievement, teamwork","Never say 'I never failed' — pick a real example with learning"],
+      },
+      { id:"common_hr", title:"Common HR Questions", icon:"❓",
+        theory:`**The 10 Most Common HR Questions + What They're Testing:**
+
+1. **Strengths** — self-awareness + relevance to role
+2. **Weaknesses** — honesty + proactive improvement
+3. **Where do you see yourself in 5 years?** — ambition + company alignment  
+4. **Why this company?** — research + genuine interest
+5. **Why should we hire you?** — value proposition
+6. **Greatest achievement?** — confidence + proof
+7. **Salary expectations?** — market knowledge + negotiation start
+8. **Notice period/joining date?** — logistics
+9. **Are you interviewing elsewhere?** — leverage + interest level
+10. **Any questions for us?** — curiosity + engagement
+
+**Weakness Framework (the right way):**
+1. Name a REAL weakness (not "I work too hard")
+2. Show what you're DOING about it
+3. Show early PROGRESS
+Example: "I sometimes spend too much time perfecting code before testing it. I've started using time-boxing — I set a max of 2 hours before committing a testable version, which has improved my iteration speed."
+
+**Salary Question:**
+• Research market rates on LinkedIn Salary, Glassdoor, AmbitionBox
+• Give a range based on research: "Based on my research and this role, I'm looking for ₹12-15 LPA"
+• Don't say "anything is fine" — shows lack of self-worth`,
+        examples:{
+          bad:`Weakness: "My weakness is that I'm a perfectionist and I work too hard."
+5 years: "I want to be in a senior position in your company."
+Why this company: "Your company is very big and reputed."`,
+          good:`Weakness: "I sometimes struggle with saying no to additional tasks, which has occasionally affected my focus on priority work. I've started using time-blocking and being more explicit about capacity in project discussions — and I've seen real improvement in the last 6 months."
+5 years: "In 5 years, I want to be a strong backend engineer with deep expertise in distributed systems. I see [Company]'s scale as the ideal place to develop that — your infrastructure team works on exactly the problems I want to master."`,
+          why:"Good answers are specific, honest, and connect to the role/company."
+        },
+        interview:[
+          {q:"What is your greatest weakness?",a:`"My weakness is [REAL skill gap — not fake modesty].
+I realized this when [specific situation where it showed up].
+To address it, I've been [specific action: course, practice, process change].
+I've already seen improvement — [brief evidence].
+It's still something I'm working on, but I'm committed to it."
+Never say: perfectionist, workaholic, too dedicated.`,followup:"How long have you been working on this weakness?"},
+          {q:"Where do you see yourself in 5 years?",a:`"In 5 years, I want to be a [specific role] with deep expertise in [domain].
+I want to have shipped [type of products/systems] at scale.
+I'm drawn to [Company] specifically because [their work in that domain].
+I see this role as the foundation for that path — and I'm excited to grow here."
+Keep it ambitious but realistic. Connect to the company.`,followup:"What if that role isn't available here?"},
+        ],
+        scenarios:[
+          {q:"Interviewer asks 'Do you have any questions for us?' You say 'No, everything is clear.' Impact?",opts:["Good — shows you're prepared","Missed opportunity — always ask questions","Saves interview time","Shows confidence"],ans:1,sol:"Always ask 2-3 thoughtful questions. It shows curiosity and engagement. Good questions: 'What does success look like in this role in 6 months?' or 'What's the biggest challenge the team is working on?'"},
+          {q:"Asked about salary, you say 'Anything is fine, I just want to join.' Effect?",opts:["Shows you're flexible and easy to work with","May signal low confidence, no market research","Always gets highest offer","Shows dedication to the company"],ans:1,sol:"'Anything is fine' signals you haven't researched the market and may have low self-worth. Research first (AmbitionBox, LinkedIn Salary), then give a range: 'Based on market research, I'm looking for ₹X-Y LPA.'"},
+        ],
+        checklist:["Strength = real skill + proof + why it matters for THIS role","Weakness = real gap + what you're doing + evidence of improvement","5 years = specific goal + how this company helps you get there","Why this company = specific research (product, culture, team, problem)","Always prepare 3 questions to ask the interviewer at the end","Salary: research first, give a range, don't say 'anything is fine'"],
+      },
+    ]
+  },
+  comm: {
+    chapters: [
+      { id:"star", title:"STAR Method & Answer Structure", icon:"⭐",
+        theory:`**Structuring your answers** is the #1 communication skill in interviews.
+
+**Why structure matters:**
+• Unstructured answers feel like rambling → interviewer loses interest
+• Structure shows logical thinking → maps to engineering mindset
+• Interviewers take notes on structure → easier to evaluate
+
+**STAR Method (repeat for behavioral questions):**
+See HR Interview module for full STAR breakdown.
+
+**PEE Method (for knowledge questions):**
+• **P**oint — state your answer clearly (1 sentence)
+• **E**xplain — add brief explanation (2-3 sentences)
+• **E**xample — give a concrete example (1-2 sentences)
+
+Example question: "What is polymorphism?"
+P: "Polymorphism means the same method can behave differently based on the object calling it."
+E: "There are two types: compile-time (method overloading) and runtime (method overriding). Runtime polymorphism uses virtual dispatch."
+E: "For example, a draw() method on Shape class behaves differently when called on Circle vs Rectangle."
+
+**Common Communication Mistakes:**
+• **Filler words:** um, uh, like, you know, basically, so yeah
+• **Rambling:** answering for 5+ minutes without stopping
+• **Too short:** one-word or one-sentence answers ("Yes", "No", "I don't know")
+• **Jargon overload:** using technical terms without checking if interviewer follows
+• **Negative language:** "I can't", "I don't know that", "That's not my area"
+
+**Better alternatives:**
+• Instead of "I don't know" → "I'm not 100% sure, but my understanding is..."
+• Instead of "I can't do X" → "I haven't done X yet, but I've done Y which is similar"`,
+        examples:{
+          bad:`Q: "How does a hash map work?"
+A: "Um, so basically, hash map is like, it's a data structure, and, uh, it uses hashing. Like you put a key and it stores the value. It's O(1). Yeah, that's basically it."`,
+          good:`Q: "How does a hash map work?"
+A: "A hash map stores key-value pairs with O(1) average-case lookup. [POINT]
+It works by applying a hash function to the key, which produces an index into an underlying array. The value is stored at that index. [EXPLAIN]
+For example, for key 'name', the hash function might return index 42, so 'Priya' is stored at array[42]. Collisions — when two keys hash to the same index — are handled via chaining (linked list at each slot) or open addressing. [EXAMPLE]"`,
+          why:"The good answer uses P-E-E structure, is confident (no fillers), and adds technical depth."
+        },
+        interview:[
+          {q:"You're asked a technical question and you don't know the answer. What do you do?",a:`Never say "I don't know" flatly and stop.
+Instead: "I'm not certain about the exact answer, but let me think through it..."
+Then: Apply first principles. Talk through your reasoning.
+If truly stuck: "I'm not confident enough to give you a specific answer on that, but based on X and Y, I would guess Z. Could you tell me if I'm in the right direction?"
+This shows: logical thinking, honesty, ability to handle uncertainty — all positive signals.`,followup:"What's the difference between saying 'I don't know' and 'I'm not sure but...'?"},
+        ],
+        scenarios:[
+          {q:"You're answering 'Explain TCP/IP' and you've been talking for 4 minutes. The interviewer hasn't asked a follow-up yet. What should you do?",opts:["Keep going, more is better","Pause and check: 'Would you like me to go into more detail on any part?'","Stop abruptly","Ask them a question about their network setup"],ans:1,sol:"After 60-90 seconds on any answer, pause and invite follow-up. This shows self-awareness, keeps the conversation two-way, and lets the interviewer guide depth."},
+        ],
+        checklist:["Use PEE for technical questions: Point → Explain → Example","Use STAR for behavioral questions","Eliminate filler words: record yourself and listen back","Answer in 60-90 seconds, then pause for follow-up","Never say 'I don't know' without attempting to reason through it","Match your vocabulary to the interviewer's level"],
+      },
+    ]
+  },
+  gd: {
+    chapters: [
+      { id:"gd_basics", title:"Group Discussion Strategy", icon:"👥",
+        theory:`**Group Discussion (GD)** is used by companies like TCS, Infosys, Wipro, and many product companies to assess communication, leadership, and thinking under pressure.
+
+**What interviewers evaluate:**
+• Communication clarity — can you make a point concisely?
+• Leadership — do you guide the discussion productively?
+• Knowledge — do you have relevant facts/examples?
+• Listening — do you build on others' points?
+• Body language — eye contact, posture, confidence
+
+**Types of GD Topics:**
+• **Controversial:** "Work from home vs office" — state balanced views
+• **Abstract:** "Blue" — be creative, structured
+• **Case-based:** "You're the CEO, company is losing revenue, what do you do?" — show decision-making
+• **Current affairs:** "AI replacing jobs" — need recent knowledge
+
+**How to start a GD (3 methods):**
+1. **Define the topic:** "Before we debate, let me define what we mean by [topic]..."
+2. **State a fact/statistic:** "According to NASSCOM, India's IT industry employs 5 million people..."
+3. **Pose a question:** "The real question we should answer today is: does [topic] benefit the majority?"
+
+**How to enter when the GD has started:**
+• "Building on what [person] said, I'd like to add..."
+• "I agree with the point about X, but I think we're missing Y..."
+• "Can I bring a different perspective here?"
+
+**Handling interruptions:**
+• Calmly raise your hand slightly
+• "If I could just finish my point — [complete in 10 seconds]"
+• Don't raise your voice
+
+**How to conclude a GD:**
+• Summarize key points from BOTH sides
+• Give a balanced conclusion
+• Don't just repeat your own views`,
+        examples:{
+          bad:`*Talks for 5 minutes straight without letting others speak. Repeats the same point 3 times. Gets angry when interrupted. Says nothing new but very loudly.*`,
+          good:`Entry: "Building on Rahul's point about cost savings, I'd like to add that WFH also has measurable productivity benefits — Stanford found a 13% productivity increase in WFH employees. However, the challenge is collaboration for creative work..."
+Response to interruption: "Let me just finish this point in 10 seconds — the key stat here is [stat] — and I'd love to hear your perspective after."`,
+          why:"Good GD participants build on others, use data, are concise, and handle pressure gracefully."
+        },
+        interview:[
+          {q:"How do you handle a GD where one person is dominating and not letting others speak?",a:`Don't: get angry, interrupt aggressively, stay silent the whole time.
+Do: When the dominant speaker pauses, step in confidently:
+"That's an interesting point. I'd like to build on it and also bring in another angle..."
+If they interrupt you again: stay calm, "Let me complete this thought — [10 second point] — thank you."
+Also: Make eye contact with evaluators, not just the dominant speaker.
+Evaluators are watching how you handle this — composure is the test.`,followup:"How do you ensure quiet participants get a chance to speak?"},
+        ],
+        scenarios:[
+          {q:"GD topic: 'AI will eliminate more jobs than it creates.' You personally disagree. What should you do?",opts:["Only argue your view strongly","Present both sides with evidence, state your position at the end","Stay silent to avoid conflict","Agree with whatever the majority says"],ans:1,sol:"In a GD, presenting balanced views with evidence shows maturity. State your position clearly, but acknowledge valid points in the opposing view. Evaluators want to see reasoning, not just opinions."},
+        ],
+        checklist:["Start confidently: define/fact/question method","Speak for 30-60 seconds at a time, not 5 minutes","Listen actively — nod, make eye contact when others speak","Use phrases: 'Building on that...' / 'I agree with X, however...'","Handle interruptions calmly — don't raise your voice","Conclude by summarizing BOTH sides fairly"],
+      },
+    ]
+  },
+  email: {
+    chapters: [
+      { id:"email_formal", title:"Professional Email Writing", icon:"✉️",
+        theory:`**Professional emails** are evaluated in written communication tests at Wipro, Accenture, and many companies.
+
+**Email Structure:**
+1. **Subject line** — clear, specific, 5-8 words
+2. **Salutation** — Dear [Name]/Dear Hiring Manager/Dear Team
+3. **Opening line** — state purpose immediately (don't start with "Hope you're doing well" in formal emails)
+4. **Body** — max 3 paragraphs, clear and direct
+5. **Call to action** — what do you want the reader to do?
+6. **Closing** — Regards / Sincerely / Best regards
+7. **Signature** — Full name, designation, contact
+
+**Common Mistakes:**
+• No subject line / vague subject: "Hi", "Regarding..."
+• Too informal: "Hey", "Wassup", emoji usage
+• Too long: more than 3 paragraphs
+• No call to action
+• Spelling errors (auto-correct doesn't catch everything)
+• Replying all when only one person needs to know
+
+**Subject Line Formula:** [Action Needed/FYI] + [Topic] + [Context if needed]
+Examples:
+• "Interview Confirmation — Software Engineer Role — [Date]"
+• "Request for Meeting — Project Status Update"
+• "Follow-up: Application for SDE Intern Position"`,
+        examples:{
+          bad:`Subject: Hi
+Hey Mr. Kumar!!!
+I wanted to write to say I am very very interested in the job that you have posted. I am a very hardworking student and I think I would be very good for this role. Please consider me. I attached my resume hope you will look at it. 
+Thanks`,
+          good:`Subject: Application for SDE Intern — B.Tech CS, VIT Vellore — June 2025
+
+Dear Mr. Kumar,
+
+I am writing to apply for the Software Engineer Intern position posted on LinkedIn (Ref: SE-INTERN-2025). I am a final-year Computer Science student at VIT Vellore with a 9.1 CGPA and 1 year of full-stack development experience through personal projects and a previous internship at Freshworks.
+
+I have attached my resume and a link to my GitHub portfolio (github.com/priya). I am available for a technical interview at your convenience.
+
+Thank you for your time. I look forward to hearing from you.
+
+Regards,
+Priya Sharma
+B.Tech CSE, VIT Vellore | +91 98765 43210 | priya@email.com`,
+          why:"Good email: specific subject, formal but not stiff, states purpose immediately, clear CTA, proper signature."
+        },
+        interview:[
+          {q:"Write an email to reschedule an interview you confirmed.",a:`Subject: Request to Reschedule Interview — [Your Name] — [Original Date]
+
+Dear [Interviewer Name],
+
+I am writing to request a reschedule for my interview originally scheduled for [Date] at [Time]. I apologize for any inconvenience this may cause.
+
+Due to [brief, professional reason — e.g., "a medical appointment I was unable to defer"], I am unable to attend at the confirmed time.
+
+I am available on [provide 2-3 alternative time slots]. Please let me know if any of these work for your schedule.
+
+Thank you for your understanding.
+
+Sincerely,
+[Full Name]`,followup:"What if the interviewer doesn't respond?"},
+        ],
+        scenarios:[
+          {q:"You send a follow-up email after an interview 2 weeks ago and haven't heard back. What's the right approach?",opts:["Send 5 emails in a week","Send one polite follow-up, then accept the outcome","Call the interviewer's personal number","Post on LinkedIn about the wait"],ans:1,sol:"One polite follow-up after 1-2 weeks is professional. Subject: 'Follow-up: Interview for [Role] on [Date]'. If still no response after another week, move on gracefully. Persistent emails can hurt your reputation."},
+        ],
+        checklist:["Subject line: action + topic + context (5-8 words)","Opening: state purpose in first line — no 'hope you're well' in formal mails","Body: max 3 paragraphs, each with one clear point","End with clear call to action (what do you want them to do?)","Signature: name, college/company, phone, email","Proofread: one spelling error = unprofessional impression"],
+      },
+    ]
+  },
+  soft: {
+    chapters: [
+      { id:"teamwork", title:"Teamwork, Leadership & Conflict", icon:"🤝",
+        theory:`**Workplace soft skills** determine promotions and long-term success more than technical skills for most roles after 2-3 years.
+
+**Teamwork Fundamentals:**
+• Assume positive intent — teammates usually aren't trying to be difficult
+• Communicate proactively — don't wait for someone to ask for updates
+• Give credit publicly, receive feedback privately
+• "Yes, and..." thinking — build on ideas rather than shutting them down
+
+**Leadership (without being a manager):**
+• Lead by example — quality of your work influences team standards
+• Speak up when you see a problem — teams value people who identify risks early
+• Take ownership — don't wait to be told what to do
+• Mentor others — sharing knowledge makes the whole team stronger
+
+**Conflict Resolution Framework (DESC):**
+• **D**escribe the situation factually: "In yesterday's meeting, the deadline was moved without discussion."
+• **E**xpress your concern: "I'm concerned this affects my ability to deliver quality work."
+• **S**pecify what you need: "I need at least 2 days notice for timeline changes."
+• **C**onsequences (positive): "This way I can plan better and meet deadlines reliably."
+
+**Time Management — interview version:**
+• Mention tools: Trello, Notion, Google Calendar
+• Show prioritization: "I use the Eisenhower Matrix — urgent+important first"
+• Show tracking: "I break tasks into 2-hour blocks and track completion"`,
+        examples:{
+          bad:`"When my teammate didn't do their work, I just did it myself and was angry about it the whole time. Eventually we stopped talking."`,
+          good:`"When I noticed a teammate was falling behind, I first checked in privately — they were dealing with a personal issue. I redistributed tasks fairly after a quick team discussion, covered their work for one week, and helped them get back on track. The project delivered on time, and they thanked me later. I learned that sometimes people need support, not judgment."`,
+          why:"Good answer shows empathy, initiative, problem-solving, and a positive outcome."
+        },
+        interview:[
+          {q:"Tell me about a time you had to work with a difficult team member.",a:`S: During [project], my teammate [specific behavior — consistently missed deadlines / had a very different approach].
+T: I needed to [maintain team output / protect timeline] without damaging the relationship.
+A: I [first tried to understand their perspective privately] → [then proposed a specific solution] → [involved manager/lead only when necessary]
+R: [Outcome — project succeeded, relationship improved/maintained]
+Key message: You solve problems without escalating unnecessarily.`,followup:"What would you do if the behavior continued?"},
+        ],
+        scenarios:[
+          {q:"Your teammate keeps taking credit for your ideas in meetings. What do you do?",opts:["Say nothing, it's fine","Send a passive-aggressive email to the team","Speak privately first, then use 'I' statements: 'I wanted to share the thinking behind this idea...'","Immediately escalate to manager"],ans:2,sol:"Start with a private, direct conversation. Then proactively share your ideas in emails/docs before meetings so there's a record. Only escalate to manager if the pattern continues after direct discussion."},
+        ],
+        checklist:["Assume positive intent before assuming conflict","Use DESC for conflict: Describe → Express → Specify → Consequence","Give credit in public, give feedback in private","Proactive communication: update teammates without being asked","Show initiative: 'I noticed X, so I did Y'","Time management tools: Trello, Notion, Eisenhower Matrix"],
+      },
+    ]
+  },
+  etiq: {
+    chapters: [
+      { id:"etiquette", title:"Professional & Business Etiquette", icon:"👔",
+        theory:`**Professional etiquette** is evaluated in interviews and determines your early career growth.
+
+**Interview Day Etiquette:**
+• Arrive 10-15 minutes early (not 30+ minutes — that creates awkwardness)
+• Phone on silent and face-down or in bag
+• Firm handshake, eye contact, smile
+• Wait to be offered a seat
+• Don't interrupt — ever
+• Don't speak negatively about previous employer/college
+
+**Virtual Interview Etiquette:**
+• Test camera, microphone, lighting 30 minutes before
+• Clean, quiet background (blurred background is fine)
+• Look at camera (not at your own face)
+• Dress professionally from head to toe (you may need to stand)
+• Have water nearby, not snacks
+• Mute when not speaking if there's background noise
+
+**Workplace Email/Slack Etiquette:**
+• Respond within 24 hours on working days
+• Don't send emails after 10pm unless urgent
+• Don't reply-all unless everyone needs to know
+• Use @name for specific people in team channels
+
+**Meeting Etiquette:**
+• Be on time (joining 2 minutes early = on time)
+• Come prepared with updates/questions
+• Take notes yourself — don't ask to be sent the notes
+• Raise hand or wait for pause before speaking in large meetings
+• End with clear action items: who does what by when`,
+        examples:{
+          bad:`*Walks in 5 minutes late to interview. Checks phone during interview. Talks badly about previous manager: "My last manager was terrible and never appreciated my work." Interrupts interviewer mid-sentence to share their opinion.*`,
+          good:`Arrives 12 minutes early. Phones off. "Thank you for meeting with me." Maintains eye contact. When asked about previous company: "My previous role helped me grow technically, and I'm looking for a new challenge because I want to work at scale which this role offers."`,
+          why:"Good candidates are calm, prepared, respectful, and keep conversations positive and forward-looking."
+        },
+        interview:[
+          {q:"Why did you leave your previous company/internship?",a:`NEVER say: "The manager was bad", "the work was boring", "the pay was low", "no growth opportunity and my team was bad"
+Always say: "I'm looking for [something specific this company offers]"
+Examples:
+"I learned a lot at [company], and I'm now looking for an opportunity to work at larger scale — which is why [this company] excites me.\nMy internship was project-based, and I'm ready for a full-time challenge where I can own a product feature long-term."`,followup:"What specifically are you hoping to find here that you didn't have before?"},
+        ],
+        scenarios:[
+          {q:"In a virtual interview, your internet cuts out for 30 seconds. When it reconnects, what do you say?",opts:["Pretend nothing happened and continue","Apologize briefly, ask if they could hear you, offer to repeat if needed","Immediately reschedule the interview","Say nothing and hope they didn't notice"],ans:1,sol:"Brief, professional: 'I apologize for the interruption — I had a brief connection issue. Could you hear everything I said, or should I repeat any part?' Then continue calmly. Technical issues happen — how you handle them shows professionalism."},
+        ],
+        checklist:["Arrive 10-15 minutes early — not 30, not late","Phone off or face-down, never check during interview","Never speak negatively about previous employer","Virtual: test tech 30 min early, look at camera not your face","Meeting: arrive prepared, take your own notes, leave with action items","Email: respond within 24h, no late-night emails unless urgent"],
+      },
+    ]
+  },
+  resume: {
+    chapters: [
+      { id:"resume_tips", title:"Resume Writing That Gets Shortlisted", icon:"📄",
+        theory:`**A resume gets 6-10 seconds** of initial attention. It must communicate value instantly.
+
+**Resume Structure (1 page for <3 years experience):**
+1. **Header** — Name (large), Contact (email, phone, LinkedIn, GitHub), Location
+2. **Summary** (optional for freshers) — 2 lines of who you are
+3. **Education** — College, Degree, CGPA, Graduation year
+4. **Experience/Internships** — Reverse chronological, STAR-format bullets
+5. **Projects** — 2-3 best projects with tech stack and impact
+6. **Skills** — Technical skills only (not "MS Word" or "hardworking")
+7. **Achievements** — Rankings, competitions, open source contributions
+
+**Bullet Point Formula (XYZ from Google):**
+"Accomplished [X] as measured by [Y], by doing [Z]"
+Example: "Reduced API latency by 40% (from 800ms to 480ms) by implementing Redis caching and optimizing N+1 database queries"
+
+**Action Verbs by category:**
+• Built/Developed/Engineered/Implemented — for building things
+• Reduced/Optimized/Improved — for performance work
+• Led/Coordinated/Managed — for leadership
+• Designed/Architected — for design work
+• Increased/Grew/Scaled — for growth metrics
+
+**Common Resume Mistakes:**
+• Responsible for... (passive) → Use action verbs
+• "Good communication skills" — irrelevant soft skill buzzword
+• Team player, hardworking, dedicated — hiring managers ignore these
+• No numbers/metrics — "Improved performance" vs "Improved performance by 40%"
+• Wrong format — tables, graphics, columns (ATS can't parse)
+• More than 1 page (for freshers/0-3 yrs)
+• Objective statement wasting top real estate
+• No GitHub/portfolio link`,
+        examples:{
+          bad:`• Responsible for developing the website for the college fest.
+• Was part of team that made an app.
+• Good communication skills, team player, quick learner.
+• Worked on React and Node.js and some databases.`,
+          good:`• Built college fest registration system (React + Node.js + PostgreSQL) used by 2,000+ students; reduced manual registration time by 80%
+• Developed Android inventory app (Kotlin + Firebase) for local retailer; eliminated stockout incidents through real-time alerts
+• Technologies: React, Node.js, PostgreSQL, Redis, Docker, AWS EC2`,
+          why:"Good bullets: start with action verb, have a number, explain the tech used, show impact."
+        },
+        interview:[
+          {q:"Walk me through your resume.",a:`Don't read it to them — they have it.
+Do: narrate the story.
+"I started with [project/internship] where I [key thing]. That taught me [skill]. Then I [next experience]. The thread through all of this is my interest in [your area]. Most recently [latest thing]. That's why I'm here — [connect to this role/company]."
+Keep it to 2 minutes max.`,followup:"Which project are you most proud of?"},
+        ],
+        scenarios:[
+          {q:"Your resume has 'Team player, hardworking, dedicated' as skills. What's wrong?",opts:["Nothing — these are important qualities","These are expected baselines, not differentiators. Remove them.","Add more such words","Put them at the top"],ans:1,sol:"Every candidate claims these. They waste space and scream 'generic resume.' Show these qualities through your project descriptions and STAR stories instead. Your resume space is valuable — use it for skills and achievements that differentiate you."},
+        ],
+        checklist:["Use XYZ bullets: Accomplished X as measured by Y by doing Z","Start every bullet with a strong action verb (Built, Reduced, Led, Designed)","Remove: team player, hardworking, dedicated, good communicator","Add numbers to every achievement (%, users, time, money, rank)","Keep to 1 page if <3 years experience","ATS-safe format: no tables, no graphics, simple columns only","Include GitHub/portfolio link — especially for tech roles"],
+      },
+    ]
+  },
+  rapid: {
+    chapters: [
+      { id:"last_day", title:"60-Minute Pre-Interview Rapid Prep", icon:"🔥",
+        theory:`**If you only have 1 hour before your interview, focus on these:**
+
+**MINUTE 0-15: Know the company (15 min)**
+• Google: "[Company Name] products/services"
+• Read their About/Careers page
+• Find 1-2 recent news items about them
+• Prepare: "Why [Company]?" answer
+
+**MINUTE 15-30: Review your own resume (15 min)**
+• Be able to explain EVERY bullet point in detail
+• Have a STAR story ready for your best project
+• Know your GPA, graduation year, key skills cold
+
+**MINUTE 30-45: Practice the top 3 HR questions (15 min)**
+• "Tell me about yourself" — practice 3 times aloud
+• "Why this company?" — use what you just researched
+• "What is your greatest weakness?" — use the real-weakness formula
+
+**MINUTE 45-55: Technical quick-revision (10 min)**
+• Review the job description — what skills/technologies did they list?
+• Refresh your memory on 2-3 core concepts for that role
+• Be ready to explain your most recent project
+
+**MINUTE 55-60: Pre-interview mindset (5 min)**
+• Drink water, breathe
+• Remember: the interview is a conversation, not an exam
+• You don't need to know everything — you need to think well
+• If you get stuck: "Let me think about that for a moment..." then reason out loud`,
+        examples:{
+          bad:`Using the 1 hour to: memorize 50 HR questions, read 3 articles about microservices, and panic.`,
+          good:`15 min: Company research → Why this company? answer ready.
+15 min: Resume walkthrough to yourself aloud.
+15 min: "Tell me about yourself" practiced 3 times.
+10 min: Top 3 technical concepts from the JD refreshed.
+5 min: Deep breaths, water, positive self-talk.`,
+          why:"Focus + quality > quantity in last-minute prep. Calm confidence beats frantic cramming."
+        },
+        interview:[
+          {q:"What do you do if you're completely blank on a technical question?",a:`Never say "I don't know" and go silent.
+Step 1: Pause 3-5 seconds — say "Let me think about this."
+Step 2: Think out loud: "I know that X is related to Y, so the answer might involve..."
+Step 3: Apply first principles or analogies
+Step 4: If you reach a dead end: "I'm not 100% confident in the answer, but my reasoning is [X]. Could you tell me if I'm on the right track?"
+This shows: honesty, logical thinking, coachability — all valued.`,followup:"How do you prepare for technical topics you're weak in?"},
+        ],
+        scenarios:[
+          {q:"You're 5 minutes into the interview and your mind goes completely blank on 'Tell me about yourself.' What do you do?",opts:["Say 'I'm very nervous, can we skip this?'","Take a breath, smile, and start with the simplest version: your name, college, strongest project","Make something up","Ask the interviewer to go first"],ans:1,sol:"Take 2 seconds, breathe, and deliver even a simple version: 'I'm [Name], final year at [College]. My strongest work has been [Project] where I [one-line impact]. I'm excited about this role because [one reason].' Simplicity beats panic-rambling."},
+        ],
+        checklist:["60 min plan: Company (15) → Resume (15) → HR questions (15) → Tech (10) → Mindset (5)","'Tell me about yourself' practiced aloud minimum 3 times","Know your resume cold — every bullet should be expandable","Research the company: 1 product, 1 recent news, 1 reason you want to join","Stuck on technical: think aloud, reason from first principles, then admit uncertainty gracefully","Interview is a conversation — you're evaluating them too"],
+      },
+    ]
+  },
+};
+
+// ── Placement Edge Component ───────────────────────────────────
+const PlacementEdgePage = ({ setPage }) => {
+  const [selSub,  setSelSub]  = React.useState("hr");
+  const [selCh,   setSelCh]   = React.useState(0);
+  const [view,    setView]    = React.useState("theory"); // theory|examples|interview|scenarios|checklist
+  const [scqAns,  setScqAns]  = React.useState({});
+  const [scqShow, setScqShow] = React.useState({});
+  const [showFU,  setShowFU]  = React.useState(null);
+  const [progress,setProgress]= React.useState(()=>{ try{return JSON.parse(localStorage.getItem("pe_prog_v1")||"{}");}catch{return {};} });
+
+  const saveProg = p=>{setProgress(p);try{localStorage.setItem("pe_prog_v1",JSON.stringify(p));}catch(_){}};
+
+  const subject  = SS_SUBJECTS.find(s=>s.id===selSub);
+  const chapters = SS_DATA[selSub]?.chapters||[];
+  const chapter  = chapters[selCh];
+
+  const changeSub = id=>{setSelSub(id);setSelCh(0);setView("theory");setScqAns({});setScqShow({});setShowFU(null);};
+  const changeCh  = i=>{setSelCh(i);setView("theory");setScqAns({});setScqShow({});setShowFU(null);};
+
+  const submitScq = (qi,oi)=>{
+    if(scqAns[qi]!==undefined) return;
+    setScqAns({...scqAns,[qi]:oi});
+    setScqShow({...scqShow,[qi]:true});
+    if(!progress[`${selSub}_${selCh}`]) saveProg({...progress,[`${selSub}_${selCh}`]:true});
+  };
+
+  const totalCh = Object.values(SS_DATA).reduce((a,s)=>a+s.chapters.length,0);
+  const doneCh  = Object.keys(progress).length;
+
+  const VIEWS = [["theory","📖 Theory"],["examples","✅ Good vs Bad"],["interview","🎤 Interview Q&A"],["scenarios","🎭 Scenarios"],["checklist","📋 Checklist"]];
+
+  return (
+    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+      {/* Header */}
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"18px 24px"}}>
+        <div style={{maxWidth:1300,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+            <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:12,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Tools</button>
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:10}}>
+            <div>
+              <h1 className="syne" style={{fontSize:22,fontWeight:900,marginBottom:2}}>🎯 Placement <span className="gtext">Edge</span></h1>
+              <p style={{color:"var(--text2)",fontSize:12,margin:0}}>HR Interview · Communication · GD · Email · Soft Skills · Etiquette · Resume Tips</p>
+            </div>
+            <div style={{display:"flex",gap:14,textAlign:"center"}}>
+              {[[`${doneCh}/${totalCh}`,"Chapters","var(--cyan)"],["200+","Q&As","var(--green)"],["8","Modules","var(--purple)"]].map(([v,l,c])=>(
+                <div key={l}><div className="syne" style={{fontSize:18,fontWeight:900,color:c}}>{v}</div><div style={{fontSize:10,color:"var(--text3)"}}>{l}</div></div>
+              ))}
+            </div>
+          </div>
+          {/* Subject tabs */}
+          <div style={{display:"flex",gap:5,marginTop:12,flexWrap:"wrap"}}>
+            {SS_SUBJECTS.map(s=>(
+              <button key={s.id} onClick={()=>changeSub(s.id)}
+                style={{fontSize:11,padding:"5px 13px",borderRadius:16,border:`2px solid ${selSub===s.id?s.color:"var(--border)"}`,background:selSub===s.id?`${s.color}18`:"var(--card)",color:selSub===s.id?s.color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:selSub===s.id?700:400,transition:"all .15s"}}>
+                {s.icon} {s.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={{maxWidth:1300,margin:"0 auto",padding:"20px 24px",display:"grid",gridTemplateColumns:"220px 1fr",gap:18}}>
+        {/* Sidebar */}
+        <div>
+          <div style={{fontSize:10,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>
+            {subject?.icon} {subject?.tagline}
+          </div>
+          {chapters.map((ch,i)=>(
+            <button key={i} onClick={()=>changeCh(i)}
+              style={{display:"flex",alignItems:"center",gap:8,width:"100%",padding:"10px 12px",borderRadius:9,marginBottom:6,border:`1px solid ${selCh===i?subject?.color:"var(--border)"}`,background:selCh===i?`${subject?.color}12`:"var(--card)",cursor:"pointer",textAlign:"left",fontFamily:"'DM Sans',sans-serif",transition:"all .15s"}}>
+              <span style={{fontSize:14,flexShrink:0}}>{ch.icon}</span>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:11,fontWeight:selCh===i?700:500,color:selCh===i?subject?.color:"var(--text)",lineHeight:1.3}}>{ch.title}</div>
+              </div>
+              {progress[`${selSub}_${i}`]&&<span style={{fontSize:9,color:"var(--green)",flexShrink:0}}>✓</span>}
+            </button>
+          ))}
+          {/* Quick links */}
+          <div style={{marginTop:12,padding:"10px 12px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:9}}>
+            <div style={{fontSize:10,fontWeight:700,color:"var(--text3)",marginBottom:8}}>⚡ QUICK ACCESS</div>
+            {[["hr","🎤 Tell me about yourself"],["hr","⭐ STAR Method"],["comm","💬 Communication tips"],["rapid","🔥 Last day prep"]].map(([sub,lbl],i)=>(
+              <button key={i} onClick={()=>changeSub(sub)}
+                style={{display:"block",width:"100%",textAlign:"left",padding:"5px 8px",borderRadius:6,marginBottom:4,border:"none",background:"none",color:"var(--text2)",cursor:"pointer",fontSize:10,fontFamily:"'DM Sans',sans-serif"}}>
+                {lbl}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Main */}
+        <div>
+          {chapter&&(
+            <>
+              {/* View tabs */}
+              <div style={{display:"flex",gap:5,marginBottom:16,flexWrap:"wrap"}}>
+                {VIEWS.map(([v,l])=>(
+                  <button key={v} onClick={()=>setView(v)}
+                    style={{fontSize:11,padding:"6px 14px",borderRadius:8,border:`1px solid ${view===v?subject?.color:"var(--border)"}`,background:view===v?`${subject?.color}15`:"var(--card)",color:view===v?subject?.color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:view===v?700:400}}>
+                    {l}
+                  </button>
+                ))}
+              </div>
+
+              {/* THEORY */}
+              {view==="theory"&&(
+                <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:13,padding:22}}>
+                  <div className="syne" style={{fontSize:17,fontWeight:800,marginBottom:14,color:subject?.color}}>{chapter.icon} {chapter.title}</div>
+                  <div style={{fontSize:13,lineHeight:1.95,color:"var(--text2)"}}>
+                    {chapter.theory.split('\n').map((line,i)=>{
+                      if(!line.trim()) return <div key={i} style={{height:6}}/>;
+                      if(line.startsWith('**')&&line.endsWith('**')&&line.slice(2,-2).indexOf('**')===-1)
+                        return <div key={i} className="syne" style={{fontSize:13,fontWeight:800,color:"var(--text)",marginTop:12,marginBottom:3}}>{line.slice(2,-2)}</div>;
+                      if(line.startsWith('• ')){
+                        const bold=line.slice(2).replace(/\*\*([^*]+)\*\*/g,(_,t)=>t);
+                        return <div key={i} style={{display:"flex",gap:7,marginBottom:3,paddingLeft:4}}><span style={{color:subject?.color,flexShrink:0}}>•</span><span style={{flex:1}}>{bold}</span></div>;
+                      }
+                      if(line.startsWith('|'))
+                        return <div key={i} className="mono" style={{fontSize:10,background:"var(--bg3)",padding:"2px 8px",marginBottom:1,borderRadius:3}}>{line}</div>;
+                      return <div key={i} style={{marginBottom:2}}>{line.replace(/\*\*([^*]+)\*\*/g,(_,t)=>t)}</div>;
+                    })}
+                  </div>
+                  <button className="btn-p" onClick={()=>setView("examples")} style={{marginTop:16,padding:"8px 20px",fontSize:12}}>Good vs Bad Examples →</button>
+                </div>
+              )}
+
+              {/* EXAMPLES */}
+              {view==="examples"&&chapter.examples&&(
+                <div>
+                  <div className="syne" style={{fontSize:14,fontWeight:800,marginBottom:14}}>✅ Good vs Bad — {chapter.title}</div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:14}}>
+                    <div style={{background:"rgba(255,61,138,.06)",border:"1px solid rgba(255,61,138,.25)",borderRadius:12,padding:16}}>
+                      <div style={{fontSize:11,fontWeight:700,color:"var(--pink)",marginBottom:10}}>❌ BAD EXAMPLE</div>
+                      <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.7,whiteSpace:"pre-wrap",fontStyle:"italic"}}>{chapter.examples.bad}</div>
+                    </div>
+                    <div style={{background:"rgba(0,255,136,.06)",border:"1px solid rgba(0,255,136,.25)",borderRadius:12,padding:16}}>
+                      <div style={{fontSize:11,fontWeight:700,color:"var(--green)",marginBottom:10}}>✅ GOOD EXAMPLE</div>
+                      <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.7,whiteSpace:"pre-wrap"}}>{chapter.examples.good}</div>
+                    </div>
+                  </div>
+                  <div style={{background:"rgba(0,212,255,.06)",border:"1px solid rgba(0,212,255,.2)",borderRadius:10,padding:14}}>
+                    <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",marginBottom:6}}>💡 WHY THE DIFFERENCE</div>
+                    <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.6}}>{chapter.examples.why}</div>
+                  </div>
+                  <button className="btn-p" onClick={()=>setView("interview")} style={{marginTop:14,padding:"8px 20px",fontSize:12}}>Interview Q&A →</button>
+                </div>
+              )}
+
+              {/* INTERVIEW Q&A */}
+              {view==="interview"&&(
+                <div>
+                  <div className="syne" style={{fontSize:14,fontWeight:800,marginBottom:4}}>🎤 Interview Q&A</div>
+                  <div style={{fontSize:11,color:"var(--text3)",marginBottom:14}}>Practice saying these out loud. Time yourself — max 90 seconds per answer.</div>
+                  {chapter.interview.map((qa,i)=>(
+                    <div key={i} style={{background:"var(--card)",border:`1px solid ${subject?.color}25`,borderRadius:12,padding:18,marginBottom:14}}>
+                      <div style={{display:"flex",gap:10,alignItems:"flex-start",marginBottom:12}}>
+                        <div style={{width:24,height:24,borderRadius:6,background:`${subject?.color}20`,color:subject?.color,fontSize:11,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>Q</div>
+                        <div className="syne" style={{fontSize:14,fontWeight:700,lineHeight:1.4,flex:1}}>{qa.q}</div>
+                      </div>
+                      <div style={{background:"var(--bg3)",borderRadius:9,padding:"12px 14px",marginBottom:10}}>
+                        <div style={{fontSize:10,fontWeight:700,color:"var(--green)",marginBottom:6}}>✅ STRONG ANSWER FRAMEWORK:</div>
+                        <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.9,whiteSpace:"pre-line"}}>{qa.a}</div>
+                      </div>
+                      {qa.followup&&(
+                        <div>
+                          <button onClick={()=>setShowFU(showFU===i?null:i)}
+                            style={{fontSize:11,padding:"4px 12px",borderRadius:6,border:`1px solid ${subject?.color}40`,background:`${subject?.color}10`,color:subject?.color,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>
+                            {showFU===i?"▲ Hide":"▼ Follow-up:"} {qa.followup}
+                          </button>
+                          {showFU===i&&(
+                            <div style={{marginTop:8,padding:"8px 12px",background:"rgba(255,214,10,.05)",border:"1px solid rgba(255,214,10,.2)",borderRadius:7,fontSize:11,color:"var(--yellow)"}}>
+                              💬 Interviewer will often follow up: <strong>"{qa.followup}"</strong><br/>
+                              <span style={{color:"var(--text3)"}}>Prepare a 3-4 line answer. Depth of follow-up answers = professional maturity.</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  <div style={{background:"var(--card)",border:"1px solid rgba(255,214,10,.2)",borderRadius:10,padding:14}}>
+                    <div style={{fontSize:11,fontWeight:700,color:"var(--yellow)",marginBottom:8}}>⚡ PRACTICE TIP</div>
+                    <div style={{fontSize:12,color:"var(--text2)"}}>Record yourself answering on your phone. Watch it back. You'll immediately spot: filler words, eye contact, pace, length. This 10-minute exercise improves your interview performance more than reading 100 tips.</div>
+                  </div>
+                </div>
+              )}
+
+              {/* SCENARIOS */}
+              {view==="scenarios"&&(
+                <div>
+                  <div className="syne" style={{fontSize:14,fontWeight:800,marginBottom:4}}>🎭 Scenario Practice</div>
+                  <div style={{fontSize:11,color:"var(--text3)",marginBottom:14}}>Real situations — pick the best response and understand why.</div>
+                  {chapter.scenarios.map((sc,si)=>(
+                    <div key={si} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:16,marginBottom:14}}>
+                      <div style={{fontSize:13,fontWeight:600,lineHeight:1.6,marginBottom:14}}>
+                        <span style={{color:subject?.color,fontWeight:800,marginRight:6}}>Scenario {si+1}:</span>{sc.q}
+                      </div>
+                      <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                        {sc.opts.map((opt,oi)=>{
+                          const chosen=scqAns[si]===oi,correct=oi===sc.ans;
+                          let bg="var(--bg)",br="var(--border)",cl="var(--text)";
+                          if(scqShow[si]&&correct){bg="rgba(0,255,136,.1)";br="var(--green)";cl="var(--green)";}
+                          else if(scqShow[si]&&chosen&&!correct){bg="rgba(255,61,138,.1)";br="var(--pink)";cl="var(--pink)";}
+                          else if(chosen&&!scqShow[si]){bg=`${subject?.color}12`;br=subject?.color||"var(--cyan)";}
+                          return(
+                            <button key={oi} onClick={()=>submitScq(si,oi)} disabled={!!scqShow[si]}
+                              style={{padding:"10px 14px",borderRadius:9,border:`1px solid ${br}`,background:bg,color:cl,cursor:scqShow[si]?"default":"pointer",textAlign:"left",fontSize:12,fontFamily:"'DM Sans',sans-serif",transition:"all .15s"}}>
+                              <span style={{fontWeight:700,marginRight:6}}>{String.fromCharCode(65+oi)}.</span>{opt}
+                              {scqShow[si]&&correct&&<span style={{float:"right"}}>✅</span>}
+                              {scqShow[si]&&chosen&&!correct&&<span style={{float:"right"}}>❌</span>}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {scqShow[si]&&(
+                        <div style={{marginTop:10,padding:"8px 12px",background:"rgba(0,212,255,.05)",border:"1px solid rgba(0,212,255,.15)",borderRadius:8,fontSize:11,color:"var(--text2)",lineHeight:1.6}}>
+                          💡 {sc.sol}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* CHECKLIST */}
+              {view==="checklist"&&(
+                <div>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+                    <div className="syne" style={{fontSize:14,fontWeight:800}}>📋 Quick Checklist — {chapter.title}</div>
+                    <button onClick={()=>window.print()} className="btn-p" style={{padding:"5px 14px",fontSize:11,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Print</button>
+                  </div>
+                  <div style={{background:"var(--card)",border:`2px solid ${subject?.color}30`,borderRadius:12,padding:20}}>
+                    {chapter.checklist.map((item,i)=>(
+                      <div key={i} style={{display:"flex",gap:10,marginBottom:10,padding:"8px 12px",borderRadius:8,background:i%2===0?"var(--bg3)":"transparent",alignItems:"flex-start"}}>
+                        <div style={{width:20,height:20,borderRadius:6,background:`${subject?.color}20`,color:subject?.color,fontSize:10,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:1}}>{i+1}</div>
+                        <span style={{fontSize:12,color:"var(--text2)",lineHeight:1.6}}>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const STUDENT_TOOLS = [
   {
     id: "dsa",
@@ -9723,6 +10693,18 @@ const STUDENT_TOOLS = [
     stats: [{ label: "Templates", value: "6" }, { label: "ATS Rules", value: "16" }, { label: "Export", value: "PDF" }],
     color: "var(--orange)",
     gradient: "linear-gradient(135deg,rgba(255,107,53,.15),rgba(255,107,53,.03))",
+  },
+  {
+    id: "placement",
+    icon: "🎯",
+    title: "Placement Edge",
+    desc: "HR Interview prep · STAR method · Group Discussion · Email writing · Business etiquette · Resume tips · Last-day rapid prep.",
+    badge: "HR · GD · Communication · Email",
+    badgeColor: "#3b82f6",
+    tags: ["HR Interview","STAR Method","Group Discussion","Email Writing","Soft Skills","Business Etiquette","Resume Tips"],
+    stats: [{ label: "Modules", value: "8" }, { label: "Topics", value: "20+" }, { label: "Q&As", value: "200+" }],
+    color: "#3b82f6",
+    gradient: "linear-gradient(135deg,rgba(59,130,246,.15),rgba(59,130,246,.03))",
   },
   {
     id: "resume",
@@ -10934,6 +11916,7 @@ export default function App() {
           {page==="dsa"    && <DSAPage setPage={setPage}/>}
           {page==="resumebuilder" && <ResumeTemplateBuilderPage setPage={setPage}/>}
           {page==="cscore" && <CSCorePage setPage={setPage}/>}
+          {page==="placement" && <PlacementEdgePage setPage={setPage}/>}
           {page==="aptitude" && <AptitudeTrainerPage setPage={setPage}/>}
           {page==="companyguide" && <CompanyResumeGuidePage setPage={setPage}/>}
           {page==="resume" && <ResumeAnalyzerPage setPage={setPage}/>}
