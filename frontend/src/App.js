@@ -633,11 +633,10 @@ const TOOLS_MENU = [
   { id:"aptitude",    icon:"🎯", label:"Aptitude Trainer",     desc:"26 companies · 500+ questions · AI solver" },
   { id:"cscore",      icon:"💻", label:"CS Core Subjects",     desc:"DBMS · OS · CN · OOP · System Design" },
   { id:"resumebuilder",icon:"🏗️",label:"Resume Builder",      desc:"6 templates · ATS score · PDF export" },
-  { id:"companyguide",icon:"🏢", label:"Company Resume Guide", desc:"Google · Amazon · Razorpay · 10 companies" },
-  { id:"resume",      icon:"📄", label:"AI Resume Analyzer",  desc:"ATS · JD match · 3-stage AI pipeline" },
-  { id:"softskills",   icon:"🎯", label:"Placement Edge",        desc:"HR Interview · STAR · GD · Email · Soft Skills" },
+  { id:"companyguide",icon:"🏢", label:"Company Guide",        desc:"Google · Amazon · Razorpay · 10 companies" },
+  { id:"resume",      icon:"📄", label:"AI Resume Analyzer",   desc:"ATS · JD match · 3-stage AI pipeline" },
+  { id:"softskills",  icon:"🎯", label:"Soft Skills",          desc:"HR Interview · STAR · GD · Email · Etiquette" },
 ];
-
 const Navbar = ({page,setPage,dark,setDark}) => {
   const [toolsOpen, setToolsOpen] = useState(false);
   const toolsRef = useRef(null);
@@ -6387,6 +6386,7 @@ const BLANK_FORM = {
   skills:[],
   projects:[{ name:"", tech:"", bullets:["",""] }],
   certs:[{ name:"", issuer:"", year:"" }],
+  extra:[{ activity:"", role:"", year:"" }],
 };
 
 const ResumeTemplateBuilderPage = ({ setPage }) => {
@@ -6397,7 +6397,9 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
   });
   const [tab,      setTab]      = React.useState("personal");
   const [skillInput, setSkillInput] = React.useState("");
-  const [accentColor, setAccentColor] = React.useState("");  // custom override
+  const [accentColor, setAccentColor] = React.useState("");
+  const [jdText,      setJdText]      = React.useState("");
+  const [showJD,      setShowJD]      = React.useState(false);  // custom override
   // eslint-disable-next-line no-unused-vars
   const [bulletAI, setBulletAI] = React.useState({});       // AI improved bullets
   // eslint-disable-next-line no-unused-vars
@@ -6427,6 +6429,18 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
       { name:"AWS Certified Solutions Architect – Associate", issuer:"Amazon Web Services", year:"2023" },
       { name:"Meta Frontend Developer Professional Certificate", issuer:"Coursera", year:"2022" },
     ],
+  };
+
+  // JD keyword matcher (no API needed)
+  const matchJD = (f, jd) => {
+    if(!jd?.trim()) return {matched:[], missing:[], score:0};
+    const jdWords = jd.toLowerCase().match(/[a-z][a-z+#.]{2,}/g)||[];
+    const jdSet = [...new Set(jdWords.filter(w=>w.length>3))];
+    const resumeText = [f.summary,...(f.skills||[]),...(f.exp||[]).flatMap(e=>e.bullets||[]),...(f.projects||[]).map(p=>p.tech||"")].join(" ").toLowerCase();
+    const matched = jdSet.filter(w=>resumeText.includes(w)).slice(0,20);
+    const missing = jdSet.filter(w=>!resumeText.includes(w)).slice(0,15);
+    const score = jdSet.length ? Math.round(matched.length/Math.min(jdSet.length,20)*100) : 0;
+    return {matched, missing, score};
   };
 
   // ATS score calculator (rule-based, no API)
@@ -6520,6 +6534,7 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
     {id:"education",  label:"🎓 Education"},
     {id:"skills",     label:"⚡ Skills"},
     {id:"projects",   label:"🛠 Projects"},
+    {id:"extra",      label:"🏅 Extra"},
     {id:"preview",    label:"👁️ Preview & Download"},
   ];
 
@@ -6915,6 +6930,37 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
         )}
 
         {/* ── PREVIEW ── */}
+        {/* ── EXTRA / ACTIVITIES TAB ── */}
+        {tab==="extra" && (
+          <div style={{maxWidth:720}}>
+            <div className="syne" style={{fontSize:14,fontWeight:800,marginBottom:4}}>🏅 Extra-Curricular & Activities</div>
+            <p style={{fontSize:12,color:"var(--text2)",marginBottom:16}}>Hackathons, open source, competitive programming, leadership, volunteer work. These significantly differentiate fresher resumes.</p>
+            {(form.extra||[{activity:"",role:"",year:""}]).map((e,ei)=>(
+              <div key={ei} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:16,marginBottom:12}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:10}}>
+                  <div className="syne" style={{fontSize:12,fontWeight:700}}>Activity #{ei+1}</div>
+                  {(form.extra||[]).length>1&&<button onClick={()=>save({...form,extra:(form.extra||[]).filter((_,j)=>j!==ei)})} style={{fontSize:10,padding:"2px 8px",borderRadius:5,border:"1px solid rgba(255,61,138,.3)",background:"rgba(255,61,138,.08)",color:"var(--pink)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Remove</button>}
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr",gap:10}}>
+                  <div><label style={labelStyle}>Activity / Achievement</label><input value={e.activity||""} onChange={ev=>{const x=[...(form.extra||[])];x[ei]={...x[ei],activity:ev.target.value};save({...form,extra:x});}} placeholder="e.g. HackIndia Winner, GSoC Contributor" style={iStyle}/></div>
+                  <div><label style={labelStyle}>Your Role</label><input value={e.role||""} onChange={ev=>{const x=[...(form.extra||[])];x[ei]={...x[ei],role:ev.target.value};save({...form,extra:x});}} placeholder="Team Lead / Contributor" style={iStyle}/></div>
+                  <div><label style={labelStyle}>Year</label><input value={e.year||""} onChange={ev=>{const x=[...(form.extra||[])];x[ei]={...x[ei],year:ev.target.value};save({...form,extra:x});}} placeholder="2024" style={iStyle}/></div>
+                </div>
+              </div>
+            ))}
+            <div style={{display:"flex",gap:10,marginBottom:20}}>
+              <button onClick={()=>save({...form,extra:[...(form.extra||[]),{activity:"",role:"",year:""}]})} style={{fontSize:12,padding:"8px 16px",borderRadius:8,border:"1px dashed var(--border)",background:"none",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>+ Add Activity</button>
+              <button className="btn-p" onClick={()=>setTab("preview")} style={{padding:"8px 18px",fontSize:12}}>Preview & Download →</button>
+            </div>
+            <div style={{background:"var(--card)",border:"1px solid rgba(255,214,10,.2)",borderRadius:10,padding:14}}>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--yellow)",marginBottom:8}}>💡 High-impact activities for your resume:</div>
+              {["Hackathon wins (Smart India Hackathon, HackIndia, etc.)","Open source contributions — PRs merged, GitHub stars","Competitive programming — LeetCode rating, Codeforces, CodeChef","College positions — CR, Club Lead, Event Coordinator","Research publications, patents","NSS/NCC, sports captain, inter-college achievements"].map((t,ti)=>(
+                <div key={ti} style={{fontSize:11,color:"var(--text2)",marginBottom:4,display:"flex",gap:6}}><span style={{color:"var(--yellow)"}}>•</span>{t}</div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {tab==="preview" && (()=>{
           const ats = calcATS(form);
           return (
@@ -6926,6 +6972,27 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
                   <button onClick={()=>setTab("personal")} style={{fontSize:12,padding:"7px 14px",borderRadius:9,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Edit</button>
                   <button className="btn-p" onClick={handlePrint} style={{padding:"7px 18px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Download PDF</button>
                 </div>
+              </div>
+              {/* JD Keyword Match */}
+              <div style={{marginBottom:10}}>
+                <button onClick={()=>setShowJD(s=>!s)} style={{fontSize:11,padding:"6px 12px",borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",width:"100%",textAlign:"left",display:"flex",justifyContent:"space-between"}}>
+                  <span>📋 JD Keyword Match</span><span style={{color:"var(--cyan)"}}>{showJD?"▲ Hide":"▼ Paste JD"}</span>
+                </button>
+                {showJD&&(
+                  <div style={{marginTop:8}}>
+                    <textarea value={jdText} onChange={e=>setJdText(e.target.value)} placeholder="Paste the full job description here to see which keywords match your resume..." style={{width:"100%",minHeight:90,padding:"8px 10px",borderRadius:8,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:11,fontFamily:"'DM Sans',sans-serif",resize:"vertical",boxSizing:"border-box",outline:"none"}}/>
+                    {jdText.trim()&&(()=>{
+                      const jm=matchJD(form,jdText);
+                      return(
+                        <div style={{marginTop:8,padding:"10px 12px",background:"var(--bg3)",borderRadius:8}}>
+                          <div style={{fontSize:13,fontWeight:700,marginBottom:8}}>Match Score: <span style={{color:jm.score>=70?"var(--green)":jm.score>=40?"var(--yellow)":"var(--pink)"}}>{jm.score}%</span></div>
+                          {jm.matched.length>0&&<div style={{marginBottom:6}}><span style={{fontSize:10,fontWeight:700,color:"var(--green)"}}>✓ In your resume: </span>{jm.matched.map(k=><span key={k} style={{fontSize:10,padding:"2px 7px",borderRadius:8,background:"rgba(0,255,136,.1)",color:"var(--green)",border:"1px solid rgba(0,255,136,.2)",marginRight:4,marginBottom:3,display:"inline-block"}}>{k}</span>)}</div>}
+                          {jm.missing.length>0&&<div><span style={{fontSize:10,fontWeight:700,color:"var(--pink)"}}>✗ Add these: </span>{jm.missing.map(k=><span key={k} style={{fontSize:10,padding:"2px 7px",borderRadius:8,background:"rgba(255,61,138,.1)",color:"var(--pink)",border:"1px solid rgba(255,61,138,.2)",marginRight:4,marginBottom:3,display:"inline-block"}}>{k}</span>)}</div>}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
               </div>
               {/* ATS Score panel */}
               <div style={{background:"var(--card)",border:`2px solid ${ats.score>=80?"rgba(0,255,136,.4)":ats.score>=60?"rgba(255,214,10,.4)":"rgba(255,61,138,.4)"}`,borderRadius:14,padding:16}}>
