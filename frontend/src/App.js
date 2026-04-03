@@ -6965,14 +6965,16 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
           const ats = calcATS(form);
           return (
           <div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 320px",gap:20,marginBottom:16,flexWrap:"wrap"}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
-                <div className="syne" style={{fontSize:16,fontWeight:800}}>Live Preview — {RT_TEMPLATES.find(t=>t.id===tmpl)?.name}</div>
-                <div style={{display:"flex",gap:8}}>
-                  <button onClick={()=>setTab("personal")} style={{fontSize:12,padding:"7px 14px",borderRadius:9,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Edit</button>
-                  <button className="btn-p" onClick={handlePrint} style={{padding:"7px 18px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Download PDF</button>
-                </div>
+            {/* Title row — full width */}
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8,marginBottom:12}}>
+              <div className="syne" style={{fontSize:16,fontWeight:800}}>Live Preview — {RT_TEMPLATES.find(t=>t.id===tmpl)?.name}</div>
+              <div style={{display:"flex",gap:8}}>
+                <button onClick={()=>setTab("personal")} style={{fontSize:12,padding:"7px 14px",borderRadius:9,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Edit</button>
+                <button className="btn-p" onClick={handlePrint} style={{padding:"7px 18px",fontSize:12,background:"linear-gradient(135deg,var(--green),#00aa55)"}}>🖨️ Download PDF</button>
               </div>
+            </div>
+            {/* JD + ATS side by side */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 320px",gap:20,marginBottom:16}}>
               {/* JD Keyword Match */}
               <div style={{marginBottom:10}}>
                 <button onClick={()=>setShowJD(s=>!s)} style={{fontSize:11,padding:"6px 12px",borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",width:"100%",textAlign:"left",display:"flex",justifyContent:"space-between"}}>
