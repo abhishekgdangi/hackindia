@@ -9614,15 +9614,6 @@ const CSCorePage = ({ setPage }) => {
             </button>
             );
           })}
-            <button key={i} onClick={()=>changeChapter(i)}
-              style={{display:"flex",alignItems:"center",gap:8,width:"100%",padding:"10px 12px",borderRadius:9,marginBottom:6,border:`1px solid ${selChapter===i?subject?.color:"var(--border)"}`,background:selChapter===i?`${subject?.color}12`:"var(--card)",cursor:"pointer",textAlign:"left",fontFamily:"'DM Sans',sans-serif",transition:"all .15s"}}>
-              <span style={{fontSize:14,flexShrink:0}}>{ch.icon}</span>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{fontSize:11,fontWeight:selChapter===i?700:500,color:selChapter===i?subject?.color:"var(--text)",lineHeight:1.3}}>{ch.title}</div>
-              </div>
-              {progress[`${selSubject}_${i}`]!==undefined&&<span style={{fontSize:9,color:"var(--green)",flexShrink:0}}>✓{progress[`${selSubject}_${i}`]}/{ch.mcqs.length}</span>}
-            </button>
-          ))}
           {/* Subject progress */}
           <div style={{marginTop:12,padding:"10px 12px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:9}}>
             <div style={{fontSize:10,color:"var(--text3)",marginBottom:5}}>{subject?.name} progress</div>
