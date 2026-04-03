@@ -6434,7 +6434,7 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
   // JD keyword matcher (no API needed)
   const matchJD = (f, jd) => {
     if(!jd?.trim()) return {matched:[], missing:[], score:0};
-    const jdWords = jd.toLowerCase().match(/[a-z][a-z+#.]{2,}/g)||[];
+    const jdWords = jd.toLowerCase().match(/[a-z][a-z+#.]{2,}/g)||[];
     const jdSet = [...new Set(jdWords.filter(w=>w.length>3))];
     const resumeText = [f.summary,...(f.skills||[]),...(f.exp||[]).flatMap(e=>e.bullets||[]),...(f.projects||[]).map(p=>p.tech||"")].join(" ").toLowerCase();
     const matched = jdSet.filter(w=>resumeText.includes(w)).slice(0,20);
