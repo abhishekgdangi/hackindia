@@ -11295,7 +11295,6 @@ const STUDENT_TOOLS = [
   },
 ];
 
-const COMING_SOON = [];
 
 const StudentToolsPage = ({ setPage }) => (
   <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
