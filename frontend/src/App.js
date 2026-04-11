@@ -289,6 +289,7 @@ html{scroll-behavior:smooth}body{font-family:'DM Sans',sans-serif;background:var
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 @keyframes shimmer{0%{background-position:-1000px 0}100%{background-position:1000px 0}}
 @keyframes agent-pulse{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes slide-down{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
 .af{animation:float 3s ease-in-out infinite}.apg{animation:pulse-glow 2s ease-in-out infinite}
 .btn-p{background:linear-gradient(135deg,var(--cyan),#0099cc);color:#fff;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;border-radius:10px;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
 .btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,212,255,.35);filter:brightness(1.1)}
@@ -319,7 +320,34 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
 .pb{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}.pf{height:100%;border-radius:2px;transition:width .8s ease}
 .bt-typing span{display:inline-block;width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:blink 1.2s infinite}
 .bt-typing span:nth-child(2){animation-delay:.2s}.bt-typing span:nth-child(3){animation-delay:.4s}
-@media(max-width:768px){.hm{display:none!important}}
+/* ── MOBILE MENU ── */
+.mob-menu{display:none;position:fixed;top:64px;left:0;right:0;bottom:0;background:var(--bg2);z-index:99;overflow-y:auto;animation:slide-down .2s ease;padding:16px}
+.mob-menu.open{display:block}
+.mob-nav-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;margin-bottom:6px;cursor:pointer;border:1px solid transparent;transition:all .15s;font-size:15px;font-weight:500;color:var(--text2)}
+.mob-nav-item:hover,.mob-nav-item.act{background:var(--card);border-color:var(--border);color:var(--text)}
+.mob-tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.mob-tool-btn{padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--card);cursor:pointer;text-align:left;transition:all .15s;font-family:'DM Sans',sans-serif}
+.mob-tool-btn:hover{border-color:var(--cyan)}
+/* ── RESPONSIVE GRIDS ── */
+.rg-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rg-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.rg-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+/* ── DESKTOP ONLY ── */
+@media(min-width:769px){.mob-only{display:none!important}.hm{display:flex}}
+/* ── MOBILE BREAKPOINT ── */
+@media(max-width:768px){
+  .hm{display:none!important}
+  .mob-only{display:flex!important}
+  .rg-2,.rg-3,.rg-4{grid-template-columns:1fr!important}
+  .rg-2-keep{grid-template-columns:1fr 1fr!important}
+  .modal-c{border-radius:14px;max-height:95vh}
+  .btn-p,.btn-g{font-size:13px!important;padding:10px 16px!important}
+  h1.syne{font-size:clamp(22px,6vw,38px)!important}
+}
+@media(max-width:480px){
+  .rg-2-keep{grid-template-columns:1fr!important}
+  .mob-tools-grid{grid-template-columns:1fr!important}
+}
 @media print{nav,footer,.btn-p,.btn-g,button{display:none!important}.no-print{display:none!important}body{background:#fff!important;color:#000!important}*{box-shadow:none!important}}
 `}</style>);
 
@@ -574,9 +602,15 @@ const HackBot = ({ hackathons }) => {
 
   return (
     <>
-      <button onClick={()=>setOpen(!open)} className="apg" style={{position:"fixed",bottom:28,right:28,zIndex:200,width:58,height:58,borderRadius:"50%",background:"linear-gradient(135deg,var(--cyan),var(--green))",border:"none",cursor:"pointer",fontSize:24,boxShadow:"0 8px 30px rgba(0,212,255,.4)",display:"flex",alignItems:"center",justifyContent:"center"}}>🤖</button>
+      <button onClick={()=>setOpen(!open)} className="apg" style={{position:"fixed",bottom:20,right:20,zIndex:200,width:54,height:54,borderRadius:"50%",background:"linear-gradient(135deg,var(--cyan),var(--green))",border:"none",cursor:"pointer",fontSize:22,boxShadow:"0 8px 30px rgba(0,212,255,.4)",display:"flex",alignItems:"center",justifyContent:"center"}}>🤖</button>
       {open && (
-        <div style={{position:"fixed",bottom:98,right:28,zIndex:200,width:370,height:500,background:"var(--bg2)",border:"1px solid var(--border2)",borderRadius:20,display:"flex",flexDirection:"column",boxShadow:"0 20px 80px rgba(0,0,0,.5)",animation:"slide-in .3s ease"}}>
+        <div style={{position:"fixed",bottom:0,right:0,zIndex:200,
+          width:"min(370px,100vw)",
+          height:"min(500px,calc(100vh - 70px))",
+          background:"var(--bg2)",border:"1px solid var(--border2)",
+          borderRadius:"20px 20px 0 0",
+          display:"flex",flexDirection:"column",
+          boxShadow:"0 20px 80px rgba(0,0,0,.5)",animation:"slide-in .3s ease"}}>
           <div style={{padding:"13px 17px",borderBottom:"1px solid var(--border)",display:"flex",alignItems:"center",justifyContent:"space-between",background:"linear-gradient(135deg,rgba(0,212,255,.08),rgba(0,255,136,.04))",borderRadius:"20px 20px 0 0"}}>
             <div style={{display:"flex",alignItems:"center",gap:9}}>
               <span style={{fontSize:22}}>🤖</span>
@@ -643,55 +677,101 @@ const TOOLS_MENU = [
 ];
 const Navbar = ({page,setPage,dark,setDark}) => {
   const [toolsOpen, setToolsOpen] = useState(false);
+  const [mobOpen,   setMobOpen]   = useState(false);
+  const [mobTools,  setMobTools]  = useState(false);
   const toolsRef = useRef(null);
+
   useEffect(()=>{
     const handler = e => { if(toolsRef.current && !toolsRef.current.contains(e.target)) setToolsOpen(false); };
     document.addEventListener("mousedown", handler);
     return ()=>document.removeEventListener("mousedown", handler);
   },[]);
+
+  // Close mob menu on page change
+  useEffect(()=>{ setMobOpen(false); setMobTools(false); },[page]);
+
+  const nav = (id) => { setPage(id); setMobOpen(false); };
   const isToolsActive = TOOLS_MENU.some(t=>t.id===page);
+
   return (
-  <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,background:"var(--nav-bg)",backdropFilter:"blur(20px)",borderBottom:"1px solid var(--border)",padding:"0 24px",height:64,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-    <div style={{display:"flex",alignItems:"center",gap:12,cursor:"pointer"}} onClick={()=>setPage("home")}>
+  <>
+  <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:100,background:"var(--nav-bg)",backdropFilter:"blur(20px)",borderBottom:"1px solid var(--border)",padding:"0 16px",height:64,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+    {/* Logo */}
+    <div style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer",flexShrink:0}} onClick={()=>nav("home")}>
       <div style={{width:34,height:34,borderRadius:9,background:"linear-gradient(135deg,var(--cyan),var(--green))",display:"flex",alignItems:"center",justifyContent:"center",fontSize:17}}>⚡</div>
       <span className="syne" style={{fontSize:18,fontWeight:800}}>Hack<span style={{color:"var(--cyan)"}}>India</span></span>
       <span className="badge b-open" style={{fontSize:9}}>LIVE</span>
     </div>
+
+    {/* Desktop nav */}
     <div className="hm" style={{display:"flex",gap:4,alignItems:"center"}}>
       {[["home","◈ Home"],["hackathons","⚡ Hackathons"],["internships","💼 Internships"],["events","🗓️ Events"]].map(([id,lbl])=>(
         <button key={id} className={`nav-link ${page===id?"act":""}`} onClick={()=>setPage(id)}>{lbl}</button>
       ))}
-      {/* Student Tools dropdown */}
+      {/* Tools dropdown */}
       <div ref={toolsRef} style={{position:"relative"}}>
-        <div className={`nav-link ${isToolsActive?"act":""}`}
-          style={{display:"inline-flex",alignItems:"center",gap:0,padding:0,cursor:"default"}}>
-          <span onClick={()=>{ setPage("tools"); setToolsOpen(false); }} style={{padding:"6px 4px 6px 12px",cursor:"pointer"}}>🛠️ Tools</span>
+        <div className={`nav-link ${isToolsActive?"act":""}`} style={{display:"inline-flex",alignItems:"center",gap:0,padding:0,cursor:"default"}}>
+          <span onClick={()=>{setPage("tools");setToolsOpen(false);}} style={{padding:"6px 4px 6px 12px",cursor:"pointer"}}>🛠️ Tools</span>
           <span onClick={()=>setToolsOpen(o=>!o)} style={{fontSize:9,opacity:.7,padding:"6px 10px 6px 4px",cursor:"pointer",transform:toolsOpen?"rotate(180deg)":"rotate(0deg)",transition:"transform .2s",display:"inline-block"}}>▼</span>
         </div>
         {toolsOpen && (
-          <div style={{position:"absolute",top:"calc(100% + 8px)",right:0,background:"var(--card)",border:"1px solid var(--border2)",borderRadius:14,padding:8,minWidth:220,boxShadow:"0 12px 40px rgba(0,0,0,.4)",zIndex:200,animation:"fade-in .15s ease"}}>
-            <div style={{fontSize:9,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",padding:"4px 10px 8px"}}>Student Tools</div>
+          <div style={{position:"absolute",top:"calc(100% + 8px)",right:0,background:"var(--card)",border:"1px solid var(--border2)",borderRadius:14,padding:8,minWidth:260,maxHeight:"80vh",overflowY:"auto",boxShadow:"0 12px 40px rgba(0,0,0,.4)",zIndex:200,animation:"fade-in .15s ease"}}>
+            <div style={{fontSize:9,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",padding:"4px 10px 8px"}}>12 Student Tools</div>
             {TOOLS_MENU.map(t=>(
               <button key={t.id} onClick={()=>{setPage(t.id);setToolsOpen(false);}}
-                style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"9px 12px",borderRadius:9,border:"none",background:page===t.id?"rgba(124,77,255,.15)":"transparent",cursor:"pointer",textAlign:"left",transition:"background .15s"}}>
-                <span style={{fontSize:18,flexShrink:0}}>{t.icon}</span>
-                <div>
-                  <div style={{fontSize:13,fontWeight:600,color:page===t.id?"var(--purple)":"var(--text)"}}>{t.label}</div>
-                  <div style={{fontSize:11,color:"var(--text3)"}}>{t.desc}</div>
+                style={{display:"flex",alignItems:"center",gap:10,width:"100%",padding:"9px 12px",borderRadius:9,border:"none",background:page===t.id?"rgba(0,212,255,.1)":"transparent",cursor:"pointer",textAlign:"left",transition:"background .15s",fontFamily:"'DM Sans',sans-serif"}}>
+                <span style={{fontSize:17,flexShrink:0}}>{t.icon}</span>
+                <div style={{minWidth:0}}>
+                  <div style={{fontSize:13,fontWeight:600,color:page===t.id?"var(--cyan)":"var(--text)"}}>{t.label}</div>
+                  <div style={{fontSize:10,color:"var(--text3)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:180}}>{t.desc}</div>
                 </div>
               </button>
             ))}
-            <div style={{margin:"6px 0",height:1,background:"var(--border)"}}/>
-            <div style={{padding:"6px 10px",fontSize:10,color:"var(--text3)"}}>More tools coming soon…</div>
           </div>
         )}
       </div>
       <button className={`nav-link ${page==="resources"?"act":""}`} onClick={()=>setPage("resources")}>📚 Resources</button>
     </div>
-    <div style={{display:"flex",alignItems:"center",gap:10}}>
+
+    {/* Right side: dark toggle + hamburger */}
+    <div style={{display:"flex",alignItems:"center",gap:8}}>
       <button onClick={()=>setDark(!dark)} style={{width:34,height:34,borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15}}>{dark?"☀️":"🌙"}</button>
+      {/* Hamburger — mobile only */}
+      <button className="mob-only" onClick={()=>setMobOpen(o=>!o)}
+        style={{width:38,height:38,borderRadius:9,border:"1px solid var(--border)",background:"var(--card)",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:5,padding:8,flexShrink:0}}>
+        <span style={{width:18,height:2,background:mobOpen?"var(--pink)":"var(--text)",borderRadius:2,transition:"all .2s",transform:mobOpen?"rotate(45deg) translate(5px,5px)":"none"}}/>
+        <span style={{width:18,height:2,background:mobOpen?"transparent":"var(--text)",borderRadius:2,transition:"all .2s"}}/>
+        <span style={{width:18,height:2,background:mobOpen?"var(--pink)":"var(--text)",borderRadius:2,transition:"all .2s",transform:mobOpen?"rotate(-45deg) translate(5px,-5px)":"none"}}/>
+      </button>
     </div>
   </nav>
+
+  {/* Mobile slide-down menu */}
+  <div className={`mob-menu${mobOpen?" open":""}`}>
+    {[["home","◈","Home"],["hackathons","⚡","Hackathons"],["internships","💼","Internships"],["events","🗓️","Events"],["resources","📚","Resources"]].map(([id,ic,lbl])=>(
+      <div key={id} className={`mob-nav-item${page===id?" act":""}`} onClick={()=>nav(id)}>
+        <span style={{fontSize:20}}>{ic}</span><span>{lbl}</span>
+      </div>
+    ))}
+    {/* Tools section */}
+    <div style={{borderTop:"1px solid var(--border)",marginTop:8,paddingTop:12}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"0 8px",marginBottom:8,cursor:"pointer"}} onClick={()=>setMobTools(o=>!o)}>
+        <div className="sl" style={{margin:0}}>🛠️ Tools ({TOOLS_MENU.length})</div>
+        <span style={{color:"var(--text3)",fontSize:12,transform:mobTools?"rotate(180deg)":"none",transition:"transform .2s"}}>▼</span>
+      </div>
+      {mobTools && (
+        <div className="mob-tools-grid">
+          {TOOLS_MENU.map(t=>(
+            <button key={t.id} className="mob-tool-btn" onClick={()=>nav(t.id)}>
+              <div style={{fontSize:18,marginBottom:3}}>{t.icon}</div>
+              <div style={{fontSize:12,fontWeight:600,color:page===t.id?"var(--cyan)":"var(--text)"}}>{t.label}</div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+  </>
   );
 };
 
@@ -724,7 +804,7 @@ const HomePage = ({setPage}) => {
               <button className="btn-p" style={{padding:"14px 32px",fontSize:16}} onClick={()=>setPage("hackathons")}>🔍 Browse Hackathons</button>
               <button className="btn-g" style={{padding:"14px 28px",fontSize:16}} onClick={()=>setPage("internships")}>💼 Find Internships</button>
             </div>
-            <div style={{display:"flex",gap:40,flexWrap:"wrap",justifyContent:"center"}}>
+            <div style={{display:"flex",gap:"clamp(20px,5vw,40px)",flexWrap:"wrap",justifyContent:"center"}}>
               {[["Every 6h","Auto-scrape"],["100%","Open only"],["Free","No sign-up"],["AI","Classification"]].map(([v,l])=>(
                 <div key={l}><div className="syne" style={{fontSize:22,fontWeight:800,color:"var(--cyan)"}}>{v}</div><div style={{fontSize:12,color:"var(--text3)"}}>{l}</div></div>
               ))}
@@ -735,7 +815,7 @@ const HomePage = ({setPage}) => {
 
       {/* Stats row */}
       <div style={{background:"var(--bg2)",borderTop:"1px solid var(--border)",borderBottom:"1px solid var(--border)",padding:"36px 24px"}}>
-        <div style={{maxWidth:1200,margin:"0 auto",display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:16}}>
+        <div style={{maxWidth:1200,margin:"0 auto",display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:16}}>
           {[[`${stats.totalOpen}+`,"Live Hackathons","⚡","var(--cyan)"],[`₹${featured.length ? Math.round(featured.reduce((s,h)=>s+(h.prizeNumeric||0),0)/100000)||"50" : "50"}L+`,"Total Prize Pool","🏆","var(--yellow)"],["AI","Powered","🤖","var(--purple)"],["Daily","Auto-refresh","🔄","var(--green)"]].map(([v,l,ic,c])=>(
             <div key={l} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:22,textAlign:"center"}}>
               <div style={{fontSize:26,marginBottom:6}}>{ic}</div>
@@ -961,7 +1041,7 @@ const HackathonsPage = () => {
         </div>
       </div>
 
-      <div style={{maxWidth:1200,margin:"0 auto",padding:"26px 24px",display:"grid",gridTemplateColumns:"245px 1fr",gap:24}}>
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"20px 16px",display:"grid",gridTemplateColumns:"minmax(0,245px) 1fr",gap:24}}>
         {/* Calendar View */}
         {hackView==="calendar" && (() => {
           const calYear=hackCalMonth.getFullYear(); const calMon=hackCalMonth.getMonth();
@@ -983,7 +1063,7 @@ const HackathonsPage = () => {
           };
           return (
             <div style={{gridColumn:"1/-1"}}>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 380px",gap:20}}>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:20}}>
                 <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:20}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
                     <button onClick={()=>setHackCalMonth(new Date(calYear,calMon-1,1))} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"6px 14px",cursor:"pointer",color:"var(--text2)"}}>‹</button>
@@ -1188,7 +1268,7 @@ const InternshipsPage = () => {
           });
           return (
             <div style={{width:"100%"}}>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 360px",gap:20}}>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:20}}>
                 <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:20}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
                     <button onClick={()=>setIntCalMonth(new Date(calYear,calMon-1,1))} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"6px 14px",cursor:"pointer",color:"var(--text2)"}}>‹</button>
@@ -1569,7 +1649,7 @@ const EventsPage = () => {
           });
           return (
             <div style={{width:"100%"}}>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 360px",gap:20}}>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:20}}>
                 <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:20}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
                     <button onClick={()=>setEvCalMonth(new Date(calYear,calMon-1,1))} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"6px 14px",cursor:"pointer",color:"var(--text2)"}}>‹</button>
@@ -3937,7 +4017,7 @@ const DSAPage = ({ setPage }) => {
             </div>
           </div>
         </div>
-        <div style={{maxWidth:900,margin:"0 auto",padding:"24px"}}>
+        <div style={{maxWidth:900,margin:"0 auto",padding:"clamp(12px,4vw,24px)"}}>
           <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".08em",marginBottom:14}}>Solve this problem on</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:12}}>
             {pLinks.map(l=>(
@@ -3975,7 +4055,7 @@ const DSAPage = ({ setPage }) => {
     return (
       <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
         <Header/>
-        <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"24px"}}>
+        <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"clamp(12px,4vw,24px)"}}>
           <div style={{maxWidth:1100,margin:"0 auto"}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12,fontSize:13,color:"var(--text3)"}}>
               <span style={{cursor:"pointer",color:"var(--cyan)"}} onClick={()=>{setView("topics");setTab("topics");}}>DSA Explorer</span>
@@ -4487,7 +4567,7 @@ const DSAPage = ({ setPage }) => {
     return (
       <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
         <Header/>
-        <div style={{maxWidth:1200,margin:"0 auto",padding:"24px"}}>
+        <div style={{maxWidth:1200,margin:"0 auto",padding:"clamp(12px,4vw,24px)"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20,flexWrap:"wrap",gap:12}}>
             <div>
               <div className="syne" style={{fontSize:22,fontWeight:800,marginBottom:6}}>💯 Top 150 DSA</div>
@@ -4623,7 +4703,7 @@ const DSAPage = ({ setPage }) => {
     return (
       <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
         <Header/>
-        <div style={{maxWidth:900,margin:"0 auto",padding:"24px"}}>
+        <div style={{maxWidth:900,margin:"0 auto",padding:"clamp(12px,4vw,24px)"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
             <div>
               <div className="syne" style={{fontSize:20,fontWeight:800,marginBottom:4}}>⭐ Bookmarked Problems</div>
@@ -4676,7 +4756,7 @@ const DSAPage = ({ setPage }) => {
     return (
       <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
         <Header/>
-        <div style={{maxWidth:900,margin:"0 auto",padding:"24px"}}>
+        <div style={{maxWidth:900,margin:"0 auto",padding:"clamp(12px,4vw,24px)"}}>
           <div className="syne" style={{fontSize:20,fontWeight:800,marginBottom:4}}>🔁 Spaced Repetition Review</div>
           <p style={{color:"var(--text2)",fontSize:13,marginBottom:20}}>Mark problems Easy/Medium/Hard after solving. They resurface at the right time for review.</p>
           {dueNow.length>0&&(<>
@@ -4870,7 +4950,7 @@ const DSAPage = ({ setPage }) => {
           </div>
         </div>
       </div>
-      <div style={{maxWidth:1200,margin:"0 auto",padding:"24px"}}>
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"clamp(12px,4vw,24px)"}}>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:12}}>
           {filtered.map(t=>(
             <div key={t.slug} onClick={()=>openTopic(t)} className="hcard" style={{padding:20,cursor:"pointer",border:"1px solid var(--border)",background:"var(--card)",transition:"all .2s"}}>
@@ -5732,7 +5812,7 @@ const CPContestPage = ({ setPage }) => {
   return (
     <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
       {/* Header */}
-      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"28px 24px 20px"}}>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"20px 16px 16px"}}>
         <div style={{maxWidth:1400,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:4}}>
             <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Tools</button>
@@ -6761,7 +6841,7 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
       </div>
 
       {/* Body */}
-      <div style={{maxWidth:1200,margin:"0 auto",padding:"24px"}}>
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"clamp(12px,4vw,24px)"}}>
 
         {/* ── PERSONAL ── */}
         {tab==="personal" && (
@@ -6978,7 +7058,7 @@ const ResumeTemplateBuilderPage = ({ setPage }) => {
               </div>
             </div>
             {/* JD + ATS side by side */}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 320px",gap:20,marginBottom:16}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:20,marginBottom:16}}>
               {/* JD Keyword Match */}
               <div style={{marginBottom:10}}>
                 <button onClick={()=>setShowJD(s=>!s)} style={{fontSize:11,padding:"6px 12px",borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",width:"100%",textAlign:"left",display:"flex",justifyContent:"space-between"}}>
@@ -7146,7 +7226,7 @@ const CompanyResumeGuidePage = ({ setPage }) => {
 
   return (
     <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
-      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"24px"}}>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"clamp(12px,4vw,24px)"}}>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
             <button onClick={()=>setPage("resumebuilder")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Builder</button>
@@ -7822,7 +7902,7 @@ const AptitudeTrainerPage = ({ setPage }) => {
         </div>
       </div>
 
-      <div style={{maxWidth:1200,margin:"0 auto",padding:"24px"}}>
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"clamp(12px,4vw,24px)"}}>
 
         {view==="home"&&(
           <div>
@@ -7969,7 +8049,7 @@ const AptitudeTrainerPage = ({ setPage }) => {
         )}
 
         {view==="concept"&&(
-          <div style={{display:"grid",gridTemplateColumns:"220px 1fr",gap:18}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:18}}>
             <div>
               {Object.entries(APT_CONCEPTS).map(([key,con])=>(
                 <button key={key} onClick={()=>setSelConcept(con)}
@@ -10455,7 +10535,7 @@ const SoftSkillsPage = ({ setPage }) => {
         </div>
       </div>
 
-      <div style={{maxWidth:1300,margin:"0 auto",padding:"20px 24px",display:"grid",gridTemplateColumns:"220px 1fr",gap:18}}>
+      <div style={{maxWidth:1300,margin:"0 auto",padding:"20px 24px",display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:18}}>
         {/* Sidebar */}
         <div>
           <div style={{fontSize:10,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>
@@ -10686,7 +10766,7 @@ const InterviewPrepRoadmapPage = ({ setPage }) => {
 
   return (
     <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
-      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"28px 24px 20px"}}>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"20px 16px 16px"}}>
         <div style={{maxWidth:860,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
             <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Tools</button>
@@ -10705,7 +10785,7 @@ const InterviewPrepRoadmapPage = ({ setPage }) => {
         </div>
       </div>
 
-      <div style={{maxWidth:860,margin:"0 auto",padding:"24px"}}>
+      <div style={{maxWidth:860,margin:"0 auto",padding:"clamp(12px,4vw,24px)"}}>
         {/* Overall progress bar */}
         <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:"16px 20px",marginBottom:20,display:"flex",alignItems:"center",gap:20,flexWrap:"wrap"}}>
           <div>
@@ -10805,7 +10885,7 @@ ${jd.substring(0,2400)}`;
 
   return (
     <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
-      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"28px 24px 20px"}}>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"20px 16px 16px"}}>
         <div style={{maxWidth:820,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
             <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Tools</button>
@@ -10816,7 +10896,7 @@ ${jd.substring(0,2400)}`;
         </div>
       </div>
 
-      <div style={{maxWidth:820,margin:"0 auto",padding:"24px"}}>
+      <div style={{maxWidth:820,margin:"0 auto",padding:"clamp(12px,4vw,24px)"}}>
         <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:20,marginBottom:16}}>
           <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".07em",marginBottom:8}}>Paste Job Description</div>
           <textarea value={jd} onChange={e=>setJd(e.target.value)} placeholder="Paste the full JD here — the longer, the better. Include responsibilities, requirements, and about the company..."
@@ -10932,7 +11012,7 @@ Warm regards,
 
   return (
     <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
-      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"28px 24px 20px"}}>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"20px 16px 16px"}}>
         <div style={{maxWidth:900,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
             <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Tools</button>
@@ -10943,7 +11023,7 @@ Warm regards,
         </div>
       </div>
 
-      <div style={{maxWidth:900,margin:"0 auto",padding:"24px"}}>
+      <div style={{maxWidth:900,margin:"0 auto",padding:"clamp(12px,4vw,24px)"}}>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:20}}>
           {/* Inputs */}
           <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:20}}>
@@ -11087,7 +11167,7 @@ const PlacementReadinessPage = ({ setPage }) => {
 
   return (
     <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
-      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"28px 24px 20px"}}>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"20px 16px 16px"}}>
         <div style={{maxWidth:860,margin:"0 auto"}}>
           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
             <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Tools</button>
@@ -11098,7 +11178,7 @@ const PlacementReadinessPage = ({ setPage }) => {
         </div>
       </div>
 
-      <div style={{maxWidth:860,margin:"0 auto",padding:"24px"}}>
+      <div style={{maxWidth:860,margin:"0 auto",padding:"clamp(12px,4vw,24px)"}}>
         {/* Big score card */}
         <div style={{background:"var(--card)",border:`2px solid ${gradeColor}40`,borderRadius:18,padding:28,marginBottom:24,display:"flex",alignItems:"center",gap:28,flexWrap:"wrap"}}>
           <div style={{textAlign:"center",minWidth:120}}>
@@ -11299,14 +11379,14 @@ const STUDENT_TOOLS = [
 const StudentToolsPage = ({ setPage }) => (
   <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
     {/* Header */}
-    <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"48px 24px 40px"}}>
+    <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"32px 16px 24px"}}>
       <div style={{maxWidth:1200,margin:"0 auto"}}>
         <div className="sl">For Students · Free · No Login</div>
         <h1 className="syne" style={{fontSize:38,fontWeight:800,marginBottom:10}}>
           🛠️ Student <span className="gtext">Tools</span>
         </h1>
         <p style={{color:"var(--text2)",fontSize:15,maxWidth:560,lineHeight:1.7}}>
-          AI-powered tools built for Indian CS students — DSA practice, resume analysis, placement prep. 100% free, no account needed.
+          AI-powered tools built for Indian CS students — DSA, aptitude, resume, CS core, roadmaps, salary coaching. 12 tools, 100% free, no login.
         </p>
         <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:16}}>
           {["No Login","No Data Stored","100% Free","AI-Powered","Built for India"].map(f=>(
@@ -11316,12 +11396,12 @@ const StudentToolsPage = ({ setPage }) => (
       </div>
     </div>
 
-    <div style={{maxWidth:1200,margin:"0 auto",padding:"40px 24px"}}>
+    <div style={{maxWidth:1200,margin:"0 auto",padding:"32px 16px"}}>
       {/* Live Tools */}
       <div style={{marginBottom:12}}>
         <div className="sl" style={{marginBottom:16}}>Live Tools</div>
       </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(360px,1fr))",gap:20,marginBottom:40}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:20,marginBottom:40}}>
         {STUDENT_TOOLS.map(tool=>(
           <div key={tool.id} onClick={()=>setPage(tool.id)}
             className="hcard"
@@ -11661,7 +11741,7 @@ const ResumeAnalyzerPage = ({ setPage }) => {
         <div onDragOver={e=>{e.preventDefault();setDrag(true);}} onDragLeave={()=>setDrag(false)} onDrop={onDrop}
           onClick={()=>!file&&fileRef.current.click()}
           style={{background:drag?"rgba(0,255,136,.06)":"var(--card)",border:`2px dashed ${drag?"var(--green)":file?"var(--green)":"var(--border2)"}`,
-            borderRadius:16,padding:"40px 24px",textAlign:"center",cursor:file?"default":"pointer",transition:"all .2s",marginBottom:16}}>
+            borderRadius:16,padding:"32px 16px",textAlign:"center",cursor:file?"default":"pointer",transition:"all .2s",marginBottom:16}}>
           {!file?(<>
             <div style={{fontSize:48,marginBottom:10}}>📂</div>
             <div className="syne" style={{fontSize:17,fontWeight:800,marginBottom:6}}>{drag?"Drop it here!":"Drag & drop your resume"}</div>
@@ -11849,7 +11929,7 @@ const ResumeAnalyzerPage = ({ setPage }) => {
       </div>
 
       {/* Tab content */}
-      <div style={{maxWidth:1060,margin:"0 auto",padding:"24px"}}>
+      <div style={{maxWidth:1060,margin:"0 auto",padding:"clamp(12px,4vw,24px)"}}>
         <div style={{display:"grid",gap:16}}>
 
         {/* ── OVERVIEW ── */}
