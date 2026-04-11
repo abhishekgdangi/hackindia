@@ -636,6 +636,10 @@ const TOOLS_MENU = [
   { id:"companyguide",icon:"🏢", label:"Company Guide",        desc:"Google · Amazon · Razorpay · 10 companies" },
   { id:"resume",      icon:"📄", label:"AI Resume Analyzer",   desc:"ATS · JD match · 3-stage AI pipeline" },
   { id:"softskills",  icon:"🎯", label:"Soft Skills",          desc:"HR Interview · STAR · GD · Email · Etiquette" },
+  { id:"roadmap",     icon:"🗺️", label:"Interview Roadmap",     desc:"30/60/90-day plan · 5 tracks · Progress tracker" },
+  { id:"jddecoder",   icon:"📋", label:"JD Decoder",            desc:"Must-haves · Red flags · Culture signals · AI" },
+  { id:"salarycoach", icon:"💬", label:"Salary Coach",          desc:"Phone script · Email · Bangalore market rates" },
+  { id:"readiness",   icon:"🎯", label:"Readiness Score",       desc:"DSA + Resume + Aptitude + CS Core — overall %" },
 ];
 const Navbar = ({page,setPage,dark,setDark}) => {
   const [toolsOpen, setToolsOpen] = useState(false);
@@ -10637,6 +10641,513 @@ const SoftSkillsPage = ({ setPage }) => {
   );
 };
 
+/* ══════════════════════════════════════════════════════════════
+   INTERVIEW PREP ROADMAP  — 100% static, localStorage progress
+══════════════════════════════════════════════════════════════ */
+const ROADMAP_PLANS = {
+  fresher:  { label:"Fresher / No Exp",       color:"#06b6d4", phases:[
+    { days:"Days 1–30",  title:"Foundation", tasks:["Complete Arrays, Strings, Hashing — 50 LeetCode Easys","Build one full-stack project (React + Node or Java Spring Boot)","Learn OOP: 4 pillars, interfaces, design patterns basics","DBMS: normalization, joins, ACID — 30 SQL practice queries","Aptitude: 2 topics/week — percentages, time-speed, ratios","Update resume: add project + skills + clean objective","OS basics: processes, threads, memory management"] },
+    { days:"Days 31–60", title:"Intermediate", tasks:["Trees, Graphs, Sliding Window, Two Pointers — 50 problems","Mock aptitude tests ×2/week — aim 80%+ accuracy","CS Core: CN + OS chapters fully (use CS Core tool)","Prepare 5 STAR format HR answers (failure, conflict, teamwork, achievement)","Apply to 20 companies on LinkedIn + Naukri","Do 2 practice mock interviews (Pramp / with friend)","SQL: window functions, CTEs, GROUP BY patterns"] },
+    { days:"Days 61–90", title:"Placement Ready", tasks:["Solve all Blind 75 — track time per problem","System design basics: load balancer, caching, DB sharding","Full mock interview ×3: DSA + CS Core + HR round","Tailor resume per company tier using Company Guide tool","Cold-message 10 alumni at target companies on LinkedIn","Participate in 1 hackathon or open coding contest","LeetCode: reach 150+ solved or rating 1600+"] },
+  ]},
+  sde:      { label:"SDE / Software Engineer",color:"var(--cyan)", phases:[
+    { days:"Days 1–30",  title:"DSA Blitz",     tasks:["Arrays, Strings, Two Pointers, Sliding Window — 60 problems","Stack, Queue, Linked List, Hashing — 30 problems","Java: Collections, Stream API, OOP deep-dive + generics","Review projects — quantify impact (users, latency, uptime %)","System design: URL shortener, chat app, notification service"] },
+    { days:"Days 31–60", title:"Depth Phase",   tasks:["Trees, Graphs, BFS/DFS, Topological Sort — 40 problems","Dynamic Programming: 1D, 2D, Knapsack, LCS — 30 problems","LLD: design Parking Lot, BookMyShow, Splitwise","3 timed mock interviews (no hints, Medium difficulty)","Read target company's engineering blog — prepare 3 smart questions"] },
+    { days:"Days 61–90", title:"Interview Mode",tasks:["All Blind 75 solved with time tracking","HLD: Instagram Feed, WhatsApp, Uber — deep component walkthrough","10 behavioral stories using STAR / Amazon LP format","2 timed mock contests on LeetCode/Codeforces weekly","Final ATS resume check — target 80+ score"] },
+  ]},
+  frontend: { label:"Frontend Developer",      color:"#f59e0b", phases:[
+    { days:"Days 1–30",  title:"React + DSA Base",       tasks:["React: hooks, context, memo, lazy loading, error boundaries","DSA: Arrays, Strings, recursion — 50 problems","Build portfolio project with Next.js + TypeScript","CSS mastery: Flexbox, Grid, animations, responsive patterns","Browser internals: event loop, rendering pipeline, Web APIs, CORS"] },
+    { days:"Days 31–60", title:"Advanced + System Design",tasks:["Frontend SD: design Twitter feed, autocomplete, infinite scroll","State management: Redux Toolkit or Zustand — patterns + anti-patterns","Performance: Core Web Vitals, Lighthouse 90+, code splitting","DSA: Trees, Graphs, DP — 40 more problems","TypeScript: generics, utility types, strict mode, type narrowing"] },
+    { days:"Days 61–90", title:"Polish + Apply",          tasks:["Portfolio live with 3 projects + GitHub activity green","10 frontend interview deep-dives (virtual DOM, reconciliation, SSR vs CSR)","Mock frontend interview ×3 (live coding + system design)","Apply to product cos: Razorpay, Swiggy, CRED, Zepto, Meesho, BrowserStack","Open source: 2 merged PRs to popular React/TS repo"] },
+  ]},
+  data:     { label:"Data / ML Engineer",      color:"#a78bfa", phases:[
+    { days:"Days 1–30",  title:"Python + Stats Base", tasks:["Python: NumPy, Pandas, Matplotlib — complete end-to-end EDA project","Statistics: distributions, hypothesis testing, p-values, A/B testing","SQL: 50 queries — window functions, CTEs, complex joins","ML: supervised/unsupervised, bias-variance, cross-validation","Kaggle: finish 1 competition, hit top 50%"] },
+    { days:"Days 31–60", title:"ML Depth + Deploy",   tasks:["Deep learning: CNNs, Transformers basics with PyTorch / TensorFlow","Experiment tracking: MLflow or DVC","Deploy a model: FastAPI + Docker + GCP or AWS","DSA: Python — Heaps, Graphs, DP — 40 problems","Build portfolio project with real dataset (Kaggle/HuggingFace)"] },
+    { days:"Days 61–90", title:"Interview Grind",      tasks:["LeetCode 100 problems Medium (MLE interviews test coding hard)","Case studies: recommendation system, fraud detection, search ranking","System design: feature store, model serving pipeline, data pipeline","Mock interviews ×3: SQL coding + ML theory + system design","Apply: Flipkart, Meesho, Juspay, Sprinklr, ShareChat for MLE/DE roles"] },
+  ]},
+  devops:   { label:"DevOps / Cloud Engineer", color:"#34d399", phases:[
+    { days:"Days 1–30",  title:"Linux + Cloud Base",  tasks:["Linux CLI mastery: bash scripting, cron, process management, permissions","Docker: build, push, compose — containerize your own app","AWS/GCP core: EC2, S3, IAM, VPC, RDS — hands-on free tier","Git advanced: branching, rebase, hooks, monorepo strategies","DSA: 30 problems (DevOps interviews test light coding)"] },
+    { days:"Days 31–60", title:"Kubernetes + CI/CD",  tasks:["Kubernetes: pods, services, deployments, ingress, HPA — minikube setup","CI/CD: GitHub Actions pipeline for build + test + deploy","Terraform: provision AWS/GCP infra as code","Monitoring: Prometheus + Grafana + AlertManager stack","Get certified: AWS SAA or GCP ACE (pick one)"] },
+    { days:"Days 61–90", title:"Production Ready",    tasks:["Full GitOps pipeline with ArgoCD or Flux on a demo project","Security: secrets management (Vault), RBAC, network policies","Incident sim: intentionally break and fix a K8s cluster","Mock interviews ×2: infra design + Linux troubleshooting scenario","Apply: Razorpay, Juspay, Dunzo, Nykaa, ThoughtWorks for DevOps roles"] },
+  ]},
+};
+
+const InterviewPrepRoadmapPage = ({ setPage }) => {
+  const [role,  setRole]  = React.useState("fresher");
+  const [phase, setPhase] = React.useState(0);
+  const [prog,  setProg]  = React.useState(() => { try { return JSON.parse(localStorage.getItem("roadmap_prog_v1")||"{}"); } catch { return {}; } });
+  const saveP = p => { setProg(p); try { localStorage.setItem("roadmap_prog_v1", JSON.stringify(p)); } catch(_){} };
+  const toggle = k => saveP({...prog, [k]: !prog[k]});
+
+  const plan = ROADMAP_PLANS[role];
+  const allKeys  = plan.phases.flatMap((ph, pi) => ph.tasks.map((_, ti) => `${role}_${pi}_${ti}`));
+  const doneCount = allKeys.filter(k => prog[k]).length;
+  const pct = Math.round(doneCount / allKeys.length * 100);
+
+  return (
+    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"28px 24px 20px"}}>
+        <div style={{maxWidth:860,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+            <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Tools</button>
+            <div className="sl" style={{marginBottom:0}}>Student Tools</div>
+          </div>
+          <h1 className="syne" style={{fontSize:26,fontWeight:800,marginBottom:6}}>🗺️ Interview Prep <span className="gtext">Roadmap</span></h1>
+          <p style={{color:"var(--text2)",fontSize:13,margin:"0 0 14px"}}>Personalised 30/60/90-day plan. Tick off tasks — progress saves in your browser.</p>
+          <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
+            {Object.entries(ROADMAP_PLANS).map(([k,v])=>(
+              <button key={k} onClick={()=>{setRole(k);setPhase(0);}}
+                style={{fontSize:12,padding:"6px 14px",borderRadius:8,border:`1px solid ${role===k?v.color:"var(--border)"}`,background:role===k?`${v.color}18`:"var(--card)",color:role===k?v.color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:role===k?700:400}}>
+                {v.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={{maxWidth:860,margin:"0 auto",padding:"24px"}}>
+        {/* Overall progress bar */}
+        <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:"16px 20px",marginBottom:20,display:"flex",alignItems:"center",gap:20,flexWrap:"wrap"}}>
+          <div>
+            <div style={{fontSize:10,color:"var(--text3)",fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:2}}>Overall Progress</div>
+            <div className="syne" style={{fontSize:32,fontWeight:900,color:plan.color}}>{pct}%</div>
+          </div>
+          <div style={{flex:1,minWidth:160}}>
+            <div style={{height:8,background:"var(--bg3)",borderRadius:4,overflow:"hidden"}}><div style={{height:"100%",background:plan.color,borderRadius:4,width:`${pct}%`,transition:"width .4s"}}/></div>
+            <div style={{fontSize:11,color:"var(--text3)",marginTop:4}}>{doneCount} / {allKeys.length} tasks completed</div>
+          </div>
+          <button onClick={()=>saveP({...prog,...Object.fromEntries(allKeys.map(k=>[k,false]))})}
+            style={{fontSize:11,padding:"5px 12px",borderRadius:7,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Reset</button>
+        </div>
+
+        {/* Phase tabs */}
+        <div style={{display:"flex",gap:8,marginBottom:16}}>
+          {plan.phases.map((ph, i) => {
+            const phKeys = ph.tasks.map((_, ti) => `${role}_${i}_${ti}`);
+            const phDone = phKeys.filter(k => prog[k]).length;
+            return (
+              <button key={i} onClick={()=>setPhase(i)}
+                style={{flex:1,padding:"10px 8px",borderRadius:10,border:`1px solid ${phase===i?plan.color:"var(--border)"}`,background:phase===i?`${plan.color}15`:"var(--card)",color:phase===i?plan.color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:phase===i?700:400,fontSize:13,transition:"all .15s",textAlign:"center"}}>
+                <div style={{fontSize:9,opacity:.7,marginBottom:2}}>{ph.days}</div>
+                <div>{ph.title}</div>
+                <div style={{fontSize:9,marginTop:3,opacity:.7}}>{phDone}/{ph.tasks.length} done</div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Checklist */}
+        <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:"16px 20px",marginBottom:16}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+            <div className="syne" style={{fontSize:15,fontWeight:800,color:plan.color}}>{plan.phases[phase].title} — {plan.phases[phase].days}</div>
+            <div style={{fontSize:12,color:"var(--text3)"}}>{plan.phases[phase].tasks.map((_,ti)=>`${role}_${phase}_${ti}`).filter(k=>prog[k]).length}/{plan.phases[phase].tasks.length}</div>
+          </div>
+          {plan.phases[phase].tasks.map((task, ti) => {
+            const key = `${role}_${phase}_${ti}`;
+            return (
+              <div key={ti} onClick={()=>toggle(key)} style={{display:"flex",alignItems:"flex-start",gap:12,padding:"11px 0",borderBottom:"1px solid var(--border)",cursor:"pointer"}}
+                onMouseEnter={e=>e.currentTarget.style.background="var(--bg2)"} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                <div style={{width:20,height:20,borderRadius:6,border:`2px solid ${prog[key]?plan.color:"var(--border)"}`,background:prog[key]?plan.color:"transparent",flexShrink:0,marginTop:1,display:"flex",alignItems:"center",justifyContent:"center",transition:"all .15s"}}>
+                  {prog[key]&&<span style={{color:"#000",fontSize:11,fontWeight:900,lineHeight:1}}>✓</span>}
+                </div>
+                <span style={{fontSize:13,color:prog[key]?"var(--text3)":"var(--text)",textDecoration:prog[key]?"line-through":"none",lineHeight:1.6}}>{task}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Phase complete */}
+        {plan.phases[phase].tasks.map((_,ti)=>`${role}_${phase}_${ti}`).filter(k=>prog[k]).length === plan.phases[phase].tasks.length && (
+          <div style={{padding:"14px 20px",background:`${plan.color}12`,border:`1px solid ${plan.color}40`,borderRadius:12,textAlign:"center",marginBottom:12}}>
+            <div style={{fontSize:22,marginBottom:4}}>🎉</div>
+            <div className="syne" style={{fontWeight:800,color:plan.color,marginBottom:6}}>{plan.phases[phase].title} phase complete!</div>
+            {phase < plan.phases.length-1 && <button onClick={()=>setPhase(p=>p+1)} style={{fontSize:12,padding:"6px 18px",borderRadius:8,border:"none",background:plan.color,color:"#000",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:700}}>Next Phase →</button>}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ══════════════════════════════════════════════════════════════
+   JD DECODER  — 1 backend AI call, tight JSON prompt
+══════════════════════════════════════════════════════════════ */
+const JDDecoderPage = ({ setPage }) => {
+  const [jd,      setJd]      = React.useState("");
+  const [result,  setResult]  = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+  const [err,     setErr]     = React.useState("");
+
+  const decode = async () => {
+    if (jd.trim().length < 80) { setErr("Paste a full job description (80+ characters)."); return; }
+    setLoading(true); setErr(""); setResult(null);
+    try {
+      const prompt = `Analyze this JD. Return ONLY a compact JSON — no markdown, no explanation:
+{"role":"job title","level":"Fresher|Junior|Mid|Senior","must_have":["skill1","skill2","skill3","skill4","skill5","skill6"],"nice_to_have":["skill1","skill2","skill3","skill4"],"red_flags":["flag1","flag2","flag3"],"culture":["value1","value2","value3"],"verdict":"1 honest sentence about this role"}
+Arrays: max 6/4/3/3 items. Be specific. JD:
+${jd.substring(0,2400)}`;
+      const r = await fetch(`${API_BASE}/dsa/topics/explain/tip`, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ problem: prompt }),
+      });
+      const d = await r.json();
+      const text = (d.tip||"").replace(/```json|```/g,"").trim();
+      const parsed = JSON.parse(text);
+      setResult(parsed);
+    } catch(e) {
+      setErr("Could not decode JD — check your connection or try again.");
+    }
+    setLoading(false);
+  };
+
+  const C = { must_have:"var(--cyan)", nice_to_have:"var(--green)", red_flags:"var(--pink)", culture:"var(--yellow)" };
+  const LABELS = { must_have:"✅ Must-Have", nice_to_have:"💡 Nice to Have", red_flags:"🚩 Red Flags", culture:"🏢 Culture Signals" };
+
+  return (
+    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"28px 24px 20px"}}>
+        <div style={{maxWidth:820,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+            <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Tools</button>
+            <div className="sl" style={{marginBottom:0}}>Student Tools</div>
+          </div>
+          <h1 className="syne" style={{fontSize:26,fontWeight:800,marginBottom:6}}>📋 JD <span className="gtext">Decoder</span></h1>
+          <p style={{color:"var(--text2)",fontSize:13,margin:0}}>Paste any job description → AI decodes must-haves, red flags, hidden culture signals, and gives a verdict.</p>
+        </div>
+      </div>
+
+      <div style={{maxWidth:820,margin:"0 auto",padding:"24px"}}>
+        <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:20,marginBottom:16}}>
+          <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".07em",marginBottom:8}}>Paste Job Description</div>
+          <textarea value={jd} onChange={e=>setJd(e.target.value)} placeholder="Paste the full JD here — the longer, the better. Include responsibilities, requirements, and about the company..."
+            style={{width:"100%",minHeight:160,padding:"10px 12px",borderRadius:10,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:13,fontFamily:"'DM Sans',sans-serif",resize:"vertical",boxSizing:"border-box",outline:"none",lineHeight:1.6}}/>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginTop:10,flexWrap:"wrap",gap:8}}>
+            <span style={{fontSize:11,color:"var(--text3)"}}>{jd.length} chars {jd.length>2400&&<span style={{color:"var(--yellow)"}}>· truncated to 2400 for AI</span>}</span>
+            <div style={{display:"flex",gap:8}}>
+              <button onClick={()=>{setJd("");setResult(null);setErr("");}} style={{fontSize:12,padding:"8px 14px",borderRadius:9,border:"1px solid var(--border)",background:"none",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Clear</button>
+              <button onClick={decode} disabled={loading||jd.trim().length<80}
+                style={{fontSize:13,padding:"8px 22px",borderRadius:9,border:"none",background:loading||jd.trim().length<80?"var(--border)":"linear-gradient(135deg,var(--cyan),#0099bb)",color:loading||jd.trim().length<80?"var(--text3)":"#000",cursor:loading||jd.trim().length<80?"not-allowed":"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:700}}>
+                {loading?"⏳ Decoding…":"🔍 Decode JD"}
+              </button>
+            </div>
+          </div>
+          {err && <div style={{marginTop:10,padding:"8px 12px",background:"rgba(255,61,138,.08)",border:"1px solid rgba(255,61,138,.25)",borderRadius:8,fontSize:12,color:"var(--pink)"}}>{err}</div>}
+        </div>
+
+        {result && (
+          <div>
+            {/* Header verdict */}
+            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:"16px 20px",marginBottom:16,display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap"}}>
+              <div style={{flex:1}}>
+                <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:6,flexWrap:"wrap"}}>
+                  <div className="syne" style={{fontSize:18,fontWeight:800}}>{result.role||"Unknown Role"}</div>
+                  <span style={{fontSize:11,padding:"3px 10px",borderRadius:12,background:"rgba(0,212,255,.12)",color:"var(--cyan)",border:"1px solid rgba(0,212,255,.25)",fontWeight:700}}>{result.level}</span>
+                </div>
+                <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.6,fontStyle:"italic"}}>"{result.verdict}"</div>
+              </div>
+            </div>
+
+            {/* 4 cards grid */}
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))",gap:14,marginBottom:16}}>
+              {["must_have","nice_to_have","red_flags","culture"].map(key => result[key]?.length > 0 && (
+                <div key={key} style={{background:"var(--card)",border:`1px solid ${C[key]}25`,borderRadius:12,padding:"14px 16px"}}>
+                  <div style={{fontSize:11,fontWeight:700,color:C[key],textTransform:"uppercase",letterSpacing:".07em",marginBottom:10}}>{LABELS[key]}</div>
+                  {result[key].map((item, i) => (
+                    <div key={i} style={{display:"flex",gap:8,marginBottom:8,alignItems:"flex-start"}}>
+                      <span style={{color:C[key],fontSize:13,flexShrink:0,marginTop:1}}>•</span>
+                      <span style={{fontSize:13,color:"var(--text)",lineHeight:1.5}}>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+
+            {/* Action buttons */}
+            <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+              <button onClick={()=>setPage("resumebuilder")} className="btn-p" style={{padding:"9px 18px",fontSize:13}}>📝 Update Resume →</button>
+              <button onClick={()=>setPage("companyguide")} className="btn-g" style={{padding:"9px 18px",fontSize:13}}>🏢 Company Guide →</button>
+              <button onClick={()=>{setResult(null);setJd("");}} className="btn-g" style={{padding:"9px 18px",fontSize:13}}>🔄 Decode Another</button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ══════════════════════════════════════════════════════════════
+   SALARY NEGOTIATION COACH  — 100% static, no API
+══════════════════════════════════════════════════════════════ */
+const SAL_DATA = {
+  "SDE / Software Developer":   {"0-1":"3–6","1-3":"6–14","3-5":"14–25","5+":"22–45"},
+  "Full Stack Developer":        {"0-1":"3–6","1-3":"6–12","3-5":"12–20","5+":"20–35"},
+  "Frontend Developer":          {"0-1":"3–5","1-3":"5–10","3-5":"10–18","5+":"18–30"},
+  "Backend Developer":           {"0-1":"3–6","1-3":"6–12","3-5":"12–22","5+":"20–40"},
+  "ML / AI Engineer":            {"0-1":"4–8","1-3":"8–18","3-5":"18–35","5+":"30–60"},
+  "Data Analyst / Scientist":    {"0-1":"3–6","1-3":"6–14","3-5":"14–25","5+":"22–45"},
+  "DevOps / Cloud Engineer":     {"0-1":"4–7","1-3":"7–15","3-5":"15–28","5+":"25–50"},
+  "Mobile App Developer":        {"0-1":"3–6","1-3":"6–12","3-5":"12–22","5+":"20–38"},
+  "QA / Test Engineer":          {"0-1":"2–4","1-3":"4–8","3-5":"8–15","5+":"14–25"},
+};
+const COMPANY_MULT = { faang:"1.4–1.8×", product:"1.1–1.3×", startup:"0.9–1.1× (+ equity)", service:"0.85–1.0×" };
+
+const SalaryNegotiationCoachPage = ({ setPage }) => {
+  const [role,    setRole]    = React.useState("");
+  const [exp,     setExp]     = React.useState("0-1");
+  const [offer,   setOffer]   = React.useState("");
+  const [coType,  setCoType]  = React.useState("product");
+  const [skill,   setSkill]   = React.useState("");
+  const [copied,  setCopied]  = React.useState("");
+
+  const range  = role && SAL_DATA[role] ? SAL_DATA[role][exp] : null;
+  const rangeParts = range ? range.split("–").map(Number) : null;
+  const mktMid = rangeParts ? Math.round((rangeParts[0]+rangeParts[1])/2*10)/10 : null;
+  const offerN = parseFloat(offer);
+  const gap    = mktMid && offerN ? Math.round((mktMid - offerN)*10)/10 : null;
+
+  const target = mktMid ? (offerN && offerN < mktMid ? `₹${mktMid}–${rangeParts[1]} LPA` : `₹${rangeParts[1]}–${Math.round(rangeParts[1]*1.15*10)/10} LPA`) : null;
+
+  const script = role && offer && range ? `"Thank you so much for the offer — I'm genuinely excited about this opportunity. I've done research on AmbitionBox and LinkedIn Salary for ${role} roles with ${exp === "0-1" ? "fresher" : exp+" years"} experience in Bangalore, and the market range is around ₹${range} LPA. ${offerN && mktMid && offerN < mktMid ? `The current offer of ₹${offer} LPA is below the market midpoint.` : `The offer is in range, but given my ${skill||"key skills and projects"},`} I would like to request ${target}. Is there any flexibility on the compensation, or perhaps on stock options or the joining bonus?"` : null;
+
+  const emailTemplate = role && offer && range ? `Subject: Re: Offer Letter — ${role} Position
+
+Dear [Hiring Manager's Name],
+
+Thank you for extending an offer for the ${role} position. I'm very enthusiastic about joining the team and contributing to [Company Name].
+
+After reviewing the offer and researching the current market for ${role} roles in Bangalore, I'd like to respectfully discuss the compensation package. Based on my research (AmbitionBox, LinkedIn Salary), the typical range for this role with ${exp} years experience is ₹${range} LPA.${skill ? ` Additionally, my experience with ${skill} would allow me to contribute meaningfully from day one.` : ""}
+
+In light of this, I'd like to propose a base CTC of ${target}. I'm open to discussing the full structure — including variable pay, stock options, or a performance-based revision after 6 months.
+
+I remain very excited about this role and hope we can reach an agreement that reflects both the market and the value I'll bring.
+
+Looking forward to your response.
+
+Warm regards,
+[Your Name]` : null;
+
+  const copy = (text, key) => { navigator.clipboard.writeText(text).catch(()=>{}); setCopied(key); setTimeout(()=>setCopied(""),2500); };
+  const iStyle = { padding:"9px 12px",borderRadius:8,border:"1px solid var(--border)",background:"var(--bg)",color:"var(--text)",fontSize:13,fontFamily:"'DM Sans',sans-serif",width:"100%",boxSizing:"border-box",outline:"none" };
+  const lStyle = { fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".07em",marginBottom:5,display:"block" };
+
+  return (
+    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"28px 24px 20px"}}>
+        <div style={{maxWidth:900,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+            <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Tools</button>
+            <div className="sl" style={{marginBottom:0}}>Student Tools</div>
+          </div>
+          <h1 className="syne" style={{fontSize:26,fontWeight:800,marginBottom:6}}>💬 Salary Negotiation <span className="gtext">Coach</span></h1>
+          <p style={{color:"var(--text2)",fontSize:13,margin:0}}>Fill your details → get a word-for-word negotiation script + counter-offer email. Bangalore market data.</p>
+        </div>
+      </div>
+
+      <div style={{maxWidth:900,margin:"0 auto",padding:"24px"}}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:20}}>
+          {/* Inputs */}
+          <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:20}}>
+            <div className="syne" style={{fontSize:14,fontWeight:800,marginBottom:16}}>Your Details</div>
+            <div style={{marginBottom:12}}><label style={lStyle}>Role</label>
+              <select value={role} onChange={e=>setRole(e.target.value)} style={{...iStyle,appearance:"none"}}>
+                <option value="">Select your role…</option>
+                {Object.keys(SAL_DATA).map(r=><option key={r} value={r}>{r}</option>)}
+              </select>
+            </div>
+            <div style={{marginBottom:12}}><label style={lStyle}>Experience</label>
+              <select value={exp} onChange={e=>setExp(e.target.value)} style={{...iStyle,appearance:"none"}}>
+                <option value="0-1">0–1 year (Fresher)</option>
+                <option value="1-3">1–3 years</option>
+                <option value="3-5">3–5 years</option>
+                <option value="5+">5+ years</option>
+              </select>
+            </div>
+            <div style={{marginBottom:12}}><label style={lStyle}>Offer in Hand (₹ LPA)</label>
+              <input type="number" value={offer} onChange={e=>setOffer(e.target.value)} placeholder="e.g. 7.5" style={iStyle}/>
+            </div>
+            <div style={{marginBottom:12}}><label style={lStyle}>Company Type</label>
+              <select value={coType} onChange={e=>setCoType(e.target.value)} style={{...iStyle,appearance:"none"}}>
+                <option value="faang">FAANG / Big Tech</option>
+                <option value="product">Indian Product Co (Razorpay, Swiggy…)</option>
+                <option value="startup">Funded Startup</option>
+                <option value="service">Service Co (TCS, Infosys, Wipro…)</option>
+              </select>
+            </div>
+            <div><label style={lStyle}>Your Key Strength (optional)</label>
+              <input value={skill} onChange={e=>setSkill(e.target.value)} placeholder="e.g. React + TypeScript, 2 production projects" style={iStyle}/>
+            </div>
+          </div>
+
+          {/* Market intel */}
+          <div>
+            {range && (
+              <div style={{background:"var(--card)",border:"1px solid rgba(0,255,136,.3)",borderRadius:14,padding:20,marginBottom:14}}>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--text3)",textTransform:"uppercase",letterSpacing:".07em",marginBottom:8}}>Bangalore Market Range</div>
+                <div className="syne" style={{fontSize:30,fontWeight:900,color:"var(--green)",marginBottom:4}}>₹{range} LPA</div>
+                <div style={{fontSize:12,color:"var(--text2)",marginBottom:10}}>For {role} · {exp === "0-1"?"Fresher":exp+" yrs"} · Bangalore</div>
+                <div style={{fontSize:11,color:"var(--text3)",padding:"8px 12px",background:"var(--bg3)",borderRadius:8}}>
+                  Company multiplier: <strong style={{color:"var(--cyan)"}}>{COMPANY_MULT[coType]}</strong> vs market
+                </div>
+                {offerN && gap !== null && (
+                  <div style={{marginTop:10,padding:"10px 12px",background:gap>0?"rgba(255,61,138,.06)":"rgba(0,255,136,.06)",border:`1px solid ${gap>0?"rgba(255,61,138,.2)":"rgba(0,255,136,.2)"}`,borderRadius:8}}>
+                    <div style={{fontSize:12,fontWeight:700,color:gap>0?"var(--pink)":"var(--green)"}}>
+                      {gap>0?`⚠️ Offer is ₹${gap}L below market midpoint — negotiate!`:`✅ Offer is at/above market midpoint`}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Do's & Don'ts */}
+            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:20}}>
+              <div className="syne" style={{fontSize:13,fontWeight:800,marginBottom:12}}>Negotiation Rules</div>
+              {[["✅","Always research before the call — know your range"],["✅","Ask, don't demand — collaborative tone wins"],["✅","Negotiate total comp: base + variable + ESOPs + bonus"],["✅","Get competing offers if possible — leverage is real"],["❌","Never give a number first — let them anchor"],["❌","Never say 'I need this for personal reasons'"],["❌","Don't accept verbally in the same call — take 24h"]].map(([e,t],i)=>(
+                <div key={i} style={{display:"flex",gap:8,marginBottom:6,fontSize:12,color:e==="✅"?"var(--green)":"var(--pink)"}}>
+                  <span style={{flexShrink:0}}>{e}</span><span style={{color:"var(--text2)"}}>{t}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Script */}
+        {script && (
+          <div style={{background:"var(--card)",border:"1px solid rgba(0,212,255,.3)",borderRadius:14,padding:20,marginBottom:16}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <div className="syne" style={{fontSize:14,fontWeight:800,color:"var(--cyan)"}}>📞 Word-for-Word Phone Script</div>
+              <button onClick={()=>copy(script,"script")} style={{fontSize:11,padding:"5px 12px",borderRadius:7,border:"1px solid var(--border)",background:"none",color:copied==="script"?"var(--green)":"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>{copied==="script"?"✅ Copied!":"Copy"}</button>
+            </div>
+            <div style={{fontSize:13,color:"var(--text)",lineHeight:1.8,fontStyle:"italic",padding:"12px 16px",background:"var(--bg3)",borderRadius:10}}>{script}</div>
+          </div>
+        )}
+
+        {/* Email */}
+        {emailTemplate && (
+          <div style={{background:"var(--card)",border:"1px solid rgba(255,214,10,.3)",borderRadius:14,padding:20}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <div className="syne" style={{fontSize:14,fontWeight:800,color:"var(--yellow)"}}>✉️ Counter-Offer Email Template</div>
+              <button onClick={()=>copy(emailTemplate,"email")} style={{fontSize:11,padding:"5px 12px",borderRadius:7,border:"1px solid var(--border)",background:"none",color:copied==="email"?"var(--green)":"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>{copied==="email"?"✅ Copied!":"Copy"}</button>
+            </div>
+            <pre style={{fontSize:12,color:"var(--text2)",lineHeight:1.8,whiteSpace:"pre-wrap",fontFamily:"'DM Sans',sans-serif",margin:0,padding:"12px 16px",background:"var(--bg3)",borderRadius:10}}>{emailTemplate}</pre>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ══════════════════════════════════════════════════════════════
+   PLACEMENT READINESS SCORE  — reads localStorage, no API
+══════════════════════════════════════════════════════════════ */
+const PlacementReadinessPage = ({ setPage }) => {
+  const scores = React.useMemo(() => {
+    // ── DSA (30%) ──────────────────────────────────────────
+    const done = (() => { try { return JSON.parse(localStorage.getItem("dsa_done_v1")||"{}"); } catch { return {}; } })();
+    const dsaCount = Object.values(done).filter(Boolean).length;
+    const dsaScore = Math.min(100, Math.round(dsaCount / 150 * 100)); // target 150 problems
+
+    // ── Resume (30%) ───────────────────────────────────────
+    const form = (() => { try { return JSON.parse(localStorage.getItem("rt_form_v1")||"null"); } catch { return null; } })();
+    let resScore = 0;
+    if (form) {
+      if (form.name?.length > 2) resScore += 15;
+      if (form.email?.includes("@")) resScore += 10;
+      if (form.summary?.length > 80) resScore += 15;
+      if (form.exp?.some(e=>e.company)) resScore += 20;
+      if (form.exp?.some(e=>e.bullets?.some(b=>b?.length>20))) resScore += 15;
+      if (form.skills?.length >= 5) resScore += 15;
+      if (form.projects?.some(p=>p.name)) resScore += 10;
+    }
+
+    // ── Aptitude (20%) ─────────────────────────────────────
+    const aptProg = (() => { try { return JSON.parse(localStorage.getItem("apt_progress_v1")||"{}"); } catch { return {}; } })();
+    const aptDone = Object.keys(aptProg).length;
+    const aptScore = Math.min(100, Math.round(aptDone / 100 * 100)); // target 100 questions
+
+    // ── CS Core (20%) ──────────────────────────────────────
+    const csProg = (() => { try { return JSON.parse(localStorage.getItem("cs_prog_v2")||"{}"); } catch { return {}; } })();
+    const csDone = Object.keys(csProg).length;
+    const csScore = Math.min(100, Math.round(csDone / 60 * 100)); // target 60 MCQs
+
+    const overall = Math.round(dsaScore*0.30 + resScore*0.30 + aptScore*0.20 + csScore*0.20);
+
+    return { dsa: dsaScore, resume: resScore, aptitude: aptScore, cscore: csScore, overall,
+      raw: { dsaCount, hasResume: !!form, aptDone, csDone } };
+  }, []);
+
+  const PILLARS = [
+    { key:"dsa",      label:"DSA Problems",   weight:"30%", score:scores.dsa,      color:"var(--cyan)",   icon:"🧠", action: scores.dsa<60  ? "Solve more problems in DSA Explorer — target 150+" : "Strong! Keep doing daily practice.", page:"dsa" },
+    { key:"resume",   label:"Resume Quality", weight:"30%", score:scores.resume,   color:"var(--green)",  icon:"📄", action: scores.resume<60? "Fill your Resume Builder — add experience, projects, and skills." : "Good resume foundation! Run ATS check.", page:"resumebuilder" },
+    { key:"aptitude", label:"Aptitude",       weight:"20%", score:scores.aptitude, color:"var(--yellow)", icon:"🎯", action: scores.aptitude<60?"Practice more questions in Aptitude Trainer." : "Solid aptitude base! Try mock tests.", page:"aptitude" },
+    { key:"cscore",   label:"CS Core",        weight:"20%", score:scores.cscore,   color:"#06b6d4",       icon:"💻", action: scores.cscore<60 ? "Complete more MCQs in CS Core Subjects tool." : "Good CS foundation! Review weak subjects.", page:"cscore" },
+  ];
+
+  const grade = scores.overall >= 80 ? "🟢 Placement Ready" : scores.overall >= 55 ? "🟡 Getting There" : "🔴 Needs Work";
+  const gradeColor = scores.overall >= 80 ? "var(--green)" : scores.overall >= 55 ? "var(--yellow)" : "var(--pink)";
+
+  return (
+    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"28px 24px 20px"}}>
+        <div style={{maxWidth:860,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+            <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Tools</button>
+            <div className="sl" style={{marginBottom:0}}>Student Tools</div>
+          </div>
+          <h1 className="syne" style={{fontSize:26,fontWeight:800,marginBottom:6}}>🎯 Placement <span className="gtext">Readiness Score</span></h1>
+          <p style={{color:"var(--text2)",fontSize:13,margin:0}}>Computed from your activity across all tools. No data leaves your browser — 100% local.</p>
+        </div>
+      </div>
+
+      <div style={{maxWidth:860,margin:"0 auto",padding:"24px"}}>
+        {/* Big score card */}
+        <div style={{background:"var(--card)",border:`2px solid ${gradeColor}40`,borderRadius:18,padding:28,marginBottom:24,display:"flex",alignItems:"center",gap:28,flexWrap:"wrap"}}>
+          <div style={{textAlign:"center",minWidth:120}}>
+            <div className="syne" style={{fontSize:64,fontWeight:900,color:gradeColor,lineHeight:1}}>{scores.overall}</div>
+            <div style={{fontSize:12,color:"var(--text3)",marginTop:4}}>/100</div>
+          </div>
+          <div style={{flex:1}}>
+            <div style={{fontSize:18,fontWeight:800,color:gradeColor,marginBottom:6}}>{grade}</div>
+            <div style={{height:10,background:"var(--bg3)",borderRadius:5,overflow:"hidden",marginBottom:8}}>
+              <div style={{height:"100%",background:`linear-gradient(90deg,${gradeColor},${gradeColor}aa)`,width:`${scores.overall}%`,borderRadius:5,transition:"width .6s"}}/>
+            </div>
+            <div style={{fontSize:12,color:"var(--text2)"}}>Weighted: DSA 30% · Resume 30% · Aptitude 20% · CS Core 20%</div>
+          </div>
+        </div>
+
+        {/* Pillar breakdown */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(380px,1fr))",gap:14,marginBottom:24}}>
+          {PILLARS.map(p=>(
+            <div key={p.key} style={{background:"var(--card)",border:`1px solid ${p.color}25`,borderRadius:14,padding:"16px 18px"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+                <div style={{display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{fontSize:20}}>{p.icon}</span>
+                  <div>
+                    <div style={{fontSize:13,fontWeight:700}}>{p.label}</div>
+                    <div style={{fontSize:10,color:"var(--text3)"}}>Weight: {p.weight}</div>
+                  </div>
+                </div>
+                <div className="syne" style={{fontSize:26,fontWeight:900,color:p.color}}>{p.score}</div>
+              </div>
+              <div style={{height:6,background:"var(--bg3)",borderRadius:3,overflow:"hidden",marginBottom:8}}>
+                <div style={{height:"100%",background:p.color,width:`${p.score}%`,borderRadius:3,transition:"width .5s"}}/>
+              </div>
+              <div style={{fontSize:11,color:"var(--text2)",marginBottom:8,lineHeight:1.5}}>{p.action}</div>
+              <button onClick={()=>setPage(p.page)} style={{fontSize:11,padding:"5px 12px",borderRadius:7,border:`1px solid ${p.color}40`,background:`${p.color}10`,color:p.color,cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:700}}>Open {p.label} →</button>
+            </div>
+          ))}
+        </div>
+
+        {/* No data hint */}
+        {scores.overall === 0 && (
+          <div style={{padding:"16px 20px",background:"rgba(255,214,10,.06)",border:"1px solid rgba(255,214,10,.2)",borderRadius:12,fontSize:13,color:"var(--text2)"}}>
+            💡 <strong>No activity detected yet.</strong> Use the tools — DSA Explorer, Resume Builder, Aptitude Trainer, and CS Core — and your score will auto-update here.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const STUDENT_TOOLS = [
   {
     id: "dsa",
@@ -10734,15 +11245,57 @@ const STUDENT_TOOLS = [
     color: "var(--green)",
     gradient: "linear-gradient(135deg,rgba(0,255,136,.15),rgba(0,255,136,.03))",
   },
+  {
+    id: "roadmap",
+    icon: "🗺️",
+    title: "Interview Prep Roadmap",
+    desc: "Personalised 30/60/90-day plan for 5 tracks: Fresher, SDE, Frontend, Data, DevOps. Tick off tasks, track progress per phase.",
+    badge: "30/60/90 Days · 5 Tracks · Progress Saved",
+    badgeColor: "#06b6d4",
+    tags: ["Fresher","SDE","Frontend","Data","DevOps","Checklist","Progress Tracker"],
+    stats: [{ label:"Tracks", value:"5" }, { label:"Days", value:"90" }, { label:"Tasks", value:"35+" }],
+    color: "#06b6d4",
+    gradient: "linear-gradient(135deg,rgba(6,182,212,.15),rgba(6,182,212,.03))",
+  },
+  {
+    id: "jddecoder",
+    icon: "📋",
+    title: "JD Decoder",
+    desc: "Paste any job description → AI extracts must-have skills, nice-to-haves, red flags, culture signals, and gives a plain-English verdict.",
+    badge: "AI-Powered · Must-Have · Red Flags",
+    badgeColor: "var(--pink)",
+    tags: ["Must-Have Skills","Red Flags","Culture Signals","JD Analysis","Job Description"],
+    stats: [{ label:"AI Calls", value:"1" }, { label:"Categories", value:"4" }, { label:"Wait", value:"~3s" }],
+    color: "var(--pink)",
+    gradient: "linear-gradient(135deg,rgba(255,61,138,.15),rgba(255,61,138,.03))",
+  },
+  {
+    id: "salarycoach",
+    icon: "💬",
+    title: "Salary Negotiation Coach",
+    desc: "Input role + offer + company type → instant word-for-word phone script, counter-offer email, and Bangalore market ranges. Zero AI calls.",
+    badge: "No AI · Instant · Script + Email",
+    badgeColor: "var(--yellow)",
+    tags: ["Negotiation Script","Counter-Offer Email","Market Data","Bangalore","9 Roles"],
+    stats: [{ label:"Roles", value:"9" }, { label:"Output", value:"Script+Email" }, { label:"API", value:"None" }],
+    color: "var(--yellow)",
+    gradient: "linear-gradient(135deg,rgba(255,214,10,.15),rgba(255,214,10,.03))",
+  },
+  {
+    id: "readiness",
+    icon: "🎯",
+    title: "Placement Readiness Score",
+    desc: "Instant score from your tool activity — DSA (30%), Resume (30%), Aptitude (20%), CS Core (20%). Reads your localStorage, no data leaves browser.",
+    badge: "Instant · Local Only · 4 Pillars",
+    badgeColor: "var(--green)",
+    tags: ["DSA Progress","Resume Score","Aptitude","CS Core","No Upload","Local Only"],
+    stats: [{ label:"Pillars", value:"4" }, { label:"Data", value:"Local" }, { label:"API", value:"None" }],
+    color: "var(--green)",
+    gradient: "linear-gradient(135deg,rgba(0,255,136,.15),rgba(0,255,136,.03))",
+  },
 ];
 
-const COMING_SOON = [
-  { icon:"🏆", name:"Mock Interview AI",       desc:"AI interviewer by role — SDE/Data/DevOps. Multi-turn Q&A with scoring and feedback" },
-  { icon:"🗺️", name:"Interview Prep Roadmap",  desc:"Personalised 30/60/90 day roadmap based on your target company and role" },
-  { icon:"📋", name:"JD Decoder",              desc:"Paste any JD → AI breaks down what they actually want, red flags, real vs nice-to-have skills" },
-  { icon:"💬", name:"Salary Negotiation Coach",desc:"Input offer + role + experience → word-for-word negotiation script for Bangalore market" },
-  { icon:"🎯", name:"Placement Readiness Score",desc:"Combine DSA progress + resume score + mock interview results into one readiness %" },
-];
+const COMING_SOON = [];
 
 const StudentToolsPage = ({ setPage }) => (
   <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
@@ -10807,21 +11360,6 @@ const StudentToolsPage = ({ setPage }) => (
               <span style={{fontSize:11,color:"var(--text3)"}}>No login · No data stored</span>
               <span style={{fontSize:13,fontWeight:700,color:tool.color}}>Open Tool →</span>
             </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Coming Soon */}
-      <div style={{marginBottom:16}}>
-        <div className="sl" style={{marginBottom:16}}>Coming Soon</div>
-      </div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:12}}>
-        {COMING_SOON.map(tool=>(
-          <div key={tool.name} style={{padding:20,border:"1px dashed var(--border)",borderRadius:14,background:"var(--card)",opacity:.65}}>
-            <div style={{fontSize:28,marginBottom:10}}>{tool.icon}</div>
-            <div className="syne" style={{fontSize:14,fontWeight:700,marginBottom:6,color:"var(--text)"}}>{tool.name}</div>
-            <div style={{fontSize:12,color:"var(--text3)",lineHeight:1.5}}>{tool.desc}</div>
-            <div style={{marginTop:10,fontSize:10,fontWeight:700,color:"var(--text3)",background:"var(--bg3)",padding:"3px 8px",borderRadius:4,display:"inline-block"}}>Coming Soon</div>
           </div>
         ))}
       </div>
@@ -11936,6 +12474,10 @@ export default function App() {
           {page==="aptitude" && <AptitudeTrainerPage setPage={setPage}/>}
           {page==="companyguide" && <CompanyResumeGuidePage setPage={setPage}/>}
           {page==="resume" && <ResumeAnalyzerPage setPage={setPage}/>}
+          {page==="roadmap"     && <InterviewPrepRoadmapPage setPage={setPage}/>}
+          {page==="jddecoder"   && <JDDecoderPage setPage={setPage}/>}
+          {page==="salarycoach" && <SalaryNegotiationCoachPage setPage={setPage}/>}
+          {page==="readiness"   && <PlacementReadinessPage setPage={setPage}/>}
         </main>
         <Footer setPage={setPage}/>
         <HackBot hackathons={allHacks}/>
