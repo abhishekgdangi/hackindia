@@ -343,6 +343,7 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
   .modal-c{border-radius:14px;max-height:95vh}
   .btn-p,.btn-g{font-size:13px!important;padding:10px 16px!important}
   h1.syne{font-size:clamp(22px,6vw,38px)!important}
+  .hack-grid{grid-template-columns:1fr!important}
 }
 @media(max-width:480px){
   .rg-2-keep{grid-template-columns:1fr!important}
@@ -494,7 +495,7 @@ const Modal = ({ h, onClose }) => {
   return (
     <div className="modal-o" onClick={onClose}>
       <div className="modal-c" onClick={e=>e.stopPropagation()}>
-        <div style={{padding:32}}>
+        <div style={{padding:"clamp(16px,4vw,32px)"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:24}}>
             <div style={{display:"flex",gap:16,alignItems:"center"}}>
               <LogoBox name={h.name} organizer={h.organizer} platform={h.sourcePlatform} applyLink={h.applyLink} size={60} radius={14}/>
@@ -519,7 +520,7 @@ const Modal = ({ h, onClose }) => {
             {h.registrationCount>0 && <div style={{fontSize:12,color:"var(--text2)"}}>{h.registrationCount.toLocaleString()} registered</div>}
           </div>
 
-          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:22}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:10,marginBottom:22}}>
             {[["🏆","Prize",h.prize||"TBA"],["👥","Team",h.teamSizeLabel||"Any"],["📍","City",h.city],["🌐","Mode",h.mode||"—"]].map(([ic,lb,vl])=>(
               <div key={lb} style={{background:"var(--card2)",borderRadius:11,padding:"12px 14px",border:"1px solid var(--border)",textAlign:"center"}}>
                 <div style={{fontSize:18,marginBottom:5}}>{ic}</div>
@@ -793,7 +794,7 @@ const HomePage = ({setPage}) => {
       </div>
 
       {/* Hero */}
-      <div className="grid-bg" style={{position:"relative",overflow:"hidden",padding:"80px 24px 90px"}}>
+      <div className="grid-bg" style={{position:"relative",overflow:"hidden",padding:"clamp(48px,8vw,80px) 16px clamp(48px,8vw,90px)"}}>
         <div style={{position:"absolute",width:600,height:600,borderRadius:"50%",background:"rgba(0,212,255,.05)",filter:"blur(80px)",top:-200,right:-100,pointerEvents:"none"}}/>
         <div style={{maxWidth:800,margin:"0 auto",position:"relative",zIndex:1,textAlign:"center"}}>
           <div style={{animation:"slide-in .6s ease"}}>
@@ -813,27 +814,26 @@ const HomePage = ({setPage}) => {
         </div>
       </div>
 
-      {/* Stats row */}
-      <div style={{background:"var(--bg2)",borderTop:"1px solid var(--border)",borderBottom:"1px solid var(--border)",padding:"36px 24px"}}>
-        <div style={{maxWidth:1200,margin:"0 auto",display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:16}}>
+      <div style={{background:"var(--bg2)",borderTop:"1px solid var(--border)",borderBottom:"1px solid var(--border)",padding:"28px 16px"}}>
+        <div style={{maxWidth:1200,margin:"0 auto",display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>
           {[[`${stats.totalOpen}+`,"Live Hackathons","⚡","var(--cyan)"],[`₹${featured.length ? Math.round(featured.reduce((s,h)=>s+(h.prizeNumeric||0),0)/100000)||"50" : "50"}L+`,"Total Prize Pool","🏆","var(--yellow)"],["AI","Powered","🤖","var(--purple)"],["Daily","Auto-refresh","🔄","var(--green)"]].map(([v,l,ic,c])=>(
-            <div key={l} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:14,padding:22,textAlign:"center"}}>
-              <div style={{fontSize:26,marginBottom:6}}>{ic}</div>
-              <div className="syne" style={{fontSize:26,fontWeight:800,color:c}}>{v}</div>
-              <div style={{fontSize:12,color:"var(--text2)",marginTop:4}}>{l}</div>
+            <div key={l} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:"16px 12px",textAlign:"center"}}>
+              <div style={{fontSize:22,marginBottom:4}}>{ic}</div>
+              <div className="syne" style={{fontSize:22,fontWeight:800,color:c}}>{v}</div>
+              <div style={{fontSize:11,color:"var(--text2)",marginTop:3}}>{l}</div>
             </div>
           ))}
         </div>
       </div>
 
       {/* Featured */}
-      <div style={{padding:"56px 24px",maxWidth:1200,margin:"0 auto"}}>
+      <div style={{padding:"clamp(32px,5vw,56px) 16px",maxWidth:1200,margin:"0 auto"}}>
         <div className="sl">Latest This Week</div>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:24}}>
           <h2 className="syne" style={{fontSize:30,fontWeight:800}}>🔥 Latest Hackathons</h2>
           <button className="btn-g" style={{padding:"7px 16px",fontSize:13}} onClick={()=>setPage("hackathons")}>View All →</button>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))",gap:18}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:18}}>
           {loading ? [1,2,3].map(i=><SkeletonCard key={i}/>) : featured.length ? [
             ...featured.slice(0,6).map(h=><HackCard key={h._id} h={h} onClick={()=>setPage("hackathons")}/>),
             <div key="browse-all" onClick={()=>setPage("hackathons")} style={{gridColumn:"1/-1",background:"linear-gradient(135deg,var(--card2),var(--bg3))",border:"2px dashed var(--border2)",borderRadius:14,display:"flex",flexDirection:"row",alignItems:"center",justifyContent:"space-between",cursor:"pointer",padding:"22px 32px",gap:24,transition:"all .25s"}} onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.background="linear-gradient(135deg,rgba(0,212,255,.06),var(--bg3))";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";e.currentTarget.style.background="linear-gradient(135deg,var(--card2),var(--bg3))";}}>
@@ -872,13 +872,13 @@ const HomePage = ({setPage}) => {
       </div>
 
       {/* Featured Internships */}
-      <div style={{padding:"56px 24px",maxWidth:1200,margin:"0 auto"}}>
+      <div style={{padding:"clamp(32px,5vw,56px) 16px",maxWidth:1200,margin:"0 auto"}}>
         <div className="sl">Top Opportunities</div>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:24}}>
           <h2 className="syne" style={{fontSize:30,fontWeight:800}}>💼 Latest Internships</h2>
           <button className="btn-g" style={{padding:"7px 16px",fontSize:13}} onClick={()=>setPage("internships")}>View All →</button>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:16}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:16}}>
           {iLoading ? [1,2,3].map(i=>(
             <div key={i} className="skel" style={{height:180,borderRadius:16}}/>
           )) : featuredInterns.slice(0,6).map(i=>(
@@ -927,14 +927,14 @@ const HomePage = ({setPage}) => {
       </div>
 
       {/* Featured Events */}
-      <div style={{background:"var(--bg2)",padding:"56px 24px",borderTop:"1px solid var(--border)"}}>
+      <div style={{background:"var(--bg2)",padding:"clamp(32px,5vw,56px) 16px",borderTop:"1px solid var(--border)"}}>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
           <div className="sl">Tech Community</div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:24}}>
             <h2 className="syne" style={{fontSize:30,fontWeight:800}}>🗓️ Upcoming Events</h2>
             <button className="btn-g" style={{padding:"7px 16px",fontSize:13}} onClick={()=>setPage("events")}>View All →</button>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(310px,1fr))",gap:16}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:16}}>
             {evLoading ? [1,2,3].map(i=><div key={i} className="skel" style={{height:180,borderRadius:16}}/>) :
              featuredEvents.slice(0,6).map(e=><EventCard key={e._id} e={e} compact/>)}
             {!evLoading && featuredEvents.length > 0 && (
@@ -953,8 +953,41 @@ const HomePage = ({setPage}) => {
         </div>
       </div>
 
+      {/* Student Tools Showcase */}
+      <div style={{padding:"clamp(32px,5vw,56px) 16px",maxWidth:1200,margin:"0 auto"}}>
+        <div className="sl">Free For Students</div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:24,flexWrap:"wrap",gap:12}}>
+          <div>
+            <h2 className="syne" style={{fontSize:30,fontWeight:800}}>🛠️ 12 Student Tools</h2>
+            <p style={{color:"var(--text2)",fontSize:13,marginTop:4}}>DSA · Aptitude · Resume · CS Core · Roadmap · Salary Coach · and more. Zero login, 100% free.</p>
+          </div>
+          <button className="btn-p" style={{padding:"10px 22px",fontSize:14}} onClick={()=>setPage("tools")}>Explore All Tools →</button>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:12}}>
+          {[
+            {icon:"🧠",name:"DSA Explorer",id:"dsa",color:"var(--cyan)",desc:"300+ problems · Blind75 · Mock test"},
+            {icon:"💻",name:"CS Core",id:"cscore",color:"#06b6d4",desc:"DBMS · OS · CN · OOP · System Design"},
+            {icon:"🎯",name:"Aptitude Trainer",id:"aptitude",color:"#fb923c",desc:"26 companies · 500+ questions"},
+            {icon:"🏗️",name:"Resume Builder",id:"resumebuilder",color:"var(--orange)",desc:"6 templates · ATS score · PDF"},
+            {icon:"📄",name:"AI Resume Analyzer",id:"resume",color:"var(--green)",desc:"3-stage AI · JD match · Recruiter verdict"},
+            {icon:"🗺️",name:"Interview Roadmap",id:"roadmap",color:"#06b6d4",desc:"30/60/90-day plan · 5 tracks"},
+            {icon:"📋",name:"JD Decoder",id:"jddecoder",color:"var(--pink)",desc:"AI · Must-haves · Red flags"},
+            {icon:"💬",name:"Salary Coach",id:"salarycoach",color:"var(--yellow)",desc:"Phone script · Counter-offer email"},
+          ].map(t=>(
+            <div key={t.id} onClick={()=>setPage(t.id)}
+              style={{background:"var(--card)",border:`1px solid ${t.color}20`,borderRadius:12,padding:"16px 14px",cursor:"pointer",transition:"all .2s"}}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor=t.color;e.currentTarget.style.transform="translateY(-2px)";}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor=`${t.color}20`;e.currentTarget.style.transform="";}}>
+              <div style={{fontSize:28,marginBottom:8}}>{t.icon}</div>
+              <div style={{fontSize:13,fontWeight:700,color:t.color,marginBottom:4}}>{t.name}</div>
+              <div style={{fontSize:11,color:"var(--text3)",lineHeight:1.4}}>{t.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Source platforms */}
-      <div style={{padding:"56px 24px",maxWidth:1200,margin:"0 auto"}}>
+      <div style={{padding:"clamp(32px,5vw,56px) 16px",maxWidth:1200,margin:"0 auto"}}>
         <div className="sl">Data Sources</div>
         <h2 className="syne" style={{fontSize:28,fontWeight:800,marginBottom:8}}>🔗 Scraped From</h2>
         <p style={{color:"var(--text2)",marginBottom:28,fontSize:14}}>AI agents auto-scrape 7+ platforms every 6 hours and keep only open registrations.</p>
@@ -1005,7 +1038,7 @@ const HackathonsPage = () => {
   return (
     <div style={{paddingTop:64}}>
       {modal && <Modal h={modal} onClose={()=>setModal(null)}/>}
-      <div style={{background:"linear-gradient(180deg,var(--bg2) 0%,var(--bg) 100%)",borderBottom:"1px solid var(--border)",padding:"36px 24px 28px"}}>
+      <div style={{background:"linear-gradient(180deg,var(--bg2) 0%,var(--bg) 100%)",borderBottom:"1px solid var(--border)",padding:"20px 16px 16px"}}>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
           <div className="sl">All Hackathons</div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18,flexWrap:"wrap",gap:12}}>
@@ -1029,19 +1062,31 @@ const HackathonsPage = () => {
             </div>
           </div>
           <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
-            <div style={{position:"relative",flex:1,minWidth:240}}>
+            <div style={{position:"relative",flex:1,minWidth:200}}>
               <span style={{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",color:"var(--text3)"}}>🔍</span>
               <input className="input" placeholder="Search hackathons, organizers, technologies…" value={search} onChange={e=>{setSearch(e.target.value);setPage(1);}} style={{padding:"12px 16px 12px 42px",fontSize:14}}/>
             </div>
             <button onClick={()=>setHackView(v=>v==="list"?"calendar":"list")}
-              style={{padding:"10px 18px",borderRadius:10,border:`1px solid ${hackView==="calendar"?"var(--purple)":"var(--border)"}`,background:hackView==="calendar"?"rgba(124,77,255,.15)":"var(--card)",color:hackView==="calendar"?"var(--purple)":"var(--text2)",cursor:"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif",fontWeight:hackView==="calendar"?700:400,whiteSpace:"nowrap"}}>
-              {hackView==="calendar"?"☰ List View":"📅 Calendar View"}
+              style={{padding:"10px 16px",borderRadius:10,border:`1px solid ${hackView==="calendar"?"var(--purple)":"var(--border)"}`,background:hackView==="calendar"?"rgba(124,77,255,.15)":"var(--card)",color:hackView==="calendar"?"var(--purple)":"var(--text2)",cursor:"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif",fontWeight:hackView==="calendar"?700:400,whiteSpace:"nowrap"}}>
+              {hackView==="calendar"?"☰ List":"📅 Calendar"}
             </button>
+          </div>
+          {/* Mobile quick filters */}
+          <div className="mob-only" style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:4,marginTop:10,WebkitOverflowScrolling:"touch"}}>
+            {[["All","Mode",setMode],["Online","Online",setMode],["Offline","Offline",setMode]].map(([v,lbl,fn])=>(
+              <button key={v+lbl} onClick={()=>{fn(v==="All"?"All":v);setPage(1);}}
+                style={{flexShrink:0,fontSize:11,padding:"5px 11px",borderRadius:7,border:`1px solid ${mode===v?"var(--cyan)":"var(--border)"}`,background:mode===v?"rgba(0,212,255,.12)":"var(--card)",color:mode===v?"var(--cyan)":"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",whiteSpace:"nowrap"}}>{lbl}</button>
+            ))}
+            <div style={{width:1,background:"var(--border)",flexShrink:0,margin:"0 2px"}}/>
+            {["All","AI/ML","Web Dev","Blockchain","Data Science"].map(d=>(
+              <button key={d} onClick={()=>{setDomain(d);setPage(1);}}
+                style={{flexShrink:0,fontSize:11,padding:"5px 11px",borderRadius:7,border:`1px solid ${domain===d?"var(--purple)":"var(--border)"}`,background:domain===d?"rgba(124,77,255,.12)":"var(--card)",color:domain===d?"var(--purple)":"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",whiteSpace:"nowrap"}}>{d}</button>
+            ))}
           </div>
         </div>
       </div>
 
-      <div style={{maxWidth:1200,margin:"0 auto",padding:"20px 16px",display:"grid",gridTemplateColumns:"minmax(0,245px) 1fr",gap:24}}>
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"16px",display:"grid",gridTemplateColumns:"minmax(0,245px) 1fr",gap:20}} className="hack-grid">
         {/* Calendar View */}
         {hackView==="calendar" && (() => {
           const calYear=hackCalMonth.getFullYear(); const calMon=hackCalMonth.getMonth();
@@ -1138,7 +1183,7 @@ const HackathonsPage = () => {
         {/* Grid */}
         <div>
           {loading ? (
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(310px,1fr))",gap:15}}>{[1,2,3,4,5,6].map(i=><SkeletonCard key={i}/>)}</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:15}}>{[1,2,3,4,5,6].map(i=><SkeletonCard key={i}/>)}</div>
           ) : offline ? (
             <div style={{textAlign:"center",padding:"80px 20px",border:"1px dashed rgba(255,75,75,.3)",borderRadius:16,background:"rgba(255,75,75,.04)"}}>
               <div style={{fontSize:52,marginBottom:14}}>🔌</div>
@@ -1164,7 +1209,7 @@ const HackathonsPage = () => {
             </div>
           ) : (
             <>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(310px,1fr))",gap:15}}>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:15}}>
                 {paginated.map(h=><HackCard key={h._id} h={h} onClick={setModal}/>)}
               </div>
               {/* Pagination */}
@@ -1362,7 +1407,7 @@ const InternshipsPage = () => {
         {/* RIGHT CARDS */}
         {intView!=="calendar" && <div style={{flex:1,minWidth:0}}>
           {loading ? (
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))",gap:15}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:15}}>
               {[1,2,3,4,5,6].map(i=><div key={i} className="skel" style={{height:220,borderRadius:16}}/>)}
             </div>
           ) : filtered.length===0 ? (
@@ -1375,7 +1420,7 @@ const InternshipsPage = () => {
             </div>
           ) : (
             <>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))",gap:15}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:15}}>
               {paginated.map(i=>(
                 <div key={i._id} className="hcard" style={{padding:20,display:"flex",flexDirection:"column"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
@@ -1757,7 +1802,7 @@ const EventsPage = () => {
         {/* Cards grid */}
         {evView!=="calendar" && <div style={{flex:1,minWidth:0}}>
           {loading ? (
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(310px,1fr))",gap:15}}>{[1,2,3,4,5,6].map(i=><div key={i} className="skel" style={{height:260,borderRadius:16}}/>)}</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:15}}>{[1,2,3,4,5,6].map(i=><div key={i} className="skel" style={{height:260,borderRadius:16}}/>)}</div>
           ) : data.length===0 ? (
             <div style={{textAlign:"center",padding:"80px 20px",border:"1px dashed var(--border)",borderRadius:16}}>
               <div style={{fontSize:52,marginBottom:14}}>🗓️</div>
@@ -1768,7 +1813,7 @@ const EventsPage = () => {
             </div>
           ) : (
             <>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(310px,1fr))",gap:15}}>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:15}}>
                 {paginated.map(e=><EventCard key={e._id||e.uniqueId} e={e}/>)}
               </div>
               {ePages>1 && (
@@ -1823,7 +1868,7 @@ const ResourcesPage = () => (
       </div>
     </div>
     <div style={{maxWidth:1200,margin:"0 auto",padding:"48px 24px"}}>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:18,marginBottom:50}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:18,marginBottom:50}}>
         {RESOURCES.map((r,i)=>(
           <div key={i} className="hcard" style={{padding:28}}>
             <div style={{width:50,height:50,borderRadius:13,marginBottom:16,background:`${r.color}18`,border:`1px solid ${r.color}28`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:25}}>{r.icon}</div>
@@ -1858,28 +1903,48 @@ const ResourcesPage = () => (
    FOOTER
 ──────────────────────────────────────────────── */
 const Footer = ({setPage}) => (
-  <footer style={{background:"var(--bg2)",borderTop:"1px solid var(--border)",padding:"44px 24px 28px"}}>
+  <footer style={{background:"var(--bg2)",borderTop:"1px solid var(--border)",padding:"40px 16px 24px"}}>
     <div style={{maxWidth:1200,margin:"0 auto"}}>
-      <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr",gap:34,marginBottom:38}}>
-        <div>
-          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
-            <div style={{width:32,height:32,borderRadius:8,background:"linear-gradient(135deg,var(--cyan),var(--green))",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16}}>⚡</div>
-            <span className="syne" style={{fontSize:18,fontWeight:800}}>Hack<span style={{color:"var(--cyan)"}}>India</span></span>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:28,marginBottom:32}}>
+        {/* Brand */}
+        <div style={{gridColumn:"span 1"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
+            <div style={{width:30,height:30,borderRadius:8,background:"linear-gradient(135deg,var(--cyan),var(--green))",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15}}>⚡</div>
+            <span className="syne" style={{fontSize:16,fontWeight:800}}>Hack<span style={{color:"var(--cyan)"}}>India</span></span>
           </div>
-          <p style={{color:"var(--text2)",fontSize:13,lineHeight:1.7,maxWidth:270}}>India's #1 hackathon discovery platform. AI agents scrape 7+ platforms every 6 hours — only live, open hackathons shown.</p>
-          <div style={{display:"flex",gap:8,marginTop:16}}>
-            {["Twitter","GitHub","LinkedIn","Discord"].map(s=><div key={s} style={{padding:"4px 10px",borderRadius:7,background:"var(--card)",border:"1px solid var(--border)",fontSize:11,color:"var(--text2)",cursor:"pointer"}}>{s}</div>)}
+          <p style={{color:"var(--text2)",fontSize:12,lineHeight:1.7,marginBottom:14}}>India's #1 hackathon discovery platform. AI agents scrape 7+ platforms every 6 hours — only live, open hackathons shown.</p>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+            {["Twitter","GitHub","LinkedIn","Discord"].map(s=><div key={s} style={{padding:"3px 9px",borderRadius:6,background:"var(--card)",border:"1px solid var(--border)",fontSize:11,color:"var(--text2)",cursor:"pointer"}}>{s}</div>)}
           </div>
         </div>
-        {[["Platform",["Home","Hackathons","Internships","Events","Resources"]],["Scrapers",["Devpost","Devfolio","Hack2Skill","Internshala","Lablab.ai","Remotive"]],["About",["How it works","AI Agents","Data Policy","Contact"]]].map(([title,links])=>(
-          <div key={title}>
-            <div style={{fontSize:10,fontWeight:700,color:"var(--text3)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:12}}>{title}</div>
-            {links.map(l=><div key={l} style={{color:"var(--text2)",fontSize:13,marginBottom:8,cursor:"pointer"}} onClick={()=>["Home","Hackathons","Internships","Events","Resources"].includes(l)&&setPage(l.toLowerCase())}>{l}</div>)}
-          </div>
-        ))}
+        {/* Platform */}
+        <div>
+          <div style={{fontSize:10,fontWeight:700,color:"var(--text3)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>Platform</div>
+          {["Home","Hackathons","Internships","Events","Resources"].map(l=>(
+            <div key={l} style={{color:"var(--text2)",fontSize:13,marginBottom:7,cursor:"pointer"}} onClick={()=>setPage(l.toLowerCase())}>{l}</div>
+          ))}
+        </div>
+        {/* Tools */}
+        <div>
+          <div style={{fontSize:10,fontWeight:700,color:"var(--text3)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>Tools</div>
+          {[["dsa","🧠 DSA Explorer"],["aptitude","🎯 Aptitude Trainer"],["cscore","💻 CS Core"],["resumebuilder","🏗️ Resume Builder"],["resume","📄 AI Resume Analyzer"],["roadmap","🗺️ Interview Roadmap"],["jddecoder","📋 JD Decoder"],["salarycoach","💬 Salary Coach"],["readiness","🎯 Readiness Score"]].map(([id,lbl])=>(
+            <div key={id} style={{color:"var(--text2)",fontSize:12,marginBottom:6,cursor:"pointer"}} onClick={()=>setPage(id)}>{lbl}</div>
+          ))}
+        </div>
+        {/* Scrapers + About */}
+        <div>
+          <div style={{fontSize:10,fontWeight:700,color:"var(--text3)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>Scrapers</div>
+          {["Devpost","Devfolio","Hack2Skill","Internshala","Lablab.ai","Remotive"].map(l=>(
+            <div key={l} style={{color:"var(--text2)",fontSize:12,marginBottom:6,cursor:"pointer"}}>{l}</div>
+          ))}
+          <div style={{fontSize:10,fontWeight:700,color:"var(--text3)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:10,marginTop:16}}>About</div>
+          {["How it works","AI Agents","Data Policy","Contact"].map(l=>(
+            <div key={l} style={{color:"var(--text2)",fontSize:12,marginBottom:6,cursor:"pointer"}}>{l}</div>
+          ))}
+        </div>
       </div>
-      <div style={{borderTop:"1px solid var(--border)",paddingTop:20,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}}>
-        <div style={{fontSize:12,color:"var(--text3)"}}>© 2025 HackIndia · Built for Indian engineering students 🇮🇳</div>
+      <div style={{borderTop:"1px solid var(--border)",paddingTop:18,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}}>
+        <div style={{fontSize:11,color:"var(--text3)"}}>© 2025 HackIndia · Built for Indian engineering students 🇮🇳</div>
         <div className="mono badge b-open" style={{fontSize:9}}>🤖 AI Agents · Updates every 6h</div>
       </div>
     </div>
@@ -10928,7 +10993,7 @@ ${jd.substring(0,2400)}`;
             </div>
 
             {/* 4 cards grid */}
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))",gap:14,marginBottom:16}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:14,marginBottom:16}}>
               {["must_have","nice_to_have","red_flags","culture"].map(key => result[key]?.length > 0 && (
                 <div key={key} style={{background:"var(--card)",border:`1px solid ${C[key]}25`,borderRadius:12,padding:"14px 16px"}}>
                   <div style={{fontSize:11,fontWeight:700,color:C[key],textTransform:"uppercase",letterSpacing:".07em",marginBottom:10}}>{LABELS[key]}</div>
@@ -11345,7 +11410,7 @@ const STUDENT_TOOLS = [
     badge: "AI-Powered · Must-Have · Red Flags",
     badgeColor: "var(--pink)",
     tags: ["Must-Have Skills","Red Flags","Culture Signals","JD Analysis","Job Description"],
-    stats: [{ label:"AI Calls", value:"1" }, { label:"Categories", value:"4" }, { label:"Wait", value:"~3s" }],
+    stats: [{ label:"AI Calls", value:"1" }, { label:"Categories", value:"4" }, { label:"Wait", value:"≈3s" }],
     color: "var(--pink)",
     gradient: "linear-gradient(135deg,rgba(255,61,138,.15),rgba(255,61,138,.03))",
   },
