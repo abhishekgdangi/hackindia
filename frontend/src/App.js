@@ -789,216 +789,186 @@ const HomePage = ({setPage}) => {
   return (
     <div style={{paddingTop:64}}>
       {/* Live ticker */}
-      <div style={{background:"linear-gradient(90deg,var(--card),var(--card2))",borderBottom:"1px solid var(--border)",padding:"9px 0"}}>
-        <div className="ticker-wrap"><div className="ticker-inner">{ticker.map((t,i)=><span key={i} className="mono" style={{fontSize:12,color:"var(--text2)",marginRight:60}}>🔴 LIVE &nbsp;{t} &nbsp;•</span>)}</div></div>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"8px 0"}}>
+        <div className="ticker-wrap"><div className="ticker-inner">{ticker.map((t,i)=><span key={i} className="mono" style={{fontSize:11,color:"var(--text3)",marginRight:56}}>🔴 LIVE &nbsp;{t} &nbsp;•</span>)}</div></div>
       </div>
 
-      {/* Hero */}
-      <div className="grid-bg" style={{position:"relative",overflow:"hidden",padding:"clamp(48px,8vw,80px) 16px clamp(48px,8vw,90px)"}}>
-        <div style={{position:"absolute",width:600,height:600,borderRadius:"50%",background:"rgba(0,212,255,.05)",filter:"blur(80px)",top:-200,right:-100,pointerEvents:"none"}}/>
-        <div style={{maxWidth:800,margin:"0 auto",position:"relative",zIndex:1,textAlign:"center"}}>
-          <div style={{animation:"slide-in .6s ease"}}>
-            <div className="sl" style={{justifyContent:"center"}}>India's #1 Hackathon Discovery Platform</div>
-            <h1 className="syne" style={{fontSize:"clamp(38px,5vw,68px)",fontWeight:800,lineHeight:1.1,marginBottom:22}}>Find Your Next<br/><span className="gtext">Hackathon</span><br/>& Win Big</h1>
-            <p style={{fontSize:17,color:"var(--text2)",lineHeight:1.75,marginBottom:36,maxWidth:520,margin:"0 auto 36px"}}>Discover <strong style={{color:"var(--cyan)"}}>{stats.totalOpen}+ live hackathons</strong> scraped by AI agents from 7+ platforms — daily. Only open registrations shown.</p>
-            <div style={{display:"flex",gap:12,flexWrap:"wrap",marginBottom:44,justifyContent:"center"}}>
-              <button className="btn-p" style={{padding:"14px 32px",fontSize:16}} onClick={()=>setPage("hackathons")}>🔍 Browse Hackathons</button>
-              <button className="btn-g" style={{padding:"14px 28px",fontSize:16}} onClick={()=>setPage("internships")}>💼 Find Internships</button>
-            </div>
-            <div style={{display:"flex",gap:"clamp(20px,5vw,40px)",flexWrap:"wrap",justifyContent:"center"}}>
-              {[["Every 6h","Auto-scrape"],["100%","Open only"],["Free","No sign-up"],["AI","Classification"]].map(([v,l])=>(
-                <div key={l}><div className="syne" style={{fontSize:22,fontWeight:800,color:"var(--cyan)"}}>{v}</div><div style={{fontSize:12,color:"var(--text3)"}}>{l}</div></div>
-              ))}
-            </div>
+      {/* ── HERO ── */}
+      <div className="grid-bg" style={{position:"relative",overflow:"hidden",padding:"clamp(56px,9vw,100px) 16px clamp(56px,9vw,100px)"}}>
+        <div style={{position:"absolute",width:500,height:500,borderRadius:"50%",background:"rgba(0,212,255,.06)",filter:"blur(80px)",top:-150,right:-80,pointerEvents:"none"}}/>
+        <div style={{position:"absolute",width:300,height:300,borderRadius:"50%",background:"rgba(0,255,136,.04)",filter:"blur(60px)",bottom:-80,left:-40,pointerEvents:"none"}}/>
+        <div style={{maxWidth:720,margin:"0 auto",position:"relative",zIndex:1,textAlign:"center",animation:"slide-in .6s ease"}}>
+          <div className="sl" style={{justifyContent:"center",marginBottom:20}}>India's #1 Hackathon Discovery Platform</div>
+          <h1 className="syne" style={{fontSize:"clamp(36px,6vw,72px)",fontWeight:800,lineHeight:1.05,marginBottom:20,letterSpacing:"-1px"}}>
+            Find Your Next<br/><span className="gtext">Hackathon</span><br/>& Win Big
+          </h1>
+          <p style={{fontSize:"clamp(14px,2vw,17px)",color:"var(--text2)",lineHeight:1.75,marginBottom:36,maxWidth:500,margin:"0 auto 36px"}}>
+            Discover <strong style={{color:"var(--cyan)"}}>{stats.totalOpen}+ live hackathons</strong> scraped from 7+ platforms daily. Only open registrations shown.
+          </p>
+          <div style={{display:"flex",gap:12,flexWrap:"wrap",marginBottom:48,justifyContent:"center"}}>
+            <button className="btn-p" style={{padding:"14px 32px",fontSize:16,borderRadius:12}} onClick={()=>setPage("hackathons")}>🔍 Browse Hackathons</button>
+            <button className="btn-g" style={{padding:"14px 28px",fontSize:16,borderRadius:12}} onClick={()=>setPage("internships")}>💼 Find Internships</button>
+          </div>
+          {/* Inline trust badges */}
+          <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
+            {[["⚡","Every 6h scrape"],["✅","Open only"],["🆓","No sign-up"],["🤖","AI-classified"],["🇮🇳","India-focused"]].map(([ic,lbl])=>(
+              <div key={lbl} style={{display:"flex",alignItems:"center",gap:5,padding:"5px 12px",borderRadius:20,background:"var(--card)",border:"1px solid var(--border)",fontSize:12,color:"var(--text2)"}}>
+                <span>{ic}</span><span>{lbl}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      <div style={{background:"var(--bg2)",borderTop:"1px solid var(--border)",borderBottom:"1px solid var(--border)",padding:"28px 16px"}}>
-        <div style={{maxWidth:1200,margin:"0 auto",display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>
-          {[[`${stats.totalOpen}+`,"Live Hackathons","⚡","var(--cyan)"],[`₹${featured.length ? Math.round(featured.reduce((s,h)=>s+(h.prizeNumeric||0),0)/100000)||"50" : "50"}L+`,"Total Prize Pool","🏆","var(--yellow)"],["AI","Powered","🤖","var(--purple)"],["Daily","Auto-refresh","🔄","var(--green)"]].map(([v,l,ic,c])=>(
-            <div key={l} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:"16px 12px",textAlign:"center"}}>
-              <div style={{fontSize:22,marginBottom:4}}>{ic}</div>
-              <div className="syne" style={{fontSize:22,fontWeight:800,color:c}}>{v}</div>
-              <div style={{fontSize:11,color:"var(--text2)",marginTop:3}}>{l}</div>
-            </div>
-          ))}
+      {/* ── LATEST HACKATHONS ── */}
+      <div style={{padding:"clamp(40px,5vw,64px) 16px",maxWidth:1200,margin:"0 auto"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:28,flexWrap:"wrap",gap:12}}>
+          <div>
+            <div className="sl" style={{marginBottom:8}}>Latest This Week</div>
+            <h2 className="syne" style={{fontSize:"clamp(22px,3vw,30px)",fontWeight:800}}>🔥 Live Hackathons</h2>
+          </div>
+          <button className="btn-g" style={{padding:"9px 20px",fontSize:13,borderRadius:10}} onClick={()=>setPage("hackathons")}>View All {stats.totalOpen ? `(${stats.totalOpen})` : ""} →</button>
         </div>
-      </div>
-
-      {/* Featured */}
-      <div style={{padding:"clamp(32px,5vw,56px) 16px",maxWidth:1200,margin:"0 auto"}}>
-        <div className="sl">Latest This Week</div>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:24}}>
-          <h2 className="syne" style={{fontSize:30,fontWeight:800}}>🔥 Latest Hackathons</h2>
-          <button className="btn-g" style={{padding:"7px 16px",fontSize:13}} onClick={()=>setPage("hackathons")}>View All →</button>
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:18}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:16}}>
           {loading ? [1,2,3].map(i=><SkeletonCard key={i}/>) : featured.length ? [
             ...featured.slice(0,6).map(h=><HackCard key={h._id} h={h} onClick={()=>setPage("hackathons")}/>),
-            <div key="browse-all" onClick={()=>setPage("hackathons")} style={{gridColumn:"1/-1",background:"linear-gradient(135deg,var(--card2),var(--bg3))",border:"2px dashed var(--border2)",borderRadius:14,display:"flex",flexDirection:"row",alignItems:"center",justifyContent:"space-between",cursor:"pointer",padding:"clamp(14px,3vw,22px) clamp(16px,3vw,32px)",gap:16,transition:"all .25s",flexWrap:"wrap"}} onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.background="linear-gradient(135deg,rgba(0,212,255,.06),var(--bg3))";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";e.currentTarget.style.background="linear-gradient(135deg,var(--card2),var(--bg3))";}}>
-              <div style={{display:"flex",alignItems:"center",gap:18}}>
-                <div style={{fontSize:36}}>⚡</div>
-                <div>
-                  <div className="syne" style={{fontSize:18,fontWeight:800,color:"var(--cyan)"}}>Browse All Hackathons</div>
-                  <div style={{fontSize:13,color:"var(--text2)",marginTop:3}}>Filter by domain, city, mode and more · New hackathons added every 6 hours</div>
-                </div>
+            <div key="browse-all" onClick={()=>setPage("hackathons")} style={{gridColumn:"1/-1",background:"linear-gradient(135deg,rgba(0,212,255,.05),rgba(0,212,255,.01))",border:"1px dashed var(--border2)",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",padding:"clamp(14px,3vw,22px) clamp(16px,3vw,32px)",gap:16,transition:"all .25s",flexWrap:"wrap"}}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.background="linear-gradient(135deg,rgba(0,212,255,.08),rgba(0,212,255,.02))";}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";e.currentTarget.style.background="linear-gradient(135deg,rgba(0,212,255,.05),rgba(0,212,255,.01))";}}>
+              <div>
+                <div className="syne" style={{fontSize:16,fontWeight:800,color:"var(--cyan)",marginBottom:4}}>Browse All Hackathons →</div>
+                <div style={{fontSize:12,color:"var(--text3)"}}>Filter by domain, city, mode · Updated every 6 hours</div>
               </div>
-              <div style={{padding:"10px 26px",background:"var(--cyan)",color:"#000",borderRadius:10,fontWeight:700,fontSize:14,flexShrink:0,textAlign:"center"}}>View All →</div>
+              <div style={{padding:"10px 24px",background:"var(--cyan)",color:"#000",borderRadius:10,fontWeight:700,fontSize:13,flexShrink:0}}>View All →</div>
             </div>
-          ] : <div style={{gridColumn:"1/-1",textAlign:"center",padding:"40px 0",color:"var(--text2)"}}>🔄 Loading hackathons... Make sure the backend server is running.</div>}
+          ] : <div style={{gridColumn:"1/-1",textAlign:"center",padding:"60px 20px",color:"var(--text2)"}}>🔄 Loading hackathons...</div>}
         </div>
       </div>
 
-      {/* Domains */}
-      <div style={{background:"var(--bg2)",padding:"clamp(32px,5vw,56px) 16px",borderTop:"1px solid var(--border)"}}>
-        <div style={{maxWidth:1200,margin:"0 auto"}}>
-          <div className="sl">Trending Now</div>
-          <h2 className="syne" style={{fontSize:30,fontWeight:800,marginBottom:32}}>🎯 Top Domains</h2>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(170px,1fr))",gap:14}}>
-            {[["AI/ML","🤖"],["Web Dev","🌐"],["Blockchain","⛓️"],["Data Science","📊"],["Cybersecurity","🔒"],["Cloud","☁️"]].map(([d,ic])=>{
-              const cnt = stats.byDomain?.find(b=>b._id===d)?.count || 0;
-              return (
-                <div key={d} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:13,padding:18,cursor:"pointer",textAlign:"center",transition:"all .2s"}} onClick={()=>setPage("hackathons")}>
-                  <div style={{fontSize:30,marginBottom:8}}>{ic}</div>
-                  <div className="syne" style={{fontWeight:700,fontSize:13,marginBottom:4}}>{d}</div>
-                  <div style={{fontSize:12,color:"var(--cyan)"}}>{cnt} hackathons</div>
-                  <div className="pb" style={{marginTop:10}}><div className="pf" style={{width:`${Math.min((cnt/10)*100,100)}%`,background:DC[d]||"var(--cyan)"}}/></div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Featured Internships */}
-      <div style={{padding:"clamp(32px,5vw,56px) 16px",maxWidth:1200,margin:"0 auto"}}>
-        <div className="sl">Top Opportunities</div>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:24}}>
-          <h2 className="syne" style={{fontSize:30,fontWeight:800}}>💼 Latest Internships</h2>
-          <button className="btn-g" style={{padding:"7px 16px",fontSize:13}} onClick={()=>setPage("internships")}>View All →</button>
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:16}}>
-          {iLoading ? [1,2,3].map(i=>(
-            <div key={i} className="skel" style={{height:180,borderRadius:16}}/>
-          )) : featuredInterns.slice(0,6).map(i=>(
-            <div key={i._id} className="hcard" style={{padding:20,cursor:"default",display:"flex",flexDirection:"column"}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
-                <div style={{display:"flex",gap:12,alignItems:"center"}}>
-                  <div style={{width:44,height:44,borderRadius:12,background:"var(--bg3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,border:"1px solid var(--border)",flexShrink:0}}>
-                    {["Google","Microsoft","Amazon","Meta","Apple"].some(b=>i.company?.includes(b)) ? <LogoBox name={i.company} organizer={i.company} platform="internshala" applyLink={i.applyLink} size={28} radius={7}/> : "💼"}
-                  </div>
-                  <div>
-                    <div className="syne" style={{fontWeight:700,fontSize:13,lineHeight:1.3}}>{i.company}</div>
-                    <div style={{color:"var(--text2)",fontSize:11,marginTop:2}}>{i.role}</div>
-                  </div>
-                </div>
-                <span className="badge b-open" style={{flexShrink:0,fontSize:10}}>OPEN</span>
-              </div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:12}}>
-                {[["💰","Stipend",i.stipend],["📍","Location",i.location],["📅","Duration",i.duration]].map(([ic,lb,vl])=>(
-                  <div key={lb} style={{background:"var(--bg3)",borderRadius:7,padding:"5px 8px"}}>
-                    <div style={{fontSize:9,color:"var(--text3)",marginBottom:1}}>{ic} {lb}</div>
-                    <div className="mono" style={{fontSize:10,fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{vl||"—"}</div>
-                  </div>
-                ))}
-                <div style={{background:"var(--bg3)",borderRadius:7,padding:"5px 8px"}}>
-                  <div style={{fontSize:9,color:"var(--text3)",marginBottom:1}}>🏷️ Skills</div>
-                  <div className="mono" style={{fontSize:10,fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{(i.skills||[]).slice(0,2).join(", ")||"—"}</div>
-                </div>
-              </div>
-              <button className="btn-p" style={{width:"100%",justifyContent:"center",padding:"7px",fontSize:12,marginTop:"auto"}} onClick={()=>window.open(i.applyLink,"_blank")}>Apply Now →</button>
+      {/* ── DIVIDER STRIP: Platform stats ── */}
+      <div style={{background:"linear-gradient(135deg,rgba(0,212,255,.06),rgba(0,255,136,.04))",borderTop:"1px solid var(--border)",borderBottom:"1px solid var(--border)",padding:"28px 16px"}}>
+        <div style={{maxWidth:1200,margin:"0 auto",display:"flex",gap:0,flexWrap:"wrap",justifyContent:"space-around",alignItems:"center"}}>
+          {[
+            {label:"Live Hackathons",value:`${stats.totalOpen||"200"}+`,color:"var(--cyan)"},
+            {label:"Scraped Platforms",value:"7+",color:"var(--green)"},
+            {label:"Student Tools",value:"12",color:"var(--purple)"},
+            {label:"Updated Every",value:"6h",color:"var(--yellow)"},
+          ].map(s=>(
+            <div key={s.label} style={{textAlign:"center",padding:"8px 24px"}}>
+              <div className="syne" style={{fontSize:"clamp(24px,4vw,36px)",fontWeight:900,color:s.color}}>{s.value}</div>
+              <div style={{fontSize:12,color:"var(--text3)",marginTop:2}}>{s.label}</div>
             </div>
           ))}
-          {/* Browse all internships card */}
-          {!iLoading && featuredInterns.length > 0 && (
-            <div onClick={()=>setPage("internships")} style={{gridColumn:"1/-1",background:"linear-gradient(135deg,var(--card2),var(--bg3))",border:"2px dashed var(--border2)",borderRadius:14,display:"flex",flexDirection:"row",alignItems:"center",justifyContent:"space-between",cursor:"pointer",padding:"clamp(14px,3vw,22px) clamp(16px,3vw,32px)",gap:16,transition:"all .25s",flexWrap:"wrap"}} onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--green)";e.currentTarget.style.background="linear-gradient(135deg,rgba(0,255,136,.06),var(--bg3))";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";e.currentTarget.style.background="linear-gradient(135deg,var(--card2),var(--bg3))"}}>
-              <div style={{display:"flex",alignItems:"center",gap:18}}>
-                <div style={{fontSize:36}}>💼</div>
-                <div>
-                  <div className="syne" style={{fontSize:18,fontWeight:800,color:"var(--green)"}}>Browse All Internships</div>
-                  <div style={{fontSize:13,color:"var(--text2)",marginTop:3}}>1000+ live internships from Internshala · Filter by skill, city, and remote</div>
-                </div>
-              </div>
-              <div style={{padding:"10px 26px",background:"var(--green)",color:"#000",borderRadius:10,fontWeight:700,fontSize:14,flexShrink:0,textAlign:"center"}}>View All →</div>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Featured Events */}
-      <div style={{background:"var(--bg2)",padding:"clamp(32px,5vw,56px) 16px",borderTop:"1px solid var(--border)"}}>
+      {/* ── LATEST INTERNSHIPS ── */}
+      <div style={{background:"var(--bg2)",padding:"clamp(40px,5vw,64px) 16px",borderTop:"1px solid var(--border)"}}>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
-          <div className="sl">Tech Community</div>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:24}}>
-            <h2 className="syne" style={{fontSize:30,fontWeight:800}}>🗓️ Upcoming Events</h2>
-            <button className="btn-g" style={{padding:"7px 16px",fontSize:13}} onClick={()=>setPage("events")}>View All →</button>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:28,flexWrap:"wrap",gap:12}}>
+            <div>
+              <div className="sl" style={{marginBottom:8}}>Top Opportunities</div>
+              <h2 className="syne" style={{fontSize:"clamp(22px,3vw,30px)",fontWeight:800}}>💼 Latest Internships</h2>
+            </div>
+            <button className="btn-g" style={{padding:"9px 20px",fontSize:13,borderRadius:10}} onClick={()=>setPage("internships")}>View All →</button>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:16}}>
-            {evLoading ? [1,2,3].map(i=><div key={i} className="skel" style={{height:180,borderRadius:16}}/>) :
-             featuredEvents.slice(0,6).map(e=><EventCard key={e._id} e={e} compact/>)}
-            {!evLoading && featuredEvents.length > 0 && (
-              <div onClick={()=>setPage("events")} style={{gridColumn:"1/-1",background:"linear-gradient(135deg,var(--card2),var(--bg3))",border:"2px dashed var(--border2)",borderRadius:14,display:"flex",flexDirection:"row",alignItems:"center",justifyContent:"space-between",cursor:"pointer",padding:"clamp(14px,3vw,22px) clamp(16px,3vw,32px)",gap:16,transition:"all .25s",flexWrap:"wrap"}} onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--purple)";e.currentTarget.style.background="linear-gradient(135deg,rgba(124,77,255,.06),var(--bg3))";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";e.currentTarget.style.background="linear-gradient(135deg,var(--card2),var(--bg3))"}}>
-                <div style={{display:"flex",alignItems:"center",gap:18}}>
-                  <div style={{fontSize:36}}>🗓️</div>
-                  <div>
-                    <div className="syne" style={{fontSize:18,fontWeight:800,color:"var(--purple)"}}>Browse All Tech Events</div>
-                    <div style={{fontSize:13,color:"var(--text2)",marginTop:3}}>Conferences, meetups, workshops, AI events & more · Scraped from 9 platforms</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:14}}>
+            {iLoading ? [1,2,3].map(i=><div key={i} className="skel" style={{height:180,borderRadius:14}}/>) :
+             featuredInterns.slice(0,6).map(i=>(
+              <div key={i._id} className="hcard" style={{padding:18,cursor:"default",display:"flex",flexDirection:"column"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
+                  <div style={{display:"flex",gap:10,alignItems:"center"}}>
+                    <div style={{width:40,height:40,borderRadius:10,background:"var(--bg3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,border:"1px solid var(--border)",flexShrink:0}}>💼</div>
+                    <div style={{minWidth:0}}>
+                      <div className="syne" style={{fontWeight:700,fontSize:13,lineHeight:1.3,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:150}}>{i.company}</div>
+                      <div style={{color:"var(--text2)",fontSize:11,marginTop:1,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:150}}>{i.role}</div>
+                    </div>
                   </div>
+                  <span className="badge b-open" style={{flexShrink:0,fontSize:9}}>OPEN</span>
                 </div>
-                <div style={{padding:"10px 26px",background:"var(--purple)",color:"#fff",borderRadius:10,fontWeight:700,fontSize:14,flexShrink:0,textAlign:"center"}}>View All →</div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:12}}>
+                  {i.stipend && <span style={{fontSize:11,padding:"2px 8px",borderRadius:6,background:"rgba(0,255,136,.08)",color:"var(--green)",border:"1px solid rgba(0,255,136,.15)"}}>{i.stipend}</span>}
+                  {i.location && <span style={{fontSize:11,padding:"2px 8px",borderRadius:6,background:"var(--bg3)",color:"var(--text2)",border:"1px solid var(--border)"}}>{i.location}</span>}
+                  {i.duration && <span style={{fontSize:11,padding:"2px 8px",borderRadius:6,background:"var(--bg3)",color:"var(--text2)",border:"1px solid var(--border)"}}>{i.duration}</span>}
+                </div>
+                <button className="btn-p" style={{width:"100%",justifyContent:"center",padding:"8px",fontSize:12,marginTop:"auto",borderRadius:8}} onClick={()=>window.open(i.applyLink,"_blank")}>Apply Now →</button>
+              </div>
+            ))}
+            {!iLoading && featuredInterns.length > 0 && (
+              <div onClick={()=>setPage("internships")} style={{gridColumn:"1/-1",background:"linear-gradient(135deg,rgba(0,255,136,.04),transparent)",border:"1px dashed var(--border2)",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",padding:"clamp(14px,3vw,20px) clamp(16px,3vw,28px)",gap:16,transition:"all .25s",flexWrap:"wrap"}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--green)";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";}}>
+                <div>
+                  <div className="syne" style={{fontSize:16,fontWeight:800,color:"var(--green)",marginBottom:4}}>Browse All Internships →</div>
+                  <div style={{fontSize:12,color:"var(--text3)"}}>1000+ live internships from Internshala · Filter by skill, city, remote</div>
+                </div>
+                <div style={{padding:"10px 24px",background:"var(--green)",color:"#000",borderRadius:10,fontWeight:700,fontSize:13,flexShrink:0}}>View All →</div>
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* Student Tools Showcase */}
-      <div style={{padding:"clamp(32px,5vw,56px) 16px",maxWidth:1200,margin:"0 auto"}}>
-        <div className="sl">Free For Students</div>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:24,flexWrap:"wrap",gap:12}}>
+      {/* ── UPCOMING EVENTS ── */}
+      <div style={{padding:"clamp(40px,5vw,64px) 16px",maxWidth:1200,margin:"0 auto"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:28,flexWrap:"wrap",gap:12}}>
           <div>
-            <h2 className="syne" style={{fontSize:30,fontWeight:800}}>🛠️ 12 Student Tools</h2>
-            <p style={{color:"var(--text2)",fontSize:13,marginTop:4}}>DSA · Aptitude · Resume · CS Core · Roadmap · Salary Coach · and more. Zero login, 100% free.</p>
+            <div className="sl" style={{marginBottom:8}}>Tech Community</div>
+            <h2 className="syne" style={{fontSize:"clamp(22px,3vw,30px)",fontWeight:800}}>🗓️ Upcoming Events</h2>
           </div>
-          <button className="btn-p" style={{padding:"10px 22px",fontSize:14}} onClick={()=>setPage("tools")}>Explore All Tools →</button>
+          <button className="btn-g" style={{padding:"9px 20px",fontSize:13,borderRadius:10}} onClick={()=>setPage("events")}>View All →</button>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:12}}>
-          {[
-            {icon:"🧠",name:"DSA Explorer",id:"dsa",color:"var(--cyan)",desc:"300+ problems · Blind75 · Mock test"},
-            {icon:"💻",name:"CS Core",id:"cscore",color:"#06b6d4",desc:"DBMS · OS · CN · OOP · System Design"},
-            {icon:"🎯",name:"Aptitude Trainer",id:"aptitude",color:"#fb923c",desc:"26 companies · 500+ questions"},
-            {icon:"🏗️",name:"Resume Builder",id:"resumebuilder",color:"var(--orange)",desc:"6 templates · ATS score · PDF"},
-            {icon:"📄",name:"AI Resume Analyzer",id:"resume",color:"var(--green)",desc:"3-stage AI · JD match · Recruiter verdict"},
-            {icon:"🗺️",name:"Interview Roadmap",id:"roadmap",color:"#06b6d4",desc:"30/60/90-day plan · 5 tracks"},
-            {icon:"📋",name:"JD Decoder",id:"jddecoder",color:"var(--pink)",desc:"AI · Must-haves · Red flags"},
-            {icon:"💬",name:"Salary Coach",id:"salarycoach",color:"var(--yellow)",desc:"Phone script · Counter-offer email"},
-          ].map(t=>(
-            <div key={t.id} onClick={()=>setPage(t.id)}
-              style={{background:"var(--card)",border:`1px solid ${t.color}20`,borderRadius:12,padding:"16px 14px",cursor:"pointer",transition:"all .2s"}}
-              onMouseEnter={e=>{e.currentTarget.style.borderColor=t.color;e.currentTarget.style.transform="translateY(-2px)";}}
-              onMouseLeave={e=>{e.currentTarget.style.borderColor=`${t.color}20`;e.currentTarget.style.transform="";}}>
-              <div style={{fontSize:28,marginBottom:8}}>{t.icon}</div>
-              <div style={{fontSize:13,fontWeight:700,color:t.color,marginBottom:4}}>{t.name}</div>
-              <div style={{fontSize:11,color:"var(--text3)",lineHeight:1.4}}>{t.desc}</div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:14}}>
+          {evLoading ? [1,2,3].map(i=><div key={i} className="skel" style={{height:160,borderRadius:14}}/>) :
+           featuredEvents.slice(0,6).map(e=><EventCard key={e._id} e={e} compact/>)}
+          {!evLoading && featuredEvents.length > 0 && (
+            <div onClick={()=>setPage("events")} style={{gridColumn:"1/-1",background:"linear-gradient(135deg,rgba(124,77,255,.04),transparent)",border:"1px dashed var(--border2)",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",padding:"clamp(14px,3vw,20px) clamp(16px,3vw,28px)",gap:16,transition:"all .25s",flexWrap:"wrap"}}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--purple)";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";}}>
+              <div>
+                <div className="syne" style={{fontSize:16,fontWeight:800,color:"var(--purple)",marginBottom:4}}>Browse All Tech Events →</div>
+                <div style={{fontSize:12,color:"var(--text3)"}}>Conferences, meetups, workshops · Scraped from 9 platforms</div>
+              </div>
+              <div style={{padding:"10px 24px",background:"var(--purple)",color:"#fff",borderRadius:10,fontWeight:700,fontSize:13,flexShrink:0}}>View All →</div>
             </div>
-          ))}
+          )}
         </div>
       </div>
 
-      {/* Source platforms */}
-      <div style={{padding:"clamp(32px,5vw,56px) 16px",maxWidth:1200,margin:"0 auto"}}>
-        <div className="sl">Data Sources</div>
-        <h2 className="syne" style={{fontSize:28,fontWeight:800,marginBottom:8}}>🔗 Scraped From</h2>
-        <p style={{color:"var(--text2)",marginBottom:28,fontSize:14}}>AI agents auto-scrape 7+ platforms every 6 hours and keep only open registrations.</p>
-        <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
-          {["Devpost","HackClub","Hackathon.com","DevEvents","MLH","TAIKAI","Internshala","Remotive"].map(s=>(
-            <div key={s} style={{padding:"9px 17px",borderRadius:10,background:"var(--card)",border:"1px solid var(--border)",fontSize:13,color:"var(--text2)",display:"flex",alignItems:"center",gap:6}}>
-              <span style={{color:"var(--cyan)"}}>◈</span> {s}
+      {/* ── STUDENT TOOLS ── */}
+      <div style={{background:"var(--bg2)",borderTop:"1px solid var(--border)",padding:"clamp(40px,5vw,64px) 16px"}}>
+        <div style={{maxWidth:1200,margin:"0 auto"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:28,flexWrap:"wrap",gap:12}}>
+            <div>
+              <div className="sl" style={{marginBottom:8}}>Free For Students</div>
+              <h2 className="syne" style={{fontSize:"clamp(22px,3vw,30px)",fontWeight:800}}>🛠️ 12 Placement Tools</h2>
+              <p style={{color:"var(--text2)",fontSize:13,marginTop:6}}>DSA · Aptitude · Resume · CS Core · Salary Coach · Readiness Score. Zero login, 100% free.</p>
             </div>
-          ))}
+            <button className="btn-p" style={{padding:"10px 22px",fontSize:13,borderRadius:10}} onClick={()=>setPage("tools")}>Explore All Tools →</button>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(170px,1fr))",gap:10}}>
+            {[
+              {icon:"🧠",name:"DSA Explorer",id:"dsa",color:"var(--cyan)"},
+              {icon:"💻",name:"CS Core",id:"cscore",color:"#06b6d4"},
+              {icon:"🎯",name:"Aptitude Trainer",id:"aptitude",color:"#fb923c"},
+              {icon:"🏗️",name:"Resume Builder",id:"resumebuilder",color:"var(--orange)"},
+              {icon:"📄",name:"AI Resume Analyzer",id:"resume",color:"var(--green)"},
+              {icon:"🗺️",name:"Interview Roadmap",id:"roadmap",color:"#06b6d4"},
+              {icon:"📋",name:"JD Decoder",id:"jddecoder",color:"var(--pink)"},
+              {icon:"💬",name:"Salary Coach",id:"salarycoach",color:"var(--yellow)"},
+              {icon:"🎯",name:"Readiness Score",id:"readiness",color:"var(--green)"},
+              {icon:"🏆",name:"CP Tracker",id:"cp",color:"var(--yellow)"},
+              {icon:"🏢",name:"Company Guide",id:"companyguide",color:"#e879f9"},
+              {icon:"🎯",name:"Soft Skills",id:"softskills",color:"#3b82f6"},
+            ].map(t=>(
+              <div key={t.id} onClick={()=>setPage(t.id)}
+                style={{background:"var(--card)",border:`1px solid ${t.color}18`,borderRadius:12,padding:"14px 12px",cursor:"pointer",transition:"all .2s",display:"flex",flexDirection:"column",alignItems:"center",textAlign:"center",gap:6}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor=t.color;e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 8px 24px ${t.color}18`;}}
+                onMouseLeave={e=>{e.currentTarget.style.borderColor=`${t.color}18`;e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
+                <div style={{fontSize:26}}>{t.icon}</div>
+                <div style={{fontSize:12,fontWeight:700,color:t.color,lineHeight:1.3}}>{t.name}</div>
+              </div>
+            ))}
+          </div>
         </div>
-
       </div>
     </div>
   );
