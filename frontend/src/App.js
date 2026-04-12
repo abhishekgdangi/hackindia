@@ -836,7 +836,7 @@ const HomePage = ({setPage}) => {
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:18}}>
           {loading ? [1,2,3].map(i=><SkeletonCard key={i}/>) : featured.length ? [
             ...featured.slice(0,6).map(h=><HackCard key={h._id} h={h} onClick={()=>setPage("hackathons")}/>),
-            <div key="browse-all" onClick={()=>setPage("hackathons")} style={{gridColumn:"1/-1",background:"linear-gradient(135deg,var(--card2),var(--bg3))",border:"2px dashed var(--border2)",borderRadius:14,display:"flex",flexDirection:"row",alignItems:"center",justifyContent:"space-between",cursor:"pointer",padding:"22px 32px",gap:24,transition:"all .25s"}} onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.background="linear-gradient(135deg,rgba(0,212,255,.06),var(--bg3))";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";e.currentTarget.style.background="linear-gradient(135deg,var(--card2),var(--bg3))";}}>
+            <div key="browse-all" onClick={()=>setPage("hackathons")} style={{gridColumn:"1/-1",background:"linear-gradient(135deg,var(--card2),var(--bg3))",border:"2px dashed var(--border2)",borderRadius:14,display:"flex",flexDirection:"row",alignItems:"center",justifyContent:"space-between",cursor:"pointer",padding:"clamp(14px,3vw,22px) clamp(16px,3vw,32px)",gap:16,transition:"all .25s",flexWrap:"wrap"}} onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.background="linear-gradient(135deg,rgba(0,212,255,.06),var(--bg3))";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";e.currentTarget.style.background="linear-gradient(135deg,var(--card2),var(--bg3))";}}>
               <div style={{display:"flex",alignItems:"center",gap:18}}>
                 <div style={{fontSize:36}}>⚡</div>
                 <div>
@@ -844,14 +844,14 @@ const HomePage = ({setPage}) => {
                   <div style={{fontSize:13,color:"var(--text2)",marginTop:3}}>Filter by domain, city, mode and more · New hackathons added every 6 hours</div>
                 </div>
               </div>
-              <div style={{padding:"10px 26px",background:"var(--cyan)",color:"#000",borderRadius:10,fontWeight:700,fontSize:14,flexShrink:0}}>View All →</div>
+              <div style={{padding:"10px 26px",background:"var(--cyan)",color:"#000",borderRadius:10,fontWeight:700,fontSize:14,flexShrink:0,textAlign:"center"}}>View All →</div>
             </div>
           ] : <div style={{gridColumn:"1/-1",textAlign:"center",padding:"40px 0",color:"var(--text2)"}}>🔄 Loading hackathons... Make sure the backend server is running.</div>}
         </div>
       </div>
 
       {/* Domains */}
-      <div style={{background:"var(--bg2)",padding:"56px 24px",borderTop:"1px solid var(--border)"}}>
+      <div style={{background:"var(--bg2)",padding:"clamp(32px,5vw,56px) 16px",borderTop:"1px solid var(--border)"}}>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
           <div className="sl">Trending Now</div>
           <h2 className="syne" style={{fontSize:30,fontWeight:800,marginBottom:32}}>🎯 Top Domains</h2>
@@ -912,7 +912,7 @@ const HomePage = ({setPage}) => {
           ))}
           {/* Browse all internships card */}
           {!iLoading && featuredInterns.length > 0 && (
-            <div onClick={()=>setPage("internships")} style={{gridColumn:"1/-1",background:"linear-gradient(135deg,var(--card2),var(--bg3))",border:"2px dashed var(--border2)",borderRadius:14,display:"flex",flexDirection:"row",alignItems:"center",justifyContent:"space-between",cursor:"pointer",padding:"22px 32px",gap:24,transition:"all .25s"}} onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--green)";e.currentTarget.style.background="linear-gradient(135deg,rgba(0,255,136,.06),var(--bg3))";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";e.currentTarget.style.background="linear-gradient(135deg,var(--card2),var(--bg3))"}}>
+            <div onClick={()=>setPage("internships")} style={{gridColumn:"1/-1",background:"linear-gradient(135deg,var(--card2),var(--bg3))",border:"2px dashed var(--border2)",borderRadius:14,display:"flex",flexDirection:"row",alignItems:"center",justifyContent:"space-between",cursor:"pointer",padding:"clamp(14px,3vw,22px) clamp(16px,3vw,32px)",gap:16,transition:"all .25s",flexWrap:"wrap"}} onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--green)";e.currentTarget.style.background="linear-gradient(135deg,rgba(0,255,136,.06),var(--bg3))";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";e.currentTarget.style.background="linear-gradient(135deg,var(--card2),var(--bg3))"}}>
               <div style={{display:"flex",alignItems:"center",gap:18}}>
                 <div style={{fontSize:36}}>💼</div>
                 <div>
@@ -920,7 +920,7 @@ const HomePage = ({setPage}) => {
                   <div style={{fontSize:13,color:"var(--text2)",marginTop:3}}>1000+ live internships from Internshala · Filter by skill, city, and remote</div>
                 </div>
               </div>
-              <div style={{padding:"10px 26px",background:"var(--green)",color:"#000",borderRadius:10,fontWeight:700,fontSize:14,flexShrink:0}}>View All →</div>
+              <div style={{padding:"10px 26px",background:"var(--green)",color:"#000",borderRadius:10,fontWeight:700,fontSize:14,flexShrink:0,textAlign:"center"}}>View All →</div>
             </div>
           )}
         </div>
@@ -938,7 +938,7 @@ const HomePage = ({setPage}) => {
             {evLoading ? [1,2,3].map(i=><div key={i} className="skel" style={{height:180,borderRadius:16}}/>) :
              featuredEvents.slice(0,6).map(e=><EventCard key={e._id} e={e} compact/>)}
             {!evLoading && featuredEvents.length > 0 && (
-              <div onClick={()=>setPage("events")} style={{gridColumn:"1/-1",background:"linear-gradient(135deg,var(--card2),var(--bg3))",border:"2px dashed var(--border2)",borderRadius:14,display:"flex",flexDirection:"row",alignItems:"center",justifyContent:"space-between",cursor:"pointer",padding:"22px 32px",gap:24,transition:"all .25s"}} onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--purple)";e.currentTarget.style.background="linear-gradient(135deg,rgba(124,77,255,.06),var(--bg3))";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";e.currentTarget.style.background="linear-gradient(135deg,var(--card2),var(--bg3))"}}>
+              <div onClick={()=>setPage("events")} style={{gridColumn:"1/-1",background:"linear-gradient(135deg,var(--card2),var(--bg3))",border:"2px dashed var(--border2)",borderRadius:14,display:"flex",flexDirection:"row",alignItems:"center",justifyContent:"space-between",cursor:"pointer",padding:"clamp(14px,3vw,22px) clamp(16px,3vw,32px)",gap:16,transition:"all .25s",flexWrap:"wrap"}} onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--purple)";e.currentTarget.style.background="linear-gradient(135deg,rgba(124,77,255,.06),var(--bg3))";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";e.currentTarget.style.background="linear-gradient(135deg,var(--card2),var(--bg3))"}}>
                 <div style={{display:"flex",alignItems:"center",gap:18}}>
                   <div style={{fontSize:36}}>🗓️</div>
                   <div>
@@ -946,7 +946,7 @@ const HomePage = ({setPage}) => {
                     <div style={{fontSize:13,color:"var(--text2)",marginTop:3}}>Conferences, meetups, workshops, AI events & more · Scraped from 9 platforms</div>
                   </div>
                 </div>
-                <div style={{padding:"10px 26px",background:"var(--purple)",color:"#fff",borderRadius:10,fontWeight:700,fontSize:14,flexShrink:0}}>View All →</div>
+                <div style={{padding:"10px 26px",background:"var(--purple)",color:"#fff",borderRadius:10,fontWeight:700,fontSize:14,flexShrink:0,textAlign:"center"}}>View All →</div>
               </div>
             )}
           </div>
@@ -1270,7 +1270,7 @@ const InternshipsPage = () => {
   return (
     <div style={{paddingTop:64}}>
       {/* Header */}
-      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"32px 24px 24px"}}>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"20px 16px 16px"}}>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
           <div className="sl">Opportunities</div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12,marginBottom:16}}>
@@ -1284,20 +1284,29 @@ const InternshipsPage = () => {
             </div>
           </div>
           <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
-            <div style={{position:"relative",flex:1,minWidth:240}}>
+            <div style={{position:"relative",flex:1,minWidth:200}}>
               <span style={{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",color:"var(--text3)"}}>🔍</span>
               <input className="input" placeholder="Search companies, roles, skills…" value={search} onChange={e=>setSearch(e.target.value)} style={{padding:"12px 16px 12px 42px",fontSize:14}}/>
             </div>
             <button onClick={()=>setIntView(v=>v==="list"?"calendar":"list")}
-              style={{padding:"10px 18px",borderRadius:10,border:`1px solid ${intView==="calendar"?"var(--purple)":"var(--border)"}`,background:intView==="calendar"?"rgba(124,77,255,.15)":"var(--card)",color:intView==="calendar"?"var(--purple)":"var(--text2)",cursor:"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif",fontWeight:intView==="calendar"?700:400,whiteSpace:"nowrap"}}>
-              {intView==="calendar"?"☰ List View":"📅 Calendar View"}
+              style={{padding:"10px 14px",borderRadius:10,border:`1px solid ${intView==="calendar"?"var(--purple)":"var(--border)"}`,background:intView==="calendar"?"rgba(124,77,255,.15)":"var(--card)",color:intView==="calendar"?"var(--purple)":"var(--text2)",cursor:"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif",fontWeight:intView==="calendar"?700:400,whiteSpace:"nowrap"}}>
+              {intView==="calendar"?"☰ List":"📅 Calendar"}
             </button>
+          </div>
+          {/* Mobile quick filters */}
+          <div className="mob-only" style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:4,marginTop:10,WebkitOverflowScrolling:"touch"}}>
+            <button onClick={()=>setIsRemote(isRemote==="Remote"?"All":"Remote")}
+              style={{flexShrink:0,fontSize:11,padding:"5px 11px",borderRadius:7,border:`1px solid ${isRemote==="Remote"?"var(--green)":"var(--border)"}`,background:isRemote==="Remote"?"rgba(0,255,136,.12)":"var(--card)",color:isRemote==="Remote"?"var(--green)":"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",whiteSpace:"nowrap"}}>🏠 Remote</button>
+            {["All","Bengaluru","Mumbai","Delhi","Hyderabad","Chennai"].map(l=>(
+              <button key={l} onClick={()=>setLocation(l)}
+                style={{flexShrink:0,fontSize:11,padding:"5px 11px",borderRadius:7,border:`1px solid ${location===l?"var(--cyan)":"var(--border)"}`,background:location===l?"rgba(0,212,255,.12)":"var(--card)",color:location===l?"var(--cyan)":"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",whiteSpace:"nowrap"}}>{l}</button>
+            ))}
           </div>
         </div>
       </div>
 
       {/* Body — sidebar + cards */}
-      <div style={{maxWidth:1200,margin:"0 auto",padding:"24px",display:"flex",gap:20,alignItems:"flex-start"}}>
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"16px",display:"grid",gridTemplateColumns:"minmax(0,220px) 1fr",gap:20,alignItems:"flex-start"}} className="hack-grid">
 
         {/* Internship Calendar View */}
         {intView==="calendar" && (() => {
@@ -1649,7 +1658,7 @@ const EventsPage = () => {
   return (
     <div style={{paddingTop:64}}>
       {/* Header */}
-      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"32px 24px 24px"}}>
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"20px 16px 16px"}}>
         <div style={{maxWidth:1200,margin:"0 auto"}}>
           <div className="sl">Tech Community</div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12,marginBottom:16}}>
@@ -1657,27 +1666,39 @@ const EventsPage = () => {
               <h1 className="syne" style={{fontSize:34,fontWeight:800,marginBottom:4}}>🗓️ Tech Events</h1>
               <p style={{color:"var(--text2)",fontSize:14}}>Conferences, workshops, meetups & AI events — scraped from 9 platforms.</p>
             </div>
-            <div style={{display:"flex",gap:16,textAlign:"center"}}>
+            <div style={{display:"flex",gap:16,textAlign:"center",flexWrap:"wrap"}}>
               <div><div className="syne" style={{fontSize:26,fontWeight:800,color:"var(--purple)"}}>{data.length||total}</div><div style={{fontSize:11,color:"var(--text2)"}}>events found</div></div>
               <div><div className="syne" style={{fontSize:26,fontWeight:800,color:"var(--cyan)"}}>{onlineCount}</div><div style={{fontSize:11,color:"var(--text2)"}}>online</div></div>
               <div><div className="syne" style={{fontSize:26,fontWeight:800,color:"var(--green)"}}>{offlineCount}</div><div style={{fontSize:11,color:"var(--text2)"}}>offline</div></div>
             </div>
           </div>
           <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
-            <div style={{position:"relative",flex:1,minWidth:240}}>
+            <div style={{position:"relative",flex:1,minWidth:200}}>
               <span style={{position:"absolute",left:13,top:"50%",transform:"translateY(-50%)",color:"var(--text3)"}}>🔍</span>
               <input className="input" placeholder="Search events, conferences, workshops…" value={search} onChange={e=>setSearch(e.target.value)} style={{padding:"12px 16px 12px 42px",fontSize:14}}/>
             </div>
             <button onClick={()=>setEvView(v=>v==="list"?"calendar":"list")}
-              style={{padding:"10px 18px",borderRadius:10,border:`1px solid ${evView==="calendar"?"var(--purple)":"var(--border)"}`,background:evView==="calendar"?"rgba(124,77,255,.15)":"var(--card)",color:evView==="calendar"?"var(--purple)":"var(--text2)",cursor:"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif",fontWeight:evView==="calendar"?700:400,whiteSpace:"nowrap"}}>
-              {evView==="calendar"?"☰ List View":"📅 Calendar View"}
+              style={{padding:"10px 14px",borderRadius:10,border:`1px solid ${evView==="calendar"?"var(--purple)":"var(--border)"}`,background:evView==="calendar"?"rgba(124,77,255,.15)":"var(--card)",color:evView==="calendar"?"var(--purple)":"var(--text2)",cursor:"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif",fontWeight:evView==="calendar"?700:400,whiteSpace:"nowrap"}}>
+              {evView==="calendar"?"☰ List":"📅 Calendar"}
             </button>
+          </div>
+          {/* Mobile quick filters */}
+          <div className="mob-only" style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:4,marginTop:10,WebkitOverflowScrolling:"touch"}}>
+            {["All","Conference","Meetup","Workshop","Hackathon"].map(t=>(
+              <button key={t} onClick={()=>setEvType(t)}
+                style={{flexShrink:0,fontSize:11,padding:"5px 11px",borderRadius:7,border:`1px solid ${evType===t?"var(--purple)":"var(--border)"}`,background:evType===t?"rgba(124,77,255,.12)":"var(--card)",color:evType===t?"var(--purple)":"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",whiteSpace:"nowrap"}}>{t}</button>
+            ))}
+            <div style={{width:1,background:"var(--border)",flexShrink:0,margin:"0 2px"}}/>
+            {["All","Free"].map(p=>(
+              <button key={p} onClick={()=>setPrice(p)}
+                style={{flexShrink:0,fontSize:11,padding:"5px 11px",borderRadius:7,border:`1px solid ${price===p?"var(--green)":"var(--border)"}`,background:price===p?"rgba(0,255,136,.12)":"var(--card)",color:price===p?"var(--green)":"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",whiteSpace:"nowrap"}}>{p==="Free"?"🆓 Free":"All"}</button>
+            ))}
           </div>
         </div>
       </div>
 
       {/* Body */}
-      <div style={{maxWidth:1200,margin:"0 auto",padding:"24px",display:"flex",gap:20,alignItems:"flex-start"}}>
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"16px",display:"grid",gridTemplateColumns:"minmax(0,220px) 1fr",gap:20,alignItems:"flex-start"}} className="hack-grid">
 
         {/* Calendar View */}
         {evView==="calendar" && (() => {
@@ -11486,11 +11507,11 @@ const StudentToolsPage = ({ setPage }) => (
             </div>
             <p style={{fontSize:13,color:"var(--text2)",lineHeight:1.65,marginBottom:16}}>{tool.desc}</p>
             {/* Stats */}
-            <div style={{display:"flex",gap:20,marginBottom:14,padding:"12px 0",borderTop:`1px solid ${tool.color}15`,borderBottom:`1px solid ${tool.color}15`}}>
+            <div style={{display:"flex",gap:12,marginBottom:14,padding:"12px 0",borderTop:`1px solid ${tool.color}15`,borderBottom:`1px solid ${tool.color}15`}}>
               {tool.stats.map(s=>(
-                <div key={s.label}>
-                  <div className="syne" style={{fontSize:20,fontWeight:900,color:tool.color}}>{s.value}</div>
-                  <div style={{fontSize:10,color:"var(--text3)",marginTop:1}}>{s.label}</div>
+                <div key={s.label} style={{flex:1,minWidth:0}}>
+                  <div className="syne" style={{fontSize:s.value.length>6?13:s.value.length>4?15:20,fontWeight:900,color:tool.color,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{s.value}</div>
+                  <div style={{fontSize:10,color:"var(--text3)",marginTop:1,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{s.label}</div>
                 </div>
               ))}
             </div>
