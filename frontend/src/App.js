@@ -784,7 +784,7 @@ const HomePage = ({setPage}) => {
   const {data:featuredInterns,loading:iLoading} = useInternships({});
   const {data:featuredEvents,loading:evLoading} = useEvents({});
   const stats = useStats();
-  const ticker = featured.length ? [...featured,...featured].map(h=>`${hackLogo(h)||"⚡"} ${h.name} — ${h.prize||"TBA"} — Closes ${fmtDate(h.registrationDeadline)}`) : ["⚡ Hackathons loading... Check back soon!","🚀 New hackathons scraped every 6 hours","🤖 AI-powered discovery platform"];
+  const ticker = featured.length ? [...featured,...featured].map(h=>`${hackLogo(h)||"⚡"} ${h.name} — ${h.prize||"TBA"} — Closes ${fmtDate(h.registrationDeadline)}`) : ["⚡ Hackathons loading... Check back soon!","🚀 New hackathons added every 6 hours","🤖 AI-powered discovery platform"];
 
   return (
     <div style={{paddingTop:64}}>
@@ -798,20 +798,20 @@ const HomePage = ({setPage}) => {
         <div style={{position:"absolute",width:500,height:500,borderRadius:"50%",background:"rgba(0,212,255,.06)",filter:"blur(80px)",top:-150,right:-80,pointerEvents:"none"}}/>
         <div style={{position:"absolute",width:300,height:300,borderRadius:"50%",background:"rgba(0,255,136,.04)",filter:"blur(60px)",bottom:-80,left:-40,pointerEvents:"none"}}/>
         <div style={{maxWidth:720,margin:"0 auto",position:"relative",zIndex:1,textAlign:"center",animation:"slide-in .6s ease"}}>
-          <div className="sl" style={{justifyContent:"center",marginBottom:20}}>India's #1 Hackathon Discovery Platform</div>
+          <div className="sl" style={{justifyContent:"center",marginBottom:20}}>India's #1 Placement & Hackathon Platform</div>
           <h1 className="syne" style={{fontSize:"clamp(36px,6vw,72px)",fontWeight:800,lineHeight:1.05,marginBottom:20,letterSpacing:"-1px"}}>
-            Find Your Next<br/><span className="gtext">Hackathon</span><br/>& Win Big
+            Your Complete<br/><span className="gtext">Placement Toolkit</span><br/>in One Place
           </h1>
-          <p style={{fontSize:"clamp(14px,2vw,17px)",color:"var(--text2)",lineHeight:1.75,marginBottom:36,maxWidth:500,margin:"0 auto 36px"}}>
-            Discover <strong style={{color:"var(--cyan)"}}>{stats.totalOpen}+ live hackathons</strong> scraped from 7+ platforms daily. Only open registrations shown.
+          <p style={{fontSize:"clamp(14px,2vw,17px)",color:"var(--text2)",lineHeight:1.75,marginBottom:36,maxWidth:560,margin:"0 auto 36px"}}>
+            <strong style={{color:"var(--cyan)"}}>{stats.totalOpen}+ live hackathons</strong> · 1000+ internships · 12 free tools — DSA, Resume, Aptitude, CS Core, Salary Coach &amp; more. All in one place, 100% free.
           </p>
           <div style={{display:"flex",gap:12,flexWrap:"wrap",marginBottom:48,justifyContent:"center"}}>
             <button className="btn-p" style={{padding:"14px 32px",fontSize:16,borderRadius:12}} onClick={()=>setPage("hackathons")}>🔍 Browse Hackathons</button>
-            <button className="btn-g" style={{padding:"14px 28px",fontSize:16,borderRadius:12}} onClick={()=>setPage("internships")}>💼 Find Internships</button>
+            <button className="btn-g" style={{padding:"14px 28px",fontSize:16,borderRadius:12}} onClick={()=>setPage("tools")}>🛠️ Student Tools</button>
           </div>
           {/* Inline trust badges */}
           <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
-            {[["⚡","Every 6h scrape"],["✅","Open only"],["🆓","No sign-up"],["🤖","AI-classified"],["🇮🇳","India-focused"]].map(([ic,lbl])=>(
+            {[["⚡","Live Hackathons"],["💼","Internships"],["🛠️","12 Free Tools"],["🆓","No Login"],["🇮🇳","India-Focused"]].map(([ic,lbl])=>(
               <div key={lbl} style={{display:"flex",alignItems:"center",gap:5,padding:"5px 12px",borderRadius:20,background:"var(--card)",border:"1px solid var(--border)",fontSize:12,color:"var(--text2)"}}>
                 <span>{ic}</span><span>{lbl}</span>
               </div>
@@ -850,9 +850,9 @@ const HomePage = ({setPage}) => {
         <div style={{maxWidth:1200,margin:"0 auto",display:"flex",gap:0,flexWrap:"wrap",justifyContent:"space-around",alignItems:"center"}}>
           {[
             {label:"Live Hackathons",value:`${stats.totalOpen||"200"}+`,color:"var(--cyan)"},
-            {label:"Scraped Platforms",value:"7+",color:"var(--green)"},
-            {label:"Student Tools",value:"12",color:"var(--purple)"},
-            {label:"Updated Every",value:"6h",color:"var(--yellow)"},
+            {label:"Live Internships",value:"1000+",color:"var(--green)"},
+            {label:"Free Student Tools",value:"12",color:"var(--purple)"},
+            {label:"Refreshed Every",value:"6h",color:"var(--yellow)"},
           ].map(s=>(
             <div key={s.label} style={{textAlign:"center",padding:"8px 24px"}}>
               <div className="syne" style={{fontSize:"clamp(24px,4vw,36px)",fontWeight:900,color:s.color}}>{s.value}</div>
@@ -899,7 +899,7 @@ const HomePage = ({setPage}) => {
                 onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--green)";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";}}>
                 <div>
                   <div className="syne" style={{fontSize:16,fontWeight:800,color:"var(--green)",marginBottom:4}}>Browse All Internships →</div>
-                  <div style={{fontSize:12,color:"var(--text3)"}}>1000+ live internships from Internshala · Filter by skill, city, remote</div>
+                  <div style={{fontSize:12,color:"var(--text3)"}}>1000+ live internships · Filter by skill, city, and remote</div>
                 </div>
                 <div style={{padding:"10px 24px",background:"var(--green)",color:"#000",borderRadius:10,fontWeight:700,fontSize:13,flexShrink:0}}>View All →</div>
               </div>
@@ -1174,7 +1174,7 @@ const HackathonsPage = () => {
               <div style={{color:"var(--text2)",fontSize:14,lineHeight:1.8}}>
                 {domain!=="All"||mode!=="All"||city!=="All"||team!=="All"||search
                   ? "No results match your filters. Try resetting filters or a different search."
-                  : "All hackathons have closed or none have been scraped yet. Check back in a few hours — scrapers run every 6 hours automatically."}
+                  : "All hackathons have closed or none have been scraped yet. Check back in a few hours — listings refresh every 6 hours automatically."}
               </div>
             </div>
           ) : (
@@ -1634,7 +1634,7 @@ const EventsPage = () => {
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12,marginBottom:16}}>
             <div>
               <h1 className="syne" style={{fontSize:34,fontWeight:800,marginBottom:4}}>🗓️ Tech Events</h1>
-              <p style={{color:"var(--text2)",fontSize:14}}>Conferences, workshops, meetups & AI events — scraped from 9 platforms.</p>
+              <p style={{color:"var(--text2)",fontSize:14}}>Conferences, workshops, meetups & AI events — aggregated from 9 platforms.</p>
             </div>
             <div style={{display:"flex",gap:16,textAlign:"center",flexWrap:"wrap"}}>
               <div><div className="syne" style={{fontSize:26,fontWeight:800,color:"var(--purple)"}}>{data.length||total}</div><div style={{fontSize:11,color:"var(--text2)"}}>events found</div></div>
@@ -1799,7 +1799,7 @@ const EventsPage = () => {
               <div style={{fontSize:52,marginBottom:14}}>🗓️</div>
               <div className="syne" style={{fontSize:22,fontWeight:800,marginBottom:10}}>No events found</div>
               <div style={{color:"var(--text2)",fontSize:14,lineHeight:1.8}}>
-                {hasFilter?"Try resetting filters.":"Events are scraped every 6 hours. Check back soon!"}
+                {hasFilter?"Try resetting filters.":"Events refresh every 6 hours. Check back soon!"}
               </div>
             </div>
           ) : (
@@ -1903,7 +1903,7 @@ const Footer = ({setPage}) => (
             <div style={{width:30,height:30,borderRadius:8,background:"linear-gradient(135deg,var(--cyan),var(--green))",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15}}>⚡</div>
             <span className="syne" style={{fontSize:16,fontWeight:800}}>Hack<span style={{color:"var(--cyan)"}}>India</span></span>
           </div>
-          <p style={{color:"var(--text2)",fontSize:12,lineHeight:1.7,marginBottom:14}}>India's #1 hackathon discovery platform. AI agents scrape 7+ platforms every 6 hours — only live, open hackathons shown.</p>
+          <p style={{color:"var(--text2)",fontSize:12,lineHeight:1.7,marginBottom:14}}>India's #1 placement platform — hackathons, internships, events, and 12 free student tools. 100% free, no login.</p>
           <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
             {["Twitter","GitHub","LinkedIn","Discord"].map(s=><div key={s} style={{padding:"3px 9px",borderRadius:6,background:"var(--card)",border:"1px solid var(--border)",fontSize:11,color:"var(--text2)",cursor:"pointer"}}>{s}</div>)}
           </div>
@@ -1924,11 +1924,7 @@ const Footer = ({setPage}) => (
         </div>
         {/* Scrapers + About */}
         <div>
-          <div style={{fontSize:10,fontWeight:700,color:"var(--text3)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>Scrapers</div>
-          {["Devpost","Devfolio","Hack2Skill","Internshala","Lablab.ai","Remotive"].map(l=>(
-            <div key={l} style={{color:"var(--text2)",fontSize:12,marginBottom:6,cursor:"pointer"}}>{l}</div>
-          ))}
-          <div style={{fontSize:10,fontWeight:700,color:"var(--text3)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:10,marginTop:16}}>About</div>
+          <div style={{fontSize:10,fontWeight:700,color:"var(--text3)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>About</div>
           {["How it works","AI Agents","Data Policy","Contact"].map(l=>(
             <div key={l} style={{color:"var(--text2)",fontSize:12,marginBottom:6,cursor:"pointer"}}>{l}</div>
           ))}
