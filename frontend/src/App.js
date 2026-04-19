@@ -269,6 +269,7 @@ const fmtDate  = (d) => {
 const dcClass  = (d) => { const n=getDays(d); return n<=3?"urgent":n<=7?"soon":"ok"; };
 const dcColor  = (d) => dcClass(d)==="urgent"?"var(--pink)":dcClass(d)==="soon"?"var(--yellow)":"var(--green)";
 const DC = {"AI/ML":"#00d4ff","Web Dev":"#00ff88","Blockchain":"#7c4dff","Cybersecurity":"#ff3d8a","Data Science":"#ffd60a","Cloud":"#ff6b35","Mobile Apps":"#00d4ff","IoT":"#00ff88","Robotics":"#7c4dff","Web3":"#7c4dff","Open Source":"#00ff88","DeFi":"#ffd60a"};
+const decodeHTML = (str="") => str.replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&nbsp;/g," ");
 
 /* ────────────────────────────────────────────────
    GLOBAL STYLES
@@ -965,11 +966,11 @@ const HomePage = ({setPage}) => {
                 <div key={ev._id} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:"14px 16px",display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,transition:"border-color .2s"}}
                   onMouseEnter={e=>e.currentTarget.style.borderColor="var(--purple)"} onMouseLeave={e=>e.currentTarget.style.borderColor="var(--border)"}>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontWeight:700,fontSize:13,marginBottom:3,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{ev.name||ev.title}</div>
+                    <div style={{fontWeight:700,fontSize:13,marginBottom:3,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{decodeHTML(ev.name||ev.title||"")}</div>
                     <div style={{fontSize:12,color:"var(--text2)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{ev.organizer||ev.platform}</div>
                     <div style={{fontSize:11,color:"var(--text3)",marginTop:4}}>📅 {fmtDate(ev.startDate||ev.date)}</div>
                   </div>
-                  {(ev.applyLink||ev.url||ev.registerLink)&&<button onClick={()=>window.open(ev.applyLink||ev.url||ev.registerLink,"_blank")} style={{padding:"7px 14px",borderRadius:8,background:"var(--purple)",color:"#fff",border:"none",cursor:"pointer",fontWeight:700,fontSize:11,flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>Join →</button>}
+                  <button onClick={()=>{const u=ev.applyLink||ev.url||ev.registerLink;u?window.open(u,"_blank"):setPage("events");}} style={{padding:"7px 14px",borderRadius:8,background:"var(--purple)",color:"#fff",border:"none",cursor:"pointer",fontWeight:700,fontSize:11,flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>Join →</button>
                 </div>
               ))}
               {!evLoading&&<div onClick={()=>setPage("events")} style={{padding:"14px 16px",borderRadius:12,border:"1px dashed var(--border2)",textAlign:"center",cursor:"pointer",color:"var(--purple)",fontWeight:700,fontSize:13,transition:"all .2s"}}
@@ -1570,7 +1571,7 @@ const EventCard = ({e, compact=false}) => {
             {EVENT_PLATFORM_LOGO(e.platform||"")}
           </div>
           <div style={{flex:1,minWidth:0}}>
-            <div className="syne" style={{fontWeight:700,fontSize:13,lineHeight:1.4,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{e.title}</div>
+            <div className="syne" style={{fontWeight:700,fontSize:13,lineHeight:1.4,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{decodeHTML(e.title||"")}</div>
             <div style={{fontSize:10,color:"var(--text3)",marginTop:2,fontFamily:"'JetBrains Mono',monospace"}}>via {e.platform||"Unknown"}</div>
           </div>
         </div>
@@ -1739,7 +1740,7 @@ const EventsPage = () => {
                           <div style={{fontSize:12,fontWeight:isToday?800:400,color:isToday?"var(--cyan)":"var(--text)",textAlign:"right",marginBottom:3}}>{day}</div>
                           {items.slice(0,2).map((ev,ei)=>{
                             const c=evColors[ev.eventType]||"var(--purple)";
-                            return <div key={ei} style={{fontSize:9,padding:"1px 4px",borderRadius:3,background:`${c}15`,color:c,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:1}}>📅 {ev.title.slice(0,12)}</div>;
+                            return <div key={ei} style={{fontSize:9,padding:"1px 4px",borderRadius:3,background:`${c}15`,color:c,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:1}}>📅 {decodeHTML(ev.title||"").slice(0,12)}</div>;
                           })}
                           {items.length>2&&<div style={{fontSize:9,color:"var(--text3)"}}>+{items.length-2}</div>}
                         </div>
@@ -1753,7 +1754,7 @@ const EventsPage = () => {
                   </div>
                   {evSelDate && (grouped[evSelDate]||[]).map((ev,i)=>(
                     <div key={i} style={{padding:"12px 14px",marginBottom:8,background:"var(--bg)",border:"1px solid var(--border)",borderRadius:12}}>
-                      <div className="syne" style={{fontSize:13,fontWeight:700,marginBottom:4}}>{ev.title}</div>
+                      <div className="syne" style={{fontSize:13,fontWeight:700,marginBottom:4}}>{decodeHTML(ev.title||"")}</div>
                       <div style={{fontSize:11,color:"var(--text2)",marginBottom:6}}>{ev.platform} · {ev.eventType}</div>
                       <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
                         <span style={{fontSize:10,padding:"2px 7px",borderRadius:4,background:ev.price==="Free"?"rgba(0,255,136,.12)":"rgba(255,107,53,.12)",color:ev.price==="Free"?"var(--green)":"var(--orange)"}}>{ev.price||"Check site"}</span>
