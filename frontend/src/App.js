@@ -344,6 +344,7 @@ select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xml
   .btn-p,.btn-g{font-size:13px!important;padding:10px 16px!important}
   h1.syne{font-size:clamp(22px,6vw,38px)!important}
   .hack-grid{grid-template-columns:1fr!important}
+  .two-col-stack{grid-template-columns:1fr!important}
 }
 @media(max-width:480px){
   .rg-2-keep{grid-template-columns:1fr!important}
@@ -450,7 +451,6 @@ const HackCard = ({ h, onClick }) => (
             <div className="syne" style={{fontWeight:700,fontSize:14,lineHeight:1.3,marginBottom:3}}>{h.name}</div>
             <div style={{fontSize:11,color:"var(--text2)",display:"flex",alignItems:"center",gap:6}}>
               {h.organizer}
-              <span style={{fontSize:9,padding:"1px 6px",borderRadius:4,background:"var(--bg3)",color:"var(--text3)",fontFamily:"JetBrains Mono"}}>{h.sourcePlatform}</span>
             </div>
           </div>
         </div>
@@ -507,8 +507,7 @@ const Modal = ({ h, onClose }) => {
                     ? <span className="badge b-open">🟢 OPEN</span>
                     : <span className="badge" style={{background:"rgba(255,61,138,.15)",color:"var(--pink)",border:"1px solid rgba(255,61,138,.3)"}}>⛔ CLOSED</span>}
                   <span className={`badge ${h.mode==="Online"?"b-online":"b-offline"}`}>{h.mode}</span>
-                  <span className="badge" style={{background:"var(--card2)",color:"var(--text2)",border:"1px solid var(--border)"}}>📡 {h.sourcePlatform}</span>
-                  {h.level && <span className="badge" style={{background:"var(--card2)",color:"var(--text2)",border:"1px solid var(--border)"}}>{h.level}</span>}
+                  <span className="badge" style={{background:"var(--card2)",color:"var(--text2)",border:"1px solid var(--border)"}}>{h.level}</span>}
                 </div>
               </div>
             </div>
@@ -547,7 +546,7 @@ const Modal = ({ h, onClose }) => {
           {h.eligibility && <div style={{marginBottom:22,background:"var(--card2)",borderRadius:11,padding:"12px 15px",border:"1px solid var(--border)"}}><div style={{fontSize:11,color:"var(--text3)",marginBottom:5}}>✅ ELIGIBILITY</div><div style={{fontSize:14}}>{h.eligibility}</div></div>}
 
           <div style={{display:"flex",gap:11}}>
-            <button className="btn-p" style={{flex:1,padding:"13px 24px",fontSize:15,justifyContent:"center"}} onClick={()=>window.open(h.applyLink,"_blank")}>🚀 Apply Now — {h.sourcePlatform}</button>
+            <button className="btn-p" style={{flex:1,padding:"13px 24px",fontSize:15,justifyContent:"center"}} onClick={()=>window.open(h.applyLink,"_blank")}>🚀 Apply Now →</button>
             <button className="btn-g" style={{padding:"13px 17px"}} onClick={onClose}>← Back</button>
           </div>
         </div>
@@ -784,192 +783,218 @@ const HomePage = ({setPage}) => {
   const {data:featuredInterns,loading:iLoading} = useInternships({});
   const {data:featuredEvents,loading:evLoading} = useEvents({});
   const stats = useStats();
-  const ticker = featured.length ? [...featured,...featured].map(h=>`${hackLogo(h)||"⚡"} ${h.name} — ${h.prize||"TBA"} — Closes ${fmtDate(h.registrationDeadline)}`) : ["⚡ Hackathons loading... Check back soon!","🚀 New hackathons added every 6 hours","🤖 AI-powered discovery platform"];
+  const featuredClean = featured.filter(h=>(h.sourcePlatform||"").toLowerCase()!=="devpost");
+  const ticker = featuredClean.length ? [...featuredClean,...featuredClean].map(h=>`${hackLogo(h)||"⚡"} ${h.name} — ${h.prize||"TBA"} — Closes ${fmtDate(h.registrationDeadline)}`) : ["⚡ Hackathons loading...","🚀 New hackathons every 6 hours","🤖 AI-powered discovery platform"];
+
+  const TOOLS=[
+    {icon:"🧠",name:"DSA Explorer",id:"dsa",color:"#00d4ff",desc:"300+ problems · Blind75 · Mock Test"},
+    {icon:"🎯",name:"Aptitude Trainer",id:"aptitude",color:"#fb923c",desc:"500+ Qs · 26 companies · AI solver"},
+    {icon:"🏗️",name:"Resume Builder",id:"resumebuilder",color:"#f59e0b",desc:"6 templates · ATS score · PDF export"},
+    {icon:"📄",name:"AI Resume Analyzer",id:"resume",color:"#00ff88",desc:"Groq AI · JD match · Cover letter"},
+    {icon:"💻",name:"CS Core Prep",id:"cscore",color:"#06b6d4",desc:"10 subjects · Rapid revision"},
+    {icon:"🗺️",name:"Interview Roadmap",id:"roadmap",color:"#818cf8",desc:"30/60/90-day plans · 5 tracks"},
+    {icon:"📋",name:"JD Decoder",id:"jddecoder",color:"#f472b6",desc:"AI extracts must-haves & red flags"},
+    {icon:"💬",name:"Salary Coach",id:"salarycoach",color:"#fbbf24",desc:"Bangalore market · Phone scripts"},
+    {icon:"📊",name:"Readiness Score",id:"readiness",color:"#34d399",desc:"Instant weighted placement score"},
+    {icon:"🏆",name:"CP Tracker",id:"cp",color:"#facc15",desc:"Live contests · CF/LC profiles"},
+    {icon:"🏢",name:"Company Guide",id:"companyguide",color:"#e879f9",desc:"10 companies · ATS keywords"},
+    {icon:"🎤",name:"Soft Skills",id:"softskills",color:"#3b82f6",desc:"GD · HR · Email · Etiquette"},
+  ];
 
   return (
     <div style={{paddingTop:64}}>
-      {/* Live ticker */}
-      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"8px 0"}}>
+
+      {/* ── TICKER ── */}
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"7px 0",overflow:"hidden"}}>
         <div className="ticker-wrap"><div className="ticker-inner">{ticker.map((t,i)=><span key={i} className="mono" style={{fontSize:11,color:"var(--text3)",marginRight:56}}>🔴 LIVE &nbsp;{t} &nbsp;•</span>)}</div></div>
       </div>
 
       {/* ── HERO ── */}
-      <div className="grid-bg" style={{position:"relative",overflow:"hidden",padding:"clamp(56px,9vw,100px) 16px clamp(56px,9vw,100px)"}}>
-        <div style={{position:"absolute",width:500,height:500,borderRadius:"50%",background:"rgba(0,212,255,.06)",filter:"blur(80px)",top:-150,right:-80,pointerEvents:"none"}}/>
-        <div style={{position:"absolute",width:300,height:300,borderRadius:"50%",background:"rgba(0,255,136,.04)",filter:"blur(60px)",bottom:-80,left:-40,pointerEvents:"none"}}/>
-        <div style={{maxWidth:720,margin:"0 auto",position:"relative",zIndex:1,textAlign:"center",animation:"slide-in .6s ease"}}>
-          <div className="sl" style={{justifyContent:"center",marginBottom:20}}>India's #1 Placement & Hackathon Platform</div>
-          <h1 className="syne" style={{fontSize:"clamp(36px,6vw,72px)",fontWeight:800,lineHeight:1.05,marginBottom:20,letterSpacing:"-1px"}}>
-            Your Complete<br/><span className="gtext">Placement Toolkit</span><br/>in One Place
-          </h1>
-          <p style={{fontSize:"clamp(14px,2vw,17px)",color:"var(--text2)",lineHeight:1.75,marginBottom:36,maxWidth:560,margin:"0 auto 36px"}}>
-            <strong style={{color:"var(--cyan)"}}>{stats.totalOpen}+ live hackathons</strong> · 1000+ internships · 12 free tools — DSA, Resume, Aptitude, CS Core, Salary Coach &amp; more. All in one place, 100% free.
-          </p>
-          <div style={{display:"flex",gap:12,flexWrap:"wrap",marginBottom:48,justifyContent:"center"}}>
-            <button className="btn-p" style={{padding:"14px 32px",fontSize:16,borderRadius:12}} onClick={()=>setPage("hackathons")}>🔍 Browse Hackathons</button>
-            <button className="btn-g" style={{padding:"14px 28px",fontSize:16,borderRadius:12}} onClick={()=>setPage("tools")}>🛠️ Student Tools</button>
+      <div style={{position:"relative",overflow:"hidden",background:"var(--bg)",minHeight:"90vh",display:"flex",alignItems:"center"}}>
+        <div style={{position:"absolute",width:700,height:700,borderRadius:"50%",background:"rgba(0,212,255,.055)",filter:"blur(120px)",top:-200,right:-150,pointerEvents:"none"}}/>
+        <div style={{position:"absolute",width:500,height:500,borderRadius:"50%",background:"rgba(0,255,136,.04)",filter:"blur(90px)",bottom:-100,left:-100,pointerEvents:"none"}}/>
+        <div style={{position:"absolute",width:400,height:400,borderRadius:"50%",background:"rgba(124,77,255,.035)",filter:"blur(80px)",top:"35%",left:"38%",pointerEvents:"none"}}/>
+        <div className="grid-bg" style={{position:"absolute",inset:0,opacity:.35,pointerEvents:"none"}}/>
+        <div style={{maxWidth:1100,margin:"0 auto",padding:"clamp(60px,8vw,100px) 20px",width:"100%",position:"relative",zIndex:1}}>
+          <div style={{display:"flex",justifyContent:"center",marginBottom:32}}>
+            <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"7px 18px",borderRadius:40,border:"1px solid rgba(0,212,255,.28)",background:"rgba(0,212,255,.07)",fontSize:12,color:"var(--cyan)",fontWeight:700,letterSpacing:".07em"}}>
+              <span style={{width:7,height:7,borderRadius:"50%",background:"var(--cyan)",display:"inline-block",animation:"pulse 1.5s infinite"}}/>
+              INDIA'S #1 PLACEMENT &amp; HACKATHON PLATFORM
+            </div>
           </div>
-          {/* Inline trust badges */}
-          <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
-            {[["⚡","Live Hackathons"],["💼","Internships"],["🛠️","12 Free Tools"],["🆓","No Login"],["🇮🇳","India-Focused"]].map(([ic,lbl])=>(
-              <div key={lbl} style={{display:"flex",alignItems:"center",gap:5,padding:"5px 12px",borderRadius:20,background:"var(--card)",border:"1px solid var(--border)",fontSize:12,color:"var(--text2)"}}>
-                <span>{ic}</span><span>{lbl}</span>
+          <h1 className="syne" style={{textAlign:"center",fontSize:"clamp(36px,6.5vw,78px)",fontWeight:900,lineHeight:1.0,letterSpacing:"-2px",marginBottom:24}}>
+            Everything You Need<br/>
+            <span style={{background:"linear-gradient(135deg,#00d4ff 0%,#00ff88 55%,#7c4dff 100%)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>To Land Your Dream Job</span>
+          </h1>
+          <p style={{textAlign:"center",fontSize:"clamp(14px,1.8vw,18px)",color:"var(--text2)",lineHeight:1.85,marginBottom:44,maxWidth:560,margin:"0 auto 44px"}}>
+            Live hackathons · Internships · 12 free placement tools.<br/>
+            <strong style={{color:"var(--text)"}}>Zero login. 100% free. Built for Indian students.</strong>
+          </p>
+          <div style={{display:"flex",gap:14,flexWrap:"wrap",justifyContent:"center",marginBottom:64}}>
+            <button className="btn-p" style={{padding:"15px 36px",fontSize:16,borderRadius:14,fontWeight:800}} onClick={()=>setPage("hackathons")}>⚡ Browse Hackathons</button>
+            <button className="btn-g" style={{padding:"15px 30px",fontSize:16,borderRadius:14,fontWeight:700}} onClick={()=>setPage("tools")}>🛠️ Student Tools</button>
+            <button onClick={()=>setPage("internships")} style={{padding:"15px 28px",fontSize:16,borderRadius:14,fontWeight:700,border:"1px solid var(--border)",background:"var(--card)",color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",transition:"all .2s"}}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--purple)";e.currentTarget.style.color="var(--purple)";}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.color="var(--text2)";}}>💼 Internships</button>
+          </div>
+          <div style={{display:"flex",justifyContent:"center",gap:0,flexWrap:"wrap",borderRadius:20,border:"1px solid var(--border)",background:"var(--card)",overflow:"hidden",maxWidth:680,margin:"0 auto"}}>
+            {[
+              {val:`${stats.totalOpen||"200"}+`,label:"Live Hackathons",color:"var(--cyan)"},
+              {val:"1000+",label:"Internships",color:"var(--green)"},
+              {val:"12",label:"Free Tools",color:"var(--purple)"},
+              {val:"6h",label:"Refresh Rate",color:"var(--yellow)"},
+            ].map((s,i,arr)=>(
+              <div key={s.label} style={{flex:1,minWidth:120,textAlign:"center",padding:"22px 10px",borderRight:i<arr.length-1?"1px solid var(--border)":"none"}}>
+                <div className="syne" style={{fontSize:"clamp(20px,3vw,30px)",fontWeight:900,color:s.color}}>{s.val}</div>
+                <div style={{fontSize:11,color:"var(--text3)",marginTop:4}}>{s.label}</div>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* ── LATEST HACKATHONS ── */}
-      <div style={{padding:"clamp(40px,5vw,64px) 16px",maxWidth:1200,margin:"0 auto"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:28,flexWrap:"wrap",gap:12}}>
-          <div>
-            <div className="sl" style={{marginBottom:8}}>Latest This Week</div>
-            <h2 className="syne" style={{fontSize:"clamp(22px,3vw,30px)",fontWeight:800}}>🔥 Live Hackathons</h2>
-          </div>
-          <button className="btn-g" style={{padding:"9px 20px",fontSize:13,borderRadius:10}} onClick={()=>setPage("hackathons")}>View All {stats.totalOpen ? `(${stats.totalOpen})` : ""} →</button>
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:16}}>
-          {loading ? [1,2,3].map(i=><SkeletonCard key={i}/>) : featured.length ? [
-            ...featured.slice(0,6).map(h=><HackCard key={h._id} h={h} onClick={()=>setPage("hackathons")}/>),
-            <div key="browse-all" onClick={()=>setPage("hackathons")} style={{gridColumn:"1/-1",background:"linear-gradient(135deg,rgba(0,212,255,.05),rgba(0,212,255,.01))",border:"1px dashed var(--border2)",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",padding:"clamp(14px,3vw,22px) clamp(16px,3vw,32px)",gap:16,transition:"all .25s",flexWrap:"wrap"}}
-              onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--cyan)";e.currentTarget.style.background="linear-gradient(135deg,rgba(0,212,255,.08),rgba(0,212,255,.02))";}}
-              onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";e.currentTarget.style.background="linear-gradient(135deg,rgba(0,212,255,.05),rgba(0,212,255,.01))";}}>
-              <div>
-                <div className="syne" style={{fontSize:16,fontWeight:800,color:"var(--cyan)",marginBottom:4}}>Browse All Hackathons →</div>
-                <div style={{fontSize:12,color:"var(--text3)"}}>Filter by domain, city, mode · Updated every 6 hours</div>
-              </div>
-              <div style={{padding:"10px 24px",background:"var(--cyan)",color:"#000",borderRadius:10,fontWeight:700,fontSize:13,flexShrink:0}}>View All →</div>
+      {/* ── LIVE HACKATHONS HORIZONTAL STRIP ── */}
+      <div style={{background:"var(--bg2)",borderTop:"1px solid var(--border)",borderBottom:"1px solid var(--border)",padding:"clamp(36px,5vw,52px) 0"}}>
+        <div style={{maxWidth:1200,margin:"0 auto",padding:"0 20px"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:22,flexWrap:"wrap",gap:10}}>
+            <div>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--cyan)",letterSpacing:".12em",textTransform:"uppercase",marginBottom:6}}>Live Right Now</div>
+              <h2 className="syne" style={{fontSize:"clamp(20px,3vw,28px)",fontWeight:800}}>⚡ Open Hackathons</h2>
             </div>
-          ] : <div style={{gridColumn:"1/-1",textAlign:"center",padding:"60px 20px",color:"var(--text2)"}}>🔄 Loading hackathons...</div>}
+            <button onClick={()=>setPage("hackathons")} style={{padding:"10px 22px",borderRadius:10,border:"1px solid var(--cyan)",background:"rgba(0,212,255,.08)",color:"var(--cyan)",cursor:"pointer",fontWeight:700,fontSize:13,fontFamily:"'DM Sans',sans-serif",transition:"all .2s",whiteSpace:"nowrap"}}
+              onMouseEnter={e=>e.currentTarget.style.background="rgba(0,212,255,.16)"}
+              onMouseLeave={e=>e.currentTarget.style.background="rgba(0,212,255,.08)"}>
+              View All {stats.totalOpen?`(${stats.totalOpen})`:""} →
+            </button>
+          </div>
+          <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,WebkitOverflowScrolling:"touch",scrollbarWidth:"thin"}}>
+            {loading ? [1,2,3,4,5].map(i=><div key={i} className="skel" style={{minWidth:270,height:175,borderRadius:14,flexShrink:0}}/>) :
+             featuredClean.slice(0,9).map(h=>(
+              <div key={h._id} onClick={()=>setPage("hackathons")} className="hcard" style={{minWidth:270,maxWidth:290,flexShrink:0,padding:18,cursor:"pointer",display:"flex",flexDirection:"column",gap:10}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+                  <LogoBox name={h.name} organizer={h.organizer} platform={h.sourcePlatform} applyLink={h.applyLink} size={36} radius={9}/>
+                  <span className={`badge ${h.mode==="Online"?"b-online":"b-offline"}`} style={{fontSize:10}}>{h.mode==="Online"?"🌐 Online":"📍 "+h.city}</span>
+                </div>
+                <div className="syne" style={{fontWeight:700,fontSize:13,lineHeight:1.3}}>{h.name}</div>
+                <div style={{fontSize:11,color:"var(--text2)"}}>{h.organizer}</div>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:"auto"}}>
+                  <span style={{fontSize:12,fontWeight:700,color:"var(--green)"}}>{h.prize||"Prize TBA"}</span>
+                  <span style={{fontSize:11,color:dcColor(h.registrationDeadline)}}>⏳ {fmtDate(h.registrationDeadline)}</span>
+                </div>
+              </div>
+            ))}
+            {!loading&&<div onClick={()=>setPage("hackathons")} style={{minWidth:190,flexShrink:0,borderRadius:14,border:"1px dashed var(--border2)",background:"linear-gradient(135deg,rgba(0,212,255,.05),transparent)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",cursor:"pointer",padding:20,gap:10,transition:"all .2s"}}
+              onMouseEnter={e=>e.currentTarget.style.borderColor="var(--cyan)"} onMouseLeave={e=>e.currentTarget.style.borderColor="var(--border2)"}>
+              <div style={{fontSize:34}}>⚡</div>
+              <div className="syne" style={{fontSize:14,fontWeight:800,color:"var(--cyan)",textAlign:"center"}}>Browse All</div>
+              <div style={{fontSize:11,color:"var(--text3)",textAlign:"center"}}>Updated every 6h</div>
+            </div>}
+          </div>
         </div>
       </div>
 
-      {/* ── DIVIDER STRIP: Platform stats ── */}
-      <div style={{background:"linear-gradient(135deg,rgba(0,212,255,.06),rgba(0,255,136,.04))",borderTop:"1px solid var(--border)",borderBottom:"1px solid var(--border)",padding:"28px 16px"}}>
-        <div style={{maxWidth:1200,margin:"0 auto",display:"flex",gap:0,flexWrap:"wrap",justifyContent:"space-around",alignItems:"center"}}>
-          {[
-            {label:"Live Hackathons",value:`${stats.totalOpen||"200"}+`,color:"var(--cyan)"},
-            {label:"Live Internships",value:"1000+",color:"var(--green)"},
-            {label:"Free Student Tools",value:"12",color:"var(--purple)"},
-            {label:"Refreshed Every",value:"6h",color:"var(--yellow)"},
-          ].map(s=>(
-            <div key={s.label} style={{textAlign:"center",padding:"8px 24px"}}>
-              <div className="syne" style={{fontSize:"clamp(24px,4vw,36px)",fontWeight:900,color:s.color}}>{s.value}</div>
-              <div style={{fontSize:12,color:"var(--text3)",marginTop:2}}>{s.label}</div>
+      {/* ── 12 TOOLS BENTO GRID ── */}
+      <div style={{padding:"clamp(44px,6vw,72px) 20px",maxWidth:1200,margin:"0 auto"}}>
+        <div style={{textAlign:"center",marginBottom:44}}>
+          <div style={{fontSize:11,fontWeight:700,color:"var(--purple)",letterSpacing:".12em",textTransform:"uppercase",marginBottom:10}}>Free For Every Student</div>
+          <h2 className="syne" style={{fontSize:"clamp(24px,4vw,40px)",fontWeight:900,marginBottom:12}}>🛠️ 12 Placement Tools</h2>
+          <p style={{color:"var(--text2)",fontSize:14,maxWidth:460,margin:"0 auto"}}>DSA · Resume · Aptitude · CS Core · Salary Coach · and more. No login. No cost.</p>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(185px,1fr))",gap:12}}>
+          {TOOLS.map(t=>(
+            <div key={t.id} onClick={()=>setPage(t.id)}
+              style={{background:"var(--card)",border:`1px solid ${t.color}22`,borderRadius:16,padding:"20px 16px",cursor:"pointer",transition:"all .22s",display:"flex",flexDirection:"column",gap:9}}
+              onMouseEnter={e=>{e.currentTarget.style.borderColor=t.color;e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow=`0 14px 36px ${t.color}18`;e.currentTarget.style.background=`${t.color}09`;}}
+              onMouseLeave={e=>{e.currentTarget.style.borderColor=`${t.color}22`;e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";e.currentTarget.style.background="var(--card)";}}>
+              <div style={{fontSize:28}}>{t.icon}</div>
+              <div style={{fontSize:13,fontWeight:800,color:t.color,lineHeight:1.2}}>{t.name}</div>
+              <div style={{fontSize:11,color:"var(--text3)",lineHeight:1.45}}>{t.desc}</div>
             </div>
           ))}
         </div>
+        <div style={{textAlign:"center",marginTop:32}}>
+          <button className="btn-p" style={{padding:"13px 34px",fontSize:14,borderRadius:12,fontWeight:800}} onClick={()=>setPage("tools")}>Explore All 12 Tools →</button>
+        </div>
       </div>
 
-      {/* ── LATEST INTERNSHIPS ── */}
-      <div style={{background:"var(--bg2)",padding:"clamp(40px,5vw,64px) 16px",borderTop:"1px solid var(--border)"}}>
-        <div style={{maxWidth:1200,margin:"0 auto"}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:28,flexWrap:"wrap",gap:12}}>
-            <div>
-              <div className="sl" style={{marginBottom:8}}>Top Opportunities</div>
-              <h2 className="syne" style={{fontSize:"clamp(22px,3vw,30px)",fontWeight:800}}>💼 Latest Internships</h2>
+      {/* ── INTERNSHIPS + EVENTS 2-COL ── */}
+      <div style={{background:"var(--bg2)",borderTop:"1px solid var(--border)",padding:"clamp(40px,5vw,64px) 20px"}}>
+        <div style={{maxWidth:1200,margin:"0 auto",display:"grid",gridTemplateColumns:"1fr 1fr",gap:40}} className="two-col-stack">
+          {/* Internships */}
+          <div>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
+              <div>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--green)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:5}}>Opportunities</div>
+                <h2 className="syne" style={{fontSize:"clamp(18px,2.5vw,24px)",fontWeight:800}}>💼 Latest Internships</h2>
+              </div>
+              <button onClick={()=>setPage("internships")} style={{padding:"8px 16px",borderRadius:9,border:"1px solid var(--green)",background:"rgba(0,255,136,.07)",color:"var(--green)",cursor:"pointer",fontWeight:700,fontSize:12,fontFamily:"'DM Sans',sans-serif",whiteSpace:"nowrap"}}>View All →</button>
             </div>
-            <button className="btn-g" style={{padding:"9px 20px",fontSize:13,borderRadius:10}} onClick={()=>setPage("internships")}>View All →</button>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:14}}>
-            {iLoading ? [1,2,3].map(i=><div key={i} className="skel" style={{height:180,borderRadius:14}}/>) :
-             featuredInterns.slice(0,6).map(i=>(
-              <div key={i._id} className="hcard" style={{padding:18,cursor:"default",display:"flex",flexDirection:"column"}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
-                  <div style={{display:"flex",gap:10,alignItems:"center"}}>
-                    <div style={{width:40,height:40,borderRadius:10,background:"var(--bg3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,border:"1px solid var(--border)",flexShrink:0}}>💼</div>
-                    <div style={{minWidth:0}}>
-                      <div className="syne" style={{fontWeight:700,fontSize:13,lineHeight:1.3,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:150}}>{i.company}</div>
-                      <div style={{color:"var(--text2)",fontSize:11,marginTop:1,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:150}}>{i.role}</div>
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              {iLoading ? [1,2,3,4].map(i=><div key={i} className="skel" style={{height:72,borderRadius:12}}/>) :
+               featuredInterns.slice(0,5).map(intern=>(
+                <div key={intern._id} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:"14px 16px",display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,transition:"border-color .2s"}}
+                  onMouseEnter={e=>e.currentTarget.style.borderColor="var(--green)"} onMouseLeave={e=>e.currentTarget.style.borderColor="var(--border)"}>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontWeight:700,fontSize:13,marginBottom:3,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{intern.company}</div>
+                    <div style={{fontSize:12,color:"var(--text2)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{intern.role}</div>
+                    <div style={{display:"flex",gap:6,marginTop:5,flexWrap:"wrap"}}>
+                      {intern.stipend&&<span style={{fontSize:10,padding:"2px 7px",borderRadius:5,background:"rgba(0,255,136,.09)",color:"var(--green)",border:"1px solid rgba(0,255,136,.15)"}}>{intern.stipend}</span>}
+                      {intern.location&&<span style={{fontSize:10,padding:"2px 7px",borderRadius:5,background:"var(--bg3)",color:"var(--text3)"}}>{intern.location}</span>}
                     </div>
                   </div>
-                  <span className="badge b-open" style={{flexShrink:0,fontSize:9}}>OPEN</span>
+                  <button onClick={()=>window.open(intern.applyLink,"_blank")} style={{padding:"7px 14px",borderRadius:8,background:"var(--green)",color:"#000",border:"none",cursor:"pointer",fontWeight:700,fontSize:11,flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>Apply →</button>
                 </div>
-                <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:12}}>
-                  {i.stipend && <span style={{fontSize:11,padding:"2px 8px",borderRadius:6,background:"rgba(0,255,136,.08)",color:"var(--green)",border:"1px solid rgba(0,255,136,.15)"}}>{i.stipend}</span>}
-                  {i.location && <span style={{fontSize:11,padding:"2px 8px",borderRadius:6,background:"var(--bg3)",color:"var(--text2)",border:"1px solid var(--border)"}}>{i.location}</span>}
-                  {i.duration && <span style={{fontSize:11,padding:"2px 8px",borderRadius:6,background:"var(--bg3)",color:"var(--text2)",border:"1px solid var(--border)"}}>{i.duration}</span>}
-                </div>
-                <button className="btn-p" style={{width:"100%",justifyContent:"center",padding:"8px",fontSize:12,marginTop:"auto",borderRadius:8}} onClick={()=>window.open(i.applyLink,"_blank")}>Apply Now →</button>
-              </div>
-            ))}
-            {!iLoading && featuredInterns.length > 0 && (
-              <div onClick={()=>setPage("internships")} style={{gridColumn:"1/-1",background:"linear-gradient(135deg,rgba(0,255,136,.04),transparent)",border:"1px dashed var(--border2)",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",padding:"clamp(14px,3vw,20px) clamp(16px,3vw,28px)",gap:16,transition:"all .25s",flexWrap:"wrap"}}
-                onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--green)";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";}}>
-                <div>
-                  <div className="syne" style={{fontSize:16,fontWeight:800,color:"var(--green)",marginBottom:4}}>Browse All Internships →</div>
-                  <div style={{fontSize:12,color:"var(--text3)"}}>1000+ live internships · Filter by skill, city, and remote</div>
-                </div>
-                <div style={{padding:"10px 24px",background:"var(--green)",color:"#000",borderRadius:10,fontWeight:700,fontSize:13,flexShrink:0}}>View All →</div>
-              </div>
-            )}
+              ))}
+              {!iLoading&&<div onClick={()=>setPage("internships")} style={{padding:"14px 16px",borderRadius:12,border:"1px dashed var(--border2)",textAlign:"center",cursor:"pointer",color:"var(--green)",fontWeight:700,fontSize:13,transition:"all .2s"}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--green)";e.currentTarget.style.background="rgba(0,255,136,.04)";}}
+                onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";e.currentTarget.style.background="";}}>Browse all 1000+ internships →</div>}
+            </div>
           </div>
-        </div>
-      </div>
-
-      {/* ── UPCOMING EVENTS ── */}
-      <div style={{padding:"clamp(40px,5vw,64px) 16px",maxWidth:1200,margin:"0 auto"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:28,flexWrap:"wrap",gap:12}}>
+          {/* Events */}
           <div>
-            <div className="sl" style={{marginBottom:8}}>Tech Community</div>
-            <h2 className="syne" style={{fontSize:"clamp(22px,3vw,30px)",fontWeight:800}}>🗓️ Upcoming Events</h2>
-          </div>
-          <button className="btn-g" style={{padding:"9px 20px",fontSize:13,borderRadius:10}} onClick={()=>setPage("events")}>View All →</button>
-        </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:14}}>
-          {evLoading ? [1,2,3].map(i=><div key={i} className="skel" style={{height:160,borderRadius:14}}/>) :
-           featuredEvents.slice(0,6).map(e=><EventCard key={e._id} e={e} compact/>)}
-          {!evLoading && featuredEvents.length > 0 && (
-            <div onClick={()=>setPage("events")} style={{gridColumn:"1/-1",background:"linear-gradient(135deg,rgba(124,77,255,.04),transparent)",border:"1px dashed var(--border2)",borderRadius:14,display:"flex",alignItems:"center",justifyContent:"space-between",cursor:"pointer",padding:"clamp(14px,3vw,20px) clamp(16px,3vw,28px)",gap:16,transition:"all .25s",flexWrap:"wrap"}}
-              onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--purple)";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
               <div>
-                <div className="syne" style={{fontSize:16,fontWeight:800,color:"var(--purple)",marginBottom:4}}>Browse All Tech Events →</div>
-                <div style={{fontSize:12,color:"var(--text3)"}}>Conferences, meetups, workshops · Scraped from 9 platforms</div>
+                <div style={{fontSize:11,fontWeight:700,color:"var(--purple)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:5}}>Tech Community</div>
+                <h2 className="syne" style={{fontSize:"clamp(18px,2.5vw,24px)",fontWeight:800}}>🗓️ Upcoming Events</h2>
               </div>
-              <div style={{padding:"10px 24px",background:"var(--purple)",color:"#fff",borderRadius:10,fontWeight:700,fontSize:13,flexShrink:0}}>View All →</div>
+              <button onClick={()=>setPage("events")} style={{padding:"8px 16px",borderRadius:9,border:"1px solid var(--purple)",background:"rgba(124,77,255,.07)",color:"var(--purple)",cursor:"pointer",fontWeight:700,fontSize:12,fontFamily:"'DM Sans',sans-serif",whiteSpace:"nowrap"}}>View All →</button>
             </div>
-          )}
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              {evLoading ? [1,2,3,4].map(i=><div key={i} className="skel" style={{height:72,borderRadius:12}}/>) :
+               featuredEvents.slice(0,5).map(ev=>(
+                <div key={ev._id} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:"14px 16px",display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,transition:"border-color .2s"}}
+                  onMouseEnter={e=>e.currentTarget.style.borderColor="var(--purple)"} onMouseLeave={e=>e.currentTarget.style.borderColor="var(--border)"}>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontWeight:700,fontSize:13,marginBottom:3,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{ev.name||ev.title}</div>
+                    <div style={{fontSize:12,color:"var(--text2)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{ev.organizer||ev.platform}</div>
+                    <div style={{fontSize:11,color:"var(--text3)",marginTop:4}}>📅 {fmtDate(ev.startDate||ev.date)}</div>
+                  </div>
+                  {(ev.applyLink||ev.url||ev.registerLink)&&<button onClick={()=>window.open(ev.applyLink||ev.url||ev.registerLink,"_blank")} style={{padding:"7px 14px",borderRadius:8,background:"var(--purple)",color:"#fff",border:"none",cursor:"pointer",fontWeight:700,fontSize:11,flexShrink:0,fontFamily:"'DM Sans',sans-serif"}}>Join →</button>}
+                </div>
+              ))}
+              {!evLoading&&<div onClick={()=>setPage("events")} style={{padding:"14px 16px",borderRadius:12,border:"1px dashed var(--border2)",textAlign:"center",cursor:"pointer",color:"var(--purple)",fontWeight:700,fontSize:13,transition:"all .2s"}}
+                onMouseEnter={e=>{e.currentTarget.style.borderColor="var(--purple)";e.currentTarget.style.background="rgba(124,77,255,.04)";}}
+                onMouseLeave={e=>{e.currentTarget.style.borderColor="var(--border2)";e.currentTarget.style.background="";}}>Browse all upcoming events →</div>}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* ── STUDENT TOOLS ── */}
-      <div style={{background:"var(--bg2)",borderTop:"1px solid var(--border)",padding:"clamp(40px,5vw,64px) 16px"}}>
-        <div style={{maxWidth:1200,margin:"0 auto"}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:28,flexWrap:"wrap",gap:12}}>
-            <div>
-              <div className="sl" style={{marginBottom:8}}>Free For Students</div>
-              <h2 className="syne" style={{fontSize:"clamp(22px,3vw,30px)",fontWeight:800}}>🛠️ 12 Placement Tools</h2>
-              <p style={{color:"var(--text2)",fontSize:13,marginTop:6}}>DSA · Aptitude · Resume · CS Core · Salary Coach · Readiness Score. Zero login, 100% free.</p>
-            </div>
-            <button className="btn-p" style={{padding:"10px 22px",fontSize:13,borderRadius:10}} onClick={()=>setPage("tools")}>Explore All Tools →</button>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(170px,1fr))",gap:10}}>
-            {[
-              {icon:"🧠",name:"DSA Explorer",id:"dsa",color:"var(--cyan)"},
-              {icon:"💻",name:"CS Core",id:"cscore",color:"#06b6d4"},
-              {icon:"🎯",name:"Aptitude Trainer",id:"aptitude",color:"#fb923c"},
-              {icon:"🏗️",name:"Resume Builder",id:"resumebuilder",color:"var(--orange)"},
-              {icon:"📄",name:"AI Resume Analyzer",id:"resume",color:"var(--green)"},
-              {icon:"🗺️",name:"Interview Roadmap",id:"roadmap",color:"#06b6d4"},
-              {icon:"📋",name:"JD Decoder",id:"jddecoder",color:"var(--pink)"},
-              {icon:"💬",name:"Salary Coach",id:"salarycoach",color:"var(--yellow)"},
-              {icon:"🎯",name:"Readiness Score",id:"readiness",color:"var(--green)"},
-              {icon:"🏆",name:"CP Tracker",id:"cp",color:"var(--yellow)"},
-              {icon:"🏢",name:"Company Guide",id:"companyguide",color:"#e879f9"},
-              {icon:"🎯",name:"Soft Skills",id:"softskills",color:"#3b82f6"},
-            ].map(t=>(
-              <div key={t.id} onClick={()=>setPage(t.id)}
-                style={{background:"var(--card)",border:`1px solid ${t.color}18`,borderRadius:12,padding:"14px 12px",cursor:"pointer",transition:"all .2s",display:"flex",flexDirection:"column",alignItems:"center",textAlign:"center",gap:6}}
-                onMouseEnter={e=>{e.currentTarget.style.borderColor=t.color;e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 8px 24px ${t.color}18`;}}
-                onMouseLeave={e=>{e.currentTarget.style.borderColor=`${t.color}18`;e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
-                <div style={{fontSize:26}}>{t.icon}</div>
-                <div style={{fontSize:12,fontWeight:700,color:t.color,lineHeight:1.3}}>{t.name}</div>
-              </div>
-            ))}
+      {/* ── BOTTOM CTA ── */}
+      <div style={{padding:"clamp(44px,6vw,72px) 20px",background:"linear-gradient(135deg,rgba(0,212,255,.06) 0%,rgba(124,77,255,.06) 50%,rgba(0,255,136,.04) 100%)",borderTop:"1px solid var(--border)"}}>
+        <div style={{maxWidth:660,margin:"0 auto",textAlign:"center"}}>
+          <div style={{fontSize:40,marginBottom:16}}>🚀</div>
+          <h2 className="syne" style={{fontSize:"clamp(22px,4vw,36px)",fontWeight:900,marginBottom:14}}>Ready to crack placements?</h2>
+          <p style={{color:"var(--text2)",fontSize:15,lineHeight:1.8,marginBottom:36,maxWidth:500,margin:"0 auto 36px"}}>
+            Start with the Placement Readiness Score to see exactly where you stand — then use the right tools to close the gaps.
+          </p>
+          <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
+            <button className="btn-p" style={{padding:"14px 32px",fontSize:15,borderRadius:12,fontWeight:800}} onClick={()=>setPage("readiness")}>📊 Check Readiness Score</button>
+            <button className="btn-g" style={{padding:"14px 28px",fontSize:15,borderRadius:12,fontWeight:700}} onClick={()=>setPage("roadmap")}>🗺️ Get Your Roadmap</button>
           </div>
         </div>
       </div>
+
     </div>
   );
 };
@@ -1145,7 +1170,7 @@ const HackathonsPage = () => {
             ))}
             <div style={{background:"var(--bg3)",borderRadius:10,padding:12}}>
               <div style={{fontSize:9,color:"var(--text3)",marginBottom:5}}>RESULTS</div>
-              <div className="syne" style={{fontSize:22,fontWeight:800,color:"var(--cyan)"}}>{total}</div>
+              <div className="syne" style={{fontSize:22,fontWeight:800,color:"var(--cyan)"}}>{data.length}</div>
               <div style={{fontSize:11,color:"var(--text2)"}}>hackathons</div>
             </div>
           </div>
@@ -1183,10 +1208,11 @@ const HackathonsPage = () => {
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:15}}>
                 {paginated.map(h=><HackCard key={h._id} h={h} onClick={setModal}/>)}
               </div>
-              {/* Pagination */}
+              {/* Pagination — always render when there is more than 1 page */}
               {pages>1 && (
-                <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:7,marginTop:28,flexWrap:"wrap"}}>
-                  <button onClick={()=>{setPage(p=>Math.max(1,p-1));window.scrollTo(0,200);}} disabled={page===1} style={{padding:"7px 14px",borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",color:page===1?"var(--text3)":"var(--text2)",cursor:page===1?"not-allowed":"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif"}}>← Prev</button>
+                <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:8,marginTop:32,flexWrap:"wrap"}}>
+                  <button onClick={()=>{setPage(p=>Math.max(1,p-1));window.scrollTo(0,200);}} disabled={page===1}
+                    style={{padding:"9px 18px",borderRadius:10,border:`1px solid ${page===1?"var(--border)":"var(--cyan)"}`,background:page===1?"var(--card)":"rgba(0,212,255,.1)",color:page===1?"var(--text3)":"var(--cyan)",cursor:page===1?"not-allowed":"pointer",fontSize:13,fontWeight:700,fontFamily:"'DM Sans',sans-serif",opacity:page===1?0.4:1}}>← Prev</button>
                   {Array.from({length:Math.min(pages,7)},(_,i)=>{
                     let p;
                     if(pages<=7) p=i+1;
@@ -1194,15 +1220,18 @@ const HackathonsPage = () => {
                     else if(page>=pages-3) p=pages-6+i;
                     else p=page-3+i;
                     return(
-                      <button key={p} onClick={()=>{setPage(p);window.scrollTo(0,200);}} style={{width:36,height:36,borderRadius:8,border:"1px solid var(--border)",background:p===page?"var(--cyan)":"var(--card)",color:p===page?"#000":"var(--text2)",cursor:"pointer",fontWeight:600,fontSize:13,fontFamily:"'DM Sans',sans-serif"}}>{p}</button>
+                      <button key={p} onClick={()=>{setPage(p);window.scrollTo(0,200);}}
+                        style={{width:38,height:38,borderRadius:10,border:`1px solid ${p===page?"var(--cyan)":"var(--border)"}`,background:p===page?"var(--cyan)":"var(--card)",color:p===page?"#000":"var(--text2)",cursor:"pointer",fontWeight:700,fontSize:13,fontFamily:"'DM Sans',sans-serif"}}>{p}</button>
                     );
                   })}
-                  <button onClick={()=>{setPage(p=>Math.min(pages,p+1));window.scrollTo(0,200);}} disabled={page===pages} style={{padding:"7px 14px",borderRadius:8,border:"1px solid var(--border)",background:"var(--card)",color:page===pages?"var(--text3)":"var(--text2)",cursor:page===pages?"not-allowed":"pointer",fontSize:13,fontFamily:"'DM Sans',sans-serif"}}>Next →</button>
+                  <button onClick={()=>{setPage(p=>Math.min(pages,p+1));window.scrollTo(0,200);}} disabled={page===pages}
+                    style={{padding:"9px 18px",borderRadius:10,border:`1px solid ${page===pages?"var(--border)":"var(--cyan)"}`,background:page===pages?"var(--card)":"rgba(0,212,255,.1)",color:page===pages?"var(--text3)":"var(--cyan)",cursor:page===pages?"not-allowed":"pointer",fontSize:13,fontWeight:700,fontFamily:"'DM Sans',sans-serif",opacity:page===pages?0.4:1}}>Next →</button>
                 </div>
               )}
               {data.length>0 && (
-                <div style={{textAlign:"center",marginTop:12,fontSize:12,color:"var(--text3)"}}>
+                <div style={{textAlign:"center",marginTop:10,fontSize:12,color:"var(--text3)"}}>
                   Showing {(page-1)*HACK_PER_PAGE+1}–{Math.min(page*HACK_PER_PAGE,data.length)} of {data.length} hackathons
+                  {pages>1 && <span style={{marginLeft:8,color:"var(--cyan)"}}>· Page {page} of {pages}</span>}
                 </div>
               )}
             </>
