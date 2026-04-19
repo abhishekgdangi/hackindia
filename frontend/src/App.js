@@ -920,7 +920,7 @@ const HomePage = ({setPage}) => {
 
       {/* ── INTERNSHIPS + EVENTS 2-COL ── */}
       <div style={{background:"var(--bg2)",borderTop:"1px solid var(--border)",padding:"clamp(40px,5vw,64px) 20px"}}>
-        <div style={{maxWidth:1200,margin:"0 auto",display:"grid",gridTemplateColumns:"1fr 1fr",gap:40}} className="two-col-stack">
+        <div style={{maxWidth:1200,margin:"0 auto",display:"grid",gridTemplateColumns:"1fr 1fr",gap:40,alignItems:"start"}} className="two-col-stack">
           {/* Internships */}
           <div>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
@@ -933,7 +933,7 @@ const HomePage = ({setPage}) => {
             <div style={{display:"flex",flexDirection:"column",gap:10}}>
               {iLoading ? [1,2,3,4].map(i=><div key={i} className="skel" style={{height:72,borderRadius:12}}/>) :
                featuredInterns.slice(0,5).map(intern=>(
-                <div key={intern._id} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:"14px 16px",display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,transition:"border-color .2s"}}
+                <div key={intern._id} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:"14px 16px",display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,transition:"border-color .2s",minHeight:72}}
                   onMouseEnter={e=>e.currentTarget.style.borderColor="var(--green)"} onMouseLeave={e=>e.currentTarget.style.borderColor="var(--border)"}>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontWeight:700,fontSize:13,marginBottom:3,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{intern.company}</div>
@@ -963,7 +963,7 @@ const HomePage = ({setPage}) => {
             <div style={{display:"flex",flexDirection:"column",gap:10}}>
               {evLoading ? [1,2,3,4].map(i=><div key={i} className="skel" style={{height:72,borderRadius:12}}/>) :
                featuredEvents.slice(0,5).map(ev=>(
-                <div key={ev._id} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:"14px 16px",display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,transition:"border-color .2s"}}
+                <div key={ev._id} style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:"14px 16px",display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,transition:"border-color .2s",minHeight:72}}
                   onMouseEnter={e=>e.currentTarget.style.borderColor="var(--purple)"} onMouseLeave={e=>e.currentTarget.style.borderColor="var(--border)"}>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontWeight:700,fontSize:13,marginBottom:3,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{decodeHTML(ev.name||ev.title||"")}</div>
