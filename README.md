@@ -347,6 +347,6 @@ Built by a CSE (Data Science) student at **Dayananda Sagar College of Engineerin
 
 **⚡ HackIndia — Built for Indian Students, by an Indian Student**
 
-[![GitHub stars](https://img.shields.io/github/stars/abhishekgdangi/hackindia?style=social)](https://github.com/YOUR_USERNAME/hackindia)
+[![GitHub stars](https://img.shields.io/github/stars/abhishekgdangi/hackindia?style=social)](https://github.com/abhishekgdangi/hackindia)
 
 </div>
