@@ -32,6 +32,113 @@
 
 ---
 
+## ✨ Why HackIndia?
+
+### 🎓 Built for Students, by a Student
+
+Most placement platforms are either paywalled, cluttered with ads, or built for the US market. HackIndia is different — it's 100% free, no login required, India-focused, and built by someone who's going through the same placement grind.
+
+---
+
+### 💡 How HackIndia Helps You
+
+<table>
+<tr>
+<td width="50%">
+
+#### 🔍 Discover Opportunities
+Stop manually checking 10 different sites. HackIndia aggregates live hackathons, internships, and tech events from across the internet — filtered for India, updated every 6 hours — all in one place.
+
+</td>
+<td width="50%">
+
+#### 🛠️ Prepare Smarter
+From DSA practice to resume building to aptitude training — every tool you need for campus placements is right here. No switching tabs, no subscriptions, no logins.
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+#### 🤖 AI When You Need It
+Groq-powered LLaMA AI helps decode job descriptions, analyze your resume, generate bullet points, answer DSA questions, and coach you through salary negotiations — all for free.
+
+</td>
+<td width="50%">
+
+#### 📊 Track Your Progress
+Every tool saves your progress locally in your browser. Your DSA checkmarks, aptitude scores, roadmap tasks — all persisted automatically, no account needed.
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+#### 🇮🇳 India-First Approach
+Hackathons filtered for Indian cities and online events. Aptitude sets from TCS, Infosys, Wipro, Amazon India. Salary data for Bangalore market. Company guides for Indian tech companies.
+
+</td>
+<td width="50%">
+
+#### 🔒 Privacy by Design
+Zero data collection. Zero cookies. Zero tracking. Everything runs locally in your browser — your resume, notes, and progress never leave your device.
+
+</td>
+</tr>
+</table>
+
+---
+
+### 👥 Who is HackIndia for?
+
+| Student Type | How HackIndia Helps |
+|-------------|---------------------|
+| 🎓 **Final Year Students** | Resume Builder + AI Analyzer + Company Guide + Readiness Score to crack campus placements |
+| 💻 **DSA Grinders** | DSA Explorer with 300+ problems, patterns, Blind75, mock tests and AI explainer |
+| 🏆 **Hackathon Enthusiasts** | 200+ live hackathons filtered for India, deadline calendar, HackBot for team ideas |
+| 📈 **Aptitude Preppers** | 500+ questions from 26 real company sets, mock tests, AI solver, wrong question bank |
+| 🌱 **Beginners** | Visual Skill Roadmap (Frontend/Backend/DSA/Java) with curated learning resources per node |
+| 💼 **Internship Hunters** | 1000+ live internships with direct apply links, filter by city, skill, stipend |
+| 💰 **Offer Negotiators** | Salary Coach with Bangalore market data and word-for-word negotiation scripts |
+| 🧭 **Career Switchers** | Interview Roadmap with 30/60/90-day plans for SDE, Frontend, Data, DevOps tracks |
+
+---
+
+### 🆚 HackIndia vs Other Platforms
+
+| Feature | HackIndia | LinkedIn | Unstop | LeetCode | InterviewBit |
+|---------|-----------|----------|--------|----------|--------------|
+| 🆓 100% Free | ✅ | ⚠️ Partial | ⚠️ Partial | ⚠️ Partial | ⚠️ Partial |
+| 🔑 No Login | ✅ | ❌ | ❌ | ❌ | ❌ |
+| ⚡ Live Hackathons | ✅ | ❌ | ✅ | ❌ | ❌ |
+| 💼 Internships | ✅ | ✅ | ✅ | ❌ | ❌ |
+| 🧠 DSA Practice | ✅ | ❌ | ❌ | ✅ | ✅ |
+| 🏗️ Resume Builder | ✅ | ❌ | ❌ | ❌ | ❌ |
+| 📄 AI Resume Analysis | ✅ | ❌ | ❌ | ❌ | ❌ |
+| 🎯 Aptitude Trainer | ✅ | ❌ | ⚠️ Partial | ❌ | ✅ |
+| 🧭 Visual Roadmap | ✅ | ❌ | ❌ | ❌ | ❌ |
+| 🇮🇳 India-Focused | ✅ | ⚠️ Partial | ✅ | ❌ | ✅ |
+| 🤖 AI-Powered Tools | ✅ | ⚠️ Partial | ❌ | ❌ | ❌ |
+| 📊 Progress Tracking | ✅ | ❌ | ❌ | ✅ | ✅ |
+
+---
+
+### 🏆 What Makes It Special
+
+```
+✅  13 placement tools in one platform — no switching between sites
+✅  AI-powered resume analysis, JD decoding, salary coaching
+✅  Visual skill roadmaps for Frontend, Backend, DevOps, DSA, Java, Full Stack
+✅  Live hackathon + internship aggregation updated every 6 hours
+✅  Aptitude sets from real Indian company placement papers
+✅  No login, no data collection, no ads — ever
+✅  Progress saved locally — works even offline for tools
+✅  Mobile responsive — use on phone during college breaks
+✅  Built with students in mind — clean UI, no distractions
+```
+
+---
+
 ## 🚀 Live Features
 
 | Feature | Description |
