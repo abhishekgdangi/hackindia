@@ -675,6 +675,7 @@ const TOOLS_MENU = [
   { id:"jddecoder",   icon:"📋", label:"JD Decoder",            desc:"Must-haves · Red flags · Culture signals · AI" },
   { id:"salarycoach", icon:"💬", label:"Salary Coach",          desc:"Phone script · Email · Bangalore market rates" },
   { id:"readiness",   icon:"🎯", label:"Readiness Score",       desc:"DSA + Resume + Aptitude + CS Core — overall %" },
+  { id:"skillmap",    icon:"🧭", label:"Skill Roadmap",          desc:"Visual node roadmap — Frontend · Backend · DevOps · DSA" },
 ];
 const Navbar = ({page,setPage,dark,setDark}) => {
   const [toolsOpen, setToolsOpen] = useState(false);
@@ -800,6 +801,7 @@ const HomePage = ({setPage}) => {
     {icon:"🏆",name:"CP Tracker",id:"cp",color:"#facc15",desc:"Live contests · CF/LC profiles"},
     {icon:"🏢",name:"Company Guide",id:"companyguide",color:"#e879f9",desc:"10 companies · ATS keywords"},
     {icon:"🎤",name:"Soft Skills",id:"softskills",color:"#3b82f6",desc:"GD · HR · Email · Etiquette"},
+    {icon:"🧭",name:"Skill Roadmap",id:"skillmap",color:"#818cf8",desc:"Visual node roadmap · 6 tracks"},
   ];
 
   return (
@@ -1947,7 +1949,7 @@ const Footer = ({setPage}) => (
         {/* Tools */}
         <div>
           <div style={{fontSize:10,fontWeight:700,color:"var(--text3)",letterSpacing:".1em",textTransform:"uppercase",marginBottom:10}}>Tools</div>
-          {[["dsa","🧠 DSA Explorer"],["aptitude","🎯 Aptitude Trainer"],["cscore","💻 CS Core"],["resumebuilder","🏗️ Resume Builder"],["resume","📄 AI Resume Analyzer"],["roadmap","🗺️ Interview Roadmap"],["jddecoder","📋 JD Decoder"],["salarycoach","💬 Salary Coach"],["readiness","🎯 Readiness Score"]].map(([id,lbl])=>(
+          {[["dsa","🧠 DSA Explorer"],["aptitude","🎯 Aptitude Trainer"],["cscore","💻 CS Core"],["resumebuilder","🏗️ Resume Builder"],["resume","📄 AI Resume Analyzer"],["roadmap","🗺️ Interview Roadmap"],["jddecoder","📋 JD Decoder"],["salarycoach","💬 Salary Coach"],["readiness","🎯 Readiness Score"],["skillmap","🧭 Skill Roadmap"]].map(([id,lbl])=>(
             <div key={id} style={{color:"var(--text2)",fontSize:12,marginBottom:6,cursor:"pointer"}} onClick={()=>setPage(id)}>{lbl}</div>
           ))}
         </div>
@@ -11454,6 +11456,18 @@ const STUDENT_TOOLS = [
     color: "var(--green)",
     gradient: "linear-gradient(135deg,rgba(0,255,136,.15),rgba(0,255,136,.03))",
   },
+  {
+    id: "skillmap",
+    icon: "🧭",
+    title: "Skill Roadmap",
+    desc: "Visual node-based roadmaps for Frontend, Backend, Full Stack, DevOps, DSA & Java — inspired by roadmap.sh, tailored for Indian placement. Click nodes to mark progress.",
+    badge: "Visual · 6 Tracks · Node Graph",
+    badgeColor: "#818cf8",
+    tags: ["Frontend","Backend","Full Stack","DevOps","DSA","Java","Visual Roadmap"],
+    stats: [{ label:"Tracks", value:"6" }, { label:"Nodes", value:"100+" }, { label:"Progress", value:"Local" }],
+    color: "#818cf8",
+    gradient: "linear-gradient(135deg,rgba(129,140,248,.15),rgba(129,140,248,.03))",
+  },
 ];
 
 
@@ -12603,6 +12617,432 @@ const ResumeAnalyzerPage = ({ setPage }) => {
 /* ────────────────────────────────────────────────
    APP ROOT
 ──────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════
+   SKILL ROADMAP — Visual node-based roadmap (roadmap.sh style)
+══════════════════════════════════════════════════════════════ */
+const SM_TRACKS = {
+  frontend: {
+    label:"Frontend Developer", icon:"🖥️", color:"#f59e0b",
+    desc:"HTML to React — the complete path to become a frontend developer",
+    sections:[
+      { title:"Internet Basics", color:"#f59e0b", nodes:[
+        {id:"how-internet",label:"How does the Internet work?",res:"https://cs.fyi/guide/how-does-internet-work"},
+        {id:"http",label:"What is HTTP?",res:"https://cs.fyi/guide/http-in-depth"},
+        {id:"browsers",label:"How Browsers Work",res:"https://web.dev/articles/howbrowserswork"},
+        {id:"dns",label:"DNS & How it Works",res:"https://howdns.works/"},
+        {id:"domain",label:"Domain Names",res:"https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Web_mechanics/What_is_a_domain_name"},
+      ]},
+      { title:"HTML", color:"#e25629", nodes:[
+        {id:"html-basics",label:"HTML Basics",res:"https://www.w3schools.com/html/"},
+        {id:"semantic-html",label:"Semantic HTML",res:"https://www.freecodecamp.org/news/semantic-html5-elements/"},
+        {id:"forms",label:"Forms & Validations",res:"https://developer.mozilla.org/en-US/docs/Learn/Forms"},
+        {id:"accessibility",label:"Accessibility (a11y)",res:"https://web.dev/accessibility/"},
+        {id:"seo-basics",label:"SEO Basics",res:"https://developers.google.com/search/docs/beginner/seo-starter-guide"},
+      ]},
+      { title:"CSS", color:"#2965f1", nodes:[
+        {id:"css-basics",label:"CSS Basics",res:"https://www.w3schools.com/css/"},
+        {id:"flexbox",label:"Flexbox",res:"https://flexboxfroggy.com/"},
+        {id:"grid",label:"CSS Grid",res:"https://cssgridgarden.com/"},
+        {id:"responsive",label:"Responsive Design",res:"https://web.dev/learn/design/"},
+        {id:"animations",label:"Animations & Transitions",res:"https://developer.mozilla.org/en-US/docs/Web/CSS/animation"},
+        {id:"tailwind",label:"Tailwind CSS",res:"https://tailwindcss.com/docs"},
+      ]},
+      { title:"JavaScript", color:"#f7df1e", nodes:[
+        {id:"js-basics",label:"JS Syntax & Basics",res:"https://javascript.info/"},
+        {id:"dom",label:"DOM Manipulation",res:"https://javascript.info/document"},
+        {id:"fetch-api",label:"Fetch API / AJAX",res:"https://javascript.info/fetch"},
+        {id:"es6",label:"ES6+ Features",res:"https://es6.io/"},
+        {id:"js-async",label:"Async JS / Promises",res:"https://javascript.info/async"},
+        {id:"typescript",label:"TypeScript Basics",res:"https://www.typescriptlang.org/docs/"},
+      ]},
+      { title:"React", color:"#61dafb", nodes:[
+        {id:"react-basics",label:"React Basics",res:"https://react.dev/learn"},
+        {id:"hooks",label:"Hooks (useState, useEffect)",res:"https://react.dev/reference/react"},
+        {id:"context",label:"Context API",res:"https://react.dev/reference/react/createContext"},
+        {id:"react-router",label:"React Router",res:"https://reactrouter.com/en/main"},
+        {id:"state-mgmt",label:"State Management (Redux/Zustand)",res:"https://redux.js.org/tutorials/essentials/part-1-overview-concepts"},
+        {id:"nextjs",label:"Next.js",res:"https://nextjs.org/docs"},
+      ]},
+      { title:"Build Tools & Deployment", color:"#646cff", nodes:[
+        {id:"git",label:"Git & GitHub",res:"https://roadmap.sh/git-github"},
+        {id:"npm",label:"npm / Package Managers",res:"https://docs.npmjs.com/"},
+        {id:"vite",label:"Vite / Webpack",res:"https://vitejs.dev/guide/"},
+        {id:"testing",label:"Testing (Jest / Vitest)",res:"https://jestjs.io/docs/getting-started"},
+        {id:"vercel",label:"Deploying (Vercel / Netlify)",res:"https://vercel.com/docs"},
+      ]},
+    ]
+  },
+  backend: {
+    label:"Backend Developer", icon:"⚙️", color:"#00d4ff",
+    desc:"Databases, APIs, auth — the complete backend engineering path",
+    sections:[
+      { title:"Internet & OS Basics", color:"#00d4ff", nodes:[
+        {id:"be-internet",label:"How Internet Works",res:"https://cs.fyi/guide/how-does-internet-work"},
+        {id:"os-basics",label:"OS & Terminal Basics",res:"https://linuxjourney.com/"},
+        {id:"be-http",label:"HTTP & HTTPS",res:"https://cs.fyi/guide/http-in-depth"},
+        {id:"ssh",label:"SSH Basics",res:"https://www.digitalocean.com/community/tutorials/ssh-essentials-working-with-ssh-servers-clients-and-keys"},
+      ]},
+      { title:"Language — Java / Python / Node", color:"#f59e0b", nodes:[
+        {id:"java-oop",label:"Java OOP & Collections",res:"https://roadmap.sh/java"},
+        {id:"java-spring",label:"Spring Boot",res:"https://spring.io/projects/spring-boot"},
+        {id:"python-be",label:"Python Basics",res:"https://roadmap.sh/python"},
+        {id:"nodejs",label:"Node.js & Express",res:"https://roadmap.sh/nodejs"},
+      ]},
+      { title:"Databases", color:"#00ff88", nodes:[
+        {id:"sql",label:"Relational DB (MySQL / PostgreSQL)",res:"https://roadmap.sh/sql"},
+        {id:"mongo",label:"MongoDB (NoSQL)",res:"https://roadmap.sh/mongodb"},
+        {id:"redis-cache",label:"Redis & Caching",res:"https://roadmap.sh/redis"},
+        {id:"db-design",label:"DB Design & Normalization",res:"https://www.geeksforgeeks.org/introduction-of-database-normalization/"},
+        {id:"acid",label:"ACID & Transactions",res:"https://www.geeksforgeeks.org/acid-properties-in-dbms/"},
+      ]},
+      { title:"APIs", color:"#818cf8", nodes:[
+        {id:"rest",label:"REST API Design",res:"https://roadmap.sh/api-design"},
+        {id:"graphql",label:"GraphQL Basics",res:"https://graphql.org/learn/"},
+        {id:"auth",label:"Auth — JWT / OAuth / Sessions",res:"https://roadmap.sh/guides/session-based-authentication"},
+        {id:"rate-limit",label:"Rate Limiting & Security",res:"https://roadmap.sh/api-security-best-practices"},
+      ]},
+      { title:"System Design & DevOps Basics", color:"#f472b6", nodes:[
+        {id:"be-docker",label:"Docker Basics",res:"https://docs.docker.com/get-started/"},
+        {id:"nginx",label:"Web Servers (Nginx)",res:"https://nginx.org/en/docs/beginners_guide.html"},
+        {id:"scalability",label:"Scalability Concepts",res:"https://roadmap.sh/system-design"},
+        {id:"message-queue",label:"Message Queues (Kafka/RabbitMQ)",res:"https://www.cloudamqp.com/blog/part1-rabbitmq-for-beginners-what-is-rabbitmq.html"},
+        {id:"monitoring",label:"Monitoring & Logging",res:"https://roadmap.sh/backend-performance-best-practices"},
+      ]},
+    ]
+  },
+  fullstack: {
+    label:"Full Stack Developer", icon:"🔰", color:"#00ff88",
+    desc:"Frontend + Backend + Deployment — become a complete developer",
+    sections:[
+      { title:"Foundation", color:"#00ff88", nodes:[
+        {id:"fs-html",label:"HTML & CSS",res:"https://www.w3schools.com/"},
+        {id:"fs-js",label:"JavaScript (ES6+)",res:"https://javascript.info/"},
+        {id:"fs-git",label:"Git & Version Control",res:"https://roadmap.sh/git-github"},
+        {id:"fs-terminal",label:"Terminal / CLI Basics",res:"https://linuxjourney.com/"},
+      ]},
+      { title:"Frontend", color:"#f59e0b", nodes:[
+        {id:"fs-react",label:"React.js",res:"https://react.dev/learn"},
+        {id:"fs-ts",label:"TypeScript",res:"https://www.typescriptlang.org/docs/"},
+        {id:"fs-tailwind",label:"Tailwind CSS",res:"https://tailwindcss.com/docs"},
+        {id:"fs-nextjs",label:"Next.js (SSR / SSG)",res:"https://nextjs.org/docs"},
+        {id:"fs-state",label:"State Management",res:"https://redux.js.org/"},
+      ]},
+      { title:"Backend", color:"#00d4ff", nodes:[
+        {id:"fs-node",label:"Node.js & Express",res:"https://roadmap.sh/nodejs"},
+        {id:"fs-rest",label:"REST API Design",res:"https://roadmap.sh/api-design"},
+        {id:"fs-auth",label:"Authentication & JWT",res:"https://jwt.io/introduction"},
+        {id:"fs-sql",label:"SQL Databases",res:"https://roadmap.sh/sql"},
+        {id:"fs-mongo",label:"MongoDB",res:"https://roadmap.sh/mongodb"},
+      ]},
+      { title:"DevOps & Deployment", color:"#818cf8", nodes:[
+        {id:"fs-docker",label:"Docker",res:"https://docs.docker.com/get-started/"},
+        {id:"fs-ci",label:"CI/CD (GitHub Actions)",res:"https://docs.github.com/en/actions"},
+        {id:"fs-cloud",label:"Cloud (AWS/GCP/Azure)",res:"https://roadmap.sh/aws"},
+        {id:"fs-vercel",label:"Vercel / Render / Railway",res:"https://vercel.com/docs"},
+      ]},
+      { title:"Advanced Topics", color:"#f472b6", nodes:[
+        {id:"fs-sysdesign",label:"System Design Basics",res:"https://roadmap.sh/system-design"},
+        {id:"fs-perf",label:"Web Performance",res:"https://web.dev/performance/"},
+        {id:"fs-testing",label:"Testing (Jest + Cypress)",res:"https://jestjs.io/"},
+        {id:"fs-websocket",label:"WebSockets & Real-time",res:"https://socket.io/docs/v4/"},
+      ]},
+    ]
+  },
+  devops: {
+    label:"DevOps Engineer", icon:"🛠️", color:"#34d399",
+    desc:"Linux to Kubernetes — the complete DevOps and cloud engineering path",
+    sections:[
+      { title:"OS & Linux", color:"#34d399", nodes:[
+        {id:"linux",label:"Linux Fundamentals",res:"https://linuxjourney.com/"},
+        {id:"bash",label:"Bash Scripting",res:"https://roadmap.sh/shell-bash"},
+        {id:"networking-do",label:"Networking Basics (TCP/IP, DNS)",res:"https://roadmap.sh/guides/"},
+        {id:"ssh-do",label:"SSH & Remote Access",res:"https://www.digitalocean.com/community/tutorials/ssh-essentials-working-with-ssh-servers-clients-and-keys"},
+      ]},
+      { title:"Version Control", color:"#f59e0b", nodes:[
+        {id:"git-do",label:"Git & GitHub",res:"https://roadmap.sh/git-github"},
+        {id:"branching",label:"Branching Strategies",res:"https://www.atlassian.com/git/tutorials/comparing-workflows"},
+      ]},
+      { title:"Containers & Orchestration", color:"#00d4ff", nodes:[
+        {id:"docker-do",label:"Docker",res:"https://docs.docker.com/get-started/"},
+        {id:"docker-compose",label:"Docker Compose",res:"https://docs.docker.com/compose/"},
+        {id:"k8s",label:"Kubernetes (K8s)",res:"https://roadmap.sh/kubernetes"},
+        {id:"helm",label:"Helm Charts",res:"https://helm.sh/docs/"},
+      ]},
+      { title:"CI/CD", color:"#818cf8", nodes:[
+        {id:"github-actions",label:"GitHub Actions",res:"https://docs.github.com/en/actions"},
+        {id:"jenkins",label:"Jenkins Basics",res:"https://www.jenkins.io/doc/"},
+        {id:"argocd",label:"ArgoCD / GitOps",res:"https://argo-cd.readthedocs.io/"},
+      ]},
+      { title:"Cloud Providers", color:"#f59e0b", nodes:[
+        {id:"aws-do",label:"AWS Core (EC2, S3, IAM, VPC)",res:"https://roadmap.sh/aws"},
+        {id:"gcp",label:"GCP Fundamentals",res:"https://cloud.google.com/docs"},
+        {id:"terraform",label:"Terraform (IaC)",res:"https://roadmap.sh/terraform"},
+      ]},
+      { title:"Monitoring & Security", color:"#ff3d8a", nodes:[
+        {id:"prometheus",label:"Prometheus & Grafana",res:"https://prometheus.io/docs/"},
+        {id:"elk",label:"ELK Stack (Logging)",res:"https://www.elastic.co/what-is/elk-stack"},
+        {id:"vault",label:"Secrets Management (Vault)",res:"https://developer.hashicorp.com/vault/docs"},
+        {id:"security-do",label:"DevSecOps Basics",res:"https://roadmap.sh/devsecops"},
+      ]},
+    ]
+  },
+  dsa: {
+    label:"DSA & Algorithms", icon:"🧠", color:"#f472b6",
+    desc:"Arrays to Graphs — master data structures and algorithms for interviews",
+    sections:[
+      { title:"Language Foundation", color:"#f472b6", nodes:[
+        {id:"java-dsa",label:"Java / C++ Basics for DSA",res:"https://roadmap.sh/java"},
+        {id:"complexity",label:"Time & Space Complexity (Big O)",res:"https://www.geeksforgeeks.org/understanding-time-complexity-simple-examples/"},
+        {id:"recursion",label:"Recursion & Backtracking",res:"https://leetcode.com/tag/backtracking/"},
+      ]},
+      { title:"Linear Data Structures", color:"#00d4ff", nodes:[
+        {id:"arrays",label:"Arrays & Strings",res:"https://leetcode.com/tag/array/"},
+        {id:"linked-list",label:"Linked Lists",res:"https://leetcode.com/tag/linked-list/"},
+        {id:"stack-queue",label:"Stack & Queue",res:"https://leetcode.com/tag/stack/"},
+        {id:"hashing",label:"Hashing & HashMaps",res:"https://leetcode.com/tag/hash-table/"},
+      ]},
+      { title:"Non-Linear Structures", color:"#00ff88", nodes:[
+        {id:"trees",label:"Binary Trees & BST",res:"https://leetcode.com/tag/tree/"},
+        {id:"heaps",label:"Heaps & Priority Queue",res:"https://leetcode.com/tag/heap-priority-queue/"},
+        {id:"graphs",label:"Graphs (BFS / DFS)",res:"https://leetcode.com/tag/graph/"},
+        {id:"trie",label:"Trie",res:"https://leetcode.com/tag/trie/"},
+      ]},
+      { title:"Algorithms", color:"#f59e0b", nodes:[
+        {id:"sorting",label:"Sorting Algorithms",res:"https://www.geeksforgeeks.org/sorting-algorithms/"},
+        {id:"binary-search",label:"Binary Search",res:"https://leetcode.com/tag/binary-search/"},
+        {id:"two-pointer",label:"Two Pointers & Sliding Window",res:"https://leetcode.com/tag/sliding-window/"},
+        {id:"dp",label:"Dynamic Programming",res:"https://leetcode.com/tag/dynamic-programming/"},
+        {id:"greedy",label:"Greedy Algorithms",res:"https://leetcode.com/tag/greedy/"},
+      ]},
+      { title:"Advanced", color:"#818cf8", nodes:[
+        {id:"segment-tree",label:"Segment Trees & BIT",res:"https://cp-algorithms.com/data_structures/segment_tree.html"},
+        {id:"disjoint-set",label:"Disjoint Set (Union-Find)",res:"https://leetcode.com/tag/union-find/"},
+        {id:"topological",label:"Topological Sort",res:"https://www.geeksforgeeks.org/topological-sorting/"},
+        {id:"bit-manip",label:"Bit Manipulation",res:"https://leetcode.com/tag/bit-manipulation/"},
+      ]},
+      { title:"Interview Practice", color:"#34d399", nodes:[
+        {id:"blind75",label:"Blind 75 Problems",res:"https://leetcode.com/discuss/general-discussion/460599/blind-75-leetcode-questions"},
+        {id:"lc150",label:"LeetCode Top 150",res:"https://leetcode.com/studyplan/top-interview-150/"},
+        {id:"mock",label:"Mock Interviews (Pramp)",res:"https://www.pramp.com/"},
+      ]},
+    ]
+  },
+  java: {
+    label:"Java Developer", icon:"☕", color:"#ff6b35",
+    desc:"Java from scratch to Spring Boot — placement-focused complete path",
+    sections:[
+      { title:"Java Fundamentals", color:"#ff6b35", nodes:[
+        {id:"java-syntax",label:"Syntax, Variables & Data Types",res:"https://www.w3schools.com/java/"},
+        {id:"java-control",label:"Control Flow (if/for/while/switch)",res:"https://www.geeksforgeeks.org/java-control-statements/"},
+        {id:"java-arrays",label:"Arrays & Strings",res:"https://www.geeksforgeeks.org/arrays-in-java/"},
+        {id:"java-methods",label:"Methods & Recursion",res:"https://www.geeksforgeeks.org/methods-in-java/"},
+      ]},
+      { title:"OOP in Java", color:"#f59e0b", nodes:[
+        {id:"classes",label:"Classes & Objects",res:"https://www.geeksforgeeks.org/classes-objects-java/"},
+        {id:"inheritance",label:"Inheritance & Polymorphism",res:"https://www.geeksforgeeks.org/inheritance-in-java/"},
+        {id:"abstraction",label:"Abstraction & Interfaces",res:"https://www.geeksforgeeks.org/abstraction-in-java/"},
+        {id:"encapsulation",label:"Encapsulation",res:"https://www.geeksforgeeks.org/encapsulation-in-java/"},
+        {id:"java-design",label:"Design Patterns (Singleton, Factory, Observer)",res:"https://refactoring.guru/design-patterns/java"},
+      ]},
+      { title:"Core Java APIs", color:"#00d4ff", nodes:[
+        {id:"collections",label:"Collections Framework",res:"https://www.geeksforgeeks.org/collections-in-java-2/"},
+        {id:"generics",label:"Generics",res:"https://www.geeksforgeeks.org/generics-in-java/"},
+        {id:"exceptions",label:"Exception Handling",res:"https://www.geeksforgeeks.org/exceptions-in-java/"},
+        {id:"streams",label:"Streams & Lambda (Java 8+)",res:"https://www.geeksforgeeks.org/stream-in-java/"},
+        {id:"multithreading",label:"Multithreading & Concurrency",res:"https://www.geeksforgeeks.org/multithreading-in-java/"},
+      ]},
+      { title:"Spring Boot", color:"#6db33f", nodes:[
+        {id:"spring-core",label:"Spring Core & DI",res:"https://spring.io/projects/spring-framework"},
+        {id:"spring-boot-basics",label:"Spring Boot Setup",res:"https://spring.io/projects/spring-boot"},
+        {id:"spring-rest",label:"REST APIs with Spring Boot",res:"https://spring.io/guides/gs/rest-service/"},
+        {id:"spring-data",label:"Spring Data JPA",res:"https://spring.io/projects/spring-data-jpa"},
+        {id:"spring-sec",label:"Spring Security & JWT",res:"https://spring.io/projects/spring-security"},
+      ]},
+      { title:"Testing & Tools", color:"#818cf8", nodes:[
+        {id:"junit",label:"JUnit & Mockito Testing",res:"https://junit.org/junit5/docs/current/user-guide/"},
+        {id:"maven",label:"Maven / Gradle",res:"https://maven.apache.org/guides/"},
+        {id:"java-docker",label:"Dockerizing Java Apps",res:"https://spring.io/guides/gs/spring-boot-docker/"},
+        {id:"java-git",label:"Git & GitHub",res:"https://roadmap.sh/git-github"},
+      ]},
+    ]
+  },
+};
+
+const SkillMapPage = ({ setPage }) => {
+  const [track, setTrack] = React.useState("frontend");
+  const [prog, setProg] = React.useState(() => {
+    try { return JSON.parse(localStorage.getItem("skillmap_prog_v1")||"{}"); } catch { return {}; }
+  });
+  const [tooltip, setTooltip] = React.useState(null); // {id, res, label}
+
+  const save = p => { setProg(p); try { localStorage.setItem("skillmap_prog_v1", JSON.stringify(p)); } catch(_){} };
+  const toggle = id => save({...prog, [id]: prog[id]==="done" ? null : "done"});
+
+  const t = SM_TRACKS[track];
+  const allNodes = t.sections.flatMap(s=>s.nodes);
+  const doneCount = allNodes.filter(n=>prog[n.id]==="done").length;
+  const pct = allNodes.length ? Math.round(doneCount/allNodes.length*100) : 0;
+
+  return (
+    <div style={{paddingTop:64,minHeight:"100vh",background:"var(--bg)"}}>
+
+      {/* Header */}
+      <div style={{background:"var(--bg2)",borderBottom:"1px solid var(--border)",padding:"20px 16px 0"}}>
+        <div style={{maxWidth:1200,margin:"0 auto"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
+            <button onClick={()=>setPage("tools")} style={{background:"none",border:"1px solid var(--border)",borderRadius:8,padding:"5px 12px",color:"var(--text2)",fontSize:13,cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>← Tools</button>
+            <div className="sl" style={{marginBottom:0}}>Skill Roadmap</div>
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:12,marginBottom:16}}>
+            <div>
+              <h1 className="syne" style={{fontSize:28,fontWeight:900,marginBottom:4}}>🧭 Skill <span className="gtext">Roadmap</span></h1>
+              <p style={{color:"var(--text2)",fontSize:13,margin:0}}>Visual learning path — click any node to mark done · click the link to learn</p>
+            </div>
+            {/* Progress */}
+            <div style={{display:"flex",alignItems:"center",gap:14,background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,padding:"10px 18px"}}>
+              <div style={{textAlign:"center"}}>
+                <div className="syne" style={{fontSize:24,fontWeight:900,color:t.color,lineHeight:1}}>{pct}%</div>
+                <div style={{fontSize:10,color:"var(--text3)"}}>complete</div>
+              </div>
+              <div>
+                <div style={{width:120,height:6,background:"var(--bg3)",borderRadius:3,overflow:"hidden",marginBottom:4}}>
+                  <div style={{height:"100%",background:t.color,width:`${pct}%`,borderRadius:3,transition:"width .4s"}}/>
+                </div>
+                <div style={{fontSize:11,color:"var(--text3)"}}>{doneCount}/{allNodes.length} nodes done</div>
+              </div>
+              <button onClick={()=>save({})} style={{fontSize:10,padding:"4px 10px",borderRadius:6,border:"1px solid var(--border)",background:"none",color:"var(--text3)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif"}}>Reset</button>
+            </div>
+          </div>
+
+          {/* Track tabs */}
+          <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:0,WebkitOverflowScrolling:"touch"}}>
+            {Object.entries(SM_TRACKS).map(([k,v])=>(
+              <button key={k} onClick={()=>setTrack(k)}
+                style={{flexShrink:0,padding:"10px 16px",borderRadius:"10px 10px 0 0",border:`1px solid ${track===k?v.color:"var(--border)"}`,borderBottom:track===k?"1px solid var(--bg2)":"1px solid var(--border)",background:track===k?"var(--bg2)":`${v.color}10`,color:track===k?v.color:"var(--text2)",cursor:"pointer",fontFamily:"'DM Sans',sans-serif",fontWeight:track===k?800:400,fontSize:13,display:"flex",alignItems:"center",gap:6,transition:"all .15s"}}>
+                <span>{v.icon}</span><span className="hm">{v.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Roadmap body */}
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"28px 16px"}}>
+
+        {/* Track description */}
+        <div style={{background:`${t.color}10`,border:`1px solid ${t.color}30`,borderRadius:14,padding:"14px 20px",marginBottom:28,display:"flex",alignItems:"center",gap:14}}>
+          <div style={{fontSize:36}}>{t.icon}</div>
+          <div>
+            <div className="syne" style={{fontSize:16,fontWeight:800,color:t.color,marginBottom:2}}>{t.label}</div>
+            <div style={{fontSize:13,color:"var(--text2)"}}>{t.desc}</div>
+          </div>
+          <div style={{marginLeft:"auto",fontSize:12,color:"var(--text3)",textAlign:"right",flexShrink:0}}>
+            <div>Click node = mark done</div>
+            <div>🔗 = open resource</div>
+          </div>
+        </div>
+
+        {/* Sections — vertical flow */}
+        <div style={{display:"flex",flexDirection:"column",gap:0}}>
+          {t.sections.map((sec, si)=>(
+            <div key={si} style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
+
+              {/* Section header */}
+              <div style={{background:sec.color,color:"#000",borderRadius:12,padding:"9px 28px",fontWeight:800,fontSize:14,fontFamily:"'Syne',sans-serif",letterSpacing:".02em",boxShadow:`0 4px 20px ${sec.color}40`,marginBottom:16,zIndex:1,position:"relative"}}>
+                {sec.title}
+              </div>
+
+              {/* Connector line down */}
+              {si < t.sections.length && (
+                <div style={{width:2,height:16,background:`${sec.color}50`,marginBottom:0}}/>
+              )}
+
+              {/* Nodes grid */}
+              <div style={{display:"flex",flexWrap:"wrap",gap:10,justifyContent:"center",marginBottom:16,maxWidth:900}}>
+                {sec.nodes.map((node, ni)=>{
+                  const done = prog[node.id]==="done";
+                  return (
+                    <div key={node.id} style={{position:"relative",display:"flex",alignItems:"center",gap:0}}>
+                      {/* Connector dot */}
+                      {ni>0 && <div style={{width:16,height:2,background:`${sec.color}30`,flexShrink:0}}/>}
+                      <div
+                        onClick={()=>toggle(node.id)}
+                        style={{
+                          padding:"10px 16px",borderRadius:10,cursor:"pointer",userSelect:"none",
+                          border:`2px solid ${done?sec.color:"var(--border)"}`,
+                          background:done?`${sec.color}18`:"var(--card)",
+                          color:done?sec.color:"var(--text)",
+                          fontSize:13,fontWeight:done?700:400,
+                          display:"flex",alignItems:"center",gap:8,
+                          transition:"all .18s",
+                          boxShadow:done?`0 4px 16px ${sec.color}25`:"none",
+                          minWidth:140,maxWidth:220,
+                        }}
+                        onMouseEnter={e=>{if(!done){e.currentTarget.style.borderColor=sec.color;e.currentTarget.style.background=`${sec.color}09`;}e.currentTarget.style.transform="translateY(-2px)";}}
+                        onMouseLeave={e=>{if(!done){e.currentTarget.style.borderColor="var(--border)";e.currentTarget.style.background="var(--card)";}e.currentTarget.style.transform="";}}
+                      >
+                        {/* Checkbox */}
+                        <div style={{width:16,height:16,borderRadius:4,border:`2px solid ${done?sec.color:"var(--border)"}`,background:done?sec.color:"transparent",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",transition:"all .15s"}}>
+                          {done&&<span style={{color:"#000",fontSize:9,fontWeight:900}}>✓</span>}
+                        </div>
+                        <span style={{flex:1,lineHeight:1.3,fontSize:12}}>{node.label}</span>
+                        {/* Resource link */}
+                        <a href={node.res} target="_blank" rel="noopener noreferrer"
+                          onClick={e=>e.stopPropagation()}
+                          style={{color:sec.color,fontSize:14,textDecoration:"none",flexShrink:0,opacity:.7,transition:"opacity .15s"}}
+                          onMouseEnter={e=>e.currentTarget.style.opacity="1"}
+                          onMouseLeave={e=>e.currentTarget.style.opacity=".7"}
+                          title="Open learning resource">🔗</a>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Arrow to next section */}
+              {si < t.sections.length-1 && (
+                <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:8}}>
+                  <div style={{width:2,height:20,background:`${t.color}40`}}/>
+                  <div style={{width:0,height:0,borderLeft:"8px solid transparent",borderRight:"8px solid transparent",borderTop:`12px solid ${t.color}60`}}/>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Completion banner */}
+        {pct===100 && (
+          <div style={{textAlign:"center",padding:"32px 20px",background:`${t.color}10`,border:`1px solid ${t.color}40`,borderRadius:16,marginTop:24}}>
+            <div style={{fontSize:48,marginBottom:12}}>🎉</div>
+            <div className="syne" style={{fontSize:22,fontWeight:900,color:t.color,marginBottom:8}}>You've completed the {t.label} Roadmap!</div>
+            <div style={{color:"var(--text2)",fontSize:14,marginBottom:20}}>Time to build something real and put it on your resume.</div>
+            <div style={{display:"flex",gap:10,justifyContent:"center",flexWrap:"wrap"}}>
+              <button className="btn-p" onClick={()=>setPage("resumebuilder")} style={{padding:"10px 24px",fontSize:13,borderRadius:10}}>🏗️ Build Your Resume</button>
+              <button className="btn-g" onClick={()=>setPage("readiness")} style={{padding:"10px 24px",fontSize:13,borderRadius:10}}>📊 Check Readiness Score</button>
+            </div>
+          </div>
+        )}
+
+        {/* Legend */}
+        <div style={{display:"flex",gap:16,justifyContent:"center",marginTop:32,flexWrap:"wrap"}}>
+          {[
+            {color:"var(--border)",bg:"var(--card)",label:"Not Started"},
+            {color:t.color,bg:`${t.color}18`,label:"Completed ✓"},
+          ].map(l=>(
+            <div key={l.label} style={{display:"flex",alignItems:"center",gap:8,fontSize:12,color:"var(--text2)"}}>
+              <div style={{width:32,height:20,borderRadius:6,border:`2px solid ${l.color}`,background:l.bg}}/>
+              <span>{l.label}</span>
+            </div>
+          ))}
+          <div style={{display:"flex",alignItems:"center",gap:6,fontSize:12,color:"var(--text2)"}}>
+            <span>🔗</span><span>= opens learning resource in new tab</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function App() {
   const [page,setPage] = useState("home");
   const [dark,setDark] = useState(false);
@@ -12638,6 +13078,7 @@ export default function App() {
           {page==="jddecoder"   && <JDDecoderPage setPage={setPage}/>}
           {page==="salarycoach" && <SalaryNegotiationCoachPage setPage={setPage}/>}
           {page==="readiness"   && <PlacementReadinessPage setPage={setPage}/>}
+          {page==="skillmap"    && <SkillMapPage setPage={setPage}/>}
         </main>
         <Footer setPage={setPage}/>
         <HackBot hackathons={allHacks}/>
