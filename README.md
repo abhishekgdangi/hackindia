@@ -28,7 +28,7 @@
 
 **HackIndia** is a free, no-login platform built specifically for Indian engineering students to prepare for placements and discover opportunities. It aggregates live hackathons, internships, and tech events — and provides 13 powerful placement tools powered by AI.
 
-> Built by a CSE student at DSCE Bengaluru, for Indian students.
+> Built by a CSE(Data Science) student at DSCE Bengaluru, for Indian students.
 
 ---
 
@@ -347,6 +347,6 @@ Built by a CSE (Data Science) student at **Dayananda Sagar College of Engineerin
 
 **⚡ HackIndia — Built for Indian Students, by an Indian Student**
 
-[![GitHub stars](https://img.shields.io/github/stars/YOUR_USERNAME/hackindia?style=social)](https://github.com/YOUR_USERNAME/hackindia)
+[![GitHub stars](https://img.shields.io/github/stars/abhishekgdangi/hackindia?style=social)](https://github.com/YOUR_USERNAME/hackindia)
 
 </div>
