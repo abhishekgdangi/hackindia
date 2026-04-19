@@ -1,397 +1,245 @@
-# ⚡ HackIndia — Complete Setup Guide
+<div align="center">
 
-India's #1 AI-powered hackathon discovery platform
-Groq (FREE) + Llama 3.3 · 7 scrapers · MongoDB · React
+<img src="https://img.shields.io/badge/HackIndia-⚡-00d4ff?style=for-the-badge&labelColor=0a0a0a" alt="HackIndia"/>
+
+# ⚡ HackIndia
+
+### India's #1 Placement & Hackathon Platform
+
+**Live Hackathons · Tech Internships · 13 Free Student Tools · AI-Powered · 100% Free**
+
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Visit_Now-00d4ff?style=for-the-badge&labelColor=0a0a0a)](https://hackindia-final.vercel.app)
+[![Backend](https://img.shields.io/badge/Backend-Render-46e3b7?style=for-the-badge&labelColor=0a0a0a)](https://hackindia-0pum.onrender.com/api)
+[![License](https://img.shields.io/badge/License-MIT-818cf8?style=for-the-badge&labelColor=0a0a0a)](LICENSE)
+[![Made in India](https://img.shields.io/badge/Made_in-India_🇮🇳-ff9933?style=for-the-badge&labelColor=0a0a0a)](https://github.com)
+
+<br/>
+
+![HackIndia Preview](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+
+</div>
 
 ---
 
-## ⚠️  CAN YOU USE AN API KEY FROM GITHUB?
+## 🌟 What is HackIndia?
 
-**NO. Never do this.**
+**HackIndia** is a free, no-login platform built specifically for Indian engineering students to prepare for placements and discover opportunities. It aggregates live hackathons, internships, and tech events — and provides 13 powerful placement tools powered by AI.
 
-- GitHub **auto-scans** all repos and **revokes leaked keys within minutes**
-- Keys you find on GitHub are **already dead/invalid**
-- Using someone else's key violates ToS and can get accounts **permanently banned**
-- It's also just plain **unethical** — they pay, you use
-
-**Groq is 100% FREE** — takes 2 minutes to get your own key:
-1. Go to https://console.groq.com
-2. Sign up with Google or GitHub — no credit card ever
-3. Click API Keys → Create API Key
-4. Copy the key starting with `gsk_...`
-5. Paste it in your `.env` as `GROQ_API_KEY=gsk_...`
-
-Free limits: **14,400 requests/day · 500,000 tokens/minute · $0 forever**
+> Built by a CSE student at DSCE Bengaluru, for Indian students.
 
 ---
 
-## 📁 Correct File Structure
+## 🚀 Live Features
+
+| Feature | Description |
+|---------|-------------|
+| ⚡ **Live Hackathons** | 200+ open hackathons, filtered for India, updated every 6 hours |
+| 💼 **Tech Internships** | 1000+ live internships with direct apply links |
+| 🗓️ **Tech Events** | Conferences, meetups, workshops aggregated from 9 platforms |
+| 🤖 **HackBot AI** | Ask anything about hackathons, placements, DSA — powered by Groq/LLaMA |
+| 📅 **Calendar View** | Deadline calendar for hackathons and internships |
+
+---
+
+## 🛠️ 13 Free Student Tools
+
+> Zero login. Zero cost. Built for Indian CS students.
+
+| # | Tool | Description |
+|---|------|-------------|
+| 1 | 🧠 **DSA Explorer** | 300+ problems, 22 patterns, Blind 75, LC Top 150, Mock Test, AI Explainer, Spaced Repetition |
+| 2 | 🏆 **CP Contest Tracker** | Live contests from CF/LC/CC/AC, countdown timers, virtual contests, calendar |
+| 3 | 🎯 **Aptitude Trainer** | 500+ questions, 26 company sets, 9 practice modes, AI solver, wrong bank |
+| 4 | 💻 **CS Core Prep** | DBMS, OS, CN, OOP, System Design — theory + MCQs + rapid revision |
+| 5 | 🎤 **Soft Skills** | HR interview, GD prep, email etiquette, STAR format, communication |
+| 6 | 🏗️ **Resume Builder** | 6 ATS templates, JD keyword match, ATS score (16 rules), AI bullet points, PDF export |
+| 7 | 🏢 **Company Guide** | Google, Amazon, Razorpay, Flipkart + 6 more — ATS keywords, red flags, interview process |
+| 8 | 📄 **AI Resume Analyzer** | Upload PDF/DOCX → 3-stage Groq AI pipeline → ATS score, JD match, cover letter |
+| 9 | 🗺️ **Interview Roadmap** | 30/60/90-day plans for 5 tracks — Fresher, SDE, Frontend, Data, DevOps |
+| 10 | 📋 **JD Decoder** | Paste any JD → AI extracts must-haves, nice-to-haves, red flags, culture signals |
+| 11 | 💬 **Salary Coach** | Word-for-word negotiation script + counter-offer email. Bangalore market data. No AI wait. |
+| 12 | 📊 **Placement Readiness Score** | Instant weighted score from your tool activity — DSA 30%, Resume 30%, Aptitude 20%, CS Core 20% |
+| 13 | 🧭 **Skill Roadmap** | Visual node-based roadmaps for Frontend, Backend, Full Stack, DevOps, DSA & Java — roadmap.sh style |
+
+---
+
+## 🏗️ Tech Stack
+
+```
+Frontend          →  React.js (Create React App)
+Backend           →  Node.js + Express.js
+Database          →  MongoDB Atlas
+AI / LLM          →  Groq API (LLaMA 3.3 70B)
+Frontend Deploy   →  Vercel
+Backend Deploy    →  Render
+Styling           →  Inline CSS (no Tailwind, no modules)
+State             →  React useState (no Redux)
+Routing           →  Single-page app (no React Router)
+```
+
+---
+
+## 📁 Project Structure
 
 ```
 hackindia/
+├── frontend/
+│   ├── src/
+│   │   └── App.js          # ~13,000 line monolithic React file
+│   ├── public/
+│   └── package.json
 ├── backend/
-│   ├── server.js
-│   ├── package.json
-│   ├── .env.example
-│   ├── models/
-│   │   ├── Hackathon.js
-│   │   ├── Internship.js
-│   │   └── AgentLog.js
-│   ├── scrapers/
-│   │   ├── base.js
-│   │   ├── devfolio.js
-│   │   ├── unstop.js
-│   │   ├── hackerearth.js
-│   │   ├── dorahacks.js
-│   │   ├── mlh.js
-│   │   ├── devpost.js
-│   │   ├── puppeteer.js
-│   │   └── index.js
-│   ├── agents/
-│   │   ├── classificationAgent.js   (Groq + Llama 3.3 FREE)
-│   │   ├── validationAgent.js
-│   │   └── updateAgent.js
-│   ├── jobs/
-│   │   ├── scheduler.js
-│   │   ├── runScrape.js
-│   │   └── seed.js
 │   ├── routes/
-│   │   ├── hackathons.js
-│   │   └── internships.js
-│   └── utils/
-│       └── logger.js
-└── frontend/
-    └── HackIndia.jsx
+│   │   ├── hackathons.js   # Hackathon scraper + API
+│   │   ├── internships.js  # Internship scraper + API
+│   │   ├── events.js       # Events aggregation
+│   │   └── dsa.js          # Groq AI proxy
+│   ├── models/             # MongoDB schemas
+│   ├── server.js
+│   └── package.json
+└── README.md
 ```
 
 ---
 
-## 🔧 STEP 0 — Install Prerequisites
+## ⚙️ Local Setup
 
-### Node.js 18+
+### Prerequisites
+- Node.js 18+
+- MongoDB Atlas account (free tier)
+- Groq API key (free at [console.groq.com](https://console.groq.com))
+
+### 1. Clone the repo
 ```bash
-node --version   # must be 18+
-
-# Ubuntu/WSL — install Node 20:
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt-get install -y nodejs
-
-# macOS:
-brew install node
-
-# Windows: https://nodejs.org — download LTS installer
+git clone https://github.com/YOUR_USERNAME/hackindia.git
+cd hackindia
 ```
 
-### MongoDB
-```bash
-# Ubuntu/WSL:
-wget -qO - https://www.mongodb.org/static/pgp/server-7.0.asc | sudo apt-key add -
-echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
-sudo apt-get update && sudo apt-get install -y mongodb-org
-sudo systemctl start mongod && sudo systemctl enable mongod
-
-# macOS:
-brew tap mongodb/brew && brew install mongodb-community
-brew services start mongodb-community
-
-# Verify:
-mongosh --eval "db.adminCommand('ping')"
-# Output: { ok: 1 }
-```
-
----
-
-## 🚀 STEP 1 — Create the Project Folders
-
-```bash
-mkdir hackindia && cd hackindia
-mkdir -p backend/{models,scrapers,agents,jobs,routes,utils}
-mkdir frontend
-```
-
----
-
-## 📄 STEP 2 — Copy All Files
-
-Copy each file from the provided scripts into the paths below.
-Every file is already written — just paste them in the right location.
-
-Files to create (in order):
-
-```
-backend/package.json
-backend/.env.example
-backend/utils/logger.js
-backend/models/Hackathon.js
-backend/models/Internship.js
-backend/models/AgentLog.js
-backend/scrapers/base.js
-backend/scrapers/devfolio.js
-backend/scrapers/unstop.js
-backend/scrapers/hackerearth.js
-backend/scrapers/dorahacks.js
-backend/scrapers/mlh.js
-backend/scrapers/devpost.js
-backend/scrapers/puppeteer.js
-backend/scrapers/index.js
-backend/agents/classificationAgent.js
-backend/agents/validationAgent.js
-backend/agents/updateAgent.js
-backend/jobs/scheduler.js
-backend/jobs/seed.js
-backend/jobs/runScrape.js
-backend/routes/hackathons.js
-backend/routes/internships.js
-backend/server.js
-frontend/HackIndia.jsx
-```
-
----
-
-## 🔑 STEP 3 — Create Your .env File
-
-```bash
-cd backend
-cp .env.example .env
-nano .env       # or use VS Code, Notepad, etc.
-```
-
-Fill in:
-```env
-MONGODB_URI=mongodb://127.0.0.1:27017/hackindia
-GROQ_API_KEY=gsk_YOUR_KEY_HERE
-GROQ_MODEL=llama-3.3-70b-versatile
-PORT=5000
-NODE_ENV=development
-FRONTEND_URL=http://localhost:3000
-ADMIN_SECRET=any_random_string
-SCRAPE_INTERVAL_HOURS=6
-REQUEST_DELAY_MS=2000
-```
-
----
-
-## 📦 STEP 4 — Install Backend Dependencies
-
+### 2. Backend setup
 ```bash
 cd backend
 npm install
 ```
 
-This downloads: express, mongoose, groq-sdk, cheerio, puppeteer (+ Chromium ~170MB), winston, node-cron, axios, cors, helmet, dotenv, express-rate-limit
-
-Takes 3–7 minutes for first install.
-
----
-
-## 🌱 STEP 5 — Seed the Database
-
-```bash
-node jobs/seed.js
-```
-
-Expected output:
-```
-✅ Seeded 10 hackathons and 8 internships
-```
-
----
-
-## ▶️ STEP 6 — Start the Backend
-
-```bash
-npm start
-```
-
-Expected:
-```
-✅ MongoDB connected
-✅ HackIndia API running at http://localhost:5000
-   Groq AI: configured ✔
-✅ All cron jobs registered (IST)
-```
-
----
-
-## 🧪 STEP 7 — Test the API
-
-Open another terminal:
-
-```bash
-# Health
-curl http://localhost:5000/api/health
-
-# All hackathons
-curl http://localhost:5000/api/hackathons | head -c 500
-
-# Filter by domain
-curl "http://localhost:5000/api/hackathons?domain=AI%2FML&sort=prize"
-
-# Stats
-curl http://localhost:5000/api/hackathons/stats
-```
-
----
-
-## 🎨 STEP 8 — Set Up the React Frontend
-
-### Create React App (recommended for beginners):
-```bash
-cd ..
-npx create-react-app hackindia-frontend
-cd hackindia-frontend
-```
-
-Copy HackIndia.jsx → replace src/App.js contents (or rename to App.jsx).
-
-Create `.env` in the frontend folder:
+Create `.env` file in `/backend`:
 ```env
-REACT_APP_API_URL=http://localhost:5000/api
-REACT_APP_GROQ_KEY=gsk_YOUR_KEY_HERE
+MONGODB_URI=your_mongodb_atlas_connection_string
+GROQ_API_KEY=your_groq_api_key
+PORT=5000
 ```
 
-```bash
-npm start
-# Opens http://localhost:3000
-```
-
-### Vite (faster, modern):
-```bash
-cd ..
-npm create vite@latest hackindia-frontend -- --template react
-cd hackindia-frontend && npm install
-```
-
-Copy HackIndia.jsx → src/App.jsx
-
-Create `.env`:
-```env
-VITE_API_URL=http://localhost:5000/api
-VITE_GROQ_KEY=gsk_YOUR_KEY_HERE
-```
-
-Change 2 lines in HackIndia.jsx:
-```js
-// OLD:
-const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
-const GROQ_KEY = process.env.REACT_APP_GROQ_KEY || "";
-
-// NEW (Vite):
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-const GROQ_KEY = import.meta.env.VITE_GROQ_KEY || "";
-```
-
+Start backend:
 ```bash
 npm run dev
-# Opens http://localhost:5173
 ```
+
+### 3. Frontend setup
+```bash
+cd frontend
+npm install
+```
+
+Create `.env` file in `/frontend`:
+```env
+REACT_APP_GROQ_KEY=your_groq_api_key
+```
+
+Start frontend:
+```bash
+npm start
+```
+
+Frontend runs at `http://localhost:3000`
+Backend runs at `http://localhost:5000`
 
 ---
 
-## ⚡ Manual Scraping Commands
+## 🌐 Deployment
 
+### Frontend → Vercel
 ```bash
-cd backend
+# Install Vercel CLI
+npm i -g vercel
 
-# Full pipeline: scrape all → validate → classify → save to DB
-node jobs/runScrape.js
-
-# Single platform (prints results, doesn't save):
-node jobs/runScrape.js devfolio
-node jobs/runScrape.js unstop
-node jobs/runScrape.js hackerearth
-node jobs/runScrape.js dorahacks
-node jobs/runScrape.js mlh
-node jobs/runScrape.js devpost
+# Deploy from frontend folder
+cd frontend
+vercel --prod
 ```
+
+### Backend → Render
+1. Push code to GitHub
+2. Go to [render.com](https://render.com) → New Web Service
+3. Connect your GitHub repo
+4. Set root directory to `backend`
+5. Build command: `npm install`
+6. Start command: `node server.js`
+7. Add environment variables (MONGODB_URI, GROQ_API_KEY)
 
 ---
 
-## 🌐 API Endpoints Reference
+## 🔑 Key Environment Variables
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | /api/health | Server + DB status |
-| GET | /api/agent-status | Last 10 AI agent runs |
-| GET | /api/hackathons | List (filters below) |
-| GET | /api/hackathons/featured | Top 6 featured |
-| GET | /api/hackathons/stats | Counts + prize pool |
-| GET | /api/hackathons/:slug | Single detail |
-| POST | /api/hackathons/:id/bookmark | +1 bookmark |
-| POST | /api/hackathons/admin/run-pipeline | Force scrape |
-| GET | /api/internships | List internships |
-
-Filter params: `?domain=AI/ML&mode=Online&city=Bangalore&sort=prize&search=blockchain&page=1&limit=20`
+| Variable | Where | Description |
+|----------|-------|-------------|
+| `MONGODB_URI` | Backend | MongoDB Atlas connection string |
+| `GROQ_API_KEY` | Backend | Groq LLaMA API key |
+| `REACT_APP_GROQ_KEY` | Frontend | Groq key for HackBot |
 
 ---
 
-## 🚀 Free Deployment (Production)
+## 📊 Platform Stats
 
-### MongoDB Atlas (FREE 512MB)
-1. Go to cloud.mongodb.com → Create free cluster (M0)
-2. Database Access → Add user with password
-3. Network Access → Add IP → 0.0.0.0/0
-4. Connect → Drivers → Copy URI
-5. Use it as `MONGODB_URI` in prod env
-
-### Backend on Render (FREE)
-1. Push `backend/` to GitHub
-2. render.com → New Web Service → Connect repo
-3. Build: `npm install` | Start: `npm start`
-4. Add env vars (MONGODB_URI, GROQ_API_KEY, etc.)
-
-### Frontend on Vercel (FREE)
-1. Push `hackindia-frontend/` to GitHub
-2. vercel.com → Import project
-3. Add env var: `REACT_APP_API_URL=https://your-render-url.onrender.com/api`
-
-**Total monthly cost: ₹0**
+- **200+** live hackathons tracked
+- **1000+** internships aggregated
+- **13** free placement tools
+- **6h** data refresh interval
+- **0** logins required
+- **100%** free forever
 
 ---
 
-## 🐛 Troubleshooting
+## 🤝 Contributing
 
-**MongoDB not connecting**
-```bash
-sudo systemctl start mongod        # Linux
-brew services start mongodb-community  # macOS
-```
+Contributions are welcome! Here's how:
 
-**Groq key error**
-```bash
-# Check no spaces or quotes:
-cat .env | grep GROQ
-# Should show: GROQ_API_KEY=gsk_xxx   (no quotes)
-```
+1. Fork the repo
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Commit: `git commit -m "Add my feature"`
+4. Push: `git push origin feature/my-feature`
+5. Open a Pull Request
 
-**Puppeteer fails on Linux**
-```bash
-sudo apt-get install -y libgbm-dev libnss3 libatk-bridge2.0-0 libgtk-3-0 libxss1
-```
-
-**CORS error in browser**
-```bash
-# backend .env:
-FRONTEND_URL=http://localhost:3000    # for CRA
-FRONTEND_URL=http://localhost:5173    # for Vite
-```
-
-**Port 5000 already in use**
-```bash
-# Change in .env:
-PORT=5001
-# And update frontend .env:
-REACT_APP_API_URL=http://localhost:5001/api
-```
+### Ideas for contribution
+- Add more companies to Company Guide
+- Add more DSA problems
+- Improve AI prompts for Resume Analyzer
+- Add new hackathon sources
+- Improve mobile responsiveness
 
 ---
 
-## 🆓 All APIs Used (100% Free)
+## 📄 License
 
-| Tool | Purpose | Cost |
-|------|---------|------|
-| Groq API | AI classification + HackBot chatbot | FREE forever |
-| Llama 3.3 70B | Model on Groq | FREE on Groq |
-| MongoDB Atlas | Database | FREE (512MB) |
-| Render | Backend hosting | FREE tier |
-| Vercel | Frontend hosting | FREE tier |
+MIT License — free to use, modify, and distribute.
+
+---
+
+## 👨‍💻 Author
+
+**Made with ❤️ for Indian engineering students**
+
+Built by a CSE (Data Science) student at **Dayananda Sagar College of Engineering, Bengaluru**
+
+> If this helped you land a placement or win a hackathon, give it a ⭐
+
+---
+
+<div align="center">
+
+**⚡ HackIndia — Built for Indian Students, by an Indian Student**
+
+[![GitHub stars](https://img.shields.io/github/stars/YOUR_USERNAME/hackindia?style=social)](https://github.com/YOUR_USERNAME/hackindia)
+
+</div>
