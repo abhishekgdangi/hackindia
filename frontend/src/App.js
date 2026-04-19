@@ -383,7 +383,7 @@ const getLogoUrl = (name="", organizer="", platform="", applyLink="") => {
     zomato:"zomato.com", swiggy:"swiggy.in", razorpay:"razorpay.com",
     infosys:"infosys.com", wipro:"wipro.com", tcs:"tcs.com",
     paytm:"paytm.com", meesho:"meesho.com", cred:"cred.club",
-    devpost:"devpost.com", devfolio:"devfolio.co",
+    devfolio:"devfolio.co",
     unstop:"unstop.com", dorahacks:"dorahacks.io",
     hackerearth:"hackerearth.com", hackclub:"hackclub.com",
     mlh:"mlh.io", "hack club":"hackclub.com",
@@ -413,7 +413,7 @@ const hackLogoEmoji = (h) => {
   if (n.includes("finance")||n.includes("fintech"))  return "💰";
   if (n.includes("climate")||n.includes("green"))    return "🌱";
   if (n.includes("edu"))                             return "📚";
-  if (p==="devfolio")    return "🚀"; if (p==="devpost")    return "💻";
+  if (p==="devfolio")    return "🚀";
   if (p==="unstop")      return "⚡"; if (p==="dorahacks")  return "🌐";
   if (p==="hackerearth") return "💡"; if (p==="hackclub")   return "🏫";
   const fb=["🔴","🟡","🟢","🔵","🟣","🟠","🔶","🔹","🌟","💎","🏆","🎪","🎭","🎨"];
@@ -994,6 +994,7 @@ const HackathonsPage = () => {
   // Backend filters expired — just India/online filter here
   const INDIA_RE = /india|bangalore|bengaluru|mumbai|delhi|hyderabad|pune|chennai|kolkata|noida|gurugram|kochi|ahmedabad|jaipur/i;
   const data = rawHacks.filter(h => {
+    if ((h.sourcePlatform||"").toLowerCase()==="devpost") return false;
     const isOnline = (h.mode||"").toLowerCase()==="online" || (h.city||"").toLowerCase()==="online";
     if (isOnline) return true;
     const loc = (h.city||h.location||h.name||"").toLowerCase();
@@ -1840,9 +1841,7 @@ const EventsPage = () => {
 ──────────────────────────────────────────────── */
 const RESOURCES=[
   {icon:"🏆",title:"How to Win Hackathons — MLH Guide",desc:"Official MLH guide covering ideation, execution, pitching and what judges look for.",tag:"Strategy",color:"var(--cyan)",time:"10 min",url:"https://guide.mlh.io"},
-  {icon:"💡",title:"Devpost Hackathon Listings",desc:"Browse 1000s of active hackathons globally. Filter by prize, theme, and eligibility.",tag:"Find Hacks",color:"var(--yellow)",time:"Browse",url:"https://devpost.com/hackathons"},
   {icon:"🛠️",title:"Top GitHub Student Developer Pack",desc:"Free tools for students — AWS, GitHub Copilot, Notion, Figma, MongoDB Atlas and 100+ more.",tag:"Tools",color:"var(--green)",time:"Free",url:"https://education.github.com/pack"},
-  {icon:"🤝",title:"Find Teammates — Devpost Forum",desc:"Post your hackathon and find co-hackers with the right skills for your team.",tag:"Team",color:"var(--purple)",time:"Browse",url:"https://devpost.com/hackathons"},
   {icon:"🎤",title:"How to Demo at a Hackathon — Y Combinator",desc:"YC's advice on how to present your project clearly and impress judges in under 3 minutes.",tag:"Pitch",color:"var(--orange)",time:"5 min",url:"https://www.ycombinator.com/library/6p-how-to-pitch-your-startup"},
   {icon:"📋",title:"Unstop — India Hackathons & Competitions",desc:"India's biggest platform for hackathons, competitions, and internships. Register and compete.",tag:"India",color:"var(--pink)",time:"Browse",url:"https://unstop.com/hackathons"},
   {icon:"🧠",title:"LeetCode — Practice DSA",desc:"Sharpen your coding skills before hackathons. Practice data structures and algorithms.",tag:"Coding",color:"var(--cyan)",time:"Practice",url:"https://leetcode.com"},
